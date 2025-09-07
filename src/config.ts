@@ -229,7 +229,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "https://q1.qlogo.cn/g?b=qq&nk=3687624214&s=100", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
+	avatar: "assets/images/avatar.gif", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
 	name: "邱息",
 	bio: "我渴望自由，渴望知道的越多！",
 	links: [
