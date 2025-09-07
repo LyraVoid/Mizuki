@@ -1,59 +1,50 @@
 ---
-title: Simple Guides for Mizuki
-published: 2024-04-01
-description: "How to use this blog template."
+title: 自我介绍 - 邱息
+published: 2025-09-07
+description: "这是我的个人自我介绍，包含我的背景、技能和兴趣爱好。"
 image: "./cover.jpeg"
-tags: ["Mizuki", "Blogging", "Customization"]
-category: Guides
+tags: ["自我介绍", "邱息", "个人背景"]
+category: Personal
 draft: false
 ---
 
+# 邱息的自我介绍
 
+## 基本信息
 
-This blog template is built with [Astro](https://astro.build/). For the things that are not mentioned in this guide, you may find the answers in the [Astro Docs](https://docs.astro.build/).
+我叫邱息，这个名字对我来说很特别，刚开始起这个名字，我觉得很奇怪，但是坚持下来发现这个名字很好很特别。我来自湖北——咸宁，这里很小很奇怪，很多奇奇怪怪，观念老旧的人，像我这样子的人就更少了，因此我向往大城市！[7,8](@ref)。
 
-## Front-matter of Posts
+## 教育背景
 
-```yaml
+我现在在一个职业中学上高一，计算机应用专业，是计算机课代表。学校教计算机基础，计算机应用，WPS，Python和MySQL。[1,2](@ref)。
+
+## 专业技能
+
+- **编程语言**：学过一丢丢Java、Python、c++等编程语言，只懂得皮毛，不能深究，不然我会输得很惨[3](@ref)
+- **数据库**：目前在学学校教的MySQL[3](@ref)
+- **开发工具**：熟练使用IDEA、Git等开发工具进行项目构建和版本控制[3](@ref)
+- **AI**：熟练使用ChatGPT，DeepSeek等大语言模型，会通过ai解决问题[1](@ref)
+- **Minecraft**：目前在开Minecraft服务器，熟练开服2.5年！(真的！)[1](@ref)
+
+## 兴趣爱好
+
+在专业之外，我有着丰富的兴趣爱好：
+- **阅读**：特别喜欢中日二次元作品，比较喜欢《你的名字。》《天气之子》《轻音少女》《孤独摇滚》《BanG Dream! It's MyGO!!!!!》《GIRLS BAND CRY》[7](@ref)
+- **音乐**：热爱日语歌曲和术力口，喜欢米津玄师，YOASOBI等真人歌手，还喜欢DECO*27等v曲制作者。[7](@ref)
+- **旅游**：喜欢探索不同的文化和风景，尤其热爱城市，可能是因为我出生在小县城吧。[1](@ref)
+- **计算机**：把计算机和计算机相关的东西当成我的热爱，这样子学习计算机也不辛苦了，主要我是真喜欢！[1](@ref)
+
+## 自我评价
+
+我是一个热爱技术、持续学习的人。也是一个自私自利的人，我很少估计他人感受，对自己却很放松，情绪不行，还很社恐，自己认为很好的朋友有事瞒着我，或者不和我说的时候心里会有莫名的情绪，想改，但是不知道怎么改[3](@ref)。
+
+> “我渴望自由，渴望知道的越多！”——这是我的目前的想法
+## 联系方式
+
+- **邮箱**：anr1003@163.com
+- **bilibili**：https://space.bilibili.com/1563899799
+- **GitHub**：[https://github.com/qiuxi903](https://github.com/qiuxi903)
+
 ---
-title: My First Blog Post
-published: 2023-09-09
-description: This is the first post of my new Astro blog.
-image: ./cover.jpg
-tags: [Foo, Bar]
-category: Front-end
-draft: false
----
-```
 
-![]()
-
-
-
-| Attribute     | Description                                                                                                                                                                                                 |
-|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `title`       | The title of the post.                                                                                                                                                                                      |
-| `published`   | The date the post was published.                                                                                                                                                                            |
-| `pinned`      | Whether this post is pinned to the top of the post list.                                                                                                                                                   |
-| `description` | A short description of the post. Displayed on index page.                                                                                                                                                   |
-| `image`       | The cover image path of the post.<br/>1. Start with `http://` or `https://`: Use web image<br/>2. Start with `/`: For image in `public` dir<br/>3. With none of the prefixes: Relative to the markdown file |
-| `tags`        | The tags of the post.                                                                                                                                                                                       |
-| `category`    | The category of the post.                                                                                                                                                                                   |
-| `licenseName` | The license name for the post content.                                                                                                                                                                      |
-| `author`      | The author of the post.                                                                                                                                                                                     |
-| `sourceLink`  | The source link or reference for the post content.                                                                                                                                                          |
-| `draft`       | If this post is still a draft, which won't be displayed.                                                                                                                                                    |
-
-## Where to Place the Post Files
-
-
-
-Your post files should be placed in `src/content/posts/` directory. You can also create sub-directories to better organize your posts and assets.
-
-```
-src/content/posts/
-├── post-1.md
-└── post-2/
-    ├── cover.png
-    └── index.md
-```
+感谢您花时间阅读我的自我介绍，期待与您交流合作！
