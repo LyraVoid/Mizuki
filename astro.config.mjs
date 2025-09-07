@@ -29,7 +29,7 @@ import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 export default defineConfig({
 	site: "https://anon.hutaomu.top/",
 
-	base: "/Mizuki_anon_hutaomu",
+	base: "/",
 	trailingSlash: "always",
 	integrations: [
 		tailwind({
