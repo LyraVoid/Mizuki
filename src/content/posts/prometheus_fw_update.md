@@ -1,4 +1,4 @@
-# Linux Synaptics FS7605
+# Linux 使用 Synaptics FS7605 指纹
 
 ## 1. 查看设备
 ```bash
