@@ -19,6 +19,7 @@ import CryptoJS from "crypto-js";
 import bcryptjs from "bcryptjs";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import Series from "../../components/widget/Series.astro";
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
 	return blogEntries.map((entry) => ({
@@ -86,6 +87,7 @@ const jsonLd = {
     setOGTypeArticle={true}
     postSlug={entry.slug}
     headings={headings}
+    series={entry.data.series}
 >
     <script
         is:inline
@@ -305,6 +307,12 @@ const jsonLd = {
                 </div>
             </div>
         </>
+    )}
+    
+    {entry.data.series && (
+        <div class="card-base p-6 mb-4 flex flex-col w-full gap-4">
+            <Series series={entry.data.series} />
+        </div>
     )}
 
     <div

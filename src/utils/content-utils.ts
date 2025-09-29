@@ -2,6 +2,7 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
+import type { BlogPostData } from '@/types/config'
 
 // // Retrieve posts and sort them by publication date
 async function getRawSortedPosts() {
@@ -116,4 +117,23 @@ export async function getCategoryList(): Promise<Category[]> {
 		});
 	}
 	return ret;
+}
+
+export async function getPostSeries(
+  seriesName: string,
+): Promise<{ body: string; data: BlogPostData; slug: string }[]> {
+  const posts = (await getCollection('posts', ({ data }) => {
+    return (
+      (import.meta.env.PROD ? data.draft !== true : true) &&
+      data.series === seriesName
+    )
+  })) as unknown as { body: string; data: BlogPostData; slug: string }[]
+
+  posts.sort((a, b) => {
+    const dateA = new Date(a.data.published)
+    const dateB = new Date(b.data.published)
+    return dateB.getTime() - dateA.getTime() 
+  })
+
+  return posts
 }

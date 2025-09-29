@@ -11,9 +11,10 @@ import MusicPlayer from "./MusicPlayer.svelte";
 interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
+	series?: string;
 }
 
-const { class: className, headings } = Astro.props;
+const { class: className, headings, series } = Astro.props;
 
 // 获取配置的组件列表
 const topComponents = widgetManager.getComponentsByPosition("top");
@@ -76,7 +77,8 @@ function renderComponent(component: any, index: number, components: any[]) {
 			})}
 		</div>
 	)}
-</div>
+
+
 
 <!-- 响应式样式和JavaScript -->
 <style>
