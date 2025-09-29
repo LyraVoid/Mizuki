@@ -1,3 +1,13 @@
+---
+title: Linux 使用 Synaptics FS7605 指纹
+published: 2025-09-29
+pinned: true
+category: Linux
+licenseName: "Unlicensed"
+author: xft233
+draft: false
+---
+
 # Linux 使用 Synaptics FS7605 指纹
 
 ## 1. 查看设备
@@ -84,6 +94,6 @@ fwupdmgr install 固件包.cab
 
 请确认打包时包含：
 - 修改过的 `prometheus.metainfo.xml`  
-- 固件二进制文件（`.bin` 或 `.fw` 等）
+- 固件二进制文件
 
 ---
