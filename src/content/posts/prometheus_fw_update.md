@@ -33,6 +33,7 @@ sudo fwupdmgr update
 > - 
 
 下文使用的设备是 06cb:00df，如果不是请自行寻找[设备固件](https://fwupd.org/lvfs/search?value=Synaptics)。
+
 下载 Prometheus (IOTA Config) 固件 (06cb:00df)
 前往 [06cb:00df](https://fwupd.org/lvfs/devices/com.synaptics.prometheus.0xDF_3483_500.config) 下载固件
 然后安装
