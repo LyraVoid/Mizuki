@@ -17,7 +17,8 @@ sudo fwupdmgr enable-remote lvfs-testing
 sudo fwupdmgr update
 ```
 
-- 如果更新成功 → 到此结束  
+- 如果更新成功 → 到此结束
+- 指纹能用
 
 ---
 
@@ -31,9 +32,9 @@ sudo fwupdmgr update
 > - 请确认型号：06cb:00df，版本完全匹配  
 > - 建议提前做好系统备份
 > - 本人概不负责 !
-> - 
 
-下文使用的设备是 06cb:00df，如果不是请自行寻找[设备固件](https://fwupd.org/lvfs/search?value=Synaptics)。
+
+下文使用的设备是 06cb:00df，如果不是请自行寻找[设备固件](https://fwupd.org/lvfs/search?value=Synaptics)。请不要去刷写。
 
 下载 Prometheus (IOTA Config) 固件 (06cb:00df)
 前往 [06cb:00df](https://fwupd.org/lvfs/devices/com.synaptics.prometheus.0xDF_3483_500.config) 下载固件
