@@ -52,7 +52,6 @@ sudo fwupdmgr update
 然后安装
 - 如果提示 **No supported devices found** 那就这样了。
 
-
 ---
 
 ## 4. 歪门邪道，修改 GUID
