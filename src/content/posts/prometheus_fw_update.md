@@ -1,4 +1,4 @@
-# Synaptics Prometheus (IOTA Config) 固件更新流程
+# Linux Synaptics FS7605
 
 ## 1. 查看设备
 ```bash
@@ -28,10 +28,12 @@ sudo fwupdmgr update
 > ⚠️ **风险提示**  
 > - 手动刷写可能导致指纹模块永久损坏或失效  
 > - 请确认型号、版本完全匹配  
-> - 建议提前做好系统备份  
+> - 建议提前做好系统备份
+> - 本人概不负责 !
 
+下载 Prometheus (IOTA Config) 固件
 前往 [LVFS 设备页面](https://fwupd.org/lvfs/devices/com.synaptics.prometheus.0xDF_3483_500.config) 下载固件
-
+然后安装
 - 如果提示 **No supported devices found** 那就这样了。
 
 
@@ -39,7 +41,7 @@ sudo fwupdmgr update
 
 ## 4. 歪门邪道，修改 GUID
 想强制安装怎么办? 把刚刚下载的固件解压。
-在 `prometheus.metainfo.xml` 找到第 10 行：  
+在这个文件 `prometheus.metainfo.xml` 找到第 10 行：  
 ```xml
 <firmware type="flashed">7b93dd19-18d1-5a0c-a32d-79a5d27e2b38</firmware>
 ```
