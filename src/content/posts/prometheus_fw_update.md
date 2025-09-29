@@ -33,7 +33,9 @@ sudo fwupdmgr update
 > - 建议提前做好系统备份
 > - 本人概不负责 !
 
+报错：Device reported an error during enroll: Enrollment failed (104)
 
+解决：
 下文使用的设备是 06cb:00df，如果不是请自行寻找[设备固件](https://fwupd.org/lvfs/search?value=Synaptics)。请不要去刷写。
 
 下载 Prometheus (IOTA Config) 固件 (06cb:00df)
