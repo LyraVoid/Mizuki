@@ -387,8 +387,8 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
-			// 组件类型：标签组件
-			type: "tags",
+			// 组件类型：系列组件
+			type: "series",
 			// 是否启用该组件
 			enable: true,
 			// 组件显示顺序
@@ -401,13 +401,13 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			animationDelay: 200,
 			// 响应式配置
 			responsive: {
-				// 折叠阈值：当标签数量超过20个时自动折叠
-				collapseThreshold: 20,
+				// 折叠阈值：当系列数量超过10个时自动折叠
+				collapseThreshold: 10,
 			},
 		},
 		{
-			// 组件类型：系列组件
-			type: "series",
+			// 组件类型：标签组件
+			type: "tags",
 			// 是否启用该组件
 			enable: true,
 			// 组件显示顺序
@@ -420,10 +420,11 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			animationDelay: 250,
 			// 响应式配置
 			responsive: {
-				// 折叠阈值：当系列数量超过10个时自动折叠
-				collapseThreshold: 10,
+				// 折叠阈值：当标签数量超过20个时自动折叠
+				collapseThreshold: 20,
 			},
 		},
+
 	],
 
 	// 默认动画配置
