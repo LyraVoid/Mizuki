@@ -2,6 +2,7 @@
 import { getPostSeries } from '../../utils/content-utils'
 import { getPostUrlBySlug } from '../../utils/url-utils'
 import WidgetLayout from './WidgetLayout.astro'
+import type { CollectionEntry } from "astro:content";
 
 const COLLAPSED_HEIGHT = '7.5rem'
 
@@ -14,36 +15,50 @@ const className = Astro.props.class
 const style = Astro.props.style
 const seriesName = Astro.props.series
 
-const series = await getPostSeries(seriesName)
+// 添加调试信息
+console.log("Series component received seriesName:", seriesName);
 
-const isCollapsed = series.length >= 10
+let series: { body: string; data: CollectionEntry<"posts">["data"]; slug: string }[] = []
+let isCollapsed = false
+
+if (seriesName) {
+  series = await getPostSeries(seriesName)
+  
+  // 添加调试信息
+  console.log("Found series posts:", series.length);
+
+  isCollapsed = series.length >= 10
+}
 ---
-<WidgetLayout name={"专栏 - " + series[0].data.series} id="series" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT} class={className} style={style}>
-    <div class="flex flex-col gap-1">
-        {series.map(t => (
-            <a href={getPostUrlBySlug(t.slug)}
-                aria-label={t.data.title}
-                class="group btn-plain h-10 w-full rounded-lg hover:text-[initial]"
-            >
-                <!-- dot and line -->
-                <div class="w-[15%] md:w-[10%] relative dash-line h-full flex items-center">
-                    <div class="transition-all mx-auto w-1 h-1 rounded group-hover:h-5
-                    bg-[oklch(0.5_0.05_var(--hue))] group-hover:bg-[var(--primary)]
-                    outline outline-4 z-50
-                    outline-[var(--card-bg)]
-                    group-hover:outline-[var(--btn-plain-bg-hover)]
-                    group-active:outline-[var(--btn-plain-bg-active)]
-                    "
-                    ></div>
-                </div>
-                <!-- post title -->
-                <div class="w-[85%] text-left font-bold
-                    group-hover:translate-x-1 transition-all group-hover:text-[var(--primary)]
-                    text-75 pr-15 whitespace-nowrap overflow-ellipsis overflow-hidden" title={t.data.title}
-                >
-                        {t.data.title}
-                </div>
-            </a>
-        ))}
-    </div>
-</WidgetLayout>
+
+{seriesName && series.length > 0 && (
+  <WidgetLayout name={"专栏 - " + seriesName} id="series" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT} class={className} style={style}>
+      <div class="flex flex-col gap-1">
+          {series.map((t) => (
+              <a href={getPostUrlBySlug(t.slug)}
+                  aria-label={t.data.title}
+                  class="group btn-plain h-10 w-full rounded-lg hover:text-[initial]"
+              >
+                  <!-- dot and line -->
+                  <div class="w-[15%] md:w-[10%] relative dash-line h-full flex items-center">
+                      <div class="transition-all mx-auto w-1 h-1 rounded group-hover:h-5
+                      bg-[oklch(0.5_0.05_var(--hue))] group-hover:bg-[var(--primary)]
+                      outline outline-4 z-50
+                      outline-[var(--card-bg)]
+                      group-hover:outline-[var(--btn-plain-bg-hover)]
+                      group-active:outline-[var(--btn-plain-bg-active)]
+                      "
+                      ></div>
+                  </div>
+                  <!-- post title -->
+                  <div class="w-[85%] text-left font-bold
+                      group-hover:translate-x-1 transition-all group-hover:text-[var(--primary)]
+                      text-75 pr-15 whitespace-nowrap overflow-ellipsis overflow-hidden" title={t.data.title}
+                  >
+                          {t.data.title}
+                  </div>
+              </a>
+          ))}
+      </div>
+  </WidgetLayout>
+)}
