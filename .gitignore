@@ -31,3 +31,4 @@ yarn.lock
 *.iml
 
 cache/
+fuwari/
