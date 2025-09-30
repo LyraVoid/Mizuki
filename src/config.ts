@@ -405,6 +405,25 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 				collapseThreshold: 20,
 			},
 		},
+		{
+			// 组件类型：系列组件
+			type: "series",
+			// 是否启用该组件
+			enable: true,
+			// 组件显示顺序
+			order: 5,
+			// 组件位置："sticky" 表示粘性定位
+			position: "sticky",
+			// CSS 类名
+			class: "onload-animation",
+			// 动画延迟时间
+			animationDelay: 250,
+			// 响应式配置
+			responsive: {
+				// 折叠阈值：当系列数量超过10个时自动折叠
+				collapseThreshold: 10,
+			},
+		},
 	],
 
 	// 默认动画配置

@@ -179,6 +179,7 @@ export type BlogPostData = {
 	prevSlug?: string;
 	nextTitle?: string;
 	nextSlug?: string;
+	series?: string;
 };
 
 export type ExpressiveCodeConfig = {
@@ -218,6 +219,7 @@ export type WidgetComponentType =
 	| "toc"
 	| "music-player"
 	| "pio" // 添加 pio 组件类型
+	| "series" // 添加 series 组件类型
 	| "custom";
 
 export type WidgetComponentConfig = {

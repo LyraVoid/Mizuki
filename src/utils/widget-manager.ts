@@ -16,6 +16,7 @@ export const WIDGET_COMPONENT_MAP = {
 	toc: "../components/widget/TOC.astro",
 	"music-player": "../components/widget/MusicPlayer.svelte",
 	pio: "../components/widget/Pio.astro", // 添加 Pio 组件映射
+	series: "../components/widget/Series.astro", // 添加 Series 组件映射
 	custom: null, // 自定义组件需要在配置中指定路径
 } as const;
 
@@ -30,6 +31,13 @@ export class WidgetManager {
 	constructor(config: SidebarLayoutConfig = sidebarLayoutConfig) {
 		this.config = config;
 		this.enabledComponents = this.getEnabledComponents();
+	}
+
+	/**
+	 * 获取配置
+	 */
+	getConfig(): SidebarLayoutConfig {
+		return this.config;
 	}
 
 	/**
@@ -247,7 +255,7 @@ export const widgetManager = new WidgetManager();
 export function getComponentConfig(
 	componentType: WidgetComponentType,
 ): WidgetComponentConfig | undefined {
-	return widgetManager.config.components.find((c) => c.type === componentType);
+	return widgetManager.getConfig().components.find((c) => c.type === componentType);
 }
 
 /**
@@ -265,5 +273,8 @@ export function isComponentEnabled(
  * 工具函数：获取所有启用的组件类型
  */
 export function getEnabledComponentTypes(): WidgetComponentType[] {
-	return widgetManager.enabledComponents.map((c) => c.type);
+	const enabledComponents = widgetManager.getComponentsByPosition("top").concat(
+		widgetManager.getComponentsByPosition("sticky")
+	);
+	return enabledComponents.map((c) => c.type);
 }
