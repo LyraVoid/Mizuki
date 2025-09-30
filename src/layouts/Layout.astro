@@ -139,6 +139,9 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 
 		<meta charset="UTF-8" />
 		<meta name="description" content={description || pageTitle}>
+		{siteConfig.keywords && siteConfig.keywords.length > 0 && (
+			<meta name="keywords" content={siteConfig.keywords.join(', ')} />
+		)}
 		<meta name="author" content={profileConfig.name}>
 
 		<meta property="og:site_name" content={siteConfig.title}>
