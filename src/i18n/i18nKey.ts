@@ -43,6 +43,10 @@ enum I18nKey {
 	anime = "anime",
 	diary = "diary",
 
+	// 专栏
+	series = "series",
+	seriesOtherPosts = "seriesOtherPosts",
+
 	// 番剧页面
 	animeTitle = "animeTitle",
 	animeSubtitle = "animeSubtitle",

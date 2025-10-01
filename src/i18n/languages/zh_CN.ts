@@ -45,6 +45,10 @@ export const zh_CN: Translation = {
 	[Key.anime]: "追番",
 	[Key.diary]: "日记",
 
+	// 专栏
+	[Key.series]: "专栏",
+	[Key.seriesOtherPosts]: "专栏其他文章",
+
 	// 番剧页面
 	[Key.animeTitle]: "我的追番记录",
 	[Key.animeSubtitle]: "记录我的二次元之旅",

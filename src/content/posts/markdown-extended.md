@@ -7,6 +7,7 @@ image: ''
 tags: [Demo, Example, Markdown, mizuki]
 category: 'Examples'
 draft: false 
+series: "Mizuki"
 ---
 
 ## GitHub Repository Cards
@@ -91,5 +92,3 @@ The content :spoiler[is hidden **ayyy**]!
 
 ```markdown
 The content :spoiler[is hidden **ayyy**]!
-
-```

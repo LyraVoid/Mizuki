@@ -3,6 +3,8 @@ import { getPostSeries } from '../../utils/content-utils'
 import { getPostUrlBySlug } from '../../utils/url-utils'
 import WidgetLayout from './WidgetLayout.astro'
 import type { CollectionEntry } from "astro:content";
+import { i18n } from '@i18n/translation';
+import I18nKey from '@i18n/i18nKey';
 
 const COLLAPSED_HEIGHT = '7.5rem'
 
@@ -32,7 +34,7 @@ if (seriesName) {
 ---
 
 {seriesName && series.length > 0 && (
-  <WidgetLayout name={"专栏 - " + seriesName} id="series" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT} class={className} style={style}>
+  <WidgetLayout name={i18n(I18nKey.series) + " - " + seriesName} id="series" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT} class={className} style={style}>
       <div class="flex flex-col gap-1">
           {series.map((t) => (
               <a href={getPostUrlBySlug(t.slug)}
