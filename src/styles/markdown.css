@@ -47,7 +47,7 @@
         counter-reset: line;
         span.line {
             &:before {
-                @apply text-white/25 mr-4 w-4 inline-block;
+                @apply text-black/25 dark:text-white/25 mr-4 w-4 inline-block;
                 content: counter(line);
                 counter-increment: line;
                 direction: rtl;

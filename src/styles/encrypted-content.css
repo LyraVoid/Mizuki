@@ -39,7 +39,7 @@
   font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   font-size: 0.875rem;
   line-height: 1.5rem;
-  color: white; /* 确保代码块内文字是白色 */
+  color: inherit; /* 使用继承的颜色而不是强制白色 */
 }
 
 /* 复制按钮样式 - 与markdown.css保持完全一致 */
@@ -145,9 +145,9 @@
   color: #f92672 !important;
 }
 
-/* 默认文本颜色 */
+/* 默认文本颜色 - 移除强制颜色，使用继承的颜色 */
 #decrypted-content .astro-code code {
-  color: #f8f8f2 !important;
+  color: inherit;
 }
 
 /* 确保语法高亮的span元素能够正确显示颜色 */
@@ -157,7 +157,7 @@
 
 /* 行号样式 - 与markdown.css保持一致 */
 #decrypted-content .astro-code code span.line:before {
-  @apply text-white/25 mr-4 w-4 inline-block;
+  @apply text-black/25 dark:text-white/25 mr-4 w-4 inline-block;
   content: counter(line);
   counter-increment: line;
   direction: rtl;
