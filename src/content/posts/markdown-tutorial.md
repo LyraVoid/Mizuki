@@ -15,7 +15,7 @@ draft: false
 
 ![这是一张图片](https://ioss.013399.xyz/picture/cgaz1.png)
 A markdown example shows how to write a markdown file. This document integrates core syntax and extensions (GMF).
-
+![这是一张图片](https://oss.013399.xyz/picture/cgaz1.png)
 - [Block Elements](#block-elements)
   - [Paragraphs and Line Breaks](#paragraphs-and-line-breaks)
   - [Headers](#headers)
