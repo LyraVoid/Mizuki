@@ -10,7 +10,7 @@
   /* 所有样式都从markdown.css继承 */
 }
 
-/* expressive-code容器样式 */
+/* expressive-code容器样式 - 保持最小化，让插件控制样式 */
 #decrypted-content .expressive-code {
   @apply my-4;
 }
@@ -19,34 +19,12 @@
   @apply bg-[var(--codeblock-selection)];
 }
 
-/* frame容器样式 - 与expressive-code.css保持一致 */
-#decrypted-content .expressive-code .frame {
-  @apply !shadow-none relative rounded-lg overflow-hidden;
-  background: var(--codeblock-bg);
-}
+/* 移除了所有可能与 expressive-code 插件冲突的样式定义 */
 
-/* 语言标签样式 - 与expressive-code.css保持一致 */
-#decrypted-content .expressive-code .title {
-  @apply px-4 py-2 text-xs font-medium;
-  background: var(--primary);
-  color: white;
-  font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
-
-/* pre元素样式 */
-#decrypted-content .frame pre {
-  @apply p-4 overflow-x-auto m-0;
-  font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-  font-size: 0.875rem;
-  line-height: 1.5rem;
-  color: inherit; /* 使用继承的颜色而不是强制白色 */
-}
-
-/* 移除了复制按钮样式定义，避免与 expressive-code 插件的样式冲突 */
-
-/* 代码元素样式 */
-#decrypted-content code {
-  font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+/* 修复代码块内列表项标记颜色问题 */
+#decrypted-content .custom-md .expressive-code ul li::marker,
+#decrypted-content .custom-md .expressive-code ol li::marker {
+  @apply text-inherit;
 }
 
 /* 内联代码样式 - 与markdown.css保持一致 */
@@ -139,12 +117,6 @@
 #decrypted-content .astro-code code span.line:last-child:empty,
 #decrypted-content .astro-code code span.line:last-child:has(> span:empty:only-child) {
   display: none;
-}
-
-/* 修复代码块内列表项标记颜色问题 */
-#decrypted-content .custom-md .expressive-code ul li::marker,
-#decrypted-content .custom-md .expressive-code ol li::marker {
-  @apply text-inherit;
 }
 
 /* 确保代码块选择样式正确 */
