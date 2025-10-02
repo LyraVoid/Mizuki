@@ -65,56 +65,13 @@ export default defineConfig({
 			},
 		}),
 		expressiveCode({
-			themes: ["github-light", "github-dark"],
-			themeCSSSelector: (theme) => `[data-theme="${theme}"]`,
-			plugins: [
-				pluginCollapsibleSections(),
-				pluginLineNumbers(),
+			themes: ["catppuccin-frappe", "light-plus"],
+			plugins: [pluginCollapsibleSections(), pluginLineNumbers(), 
 				pluginFileIcons({
 					iconClass: "text-4 w-5 inline mr-1 mb-1",
 					titleClass: ""
-				}),
+				})
 			],
-			defaultProps: {
-				wrap: true,
-				overridesByLang: {
-					shellsession: {
-						showLineNumbers: false,
-					},
-				},
-			},
-			styleOverrides: {
-				codeBackground: "var(--codeblock-bg)",
-				borderRadius: "0.75rem",
-				borderColor: "none",
-				codeFontSize: "0.875rem",
-				codeFontFamily:
-					"'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-				codeLineHeight: "1.5rem",
-				frames: {
-					editorBackground: "var(--codeblock-bg)",
-					terminalBackground: "var(--codeblock-bg)",
-					terminalTitlebarBackground: "var(--codeblock-topbar-bg)",
-					editorTabBarBackground: "var(--codeblock-topbar-bg)",
-					editorActiveTabBackground: "none",
-					editorActiveTabIndicatorBottomColor: "var(--primary)",
-					editorActiveTabIndicatorTopColor: "none",
-					editorTabBarBorderBottomColor: "var(--codeblock-topbar-bg)",
-					terminalTitlebarBorderBottomColor: "none",
-					copyButtonBackground: "var(--btn-regular-bg)",
-					copyButtonBackgroundHover: "var(--btn-regular-bg-hover)",
-					copyButtonBackgroundActive: "var(--btn-regular-bg-active)",
-					copyButtonForeground: "var(--btn-content)",
-				},
-				textMarkers: {
-					delHue: 0,
-					insHue: 180,
-					markHue: 250,
-				},
-			},
-			frames: {
-				showCopyToClipboardButton: false,
-			},
 		}),
 		svelte(),
 		sitemap(),
