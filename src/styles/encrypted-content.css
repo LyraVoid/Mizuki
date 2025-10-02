@@ -27,6 +27,12 @@
   @apply text-inherit;
 }
 
+/* 确保代码块容器不会穿模 */
+#decrypted-content .expressive-code .frame {
+  position: relative;
+  overflow: hidden;
+}
+
 /* 内联代码样式 - 与markdown.css保持一致 */
 #decrypted-content .custom-md code:not(.astro-code code) {
   @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
