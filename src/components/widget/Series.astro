@@ -17,11 +17,18 @@ const className = Astro.props.class
 const style = Astro.props.style
 const seriesName = Astro.props.series
 
+// 添加调试信息
+console.log("Series component received seriesName:", seriesName);
+
 let series: { body: string; data: CollectionEntry<"posts">["data"]; slug: string }[] = []
 let isCollapsed = false
 
 if (seriesName) {
   series = await getPostSeries(seriesName)
+  
+  // 添加调试信息
+  console.log("Found series posts:", series.length);
+
   isCollapsed = series.length >= 10
 }
 ---
@@ -57,17 +64,3 @@ if (seriesName) {
       </div>
   </WidgetLayout>
 )}
-
-<!-- 修复swup页面切换时专栏不显示的问题 -->
-<script>
-  // Swup页面切换后重新初始化
-  if (typeof window !== 'undefined' && window.swup) {
-    window.swup.hooks.on('page:view', () => {
-      // 确保系列组件正确显示
-      const seriesElement = document.getElementById('series');
-      if (seriesElement) {
-        seriesElement.style.display = 'block';
-      }
-    });
-  }
-</script>
