@@ -363,30 +363,16 @@ const jsonLd = {
 
 <!-- 修复swup页面切换时专栏不显示的问题 -->
 <script is:inline>
-    // 页面加载完成后初始化专栏组件
-    function initSeriesComponent() {
-        // 获取当前文章的系列名称
-        const seriesName = "{entry.data.series}";
-        if (seriesName && seriesName !== "undefined") {
-            // 确保侧边栏中的系列组件正确显示
+    // Swup页面切换后重新初始化
+    if (typeof window !== 'undefined' && window.swup) {
+        window.swup.hooks.on('page:view', () => {
+            // 确保系列组件正确显示
             setTimeout(() => {
                 const seriesElement = document.getElementById('series');
                 if (seriesElement) {
                     seriesElement.style.display = 'block';
                 }
             }, 100);
-        }
-    }
-    
-    // 页面加载完成后初始化
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initSeriesComponent);
-    } else {
-        initSeriesComponent();
-    }
-    
-    // Swup页面切换后重新初始化
-    if (typeof window !== 'undefined' && window.swup) {
-        window.swup.hooks.on('page:view', initSeriesComponent);
+        });
     }
 </script>

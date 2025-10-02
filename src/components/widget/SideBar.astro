@@ -125,13 +125,6 @@ function renderComponent(component: any, index: number, components: any[]) {
 					}, 100);
 				});
 			}
-			
-			// 监听自定义的系列更新事件
-			document.addEventListener('series:update', () => {
-				setTimeout(() => {
-					this.updateResponsiveDisplay();
-				}, 100);
-			});
 		}
 		
 		updateResponsiveDisplay() {
@@ -161,13 +154,4 @@ function renderComponent(component: any, index: number, components: any[]) {
 	
 	// 初始化侧边栏管理器
 	new SidebarManager();
-	
-	// 页面加载完成后初始化
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', () => {
-			new SidebarManager();
-		});
-	} else {
-		new SidebarManager();
-	}
 </script>
