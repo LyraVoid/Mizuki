@@ -26,21 +26,6 @@ export function pluginLanguageBadge() {
         opacity: 0;
       }
       .frame:not(.has-title):not(.is-terminal) {
-        @media (hover: none) {
-          /* 在移动端，语言角标的行为与复制按钮一致，悬停时才显示 */
-          & [data-language]::before {
-            opacity: 0;
-          }
-          /* 当.frame有touch-active类时显示语言角标，与复制按钮行为一致 */
-          &.touch-active [data-language]::before {
-            opacity: 1;
-            margin-right: 3rem;
-          }
-          /* 当语言角标被激活时隐藏，与复制按钮行为一致 */
-          & [data-language]:active::before {
-            opacity: 0;
-          }
-        }
         @media (hover: hover) {
           & [data-language]::before {
             opacity: 1;
@@ -48,6 +33,13 @@ export function pluginLanguageBadge() {
           &:hover [data-language]::before {
             opacity: 0;
           }
+        }
+      }
+      
+      /* 移动端优化：使用触摸事件而不是始终显示，与复制按钮行为一致 */
+      @media (hover: none) {
+        .frame:not(.has-title):not(.is-terminal).touch-active [data-language]::before {
+          opacity: 1;
         }
       }
     `,
@@ -65,7 +57,10 @@ export function pluginLanguageBadge() {
 								
 								// 3秒后自动隐藏按钮（除非处于成功状态）
 								setTimeout(() => {
-									this.classList.remove('touch-active');
+									const copyBtn = this.querySelector('.copy-btn');
+									if (copyBtn && !copyBtn.classList.contains('success')) {
+										this.classList.remove('touch-active');
+									}
 								}, 3000);
 							}, { passive: true });
 							
