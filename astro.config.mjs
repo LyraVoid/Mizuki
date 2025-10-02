@@ -16,8 +16,7 @@ import remarkGithubAdmonitionsToDirectives from "remark-github-admonitions-to-di
 import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
 import { expressiveCodeConfig } from "./src/config.ts";
-import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
-import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
+import { pluginFileIcons } from "@xt0rted/expressive-code-file-icons";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
 import { rehypeMermaid } from "./src/plugins/rehype-mermaid.mjs";
@@ -71,8 +70,10 @@ export default defineConfig({
 			plugins: [
 				pluginCollapsibleSections(),
 				pluginLineNumbers(),
-				pluginLanguageBadge(),
-				pluginCustomCopyButton(),
+				pluginFileIcons({
+					iconClass: "text-4 w-5 inline mr-1 mb-1",
+					titleClass: ""
+				}),
 			],
 			defaultProps: {
 				wrap: true,

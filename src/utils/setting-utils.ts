@@ -4,7 +4,6 @@ import {
 	DEFAULT_THEME,
 	LIGHT_MODE,
 } from "@constants/constants";
-import { expressiveCodeConfig } from "@/config";
 import type { LIGHT_DARK_MODE } from "@/types/config";
 
 export function getDefaultHue(): number {
@@ -50,7 +49,7 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 	// 1. dark类状态是否改变
 	// 2. expressiveCode主题是否需要更新
 	const needsThemeChange = currentIsDark !== targetIsDark;
-	const needsCodeThemeUpdate = currentTheme !== expressiveCodeConfig.theme;
+	const needsCodeThemeUpdate = currentTheme !== (targetIsDark ? "github-dark" : "github-light");
 
 	// 如果既不需要主题切换也不需要代码主题更新，直接返回
 	if (!needsThemeChange && !needsCodeThemeUpdate) {

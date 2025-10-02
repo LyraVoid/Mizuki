@@ -47,7 +47,7 @@
         counter-reset: line;
         span.line {
             &:before {
-                @apply text-black/25 dark:text-white/25 mr-4 w-4 inline-block;
+                @apply text-white/25 mr-4 w-4 inline-block;
                 content: counter(line);
                 counter-increment: line;
                 direction: rtl;
@@ -58,37 +58,12 @@
         }
     }
 
-    .copy-btn {
-        all: initial;
-        @apply opacity-0 absolute active:scale-90 h-6 w-6 top-2 right-2 text-xs rounded transition-all ease-in-out z-20 cursor-pointer bg-gray-700/80 hover:bg-gray-600;
-    }
-    .frame:hover .copy-btn {
-        opacity: 1;
-    }
-
-    .copy-btn-icon {
-        @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2 w-3 h-3 fill-white pointer-events-none;
-    }
-    .copy-btn .copy-icon {
-        @apply opacity-100 fill-white dark:fill-white/90;
-    }
-    .copy-btn.success .copy-icon {
-        @apply opacity-0 fill-[var(--deep-text)]
-    }
-    .copy-btn .success-icon {
-        @apply opacity-0 fill-white;
-    }
-    .copy-btn.success .success-icon {
-        @apply opacity-100
-    }
-
     .expressive-code {
         @apply my-4;
         ::selection {
             @apply bg-[var(--codeblock-selection)];
         }
     }
-
 
     ul, ol {
         li::marker {
