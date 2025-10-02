@@ -94,8 +94,9 @@ const jsonLd = {
         type="application/ld+json"
         set:html={JSON.stringify(jsonLd)}
     />
+    <!-- 移除了外部容器的 mb-4 边距，以确保容器能够正确贴边显示 -->
     <div
-        class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"
+        class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative"
     >
         <div
             id="post-container"
