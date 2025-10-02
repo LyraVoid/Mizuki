@@ -263,24 +263,24 @@ const jsonLd = {
                         let runtimeString = prefix + ' ';
                         
                         if (years > 0) {
-                            runtimeString += `${years}${yearKey}`;
+                            runtimeString += `${years} ${yearKey} `;
                         }
                         if (months > 0) {
-                            runtimeString += `${months}${monthKey}`;
+                            runtimeString += `${months} ${monthKey} `;
                         }
                         if (remainingDays > 0) {
-                            runtimeString += `${remainingDays}${dayKey}`;
+                            runtimeString += `${remainingDays} ${dayKey} `;
                         }
-                        runtimeString += `${hours}${hourKey}`;
+                        runtimeString += `${hours} ${hourKey} `;
                         if (minutes < 10) {
-                            runtimeString += `0${minutes}${minuteKey}`;
+                            runtimeString += `0${minutes} ${minuteKey} `;
                         } else {
-                            runtimeString += `${minutes}${minuteKey}`;
+                            runtimeString += `${minutes} ${minuteKey} `;
                         }
                         if (secs < 10) {
-                            runtimeString += `0${secs}${secondKey}`;
+                            runtimeString += `0${secs} ${secondKey}`;
                         } else {
-                            runtimeString += `${secs}${secondKey}`;
+                            runtimeString += `${secs} ${secondKey}`;
                         }
 
                         document.getElementById("modifiedtime").innerHTML = runtimeString;
