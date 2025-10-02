@@ -23,27 +23,11 @@ export function pluginLanguageBadge() {
         background: var(--btn-regular-bg);
         border-radius: 0.5rem;
         pointer-events: none;
-        transition: opacity 0.3s;
+        transition: opacity 0.2s ease;
         opacity: 0;
       }
-      .frame:not(.has-title):not(.is-terminal) {
-        @media (hover: none) {
-          & [data-language]::before {
-            opacity: 1;
-            margin-right: 3rem;
-          }
-          & [data-language]:active::before {
-            opacity: 0;
-          }
-        }
-        @media (hover: hover) {
-          & [data-language]::before {
-            opacity: 1;
-          }
-          &:hover [data-language]::before {
-            opacity: 0;
-          }
-        }
+      .frame:hover [data-language]::before {
+        opacity: 1;
       }
     `,
 	});
