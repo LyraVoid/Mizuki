@@ -332,8 +332,6 @@ html {
     .btn-regular-dark.success {
         @apply bg-[oklch(0.75_0.14_var(--hue))] dark:bg-[oklch(0.75_0.14_var(--hue))]
     }
-
-    /* 移除了重复的复制按钮样式定义，避免与 expressive-code 插件的样式冲突 */
 }
 
 .custom-md img, #post-cover img {

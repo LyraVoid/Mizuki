@@ -1,11 +1,10 @@
 :root {
   --tk-text: black;
-  --code-block-text: #333; /* 调整为深色但在浅色背景下仍然舒适的值 */
+  --code-block-text: #d1d5db;
 }
 
 html.dark {
   --tk-text: #d1d5db;
-  --code-block-text: #d1d5db; /* 在深色模式下使用更亮的颜色 */
 }
 
 .tk-comments {
@@ -137,7 +136,7 @@ html.dark {
 
   /* Code block fall back */
   pre:not([class]) {
-    @apply bg-[var(--codeblock-bg)] overflow-auto p-2 text-[var(--code-block-text)];
+    @apply bg-[#2d2d2d] overflow-auto p-2 text-[var(--code-block-text)];
   }
 
   .copy-btn-icon {

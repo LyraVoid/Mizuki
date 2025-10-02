@@ -3,7 +3,6 @@ import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
-import { pluginFileIcons } from "@xt0rted/expressive-code-file-icons";
 import swup from "@swup/astro";
 import { defineConfig } from "astro/config";
 import expressiveCode from "astro-expressive-code";
@@ -17,6 +16,8 @@ import remarkGithubAdmonitionsToDirectives from "remark-github-admonitions-to-di
 import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
 import { expressiveCodeConfig } from "./src/config.ts";
+import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
+import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
 import { rehypeMermaid } from "./src/plugins/rehype-mermaid.mjs";
@@ -65,13 +66,54 @@ export default defineConfig({
 			},
 		}),
 		expressiveCode({
-			themes: ["catppuccin-frappe", "light-plus"],
-			plugins: [pluginCollapsibleSections(), pluginLineNumbers(), 
-				pluginFileIcons({
-					iconClass: "text-4 w-5 inline mr-1 mb-1",
-					titleClass: ""
-				})
+			themes: ["github-light", "github-dark"],
+			themeCSSSelector: (theme) => `[data-theme="${theme}"]`,
+			plugins: [
+				pluginCollapsibleSections(),
+				pluginLineNumbers(),
+				pluginLanguageBadge(),
+				pluginCustomCopyButton(),
 			],
+			defaultProps: {
+				wrap: true,
+				overridesByLang: {
+					shellsession: {
+						showLineNumbers: false,
+					},
+				},
+			},
+			styleOverrides: {
+				codeBackground: "var(--codeblock-bg)",
+				borderRadius: "0.75rem",
+				borderColor: "none",
+				codeFontSize: "0.875rem",
+				codeFontFamily:
+					"'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+				codeLineHeight: "1.5rem",
+				frames: {
+					editorBackground: "var(--codeblock-bg)",
+					terminalBackground: "var(--codeblock-bg)",
+					terminalTitlebarBackground: "var(--codeblock-topbar-bg)",
+					editorTabBarBackground: "var(--codeblock-topbar-bg)",
+					editorActiveTabBackground: "none",
+					editorActiveTabIndicatorBottomColor: "var(--primary)",
+					editorActiveTabIndicatorTopColor: "none",
+					editorTabBarBorderBottomColor: "var(--codeblock-topbar-bg)",
+					terminalTitlebarBorderBottomColor: "none",
+					copyButtonBackground: "var(--btn-regular-bg)",
+					copyButtonBackgroundHover: "var(--btn-regular-bg-hover)",
+					copyButtonBackgroundActive: "var(--btn-regular-bg-active)",
+					copyButtonForeground: "var(--btn-content)",
+				},
+				textMarkers: {
+					delHue: 0,
+					insHue: 180,
+					markHue: 250,
+				},
+			},
+			frames: {
+				showCopyToClipboardButton: false,
+			},
 		}),
 		svelte(),
 		sitemap(),
