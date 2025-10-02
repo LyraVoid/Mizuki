@@ -60,7 +60,7 @@
 
     .copy-btn {
         all: initial;
-        @apply opacity-0 absolute active:scale-90 h-6 w-6 top-2 right-2 text-xs rounded transition-all ease-in-out z-20 cursor-pointer bg-gray-700/80 hover:bg-gray-600;
+        @apply opacity-0 absolute active:scale-90 h-6 w-6 top-2 right-2 text-xs rounded transition-all ease-in-out z-20 cursor-pointer bg-[var(--btn-regular-bg)] hover:bg-[var(--btn-regular-bg-hover)];
     }
     .frame:hover .copy-btn {
         opacity: 1;
