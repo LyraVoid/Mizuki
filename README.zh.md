@@ -160,6 +160,8 @@
 - **GitHub Pages：** 使用包含的 GitHub Actions 工作流
 - **Cloudflare Pages：** 连接您的仓库
 
+- **环境变量配置：** 如果你需要使用Umami统计，推荐在部署平台设置环境变量 `UMAMI_API_KEY` 为您的 Umami API 密钥，或者直接在配置文件中修改
+
 部署前，请在 `astro.config.mjs` 中更新 `site` URL。
 
 ## 📝 文章前言格式

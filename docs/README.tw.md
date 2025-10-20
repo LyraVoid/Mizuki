@@ -159,6 +159,8 @@
 
 部署前，請在 `astro.config.mjs` 中更新 `site` URL。
 
+- **環境變數配置：** 如果你需要使用 Umami 統計，建議在部署平台設定環境變數 `UMAMI_API_KEY` 為你的 Umami API 金鑰，或直接在配置檔中修改。
+
 ## 📝 文章前言格式
 
 ```yaml

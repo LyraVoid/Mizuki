@@ -159,6 +159,8 @@ Deploy your blog to any static hosting platform:
 - **Cloudflare Pages:** Connect your repository
 
 Before deployment, update the `site` URL in `astro.config.mjs`.
+ 
+ - **Umami API key (optional):** If you plan to use Umami analytics, we recommend setting the environment variable `UMAMI_API_KEY` on your deployment platform, or alternatively configure the key directly in the project's configuration files.
 
 ## 📝 Post Frontmatter Format
 
