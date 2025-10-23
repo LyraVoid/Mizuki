@@ -16,7 +16,7 @@
 		"preinstall": "npx only-allow pnpm"
 	},
 	"dependencies": {
-		"@astrojs/check": "^0.9.4",
+		"@astrojs/check": "^0.9.5",
 		"@astrojs/rss": "^4.0.12",
 		"@astrojs/sitemap": "^3.6.0",
 		"@astrojs/svelte": "7.2.0",
@@ -34,7 +34,7 @@
 		"@iconify/svelte": "^4.2.0",
 		"@swup/astro": "^1.7.0",
 		"@tailwindcss/typography": "^0.5.19",
-		"astro": "5.14.6",
+		"astro": "5.14.8",
 		"astro-expressive-code": "^0.41.3",
 		"astro-icon": "^1.1.5",
 		"bcryptjs": "^3.0.2",
@@ -70,7 +70,7 @@
 	},
 	"devDependencies": {
 		"@astrojs/ts-plugin": "^1.10.5",
-		"@biomejs/biome": "2.2.6",
+		"@biomejs/biome": "2.2.7",
 		"@iconify-json/mdi": "^1.2.3",
 		"@rollup/plugin-yaml": "^4.1.2",
 		"@types/hast": "^3.0.4",
