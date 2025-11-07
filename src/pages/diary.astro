@@ -25,7 +25,7 @@ function formatTime(dateString: string): string {
 	const now = new Date();
 	const date = new Date(dateString);
 	const diffInMinutes = Math.floor(
-		(now.getTime() - date.getTime()) / (1000 * 60),
+		(480*60*1000+now.getTime() - date.getTime()) / (1000 * 60),
 	);
 
 	if (diffInMinutes < 60) {
