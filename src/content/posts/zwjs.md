@@ -1,6 +1,6 @@
 ---
 title: 曦月的博客的第一篇文章
-published: 205-11-08
+published: 2025-11-08
 description: 这是我的博客的第一篇文章
 tags: [Example, Video]
 category: Examples
