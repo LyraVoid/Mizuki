@@ -1,14 +1,13 @@
 ---
-title: Encrypted Post
+title: 很好用的开源安卓软件
 published: 2025-11-11
-description:个人收集的实用、良心开源安卓软件
+description: 个人收集的实用、良心开源安卓软件
 encrypted: true
 pinned: true
 tags: ["Test", "Encryption"]
 category: "Technology"
 ---
 
-# 很好用的开源安卓软件
 ## 基本信息
 
 - **仓库**：
