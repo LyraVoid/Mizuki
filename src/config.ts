@@ -27,7 +27,7 @@ export const siteConfig: SiteConfig = {
 
 	themeColor: {
 		hue: 35, // 主题色的默认色相，范围从 0 到 360。例如：红色：0，青色：200，蓝绿色：250，粉色：345
-		fixed: true, // 对访问者隐藏主题色选择器
+		fixed: false, // 对访问者隐藏主题色选择器
 	},
 
 	// 特色页面开关配置(关闭不在使用的页面有助于提升SEO,关闭后直接在顶部导航删除对应的页面就行)
@@ -102,8 +102,8 @@ export const siteConfig: SiteConfig = {
 
 		waves: {
 			enable: true, // 是否启用水波纹效果(这个功能比较吃性能)
-			performanceMode: true, // 性能模式：减少动画复杂度(性能提升40%)
-			mobileDisable: true, // 移动端禁用
+			performanceMode: false, // 性能模式：减少动画复杂度(性能提升40%)
+			mobileDisable: false, // 移动端禁用
 		},
 
 		// PicFlow API支持(智能图片API)
@@ -117,13 +117,14 @@ export const siteConfig: SiteConfig = {
 
 		homeText: {
 			enable: true, // 在主页显示自定义文本
-			title: "Beautiful Mizuki!", // 主页横幅主标题
+			title: "欢迎访问曦月的博客！", // 主页横幅主标题
 
 			subtitle: [
-				"A Showcase Demo Site",
-				"Carousel Highlight: Innovation",
-				"Carousel Focus: User Experience",
-				"Carousel Spot: Core Advantages",
+				"天行健，君子以自强不息",
+				"岁月漫长，心怀热爱，携手共赴星辰大海",
+				"我生来就是高山而非溪流，我欲于群峰之巅俯视平庸的沟壑",
+				"路漫漫其修远兮，吾将上下而求索",
+				"‌苦心人，天不负；有志者，事竟成",
 			],
 			typewriter: {
 				enable: true, // 启用副标题打字机效果
