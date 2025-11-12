@@ -25,7 +25,7 @@ only.ant.nkqc@mask.me
 我是一名中学生，男，16岁。来着中国山东青岛
 >I am a 16-year-old male middle school student from Qingdao, Shandong, China.
 
-##兴趣爱好
+## 兴趣爱好
 
 二次元，编程，玩机，折腾Linux，漫画小说，时事新闻，听一些好听的音乐，刷视频，浏览帖子。社交圈子很小，有严重的社交恐惧症（并非自闭）。低情商，我是泪失禁体质，容易哭泣。
 喜欢一些不那么时髦的游戏:
@@ -37,7 +37,7 @@ only.ant.nkqc@mask.me
 钉钉dingtalk，贴吧，酷安Cookapk，哔哩哔哩bilibili,小红书rednote，抖音TikTok，X，Facebook，Telegram，GitHub，deepseek以及其他小众App这里不一一列举
 >话说我应该是最早那一批使用Deepseek的人了
 
-##其他方面的介绍
+## 其他方面的介绍
 
 ***我不是gay***
 
