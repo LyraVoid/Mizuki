@@ -35,8 +35,8 @@ export async function GET(context: APIContext) {
   <language>${siteConfig.lang}</language>`;
 
 	for (const post of posts) {
-		// convert markdown to html string
-		const body = markdownParser.render(post.body);
+		// convert markdown to html string, ensure post.body is a string
+        const body = markdownParser.render(String(post.body ?? ""));
 		// convert html string to DOM-like structure
 		const html = htmlParser.parse(body);
 		// hold all img tags in variable images

@@ -32,15 +32,15 @@ const {
 const getLevelColor = (level: string) => {
 	switch (level) {
 		case "expert":
-			return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+			return "bg-red-600/20 text-red-700 dark:bg-red-900/30 dark:text-red-400";
 		case "advanced":
-			return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
+			return "bg-orange-600/20 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
 		case "intermediate":
-			return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+			return "bg-yellow-600/20 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
 		case "beginner":
-			return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400";
 		default:
-			return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
+			return "bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
 	}
 };
 
@@ -116,7 +116,7 @@ const sizeClasses = getSizeClasses(size);
 const skillColor = skill.color || "#3B82F6";
 ---
 
-<div class="bg-white dark:bg-slate-800/50 rounded-lg border border-black/10 dark:border-white/10 overflow-hidden hover:shadow-lg transition-all duration-300 group">
+<div class="bg-transparent rounded-lg border border-black/10 dark:border-white/10 overflow-hidden hover:shadow-lg transition-all duration-300 group">
   <div class={sizeClasses.container}>
     <div class="flex items-start gap-4">
       <!-- 技能图标 -->
@@ -146,7 +146,7 @@ const skillColor = skill.color || "#3B82F6";
         <!-- 分类标签 -->
         {skill.category && (
           <div class="mb-2">
-            <span class={`px-2 py-1 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 rounded ${sizeClasses.badge}`}>
+            <span class={`px-2 py-1 bg-blue-600/20 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 rounded ${sizeClasses.badge}`}>
               {skill.category}
             </span>
           </div>
@@ -178,7 +178,7 @@ const skillColor = skill.color || "#3B82F6";
           <div class="mb-3">
             <div class="flex flex-wrap gap-1">
               {skill.certifications.map((cert) => (
-                <span class={`px-2 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded ${sizeClasses.badge}`}>
+                <span class={`px-2 py-1 bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded ${sizeClasses.badge}`}>
                   🏆 {cert}
                 </span>
               ))}

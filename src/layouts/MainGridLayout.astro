@@ -18,6 +18,7 @@ import {
 import {
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
+	BANNER_HEIGHT_HOME,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 } from "../constants/constants";
 import { widgetManager } from "../utils/widget-manager";
@@ -100,8 +101,7 @@ const {
 	postSlug,
 	headings = [],
 } = Astro.props;
-const hasBannerCredit =
-	siteConfig.banner.enable && siteConfig.banner.credit.enable;
+const hasBannerCredit = siteConfig.banner.credit.enable;
 const hasBannerLink = !!siteConfig.banner.credit.url;
 
 // 检查是否为首页
@@ -111,13 +111,15 @@ const showHomeText = siteConfig.banner.homeText?.enable && isHomePage;
 const mobileNonHomeBannerClass = !isHomePage ? "mobile-hide-banner" : "";
 
 // 计算主内容区域位置，考虑手机端非首页时banner被隐藏
-const mainPanelTop = siteConfig.banner.enable
-	? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
+// 当默认模式为 banner 时，使用banner高度；否则使用顶栏高度
+// 让主内容区域紧贴波浪线下方，波浪线高度约为10-15vh，所以主内容从banner顶部开始
+const mainPanelTop = siteConfig.wallpaperMode.defaultMode === "banner"
+	? `${BANNER_HEIGHT}vh`
 	: "5.5rem";
 const mobileNonHomeMainTop = !isHomePage ? "5.5rem" : mainPanelTop;
 
-// 当banner被禁用时，主内容区域应该始终从顶栏下面开始
-const finalMainPanelTop = siteConfig.banner.enable ? mainPanelTop : "5.5rem";
+// 当默认模式不是 banner 时，主内容区域应该始终从顶栏下面开始
+const finalMainPanelTop = siteConfig.wallpaperMode.defaultMode === "banner" ? mainPanelTop : "5.5rem";
 
 // 检查侧边栏是否启用，动态调整网格布局
 // 全局启用状态
@@ -161,9 +163,8 @@ const mainContentClass = `
 	.trim()
 	.replace(/\s+/g, " ");
 
-// 检查是否应该启用半透明效果
-const shouldEnableTransparency =
-	!siteConfig.banner.enable && fullscreenWallpaperConfig.enable;
+// 检查是否应该启用半透明效果（当默认模式为 fullscreen 时）
+const shouldEnableTransparency = siteConfig.wallpaperMode.defaultMode === "fullscreen";
 
 // 为组件添加半透明效果的CSS类
 const transparentClass = shouldEnableTransparency
@@ -173,22 +174,166 @@ const transparentClass = shouldEnableTransparency
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
 
+<script is:inline define:vars={{navbarTransparentMode: siteConfig.banner?.navbar?.transparentMode || "semi", defaultWallpaperMode: siteConfig.wallpaperMode.defaultMode}}>
+	// 立即执行，在页面渲染前应用壁纸模式，避免闪烁
+	(function() {
+		const wallpaperMode = localStorage.getItem('wallpaperMode') || defaultWallpaperMode;
+		const body = document.body;
+		
+		// 定义 banner 高度常量（与 constants.ts 保持一致）
+		const BANNER_HEIGHT = 35;
+		const BANNER_HEIGHT_EXTEND = 30;
+		const BANNER_HEIGHT_HOME = BANNER_HEIGHT + BANNER_HEIGHT_EXTEND;
+		const MAIN_PANEL_OVERLAPS_BANNER_HEIGHT = 3.5;
+		
+		// 立即应用 body 类，确保首次渲染就是正确的状态
+		switch(wallpaperMode) {
+			case 'banner':
+				body.classList.add('enable-banner');
+				body.classList.remove('wallpaper-transparent', 'no-banner-mode');
+				break;
+			case 'fullscreen':
+				body.classList.remove('enable-banner');
+				body.classList.add('wallpaper-transparent', 'no-banner-mode');
+				break;
+			case 'none':
+				body.classList.remove('enable-banner', 'wallpaper-transparent');
+				body.classList.add('no-banner-mode');
+				break;
+		}
+		
+		// 立即调整主内容区域位置（避免闪烁和位置错误）
+		// 使用 requestAnimationFrame 确保 DOM 准备好
+		requestAnimationFrame(function() {
+			const mainContent = document.querySelector('.absolute.w-full.z-30.pointer-events-none');
+			if (mainContent) {
+				if (wallpaperMode === 'banner') {
+					// 让主内容区域从banner顶部开始，这样波浪线会自然覆盖内容上部
+					mainContent.style.top = `${BANNER_HEIGHT}vh`;
+				} else {
+					// fullscreen 或 none 模式
+					mainContent.style.top = '5.5rem';
+				}
+			}
+		});
+	})();
+	
+	// 根据壁纸模式动态设置 banner 和全屏壁纸的显示
+	const wallpaperMode = localStorage.getItem('wallpaperMode') || defaultWallpaperMode;
+	
+	// 在 DOM 加载后执行
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', applyWallpaperMode);
+	} else {
+		applyWallpaperMode();
+	}
+	
+	function applyWallpaperMode() {
+		const wallpaperMode = localStorage.getItem('wallpaperMode') || defaultWallpaperMode;
+		const bannerWrapper = document.getElementById('banner-wrapper');
+		const fullscreenWallpaper = document.querySelector('[data-fullscreen-wallpaper]');
+		const navbar = document.getElementById('navbar');
+		const body = document.body;
+		const mainContent = document.querySelector('.absolute.w-full.z-30.pointer-events-none');
+		
+		// 定义 banner 高度常量（与 constants.ts 保持一致）
+		const BANNER_HEIGHT = 35;
+		const BANNER_HEIGHT_EXTEND = 30;
+		const BANNER_HEIGHT_HOME = BANNER_HEIGHT + BANNER_HEIGHT_EXTEND;
+		const MAIN_PANEL_OVERLAPS_BANNER_HEIGHT = 3.5;
+		
+		switch(wallpaperMode) {
+			case 'banner':
+				// 显示 banner，隐藏全屏壁纸
+				if (bannerWrapper) {
+					bannerWrapper.style.display = 'block';
+				}
+				if (fullscreenWallpaper) {
+					fullscreenWallpaper.style.display = 'none';
+				}
+				// 动态调整主内容区域位置到 banner 顶部开始
+				if (mainContent) {
+					mainContent.style.top = `${BANNER_HEIGHT}vh`;
+				}
+				// navbar 恢复原始透明模式（从 config 读取）
+				if (navbar) {
+					navbar.removeAttribute('data-dynamic-transparent');
+					// 恢复 config 中设置的 data-transparent-mode
+					navbar.setAttribute('data-transparent-mode', navbarTransparentMode);
+					// 如果是 semifull 模式，重新初始化滚动检测
+					if (navbarTransparentMode === 'semifull' && window.initSemifullScrollDetection) {
+						window.initSemifullScrollDetection();
+					}
+				}
+				body.classList.add('enable-banner');
+				body.classList.remove('wallpaper-transparent');
+				body.classList.remove('no-banner-mode');
+				break;
+				
+			case 'fullscreen':
+				// 隐藏 banner，显示全屏壁纸
+				if (bannerWrapper) {
+					bannerWrapper.style.display = 'none';
+				}
+				if (fullscreenWallpaper) {
+					fullscreenWallpaper.style.display = 'block';
+				}
+				// 动态调整主内容区域位置到顶栏下方
+				if (mainContent) {
+					mainContent.style.top = '5.5rem';
+				}
+				// navbar 强制设置为 semi 透明模式（忽略 config 配置）
+				if (navbar) {
+					navbar.setAttribute('data-dynamic-transparent', 'semi');
+					// 强制移除 config 中的 data-transparent-mode 影响
+					navbar.removeAttribute('data-transparent-mode');
+				}
+				body.classList.remove('enable-banner');
+				body.classList.add('wallpaper-transparent');
+				body.classList.add('no-banner-mode');
+				break;
+				
+			case 'none':
+				// 隐藏所有壁纸
+				if (bannerWrapper) {
+					bannerWrapper.style.display = 'none';
+				}
+				if (fullscreenWallpaper) {
+					fullscreenWallpaper.style.display = 'none';
+				}
+				// 动态调整主内容区域位置到顶栏下方
+				if (mainContent) {
+					mainContent.style.top = '5.5rem';
+				}
+				// navbar 强制设置为不透明（忽略 config 配置）
+				if (navbar) {
+					navbar.setAttribute('data-dynamic-transparent', 'none');
+					// 强制移除 config 中的 data-transparent-mode 影响
+					navbar.removeAttribute('data-transparent-mode');
+				}
+				body.classList.remove('enable-banner');
+				body.classList.remove('wallpaper-transparent');
+				body.classList.add('no-banner-mode');
+				break;
+		}
+	}
+	
+	// 监听壁纸模式变化，立即应用（不重载页面）
+	window.addEventListener('wallpaper-mode-change', function(event) {
+		applyWallpaperMode();
+	});
+	
+	// 支持 Swup 页面过渡
+	document.addEventListener('swup:page:view', function() {
+		applyWallpaperMode();
+	});
+</script>
 
-
-<!-- 全屏壁纸 - 仅在banner关闭且全屏壁纸启用时显示 -->
-{!siteConfig.banner.enable && fullscreenWallpaperConfig.enable && (
-	<FullscreenWallpaper config={fullscreenWallpaperConfig} />
-)}
+<!-- 全屏壁纸 - 始终渲染，通过 JS 控制显示隐藏 -->
+<FullscreenWallpaper config={fullscreenWallpaperConfig} />
 
 <!-- 全局图标加载器 -->
 <IconifyLoader />
-
-<!-- 为全屏壁纸模式添加body类 -->
-{shouldEnableTransparency && (
-	<script>
-		document.body.classList.add('wallpaper-transparent');
-	</script>
-)}
 
 <!-- Navbar -->
 <slot slot="head" name="head"></slot>
@@ -198,8 +343,9 @@ const transparentClass = shouldEnableTransparency
     </div>
 </div>
 
-<!-- Banner -->
-{siteConfig.banner.enable && <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden ${mobileNonHomeBannerClass}`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
+<!-- Banner - 始终渲染，通过 JS 控制显示隐藏 -->
+<div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden ${mobileNonHomeBannerClass}`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
+
     {(bannerImages.desktop && Array.isArray(bannerImages.desktop) && bannerImages.desktop.length > 1) || (bannerImages.mobile && Array.isArray(bannerImages.mobile) && bannerImages.mobile.length > 1) ? (
         <!-- Carousel mode for multiple images -->
         <div id="banner-carousel" class="relative h-full w-full">
@@ -353,10 +499,10 @@ const transparentClass = shouldEnableTransparency
     )}
     
 
-</div>}
+</div>
 
 <!-- Main content -->
-<div class={`absolute w-full z-30 pointer-events-none ${mobileNonHomeBannerClass ? 'mobile-main-no-banner' : ''} ${!siteConfig.banner.enable ? 'no-banner-layout' : ''} ${transparentClass}`} style={`top: ${finalMainPanelTop}`}>
+<div class={`absolute w-full z-30 pointer-events-none ${mobileNonHomeBannerClass ? 'mobile-main-no-banner' : ''} ${siteConfig.wallpaperMode.defaultMode === 'none' ? 'no-banner-layout' : ''} ${transparentClass}`} style={`top: ${finalMainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
         <div id="main-grid" class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${!mobileShowSidebar ? 'mobile-no-sidebar' : ''}`}
@@ -403,7 +549,7 @@ const transparentClass = shouldEnableTransparency
         <!-- TOC component -->
         {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 w-[var(--toc-width)] items-center",
             sidebarLayoutConfig.position === "right" ? "-left-[var(--toc-width)]" : "-right-[var(--toc-width)]",
-            {"toc-hide": siteConfig.banner.enable}]}
+            {"toc-hide": siteConfig.wallpaperMode.defaultMode === "banner"}]}
         >
             <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
                 <div id="toc" class="w-full h-full transition-swup-fade ">       
@@ -443,6 +589,12 @@ const transparentClass = shouldEnableTransparency
         transform: translateY(0);
     }
 }
+
+/* 当没有 banner 时，主内容区域移到顶部 */
+body.no-banner-mode .absolute.w-full.z-30 {
+    top: 5.5rem !important;
+}
+
 /* 移动端无侧边栏布局优化 */
 @media (max-width: 768px) {
     .mobile-no-sidebar {
@@ -770,7 +922,7 @@ const transparentClass = shouldEnableTransparency
 }
 
 /* 移动端导航栏与banner的协调 */
-@media (max-width: 1023px) {
+@media (max-width: 1279px) {
     #navbar-wrapper {
         /* 移除覆盖样式，让Navbar.astro的圆角和半透明效果生效 */
     }
@@ -782,7 +934,7 @@ const transparentClass = shouldEnableTransparency
 }
 
 /* 移动端banner性能优化 */
-@media (max-width: 1023px) {
+@media (max-width: 1279px) {
     .banner-container {
         /* 启用硬件加速 */
         transform: translateZ(0);
@@ -870,7 +1022,7 @@ const transparentClass = shouldEnableTransparency
 }
 
 /* 移动端当banner被禁用时的布局样式 */
-@media (max-width: 1023px) {
+@media (max-width: 1279px) {
     .absolute.w-full.z-30.no-banner-layout {
         top: 5.5rem !important;
         min-height: calc(100vh - 5.5rem) !important;
@@ -888,7 +1040,7 @@ const transparentClass = shouldEnableTransparency
 }
 
 /* 平板设备当banner被禁用时的布局样式 */
-@media (min-width: 641px) and (max-width: 1023px) {
+@media (min-width: 641px) and (max-width: 1279px) {
     .absolute.w-full.z-30.no-banner-layout {
         top: 5.5rem !important;
         min-height: calc(100vh - 5.5rem) !important;
@@ -897,7 +1049,7 @@ const transparentClass = shouldEnableTransparency
 }
 
 /* 移动端横屏优化 */
-@media (max-width: 1023px) and (orientation: landscape) {
+@media (max-width: 1279px) and (orientation: landscape) {
     #banner-wrapper:not(.mobile-hide-banner) {
         top: 0 !important; /* 横屏模式从顶部开始，避免被导航栏覆盖 */
         height: 60vh !important;
@@ -933,7 +1085,7 @@ const transparentClass = shouldEnableTransparency
 }
 
 /* 移动端暗色模式优化 */
-@media (max-width: 1023px) and (prefers-color-scheme: dark) {
+@media (max-width: 1279px) and (prefers-color-scheme: dark) {
     .banner-text-overlay {
         background: linear-gradient(
             to top,

@@ -10,18 +10,12 @@ interface Props {
 
 const { config, className } = Astro.props;
 
-// 如果全屏壁纸功能未启用，不渲染任何内容
-if (!config.enable) {
-	return null;
-}
-
 // 获取当前设备类型的图片源
 const getImageSources = async () => {
 	let srcConfig = config.src;
 
-	// 如果banner关闭且启用了图片API，使用API图片
+	// 如果启用了图片API，使用API图片
 	if (
-		!siteConfig.banner.enable &&
 		siteConfig.banner.imageApi?.enable &&
 		siteConfig.banner.imageApi?.url
 	) {
@@ -116,6 +110,16 @@ const positionClass = getPositionClass(position);
 	style={`z-index: ${zIndex}; opacity: ${opacity};`}
 	data-fullscreen-wallpaper
 >
+<script is:inline>
+// 根据 localStorage 立即设置全屏壁纸初始显示状态，避免闪烁
+(function() {
+	const wallpaperMode = localStorage.getItem('wallpaperMode') || 'banner';
+	const fullscreenWallpaper = document.currentScript.parentElement;
+	if (wallpaperMode !== 'fullscreen') {
+		fullscreenWallpaper.style.display = 'none';
+	}
+})();
+</script>
 	<!-- 桌面端壁纸 -->
 	{hasDesktopImages && (
 		<div class="hidden lg:block w-full h-full relative">

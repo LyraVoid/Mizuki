@@ -43,15 +43,15 @@ const skillsByCategory = categories.reduce(
 const getLevelColor = (level: string) => {
 	switch (level) {
 		case "expert":
-			return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+			return "bg-red-600/20 text-red-700 dark:bg-red-900/30 dark:text-red-400";
 		case "advanced":
-			return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
+			return "bg-orange-600/20 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
 		case "intermediate":
-			return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+			return "bg-yellow-600/20 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
 		case "beginner":
-			return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400";
 		default:
-			return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
+			return "bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
 	}
 };
 
@@ -131,7 +131,7 @@ let animated = false;
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {advancedSkills.map((skill) => (
-              <div class="bg-white dark:bg-transparent rounded-lg border border-black/10 dark:border-white/10 p-6 hover:shadow-lg transition-shadow duration-300">
+              <div class="bg-transparent rounded-lg border border-black/10 dark:border-white/10 p-6 hover:shadow-lg transition-shadow duration-300">
                 <div class="flex items-start gap-4">
                   {skill.icon && (
                     <div class="w-12 h-12 rounded-lg flex items-center justify-center" style={`background-color: ${skill.color || 'rgb(99 102 241)'}20`}>
@@ -177,7 +177,7 @@ let animated = false;
                     {skill.certifications && skill.certifications.length > 0 && (
                       <div class="flex flex-wrap gap-1">
                         {skill.certifications.map((cert) => (
-                          <span class="px-2 py-1 text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded">
+                          <span class="px-2 py-1 text-xs bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded">
                             {cert}
                           </span>
                         ))}
@@ -209,7 +209,7 @@ let animated = false;
               </h2>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {categorySkills.map((skill) => (
-                  <div class="bg-white dark:bg-transparent rounded-lg border border-black/10 dark:border-white/10 p-4 hover:shadow-lg transition-shadow duration-300">
+                  <div class="bg-transparent rounded-lg border border-black/10 dark:border-white/10 p-4 hover:shadow-lg transition-shadow duration-300">
                     <div class="flex items-start gap-3">
                       {skill.icon && (
                         <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={`background-color: ${skill.color || 'rgb(99 102 241)'}20`}>

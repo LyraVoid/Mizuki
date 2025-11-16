@@ -57,15 +57,15 @@ const getTypeIcon = (type: string) => {
 const getTypeColor = (type: string) => {
 	switch (type) {
 		case "education":
-			return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+			return "bg-blue-600/20 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
 		case "work":
-			return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400";
 		case "project":
-			return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
+			return "bg-purple-600/20 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
 		case "achievement":
-			return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
+			return "bg-orange-600/20 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
 		default:
-			return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
+			return "bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
 	}
 };
 
@@ -182,7 +182,7 @@ const itemColor = item.color || "#3B82F6";
     )}
     
     <!-- 内容卡片 -->
-    <div class="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-black/10 dark:border-white/10 hover:shadow-lg transition-shadow duration-300">
+    <div class="flex-1 bg-transparent rounded-lg border border-black/10 dark:border-white/10 hover:shadow-lg transition-shadow duration-300">
       <div class={sizeClasses.container}>
         <!-- 标题和类型 -->
         <div class="flex items-start justify-between mb-3">
@@ -246,7 +246,7 @@ const itemColor = item.color || "#3B82F6";
           <div class="mb-4">
             <div class="flex flex-wrap gap-1">
               {item.skills.map((skill) => (
-                <span class={`px-2 py-1 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded ${sizeClasses.badge}`}>
+                <span class={`px-2 py-1 bg-gray-600/20 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded ${sizeClasses.badge}`}>
                   {skill}
                 </span>
               ))}
@@ -275,7 +275,7 @@ const itemColor = item.color || "#3B82F6";
   </div>
 ) : (
   <!-- 卡片布局 -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg border border-black/10 dark:border-white/10 hover:shadow-lg transition-shadow duration-300">
+  <div class="bg-transparent rounded-lg border border-black/10 dark:border-white/10 hover:shadow-lg transition-shadow duration-300">
     <div class={sizeClasses.container}>
       <!-- 图标和标题 -->
       <div class="flex items-start gap-4 mb-3">
@@ -344,12 +344,12 @@ const itemColor = item.color || "#3B82F6";
         {item.skills && item.skills.length > 0 && (
           <div class="flex flex-wrap gap-1">
             {item.skills.slice(0, 3).map((skill) => (
-              <span class={`px-2 py-1 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded ${sizeClasses.badge}`}>
+              <span class={`px-2 py-1 bg-gray-600/20 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded ${sizeClasses.badge}`}>
                 {skill}
               </span>
             ))}
             {item.skills.length > 3 && (
-              <span class={`px-2 py-1 bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400 rounded ${sizeClasses.badge}`}>
+              <span class={`px-2 py-1 bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400 rounded ${sizeClasses.badge}`}>
                 +{item.skills.length - 3}
               </span>
             )}

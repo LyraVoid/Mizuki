@@ -22,10 +22,15 @@ const moments = [
 
 // 时间格式化函数
 function formatTime(dateString: string): string {
+    var TG=8;
+    if(siteConfig.timeZone>=-12&&siteConfig.timeZone<=12)TG=siteConfig.timeZone;
+    const timeGap=TG;
+	
+	const lang=siteConfig.lang;
 	const now = new Date();
 	const date = new Date(dateString);
 	const diffInMinutes = Math.floor(
-		(now.getTime() - date.getTime()) / (1000 * 60),
+		(now.getTime()+timeGap*60*60*1000 - date.getTime()) / (1000 * 60),
 	);
 
 	if (diffInMinutes < 60) {

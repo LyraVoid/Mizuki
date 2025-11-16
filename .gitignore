@@ -17,6 +17,13 @@ pnpm-debug.log*
 .env
 .env.production
 
+# content repository (independent mode)
+content/
+*.backup
+
+# Large zip files
+*.zip
+
 # macOS-specific files
 .DS_Store
 
@@ -32,3 +39,5 @@ yarn.lock
 
 cache/
 fuwari/
+src/data/myself.ts
+src/pages/myself.astro

@@ -27,7 +27,7 @@ const recentPosts = posts.slice(0, 6);
 
         <!-- RSS 链接复制区域 -->
         <div class="card-base rounded-[var(--radius-large)] p-6 mb-6">
-            <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-center">
                     <div class="w-12 h-12 bg-[var(--primary)] rounded-xl flex items-center justify-center mr-4">
                         <Icon name="material-symbols:link" class="text-white text-xl" />
@@ -37,13 +37,13 @@ const recentPosts = posts.slice(0, 6);
                         <p class="text-sm text-75">{i18n(I18nKey.rssCopyToReader)}</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <code class="bg-[var(--card-bg)] px-3 py-2 rounded-lg text-sm font-mono text-75 border border-[var(--line-divider)]">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <code class="bg-[var(--card-bg)] px-3 py-2 rounded-lg text-sm font-mono text-75 border border-[var(--line-divider)] break-all">
                         {Astro.site}rss.xml
                     </code>
                     <button 
                         id="copy-rss-btn"
-                        class="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:opacity-80 transition-all duration-200 font-medium text-sm"
+                        class="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:opacity-80 transition-all duration-200 font-medium text-sm whitespace-nowrap"
                         data-url={`${Astro.site}rss.xml`}
                     >
                         {i18n(I18nKey.rssCopyLink)}

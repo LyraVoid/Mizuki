@@ -39,13 +39,45 @@
   font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   font-size: 0.875rem;
   line-height: 1.5rem;
-  color: white; /* 确保代码块内文字是白色 */
+  background: var(--codeblock-bg);
 }
 
-/* 复制按钮样式 - 与markdown.css保持完全一致 */
+/* 深色主题代码文字颜色 */
+:global(.dark) #decrypted-content .frame pre {
+  color: #f8f8f2;
+}
+
+/* 亮色主题代码文字颜色 */
+:root:not(.dark) #decrypted-content .frame pre {
+  color: #24292e;
+}
+
+#decrypted-content .astro-code {
+  background: var(--codeblock-bg) !important;
+}
+
+/* 复制按钮样式 - 与markdown.css保持完全一致，使用相同的CSS变量 */
 #decrypted-content .copy-btn {
   all: initial;
-  @apply opacity-0 shadow-lg shadow-black/50 absolute active:scale-90 h-8 w-8 top-3 right-3 text-sm rounded-lg transition-all ease-in-out z-20 cursor-pointer bg-gray-700 hover:bg-gray-600;
+  @apply opacity-0 absolute active:scale-90 h-8 w-8 top-3 right-3 text-sm rounded-lg transition-all ease-in-out z-20 cursor-pointer;
+  background: var(--btn-regular-bg);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+#decrypted-content .copy-btn:hover {
+  background: var(--btn-regular-bg-hover);
+}
+
+/* 浅色模式适配 */
+@media (prefers-color-scheme: light) {
+  #decrypted-content .copy-btn {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* 支持 Astro 的主题切换（非 dark 类时） */
+:root:not(.dark) #decrypted-content .copy-btn {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
 }
 
 #decrypted-content .frame:hover .copy-btn {
@@ -53,11 +85,13 @@
 }
 
 #decrypted-content .copy-btn-icon {
-  @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2 w-4 h-4 fill-white pointer-events-none;
+  @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none;
+  fill: var(--btn-content);
 }
 
 #decrypted-content .copy-btn .copy-icon {
-  @apply opacity-100 fill-white dark:fill-white/75;
+  @apply opacity-100;
+  fill: var(--btn-content);
 }
 
 #decrypted-content .copy-btn.success .copy-icon {
@@ -65,7 +99,8 @@
 }
 
 #decrypted-content .copy-btn .success-icon {
-  @apply opacity-0 fill-white;
+  @apply opacity-0;
+  fill: var(--btn-content);
 }
 
 #decrypted-content .copy-btn.success .success-icon {
@@ -96,58 +131,183 @@
   /* 移除强制白色，让语法高亮颜色显示 */
 }
 
-/* highlight.js 语法高亮样式支持 - 让highlight.js的颜色能够正确显示 */
-#decrypted-content .astro-code code .hljs-comment,
-#decrypted-content .astro-code code .hljs-quote {
-  color: #7c7c7c !important;
+/* ==================== 深色主题 - highlight.js 语法高亮样式 ==================== */
+/* Monokai 风格配色方案 - 经典深色主题 */
+
+/* 注释 - 灰色 */
+:global(.dark) #decrypted-content .astro-code code .hljs-comment,
+:global(.dark) #decrypted-content .astro-code code .hljs-quote {
+  color: #75715e !important;
+  font-style: italic;
 }
 
-#decrypted-content .astro-code code .hljs-variable,
-#decrypted-content .astro-code code .hljs-template-variable,
-#decrypted-content .astro-code code .hljs-tag,
-#decrypted-content .astro-code code .hljs-name,
-#decrypted-content .astro-code code .hljs-selector-id,
-#decrypted-content .astro-code code .hljs-selector-class,
-#decrypted-content .astro-code code .hljs-regexp,
-#decrypted-content .astro-code code .hljs-deletion {
+/* 关键字、标签名 - 品红色 */
+:global(.dark) #decrypted-content .astro-code code .hljs-keyword,
+:global(.dark) #decrypted-content .astro-code code .hljs-selector-tag,
+:global(.dark) #decrypted-content .astro-code code .hljs-deletion {
+  color: #f92672 !important;
+  font-weight: 600;
+}
+
+/* 变量、标签、选择器 - 品红色 */
+:global(.dark) #decrypted-content .astro-code code .hljs-variable,
+:global(.dark) #decrypted-content .astro-code code .hljs-template-variable,
+:global(.dark) #decrypted-content .astro-code code .hljs-tag,
+:global(.dark) #decrypted-content .astro-code code .hljs-name,
+:global(.dark) #decrypted-content .astro-code code .hljs-selector-id,
+:global(.dark) #decrypted-content .astro-code code .hljs-selector-class,
+:global(.dark) #decrypted-content .astro-code code .hljs-regexp {
   color: #f92672 !important;
 }
 
-#decrypted-content .astro-code code .hljs-number,
-#decrypted-content .astro-code code .hljs-built_in,
-#decrypted-content .astro-code code .hljs-builtin-name,
-#decrypted-content .astro-code code .hljs-literal,
-#decrypted-content .astro-code code .hljs-type,
-#decrypted-content .astro-code code .hljs-params,
-#decrypted-content .astro-code code .hljs-meta,
-#decrypted-content .astro-code code .hljs-link {
+/* 数字、字面量 - 紫色 */
+:global(.dark) #decrypted-content .astro-code code .hljs-number,
+:global(.dark) #decrypted-content .astro-code code .hljs-built_in,
+:global(.dark) #decrypted-content .astro-code code .hljs-builtin-name,
+:global(.dark) #decrypted-content .astro-code code .hljs-literal,
+:global(.dark) #decrypted-content .astro-code code .hljs-type,
+:global(.dark) #decrypted-content .astro-code code .hljs-params,
+:global(.dark) #decrypted-content .astro-code code .hljs-meta,
+:global(.dark) #decrypted-content .astro-code code .hljs-link {
   color: #ae81ff !important;
 }
 
-#decrypted-content .astro-code code .hljs-attribute {
+/* 属性、函数名 - 绿色 */
+:global(.dark) #decrypted-content .astro-code code .hljs-attribute {
   color: #a6e22e !important;
 }
 
-#decrypted-content .astro-code code .hljs-string,
-#decrypted-content .astro-code code .hljs-symbol,
-#decrypted-content .astro-code code .hljs-bullet,
-#decrypted-content .astro-code code .hljs-addition {
+/* 字符串 - 黄色 */
+:global(.dark) #decrypted-content .astro-code code .hljs-string,
+:global(.dark) #decrypted-content .astro-code code .hljs-symbol,
+:global(.dark) #decrypted-content .astro-code code .hljs-bullet,
+:global(.dark) #decrypted-content .astro-code code .hljs-addition {
   color: #e6db74 !important;
 }
 
-#decrypted-content .astro-code code .hljs-title,
-#decrypted-content .astro-code code .hljs-section {
+/* 标题、函数 - 青色 */
+:global(.dark) #decrypted-content .astro-code code .hljs-title,
+:global(.dark) #decrypted-content .astro-code code .hljs-section {
+  color: #66d9ef !important;
+  font-weight: 600;
+}
+
+/* 深色主题默认文本颜色 - 浅灰色确保可读性 */
+:global(.dark) #decrypted-content .astro-code code {
+  color: #f8f8f2 !important;
+}
+
+/* 深色主题 - 函数调用 - 绿色 */
+:global(.dark) #decrypted-content .astro-code code .hljs-function,
+:global(.dark) #decrypted-content .astro-code code .hljs-function > .hljs-title {
+  color: #a6e22e !important;
+}
+
+/* 深色主题 - 类名、构造函数 - 青色 */
+:global(.dark) #decrypted-content .astro-code code .hljs-class,
+:global(.dark) #decrypted-content .astro-code code .hljs-class > .hljs-title {
   color: #66d9ef !important;
 }
 
-#decrypted-content .astro-code code .hljs-keyword,
-#decrypted-content .astro-code code .hljs-selector-tag {
-  color: #f92672 !important;
+/* 深色主题 - 强调文本 */
+:global(.dark) #decrypted-content .astro-code code .hljs-emphasis {
+  font-style: italic;
 }
 
-/* 默认文本颜色 */
-#decrypted-content .astro-code code {
-  color: #f8f8f2 !important;
+/* 深色主题 - 粗体文本 */
+:global(.dark) #decrypted-content .astro-code code .hljs-strong {
+  font-weight: bold;
+}
+
+/* ==================== 亮色主题 - highlight.js 语法高亮样式 ==================== */
+/* GitHub Light 风格配色方案 - 优化可读性 */
+
+/* 注释和引用 - 灰色 */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-comment,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-quote {
+  color: #6a737d !important;
+  font-style: italic;
+}
+
+/* 关键字、标签名 - 红色系 */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-keyword,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-selector-tag,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-deletion {
+  color: #d73a49 !important;
+  font-weight: 600;
+}
+
+/* 变量、标签、选择器 - 深红色 */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-variable,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-template-variable,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-tag,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-name,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-selector-id,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-selector-class,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-regexp {
+  color: #e36209 !important;
+}
+
+/* 数字、字面量、内置函数 - 蓝色 */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-number,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-built_in,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-builtin-name,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-literal,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-type,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-params,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-meta,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-link {
+  color: #005cc5 !important;
+}
+
+/* 属性、函数名、标题 - 紫色 */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-attribute,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-title,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-section {
+  color: #6f42c1 !important;
+  font-weight: 600;
+}
+
+/* 字符串 - 深蓝色（提高对比度） */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-string,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-symbol,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-bullet,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-addition {
+  color: #032f62 !important;
+}
+
+/* 亮色主题默认文本颜色 - 深灰色确保可读性 */
+:root:not(.dark) #decrypted-content .astro-code code {
+  color: #24292e !important;
+}
+
+/* 亮色主题 - 函数调用 - 紫色 */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-function,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-function > .hljs-title {
+  color: #6f42c1 !important;
+}
+
+/* 亮色主题 - 类名、构造函数 - 深蓝色 */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-class,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-class > .hljs-title {
+  color: #005cc5 !important;
+  font-weight: 600;
+}
+
+/* 亮色主题 - 强调文本 */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-emphasis {
+  font-style: italic;
+}
+
+/* 亮色主题 - 粗体文本 */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-strong {
+  font-weight: bold;
+}
+
+/* 亮色主题 - 实体名称 - 深紫色 */
+:root:not(.dark) #decrypted-content .astro-code code .hljs-doctag,
+:root:not(.dark) #decrypted-content .astro-code code .hljs-formula {
+  color: #6f42c1 !important;
 }
 
 /* 确保语法高亮的span元素能够正确显示颜色 */
@@ -161,6 +321,11 @@
   content: counter(line);
   counter-increment: line;
   direction: rtl;
+}
+
+/* 亮色主题下的行号颜色 */
+:root:not(.dark) #decrypted-content .astro-code code span.line:before {
+  @apply text-black/25;
 }
 
 /* 隐藏最后的空行 */
@@ -218,5 +383,27 @@
   }
   #decrypted-content .frame.has-language-badge:hover [data-language]::before {
     opacity: 0;
+  }
+}
+
+/* 移动端适配 - 复制按钮 */
+@media (max-width: 768px) {
+  /* 调整复制按钮大小和位置 */
+  #decrypted-content .copy-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  /* 调整图标大小 */
+  #decrypted-content .copy-btn-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  
+  /* 在移动端隐藏语言标识（与全局行为一致） */
+  #decrypted-content .frame.has-language-badge [data-language]::before {
+    display: none !important;
   }
 }

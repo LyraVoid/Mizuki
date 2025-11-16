@@ -11,7 +11,7 @@ const interval = 50;
 ---
 <div 
   id="post-list-container"
-  class="transition flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-1 md:py-0 md:bg-transparent md:gap-4 mb-4"
+  class="transition-all duration-500 ease-in-out flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-0 md:py-0 md:bg-transparent gap-2 md:gap-4 mb-4 list-mode md:list-mode"
   data-default-layout={siteConfig.postListLayout.defaultMode}
 >
     {page.data.map((entry: CollectionEntry<"posts">) => (
@@ -40,9 +40,9 @@ const interval = 50;
     setTimeout(() => {
       const postListContainer = document.getElementById("post-list-container");
       if (!postListContainer) {
-        console.warn("post-list-container not found, retrying...");
-        // 如果找不到容器，延迟重试
-        setTimeout(initLayout, 100);
+        // 如果找不到容器，说明当前页面不是文章列表页面
+        console.debug("post-list-container not found, skipping layout initialization (not a post list page)");
+        // setTimeout(initLayout, 100);
         return;
       }
 
@@ -51,10 +51,16 @@ const interval = 50;
       const defaultLayout = postListContainer.getAttribute("data-default-layout") || "list";
       const currentLayout = savedLayout || defaultLayout;
 
-      console.log("Initializing layout:", { savedLayout, defaultLayout, currentLayout });
+      console.debug("Initializing layout:", { savedLayout, defaultLayout, currentLayout });
 
-      // 应用布局
-      updatePostListLayout(currentLayout);
+      // 移动端由CSS处理，桌面端才需要JavaScript初始化
+      const isDesktop = window.innerWidth >= 769;
+      if (isDesktop) {
+        updatePostListLayout(currentLayout);
+      } else {
+        // 移动端：只添加初始化标记，不更改布局（CSS已处理）
+        postListContainer.classList.add("js-initialized");
+      }
       
       // 发布布局初始化事件
       publishLayoutInit();
@@ -64,6 +70,9 @@ const interval = 50;
   function updatePostListLayout(layout: string) {
     const postListContainer = document.getElementById("post-list-container");
     if (!postListContainer) return;
+
+    // 添加切换动画类
+    postListContainer.classList.add("layout-switching");
 
     // 移除现有布局类
     postListContainer.classList.remove("list-mode", "grid-mode");
@@ -80,6 +89,14 @@ const interval = 50;
       postListContainer.classList.add("flex", "flex-col");
       postListContainer.classList.remove("grid", "grid-cols-1", "md:grid-cols-2", "gap-6");
     }
+    
+    // 添加初始化完成标记，用于移除闪烁保护
+    postListContainer.classList.add("js-initialized");
+
+    // 移除切换动画类
+    setTimeout(() => {
+      postListContainer.classList.remove("layout-switching");
+    }, 500);
   }
 
   // 监听布局变化事件
@@ -87,18 +104,17 @@ const interval = 50;
     updatePostListLayout(event.detail.layout);
   });
 
-  // 监听窗口大小变化，在小屏幕上强制使用列表模式
+  // 监听窗口大小变化，调整布局（CSS已处理移动端，这里只处理桌面端切换）
   window.addEventListener("resize", () => {
-    const isSmallScreen = window.innerWidth < 1200;
+    const isDesktop = window.innerWidth >= 769;
     const savedLayout = localStorage.getItem("postListLayout");
     const defaultLayout = document.getElementById("post-list-container")?.getAttribute("data-default-layout") || "list";
     const currentLayout = savedLayout || defaultLayout;
     
-    if (isSmallScreen) {
-      updatePostListLayout("list");
-    } else {
+    if (isDesktop) {
       updatePostListLayout(currentLayout);
     }
+    // 移动端由CSS处理，不需要JavaScript干预
   });
 
   // 页面加载时初始化布局
@@ -120,7 +136,7 @@ const interval = 50;
         // 页面内容替换后重新初始化布局
         swup.hooks.on("content:replace", () => {
           setTimeout(() => {
-            console.log("Swup content:replace - reinitializing layout");
+            console.debug("Swup content:replace - reinitializing layout");
             initLayout();
           }, 100);
         });
@@ -128,7 +144,7 @@ const interval = 50;
         // 页面视图切换后重新初始化布局
         swup.hooks.on("page:view", () => {
           setTimeout(() => {
-            console.log("Swup page:view - reinitializing layout");
+            console.debug("Swup page:view - reinitializing layout");
             initLayout();
           }, 100);
         });
@@ -136,12 +152,12 @@ const interval = 50;
         // 动画进入结束后重新初始化布局
         swup.hooks.on("animation:in:end", () => {
           setTimeout(() => {
-            console.log("Swup animation:in:end - reinitializing layout");
+            console.debug("Swup animation:in:end - reinitializing layout");
             initLayout();
           }, 50);
         });
         
-        console.log("Swup layout listeners registered");
+        console.debug("Swup layout listeners registered");
         return true;
       }
       return false;
@@ -160,7 +176,7 @@ const interval = 50;
           // 降级处理：监听普通页面切换事件
           window.addEventListener("popstate", () => {
             setTimeout(() => {
-              console.log("Popstate - reinitializing layout");
+              console.debug("Popstate - reinitializing layout");
               initLayout();
             }, 100);
           });
@@ -173,7 +189,7 @@ const interval = 50;
             history.pushState = function(...args) {
               originalPushState.apply(this, args);
               setTimeout(() => {
-                console.log("PushState - reinitializing layout");
+                console.debug("PushState - reinitializing layout");
                 initLayout();
               }, 100);
             };
@@ -181,13 +197,13 @@ const interval = 50;
             history.replaceState = function(...args) {
               originalReplaceState.apply(this, args);
               setTimeout(() => {
-                console.log("ReplaceState - reinitializing layout");
+                console.debug("ReplaceState - reinitializing layout");
                 initLayout();
               }, 100);
             };
           }
           
-          console.log("Fallback layout listeners registered");
+          console.debug("Fallback layout listeners registered");
         }
       }, 100);
     }
@@ -213,3 +229,88 @@ const interval = 50;
   // 在布局初始化后发布事件
   setTimeout(publishLayoutInit, 150);
 </script>
+
+<style>
+  /* 布局切换动画 */
+  #post-list-container {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* 文章卡片的过渡动画 */
+  #post-list-container > :global(*) {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* 布局切换时的动画效果 */
+  #post-list-container.layout-switching {
+    opacity: 0.95;
+  }
+
+  #post-list-container.layout-switching > :global(*) {
+    transform: scale(0.98);
+  }
+
+  /* 网格模式的特殊动画 */
+  #post-list-container.grid-mode > :global(*) {
+    animation: fadeInScale 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* 列表模式的特殊动画 */
+  #post-list-container.list-mode > :global(*) {
+    animation: fadeInSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fadeInSlide {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* 为每个卡片添加延迟动画 */
+  #post-list-container.layout-switching > :global(*:nth-child(1)) {
+    animation-delay: 0ms;
+  }
+  #post-list-container.layout-switching > :global(*:nth-child(2)) {
+    animation-delay: 50ms;
+  }
+  #post-list-container.layout-switching > :global(*:nth-child(3)) {
+    animation-delay: 100ms;
+  }
+  #post-list-container.layout-switching > :global(*:nth-child(4)) {
+    animation-delay: 150ms;
+  }
+  #post-list-container.layout-switching > :global(*:nth-child(5)) {
+    animation-delay: 200ms;
+  }
+  #post-list-container.layout-switching > :global(*:nth-child(6)) {
+    animation-delay: 250ms;
+  }
+  #post-list-container.layout-switching > :global(*:nth-child(7)) {
+    animation-delay: 300ms;
+  }
+  #post-list-container.layout-switching > :global(*:nth-child(8)) {
+    animation-delay: 350ms;
+  }
+  #post-list-container.layout-switching > :global(*:nth-child(9)) {
+    animation-delay: 400ms;
+  }
+  #post-list-container.layout-switching > :global(*:nth-child(10)) {
+    animation-delay: 450ms;
+  }
+</style>

@@ -1,49 +1,48 @@
 ---
 import { Icon } from "astro-icon/components";
-import { profileConfig } from "../config";
+import { profileConfig, umamiConfig } from "../config";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { formatDateToYYYYMMDD } from "../utils/date-utils";
 import { getCategoryUrl, getTagUrl } from "../utils/url-utils";
 
-import { umamiConfig } from '../config';
-
 // 解析 umami
 const umamiEnabled = umamiConfig.enabled || false;
-const umamiWebsiteId = umamiConfig.scripts.match(/data-website-id="([^"]+)"/)?.[1] || "";
+const umamiWebsiteId =
+	umamiConfig.scripts.match(/data-website-id="([^"]+)"/)?.[1] || "";
 const umamiApiKey = umamiConfig.apiKey || "";
 const umamiBaseUrl = umamiConfig.baseUrl || "";
 
 export interface Props {
-  published: Date;
-  updated?: Date;
-  category?: string;
-  tags?: string[];
-  hideUpdateDate?: boolean;
-  hideTagsForMobile?: boolean;
-  isHome?: boolean;
-  className?: string;
-  slug?: string;
-  showOnlyBasicMeta?: boolean; // 新增属性，控制是否只显示基本元数据
-  words?: number; // 字数统计
-  minutes?: number; // 阅读时间（分钟）
-  showWordCount?: boolean; // 是否显示字数统计
+	published: Date;
+	updated?: Date;
+	category?: string;
+	tags?: string[];
+	hideUpdateDate?: boolean;
+	hideTagsForMobile?: boolean;
+	isHome?: boolean;
+	className?: string;
+	slug?: string;
+	showOnlyBasicMeta?: boolean; // 新增属性，控制是否只显示基本元数据
+	words?: number; // 字数统计
+	minutes?: number; // 阅读时间（分钟）
+	showWordCount?: boolean; // 是否显示字数统计
 }
 
 const {
-  published,
-  updated,
-  category,
-  tags,
-  hideUpdateDate,
-  hideTagsForMobile,
-  isHome,
-  className = "",
-  slug,
-  showOnlyBasicMeta = false, // 默认为false，保持原有行为
-  words,
-  minutes,
-  showWordCount = false // 默认不显示字数统计
+	published,
+	updated,
+	category,
+	tags,
+	hideUpdateDate,
+	hideTagsForMobile,
+	isHome,
+	className = "",
+	slug,
+	showOnlyBasicMeta = false, // 默认为false，保持原有行为
+	words,
+	minutes,
+	showWordCount = false, // 默认不显示字数统计
 } = Astro.props;
 ---
 

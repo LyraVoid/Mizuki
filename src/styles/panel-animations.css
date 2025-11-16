@@ -1,0 +1,84 @@
+/* 
+ * 浮层面板动画增强样式
+ * 为所有浮层面板提供统一、流畅的动画效果
+ */
+
+.float-panel {
+    z-index: 50;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    
+    /* 为动画做准备 */
+    transform-origin: top center;
+}
+
+/* 面板打开时的默认状态 */
+.float-panel:not(.float-panel-closed) {
+    transform: scaleY(1) scaleX(1);
+    pointer-events: auto;
+}
+
+/* 面板关闭时的状态 */
+.float-panel-closed {
+    transform: scaleY(0) scaleX(0.8);
+    pointer-events: none;
+}
+
+/* 特定面板的动画调整 */
+#mobile-toc-panel {
+    transform-origin: top right;
+}
+
+#mobile-toc-panel.float-panel-closed {
+    transform: scaleY(0) scaleX(0.7);
+}
+
+#display-setting {
+    transform-origin: top right;
+}
+
+#display-setting.float-panel-closed {
+    transform: scaleY(0) scaleX(0.6);
+}
+
+#search-panel {
+    transform-origin: top center;
+}
+
+#search-panel.float-panel-closed {
+    transform: scaleY(0) scaleX(0.8);
+}
+
+#nav-menu-panel {
+    transform-origin: top right;
+}
+
+#nav-menu-panel.float-panel-closed {
+    transform: scaleY(0) scaleX(0.65);
+}
+
+#wallpaper-mode-panel {
+    transform-origin: top right;
+}
+
+#wallpaper-mode-panel.float-panel-closed {
+    transform: scaleY(0) scaleX(0.5);
+}
+
+/* 移动端 */
+@media (max-width: 768px) {
+    .float-panel-closed {
+        transform: scaleY(0) scaleX(0.85);
+    }
+    
+    #mobile-toc-panel.float-panel-closed {
+        transform: scaleY(0) scaleX(0.8);
+    }
+}
+
+/* 移动设备触摸优化 */
+@media (hover: none) and (pointer: coarse) {
+    .float-panel {
+        touch-action: manipulation;
+    }
+}

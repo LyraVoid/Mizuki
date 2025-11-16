@@ -18,5 +18,6 @@
     "quickfix.biome": "always",
     "source.organizeImports.biome": "always"
   },
+  "liveServer.settings.root": "/dist",
   "frontMatter.dashboard.openOnStart": false
 }

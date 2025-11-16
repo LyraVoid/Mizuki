@@ -1,4 +1,10 @@
 .expressive-code {
+    @apply relative;
+    
+    /* 性能优化：使用 content-visibility 来跳过屏幕外的代码块渲染 */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+    
     .frame {
         @apply !shadow-none;
     }
@@ -6,4 +12,193 @@
     .title {
         font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
+}
+
+/* 代码块折叠功能 - frame作为折叠按钮 */
+.expressive-code.collapsible .frame {
+    user-select: none;
+    transition: background-color 0.15s ease;
+    position: relative;
+}
+
+.expressive-code.collapsible .frame:hover {
+    background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.03);
+}
+
+/* 折叠按钮 - 在右上角复制按钮旁边 */
+.expressive-code.collapsible .collapse-toggle-btn {
+    all: initial;
+    opacity: 0;
+    position: absolute;
+    height: 2rem;
+    width: 2rem;
+    top: 0.75rem;
+    right: 3.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.5rem;
+    transition: opacity 0.15s ease-in-out, background-color 0.15s ease-in-out, transform 0.15s ease-in-out;
+    z-index: 20;
+    cursor: pointer;
+    background: var(--btn-regular-bg);
+    color: var(--btn-content); /* 设置文字颜色，SVG 的 currentColor 会继承这个值 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.expressive-code.collapsible .collapse-toggle-btn:hover {
+    background: var(--btn-regular-bg-hover);
+}
+
+.expressive-code.collapsible .collapse-toggle-btn:active {
+    transform: scale(0.9);
+}
+
+.expressive-code.collapsible .frame:hover .collapse-toggle-btn {
+    opacity: 1;
+}
+
+/* 按钮图标 */
+.expressive-code.collapsible .collapse-toggle-btn svg {
+    width: 1rem;
+    height: 1rem;
+    fill: var(--btn-content);
+    transition: transform 0.25s ease;
+    pointer-events: none;
+}
+
+.expressive-code.collapsed .collapse-toggle-btn svg {
+    transform: rotate(180deg);
+}
+
+/* 代码内容折叠状态 - 显示前3行 */
+.expressive-code.collapsed .frame pre {
+    max-height: 5rem;
+    overflow: hidden;
+}
+
+.expressive-code.collapsed .frame pre::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2.5rem;
+    background: linear-gradient(to bottom, 
+        transparent 0%, 
+        var(--codeblock-bg) 90%
+    );
+    pointer-events: none;
+}
+
+/* 展开状态 */
+.expressive-code.expanded .frame pre {
+    max-height: none;
+}
+
+.expressive-code.collapsible .frame pre {
+    transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    will-change: max-height;
+}
+
+@media (max-width: 768px) {
+    .expressive-code.collapsible .collapse-toggle-btn {
+        right: 3rem;
+    }
+    
+    .expressive-code.collapsed .frame pre {
+        max-height: 4.5rem;
+    }
+    
+    .expressive-code [data-language]::before {
+        display: none !important;
+    }
+}
+
+/* 小屏幕折叠按钮 */
+@media screen and (max-width: 768px) {
+    .expressive-code.collapsible .collapse-toggle-btn {
+        top: 0.5rem;
+        right: 2.5rem;
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+    
+    .expressive-code.collapsible .collapse-toggle-btn svg {
+        width: 0.875rem;
+        height: 0.875rem;
+    }
+}
+
+/* 主题适配 - 确保文字可读 */
+@media (prefers-color-scheme: light) {
+    /* 折叠按钮适配 */
+    .expressive-code.collapsible .collapse-toggle-btn {
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 复制按钮适配 */
+    .custom-md .copy-btn {
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+}
+
+/* 暗色模式下折叠按钮样式 */
+:root:not(.dark) .expressive-code.collapsible .collapse-toggle-btn {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+:root:not(.dark) .custom-md .copy-btn {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 优化代码块的重绘性能 */
+.expressive-code pre,
+.expressive-code code {
+    transform: translateZ(0);
+    will-change: auto;
+}
+
+/* 减少不必要的重排和重绘 */
+.expressive-code .frame {
+    /* 使用 contain 属性隔离渲染上下文 */
+    contain: layout style paint;
+}
+
+/* 打印样式 - 自动展开所有代码块 */
+@media print {
+    .expressive-code.collapsed .frame pre {
+        max-height: none !important;
+    }
+    
+    .expressive-code.collapsed .frame pre::after {
+        display: none !important;
+    }
+    
+    .expressive-code.collapsible .collapse-toggle-btn {
+        display: none !important;
+    }
+}
+
+/* 主题切换性能优化：在主题过渡期间禁用代码块的所有过渡效果 */
+.is-theme-transitioning .expressive-code,
+.is-theme-transitioning .expressive-code *,
+.is-theme-transitioning .expressive-code *::before,
+.is-theme-transitioning .expressive-code *::after {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* 主题切换性能优化：在主题过渡期间完全隐藏代码块渲染 */
+.is-theme-transitioning .expressive-code {
+    content-visibility: hidden !important;
+    /* 避免闪烁 */
+    opacity: 0.99;
+}
+
+/* 主题切换时的平滑过渡 */
+:root:not(.is-theme-transitioning) .expressive-code {
+    transition: opacity 0.1s ease-out;
 }

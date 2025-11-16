@@ -4,6 +4,7 @@ import { onMount } from "svelte";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { navigateToPage } from "../utils/navigation-utils";
+import { panelManager } from "../utils/panel-manager.js";
 
 let tocItems: Array<{ id: string; text: string; level: number }> = [];
 let postItems: Array<{
@@ -17,20 +18,12 @@ let observer: IntersectionObserver;
 let isHomePage = false;
 let swupReady = false;
 
-const togglePanel = () => {
-	const panel = document.getElementById("mobile-toc-panel");
-	panel?.classList.toggle("float-panel-closed");
+const togglePanel = async () => {
+	await panelManager.togglePanel('mobile-toc-panel');
 };
 
-const setPanelVisibility = (show: boolean): void => {
-	const panel = document.getElementById("mobile-toc-panel");
-	if (!panel) return;
-
-	if (show) {
-		panel.classList.remove("float-panel-closed");
-	} else {
-		panel.classList.add("float-panel-closed");
-	}
+const setPanelVisibility = async (show: boolean): Promise<void> => {
+	await panelManager.togglePanel('mobile-toc-panel', show);
 };
 
 const generateTOC = () => {
@@ -223,7 +216,7 @@ if (typeof window !== "undefined") {
 	on:click={togglePanel} 
 	aria-label="Table of Contents" 
 	id="mobile-toc-switch"
-	class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 lg:!hidden"
+	class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 lg:!hidden theme-switch-btn"
 >
 	<Icon icon="material-symbols:format-list-bulleted" class="text-[1.25rem]" />
 </button>
@@ -239,7 +232,7 @@ if (typeof window !== "undefined") {
 		<button 
 			on:click={togglePanel}
 			aria-label="Close TOC"
-			class="btn-plain rounded-lg h-8 w-8 active:scale-90"
+			class="btn-plain rounded-lg h-8 w-8 active:scale-90 theme-switch-btn"
 		>
 			<Icon icon="material-symbols:close" class="text-[1rem]" />
 		</button>
@@ -274,7 +267,6 @@ if (typeof window !== "undefined") {
 	{:else}
 		{#if tocItems.length === 0}
 			<div class="text-center py-8 text-black/50 dark:text-white/50">
-				<Icon icon="material-symbols:article-outline" class="text-2xl mb-2" />
 				<p>当前页面没有目录</p>
 			</div>
 		{:else}
@@ -300,6 +292,11 @@ if (typeof window !== "undefined") {
 		background: var(--card-bg);
 		border: 1px solid var(--line-color);
 		backdrop-filter: blur(10px);
+	}
+
+	/* 确保主题切换按钮的背景色即时更新 */
+	:global(.theme-switch-btn)::before {
+		transition: transform 75ms ease-out, background-color 0ms !important;
 	}
 
 	.toc-content {

@@ -42,15 +42,19 @@ if (isEncrypted) {
 	// 在客户端解密后，会通过JavaScript重新渲染
 	const contentToEncrypt = entry.body;
 
-	// 使用AES加密内容
+	// 生成密码哈希（使用环境变量配置盐值轮数，默认12）
+	const saltRounds = Number.parseInt(import.meta.env.BCRYPT_SALT_ROUNDS || "12", 10);
+	passwordHash = bcryptjs.hashSync(entry.data.password, saltRounds);
+
+	// 使用密码哈希的一部分作为加密密钥，而不是明文密码
+	// 这样即使攻击者获取到加密内容，也无法直接用原始密码解密
+	const encryptionKey = passwordHash.substring(0, 32); // 使用哈希的前32个字符作为密钥
+	
+	// 使用派生密钥加密内容
 	encryptedContent = CryptoJS.AES.encrypt(
 		contentToEncrypt,
-		entry.data.password,
+		encryptionKey,
 	).toString();
-
-	// 生成密码哈希
-	const saltRounds = 10;
-	passwordHash = bcryptjs.hashSync(entry.data.password, saltRounds);
 }
 
 dayjs.extend(utc);
@@ -288,21 +292,19 @@ const jsonLd = {
                     }
                     setInterval(runtime, 1000);
                 </script>
-                <div class="card-base p-1 mb-0.1">
-                    <div class="flex items-center gap-2">
-                        <div class="transition h-9 w-9 rounded-lg overflow-hidden relative flex items-center justify-center mr-0">
-                            <Icon
-                                name="material-symbols:history-rounded"
-                                class="text-4xl text-[var(--primary)] transition-transform group-hover:translate-x-0.5 bg-[var(--enter-btn-bg)] p-2 rounded-md"
-                            />
-                        </div>
-                       
-                        <div class="flex flex-col gap-0.1">
-                            <div id="modifiedtime" class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75"></div>
-                            <p class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75">
-                                {i18n(I18nKey.lastModifiedOutdated)}
-                            </p>
-                        </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-[var(--enter-btn-bg)]">
+                        <Icon
+                            name="material-symbols:history-rounded"
+                            class="text-3xl text-[var(--primary)]"
+                        />
+                    </div>
+                   
+                    <div class="flex flex-col gap-1">
+                        <div id="modifiedtime" class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75"></div>
+                        <p class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75">
+                            {i18n(I18nKey.lastModifiedOutdated)}
+                        </p>
                     </div>
                 </div>
             </div>

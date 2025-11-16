@@ -1,7 +1,7 @@
 # 🌸 Mizuki  
 ![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen) 
 ![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue) 
-![Astro](https://img.shields.io/badge/Astro-5.12.8-orange)
+![Astro](https://img.shields.io/badge/Astro-5.15.3-orange)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -30,6 +30,14 @@
 [**中文**](./README.zh.md) /
 [**日本語**](./docs/README.ja.md) /
 [**中文繁体**](./docs/README.tw.md) /
+
+## 🆕 v6.5 版本更新
+- **代码块折叠功能**：代码块支持折叠了，改善代码阅读体验。
+- **代码仓库与内容仓库分离**：支持代码仓库和内容仓库的分离模式，更方便更新内容。
+- **全新的前端布局管理**：实现了全新的前端布局管理系统，提供更好的控制。
+- **网站地址配置**：网站地址配置加入到config.ts，便于管理。
+- **前端布局切换功能**：添加前端布局切换功能，提供更灵活的显示选项。
+- **性能优化和Bug修复**：优化网站性能并修复各种Bug，提升用户体验。
 
 ## 🆕 v6.0 版本更新
 - **页面重构**：完全重构了番剧、时间线、项目、技能、相册、友情链接、日记、关于页面，提升性能和用户体验。
@@ -143,6 +151,7 @@
    - 编辑 `src/config.ts` 自定义博客设置
    - 更新站点信息、主题色彩、横幅图片和社交链接
    - 配置特色页面功能
+   - (可选) 配置内容仓库分离 - 见 [内容仓库配置](#-代码内容分离可选)
 
 4. **启动开发服务器：**
    ```bash
@@ -166,9 +175,18 @@
 - **GitHub Pages：** 使用包含的 GitHub Actions 工作流
 - **Cloudflare Pages：** 连接您的仓库
 
-- **环境变量配置：** 如果你需要使用Umami统计，推荐在部署平台设置环境变量 `UMAMI_API_KEY` 为您的 Umami API 密钥，或者直接在配置文件中修改
+- **环境变量配置（可选）：** 在 `.env` 文件或部署平台配置
 
-部署前，请在 `astro.config.mjs` 中更新 `site` URL。
+```bash
+# Umami API 密钥，用于访问 Umami 统计数据
+# 如果在 config.ts 中启用了 Umami，建议在此配置 API 密钥
+UMAMI_API_KEY=your_umami_api_key_here
+# bcrypt 盐值轮数（10-14 推荐，默认 12）
+BCRYPT_SALT_ROUNDS=12
+```
+
+部署前，请在 `src/config.ts` 中更新 `siteURL`。
+**不建议**将 `.env` 文件提交到 Git，`.env` 应该仅在本地调试或构建使用。若要将项目在云平台部署，建议通过平台上的 `环境变量` 配置传入。
 
 ## 📝 文章前言格式
 
@@ -280,6 +298,45 @@ export const siteConfig: SiteConfig = {
 - **友链页面：** 在 `src/content/spec/friends.md` 中编辑朋友数据
 - **日记页面：** 在 `src/pages/diary.astro` 中编辑动态
 - **关于页面：** 在 `src/content/spec/about.md` 中编辑内容
+
+### 📦 代码内容分离 (可选)
+
+Mizuki 支持将代码和内容分成两个独立的仓库管理,适合团队协作和大型项目。
+
+**快速选择**:
+
+| 使用场景 | 配置方式 | 适合人群 |
+|---------|---------|---------|
+| 🆕 **本地模式** (默认) | 不配置,直接使用 | 新手、个人博客 |
+| 🔧 **分离模式** | 设置 `ENABLE_CONTENT_SYNC=true` | 团队协作、私有内容 |
+
+**一键启用/禁用**:
+
+```bash
+# 方式 1: 本地模式 (推荐新手)
+# 不创建 .env 文件,直接运行
+pnpm dev
+
+# 方式 2: 内容分离模式
+# 1. 复制配置文件
+cp .env.example .env
+
+# 2. 编辑 .env,启用内容分离
+ENABLE_CONTENT_SYNC=true
+CONTENT_REPO_URL=https://github.com/your-username/Mizuki-Content.git
+
+# 3. 同步内容
+pnpm run sync-content
+```
+
+**功能特性**:
+- ✅ 支持公开和私有仓库 🔐
+- ✅ 一键启用/禁用,无需修改代码
+- ✅ 自动同步,开发前自动拉取最新内容
+
+📖 **详细配置**: [内容分离完整指南](docs/CONTENT_SEPARATION.md)  
+🔄 **迁移教程**: [从单仓库迁移到分离模式](docs/MIGRATION_GUIDE.md)  
+📚 **更多文档**: [文档索引](docs/README.md)
 
 ## ✏️ 贡献
 

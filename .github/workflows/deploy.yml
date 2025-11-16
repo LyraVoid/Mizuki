@@ -18,6 +18,9 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
+        with:
+          submodules: true  # 支持 Git Submodule 模式
+          token: ${{ secrets.GITHUB_TOKEN }}  # 自动访问同账号下的私有仓库
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -35,6 +38,14 @@ jobs:
       
       - name: Build site
         run: pnpm run build
+        env:
+          # 如果需要启用内容分离,取消以下注释并配置
+          # ENABLE_CONTENT_SYNC: true
+          # CONTENT_REPO_URL: ${{ secrets.CONTENT_REPO_URL }}
+          # USE_SUBMODULE: true
+          
+          # 其他环境变量
+          UMAMI_API_KEY: ${{ secrets.UMAMI_API_KEY }}
       
       - name: Deploy to pages branch
         uses: JamesIves/github-pages-deploy-action@v4

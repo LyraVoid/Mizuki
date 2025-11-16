@@ -1,7 +1,7 @@
 # 🌸 Mizuki  
 ![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen) 
 ![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue) 
-![Astro](https://img.shields.io/badge/Astro-5.12.8-orange)
+![Astro](https://img.shields.io/badge/Astro-5.15.3-orange)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -32,6 +32,14 @@ A modern, feature-rich static blog template built with [Astro](https://astro.bui
 [**日本語**](./docs/README.ja.md) /
 [**中文繁体**](./docs/README.tw.md) /
 
+## 🆕 v6.5 Update
+- **Code Block Collapsible**: Added support for collapsible code blocks, improving code reading experience.
+- **Repository Separation**: Added support for separating code repository and content repository, making content updates more convenient.
+- **New Frontend Layout Management**: Implemented a brand new frontend layout management system for better control.
+- **Website URL Configuration**: Added website URL configuration to config.ts for easier management.
+- **Layout Switching Feature**: Added frontend layout switching functionality for more flexible display options.
+- **Performance and Bug Fixes**: Optimized website performance and fixed various bugs for better user experience.
+
 ## 🆕 v6.0 Update
 - **Page Refactoring**: Completely refactored anime, timeline, projects, skills, albums, friends, diary, and about pages for better performance and user experience.
 - **Page Toggle Feature**: Added page toggle functionality with SEO optimization modules, allowing control over feature page visibility.
@@ -42,6 +50,12 @@ A modern, feature-rich static blog template built with [Astro](https://astro.bui
 - **Pio Live2D Integration**: Added Pio Live2D character, providing a cute interactive companion to enhance user engagement.
 - **Highly Configurable**: Supports detailed configuration in `src/config.ts`, including model path, position, size, dialogue content, etc., to meet personalized needs.
 - **Seamless Navigation**: The "Back to Home" feature now uses the theme's built-in Swup for smooth, no-refresh page transitions.
+
+## 🆕 v4.6 Update
+- **Anime Page:** Redesigned a cuter and more attractive anime page, including anime list, details, and timeline.
+- **Album Page:** Restructured the album page using pagination + folder data indexing solution.
+- **Brand New Animations:** Implemented new animation components for smoother and more beautiful page transitions.
+- **Image API Support:** Added support for image APIs, enabling quick image information retrieval using the [PicFlow API project](https://github.com/matsuzaka-yuki/PicFlow-API).
 
 ## 🆕 v4.3 Update
 - **Anime Page:** Redesigned a cuter and more attractive anime page, including anime list, details, and timeline.
@@ -164,9 +178,18 @@ Deploy your blog to any static hosting platform:
 - **GitHub Pages:** Use the included GitHub Actions workflow
 - **Cloudflare Pages:** Connect your repository
 
-Before deployment, update the `site` URL in `astro.config.mjs`.
- 
- - **Umami API key (optional):** If you plan to use Umami analytics, we recommend setting the environment variable `UMAMI_API_KEY` on your deployment platform, or alternatively configure the key directly in the project's configuration files.
+- **Environment Variable Configuration (Optional):** Configure in `.env` file or deployment platform
+
+```bash
+# Umami API key for accessing Umami analytics data
+# If Umami is enabled in config.ts, it's recommended to configure the API key here
+UMAMI_API_KEY=your_umami_api_key_here
+# bcrypt salt rounds (10-14 recommended, default 12)
+BCRYPT_SALT_ROUNDS=12
+```
+
+Before deployment, update the `siteURL` in `src/config.ts`.
+**Not recommended** to commit the `.env` file to Git. The `.env` file should only be used for local debugging or building. For cloud platform deployment, it's recommended to configure via the platform's `environment variables` settings.
 
 ## 📝 Post Frontmatter Format
 

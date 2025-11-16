@@ -8,6 +8,7 @@ import LightDarkSwitch from "./LightDarkSwitch.svelte";
 import LayoutSwitchButton from "./LayoutSwitchButton.svelte";
 import MobileTOC from "./MobileTOC.svelte";
 import Search from "./Search.svelte";
+import WallpaperSwitch from "./WallpaperSwitch.svelte";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
 import DropdownMenu from "./widget/DropdownMenu.astro";
 import NavMenuPanel from "./widget/NavMenuPanel.astro";
@@ -17,6 +18,9 @@ const className = Astro.props.class;
 // 获取导航栏透明模式配置
 const navbarTransparentMode =
 	siteConfig.banner?.navbar?.transparentMode || "semi";
+
+// 获取整体布局方案切换按钮显示设置
+const modeSwitchDisplay = siteConfig.wallpaperMode?.showModeSwitchOnMobile || "desktop";
 
 // 检查是否为首页
 const isHomePage = Astro.url.pathname === "/" || Astro.url.pathname === "";
@@ -64,6 +68,15 @@ let links: NavBarLink[] = navBarConfig.links.map(
                     </button>
             )}
             <LayoutSwitchButton client:only="svelte" currentLayout={siteConfig.postListLayout.defaultMode}></LayoutSwitchButton>
+            <!-- 整体布局方案切换按钮：根据配置决定在哪些设备上显示 -->
+            <div class:list={[
+                modeSwitchDisplay === "off" ? "hidden" :
+                modeSwitchDisplay === "mobile" ? "block md:hidden" :
+                modeSwitchDisplay === "desktop" ? "hidden md:block" :
+                modeSwitchDisplay === "both" ? "block" : "hidden md:block"
+            ]}>
+                <WallpaperSwitch client:only="svelte"></WallpaperSwitch>
+            </div>
             <LightDarkSwitch client:only="svelte"></LightDarkSwitch>
             <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch">
                 <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
@@ -85,25 +98,46 @@ function switchTheme() {
     }
 }
 
-function loadButtonScript() {
-    let settingBtn = document.getElementById("display-settings-switch");
-    if (settingBtn) {
-        settingBtn.onclick = function () {
-            let settingPanel = document.getElementById("display-setting");
-            if (settingPanel) {
-                settingPanel.classList.toggle("float-panel-closed");
-            }
-        };
-    }
+async function loadButtonScript() {
+    try {
+        // 导入面板管理器
+        const { panelManager } = await import('../utils/panel-manager.js');
+        
+        let settingBtn = document.getElementById("display-settings-switch");
+        if (settingBtn) {
+            settingBtn.onclick = async function () {
+                await panelManager.togglePanel('display-setting');
+            };
+        }
 
-    let menuBtn = document.getElementById("nav-menu-switch");
-    if (menuBtn) {
-        menuBtn.onclick = function () {
-            let menuPanel = document.getElementById("nav-menu-panel");
-            if (menuPanel) {
-                menuPanel.classList.toggle("float-panel-closed");
-            }
-        };
+        let menuBtn = document.getElementById("nav-menu-switch");
+        if (menuBtn) {
+            menuBtn.onclick = async function () {
+                await panelManager.togglePanel('nav-menu-panel');
+            };
+        }
+    } catch (error) {
+        console.error('Failed to load panel manager:', error);
+        // 备用逻辑
+        let settingBtn = document.getElementById("display-settings-switch");
+        if (settingBtn) {
+            settingBtn.onclick = function () {
+                let settingPanel = document.getElementById("display-setting");
+                if (settingPanel) {
+                    settingPanel.classList.toggle("float-panel-closed");
+                }
+            };
+        }
+
+        let menuBtn = document.getElementById("nav-menu-switch");
+        if (menuBtn) {
+            menuBtn.onclick = function () {
+                let menuPanel = document.getElementById("nav-menu-panel");
+                if (menuPanel) {
+                    menuPanel.classList.toggle("float-panel-closed");
+                }
+            };
+        }
     }
 }
 

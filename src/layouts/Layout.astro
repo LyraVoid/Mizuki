@@ -6,7 +6,7 @@ import "@fontsource/roboto/700.css";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import MusicPlayer from "@components/widget/MusicPlayer.svelte";
 import Pio from "@components/widget/Pio.svelte"; // 使用 Svelte 版本的 Pio 组件
-import { profileConfig, siteConfig } from "@/config";
+import { profileConfig, siteConfig, musicPlayerConfig, pioConfig } from "@/config";
 import { widgetConfigs } from "../config";
 import { umamiConfig } from "../config.ts";
 import {
@@ -26,8 +26,8 @@ import "katex/dist/katex.css";
 import "../styles/mobile-navbar.css";
 import "../styles/wallpaper-navbar-transparent.css";
 import "../styles/fancybox-custom.css";
-import "../styles/mobile-transition-fix.css";
-
+import "../styles/expressive-code.css";
+import "../styles/panel-animations.css";
 
 interface Props {
 	title?: string;
@@ -135,8 +135,24 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 	  data-overlayscrollbars-initialize
 >
 	<head>
-		<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-KRX3XGVH');</script>
-		<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "tjr3vkhj8i");</script>
+		<!-- 第三方分析脚本 - 延迟加载优化 -->
+		<script is:inline>
+			// 使用 requestIdleCallback 延迟加载第三方脚本
+			function loadAnalytics() {
+				// Google Tag Manager
+				(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-KRX3XGVH');
+				
+				// Clarity
+				(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "tjr3vkhj8i");
+			}
+			
+			// 在浏览器空闲时加载，或者在 3 秒后加载
+			if ('requestIdleCallback' in window) {
+				requestIdleCallback(loadAnalytics, { timeout: 3000 });
+			} else {
+				setTimeout(loadAnalytics, 3000);
+			}
+		</script>
 
 		<title>{pageTitle}</title>
 
@@ -194,16 +210,12 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 			
 			// Set the theme for Expressive Code based on current mode
 			const expressiveTheme = isDark ? "github-dark" : "github-light";
-			document.documentElement.setAttribute("data-theme", expressiveTheme);
+			const currentTheme = document.documentElement.getAttribute("data-theme");
 			
-			// 确保主题正确应用 - 解决代码块渲染问题
-			// 使用 requestAnimationFrame 确保在下一帧检查主题状态
-			requestAnimationFrame(() => {
-				const currentTheme = document.documentElement.getAttribute('data-theme');
-				if (currentTheme !== expressiveTheme) {
-					document.documentElement.setAttribute('data-theme', expressiveTheme);
-				}
-			});
+			// 只在主题不同时才更新，避免触发不必要的重绘
+			if (currentTheme !== expressiveTheme) {
+				document.documentElement.setAttribute("data-theme", expressiveTheme);
+			}
 
 			// Load the hue from local storage
 			const hue = localStorage.getItem('hue') || configHue;
@@ -223,17 +235,14 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 
 		<slot name="head"></slot>
 
-		<!-- Pio 看板娘样式 -->
-		<link rel="stylesheet" href="/pio/static/pio.css" />
+		<!-- Pio 看板娘样式 - 仅在启用时加载 -->
+		{pioConfig.enable && <link rel="stylesheet" href="/pio/static/pio.css" />}
 
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
 
 		<!-- Umami Analytics -->
 		{umamiEnabled && umamiScripts && <Fragment set:html={umamiScripts} />}
 
-		<!-- 引入全局处理脚本 -->
-		<script src="/js/timeline-scroll-handler.js" defer></script>
-		<script src="/js/skills-progress-handler.js" defer></script>
 </head>
 	<body class=" min-h-screen " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner, "zen-maru-gothic-enabled": siteConfig.font.zenMaruGothic.enable, "hanalei-enabled": siteConfig.font.hanalei.enable}]}
 		  data-overlayscrollbars-initialize
@@ -245,13 +254,11 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 		<ConfigCarrier></ConfigCarrier>
 		<slot />
 		
-		<!-- Music Player -->
-		<MusicPlayer client:load />
+		<!-- Music Player - 仅在启用时加载 -->
+		{musicPlayerConfig.enable && <MusicPlayer client:load />}
 		
-		<!-- Pio 看板娘组件 -->
-		<!-- 注意：Pio 组件需要放在 body 标签内，但要在其他内容之前 -->
-		<!-- 如果启用了侧边栏，可能需要调整 z-index -->
-		<Pio client:load />
+		<!-- Pio 看板娘组件 - 仅在启用时加载 -->
+		{pioConfig.enable && <Pio client:load />}
 		
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
@@ -261,12 +268,11 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 			<script define:vars={{ sakuraConfig: widgetConfigs.sakura }}>
 				// 樱花对象类
 				class Sakura {
-					constructor(x, y, s, r, a, fn, idx, img, limitArray, config) {
+					constructor(x, y, s, r, fn, idx, img, limitArray, config) {
 						this.x = x;
 						this.y = y;
 						this.s = s;
 						this.r = r;
-        				this.a = a;
 						this.fn = fn;
 						this.idx = idx;
 						this.img = img;
@@ -278,7 +284,6 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 						cxt.save();
 						cxt.translate(this.x, this.y);
 						cxt.rotate(this.r);
-						cxt.globalAlpha = this.a;
 						cxt.drawImage(this.img, 0, 0, 40 * this.s, 40 * this.s);
 						cxt.restore();
 					}
@@ -287,15 +292,13 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 						this.x = this.fn.x(this.x, this.y);
 						this.y = this.fn.y(this.y, this.y);
 						this.r = this.fn.r(this.r);
-						this.a = this.fn.a(this.a);
-						
-						// 如果樱花越界或完全透明，重新调整位置
+
+						// 如果樱花越界，重新调整位置
 						if (
 							this.x > window.innerWidth ||
 							this.x < 0 ||
 							this.y > window.innerHeight ||
-							this.y < 0 ||
-							this.a <= 0
+							this.y < 0
 						) {
 							// 如果樱花不做限制
 							if (this.limitArray[this.idx] === -1) {
@@ -318,13 +321,11 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 							this.y = 0;
 							this.s = getRandom('s', this.config);
 							this.r = getRandom('r', this.config);
-							this.a = getRandom('a', this.config);
 						} else {
 							this.x = window.innerWidth;
 							this.y = getRandom('y', this.config);
 							this.s = getRandom('s', this.config);
 							this.r = getRandom('r', this.config);
-							this.a = getRandom('a', this.config);
 						}
 					}
 				}
@@ -378,9 +379,6 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 						case 'r':
 							ret = Math.random() * 6;
 							break;
-						case 'a':
-							ret = config.opacity.min + Math.random() * (config.opacity.max - config.opacity.min);
-							break;
 						case 'fnx':
 							random = config.speed.horizontal.min + Math.random() * (config.speed.horizontal.max - config.speed.horizontal.min);
 							ret = function (x, y) {
@@ -396,11 +394,6 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 						case 'fnr':
 							ret = function (r) {
 								return r + config.speed.rotation;
-							};
-							break;
-						case 'fna':
-							ret = function (alpha) {
-								return alpha - config.speed.fadeSpeed * 0.01;
 							};
 							break;
 					}
@@ -467,25 +460,21 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 						for (let i = 0; i < this.config.sakuraNum; i++) {
 							const randomX = getRandom('x', this.config);
 							const randomY = getRandom('y', this.config);
-							const randomS = getRandom('s', this.config);
 							const randomR = getRandom('r', this.config);
-							const randomA = getRandom('a', this.config);
+							const randomS = getRandom('s', this.config);
 							const randomFnx = getRandom('fnx', this.config);
 							const randomFny = getRandom('fny', this.config);
 							const randomFnR = getRandom('fnr', this.config);
-							const randomFnA = getRandom('fna', this.config);
 
 							const sakura = new Sakura(
 								randomX,
 								randomY,
 								randomS,
 								randomR,
-								randomA,
 								{
 									x: randomFnx,
 									y: randomFny,
 									r: randomFnR,
-									a: randomFnA,
 								},
 								i,
 								this.img,
@@ -723,23 +712,39 @@ function disableAnimation() {
 
 const bannerEnabled = !!document.getElementById('banner-wrapper')
 
-function setClickOutsideToClose(panel: string, ignores: string[]) {
-	document.addEventListener("click", event => {
-		let panelDom = document.getElementById(panel);
-		let tDom = event.target;
-		if (!(tDom instanceof Node)) return;		// Ensure the event target is an HTML Node
-		for (let ig of ignores) {
-			let ie = document.getElementById(ig)
-			if (ie == tDom || (ie?.contains(tDom))) {
-				return;
-			}
+// 导入面板管理器
+async function initializePanelManager() {
+	try {
+		const { panelManager } = await import('../utils/panel-manager.js');
+		
+		function setClickOutsideToClose(panel: string, ignores: string[]) {
+			document.addEventListener("click", async event => {
+				let panelDom = document.getElementById(panel);
+				let tDom = event.target;
+				if (!(tDom instanceof Node)) return;		// Ensure the event target is an HTML Node
+				for (let ig of ignores) {
+					let ie = document.getElementById(ig)
+					if (ie == tDom || (ie?.contains(tDom))) {
+						return;
+					}
+				}
+				await panelManager.closePanel(panel as any);
+			});
 		}
-		panelDom!.classList.add("float-panel-closed");
-	});
+		setClickOutsideToClose("display-setting", ["display-setting", "display-settings-switch"])
+		setClickOutsideToClose("nav-menu-panel", ["nav-menu-panel", "nav-menu-switch"])
+		setClickOutsideToClose("search-panel", ["search-panel", "search-bar", "search-switch"])
+		setClickOutsideToClose("mobile-toc-panel", ["mobile-toc-panel", "mobile-toc-switch"])
+		setClickOutsideToClose("wallpaper-mode-panel", ["wallpaper-mode-panel", "wallpaper-mode-switch"])
+		
+		return panelManager;
+	} catch (error) {
+		console.error('Failed to initialize panel manager:', error);
+		return null;
+	}
 }
-setClickOutsideToClose("display-setting", ["display-setting", "display-settings-switch"])
-setClickOutsideToClose("nav-menu-panel", ["nav-menu-panel", "nav-menu-switch"])
-setClickOutsideToClose("search-panel", ["search-panel", "search-bar", "search-switch"])
+
+initializePanelManager();
 
 
 function loadTheme() {
@@ -797,8 +802,6 @@ function initCustomScrollbar() {
 }
 
 function showBanner() {
-	if (!siteConfig.banner.enable) return;
-
 	// 使用requestAnimationFrame优化DOM操作
 	requestAnimationFrame(() => {
 		// Handle single image banner (desktop)
@@ -1143,13 +1146,12 @@ const setup = () => {
 		const expectedTheme = isDark ? 'github-dark' : 'github-light';
 		const currentTheme = document.documentElement.getAttribute('data-theme');
 		
-		// 如果主题不匹配，强制重新应用
+		// 如果主题不匹配，使用批量更新减少重绘
 		if (currentTheme !== expectedTheme) {
-			document.documentElement.setAttribute('data-theme', expectedTheme);
-			// 触发代码块重新渲染
-			setTimeout(() => {
-				window.dispatchEvent(new CustomEvent('theme-change'));
-			}, 50);
+			// 使用 requestAnimationFrame 批量更新，减少重绘
+			requestAnimationFrame(() => {
+				document.documentElement.setAttribute('data-theme', expectedTheme);
+			});
 		}
 		
 		// 检查当前页面是否为文章页面，如果是则触发自定义事件用于初始化评论系统
@@ -1254,192 +1256,134 @@ window.onresize = () => {
 
 // 页面加载完成后初始化banner和轮播图
 if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', () => {
+	document.addEventListener('DOMContentLoaded', async () => {
 		showBanner();
+		// 初始化面板管理器
+		try {
+			const { panelManager } = await import('../utils/panel-manager.js');
+			console.log('Panel manager initialized');
+		} catch (error) {
+			console.error('Failed to initialize panel manager:', error);
+		}
 	});
 } else {
 	showBanner();
+	// 页面已经加载完成，立即初始化面板管理器
+	(async () => {
+		try {
+			const { panelManager } = await import('../utils/panel-manager.js');
+			console.log('Panel manager initialized');
+		} catch (error) {
+			console.error('Failed to initialize panel manager:', error);
+		}
+	})();
 }
 
+</script>
+
+<!-- 代码块折叠功能 -->
+<script>
+import '../scripts/code-collapse.js';
+</script>
+
+<!-- 主题切换综合性能优化器（包含代码块优化、重型元素优化、性能诊断） -->
+<script>
+import '../scripts/theme-optimizer.js';
 </script>
 
 <script>
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
+// 使用单例模式避免重复初始化
+let fancyboxInstances = [];
+
 function initFancybox() {
-  // 销毁现有的 Fancybox 实例（如果存在）
-  Fancybox.close();
+  // 不需要关闭所有实例，只需检查是否已经初始化
+  if (fancyboxInstances.length > 0) {
+    return; // 已经初始化，直接返回
+  }
+  
+  // 通用配置
+  const commonConfig = {
+    Thumbs: {
+      autoStart: true,
+      showOnStart: "yes",
+    },
+    Toolbar: {
+      display: {
+        left: ["infobar"],
+        middle: [
+          "zoomIn",
+          "zoomOut",
+          "toggle1to1",
+          "rotateCCW",
+          "rotateCW",
+          "flipX",
+          "flipY",
+        ],
+        right: ["slideshow", "thumbs", "close"],
+      },
+    },
+    animated: true,
+    dragToClose: true,
+    keyboard: {
+      Escape: "close",
+      Delete: "close",
+      Backspace: "close",
+      PageUp: "next",
+      PageDown: "prev",
+      ArrowUp: "next",
+      ArrowDown: "prev",
+      ArrowRight: "next",
+      ArrowLeft: "prev",
+    },
+    fitToView: true,
+    preload: 3,
+    infinite: true,
+    Panzoom: {
+      maxScale: 3,
+      minScale: 1,
+    },
+    caption: false
+  };
   
   // 为相册图片添加 Fancybox 支持
-  Fancybox.bind(".custom-md img, #post-cover img, .moment-images img", {
-    groupAll: true,
-    Thumbs: {
-      autoStart: true,
-      showOnStart: "yes",
-    },
-    // 添加自定义按钮
-    Toolbar: {
-      display: {
-        left: ["infobar"],
-        middle: [
-          "zoomIn",
-          "zoomOut",
-          "toggle1to1",
-          "rotateCCW",
-          "rotateCW",
-          "flipX",
-          "flipY",
-        ],
-        right: ["slideshow", "thumbs", "close"],
+  fancyboxInstances.push(
+    Fancybox.bind(".custom-md img, #post-cover img, .moment-images img", {
+      ...commonConfig,
+      groupAll: true,
+      Carousel: {
+        transition: "slide",
+        preload: 2,
       },
-    },
-    // 动画效果
-    animated: true,
-    // 是否支持拖拽
-    dragToClose: true,
-    // 是否支持键盘导航
-    keyboard: {
-      Escape: "close",
-      Delete: "close",
-      Backspace: "close",
-      PageUp: "next",
-      PageDown: "prev",
-      ArrowUp: "next",
-      ArrowDown: "prev",
-      ArrowRight: "next",
-      ArrowLeft: "prev",
-    },
-    // 自适应图片大小
-    fitToView: true,
-    // 图片预加载
-    preload: 3,
-    // 循环浏览
-    infinite: true,
-    // 智能图片适配
-    Panzoom: {
-      maxScale: 3,
-      minScale: 1,
-    },
-    // 幻灯片设置
-    Carousel: {
-      transition: "slide",
-      preload: 2,
-    },
-    // 禁用标题显示
-    caption: false
-  });
+    })
+  );
   
   // 为相册中的链接添加 Fancybox 支持
-  Fancybox.bind(".moment-images a[data-fancybox]", {
-    Thumbs: {
-      autoStart: true,
-      showOnStart: "yes",
-    },
-    // 工具栏配置
-    Toolbar: {
-      display: {
-        left: ["infobar"],
-        middle: [
-          "zoomIn",
-          "zoomOut",
-          "toggle1to1",
-          "rotateCCW",
-          "rotateCW",
-          "flipX",
-          "flipY",
-        ],
-        right: ["slideshow", "thumbs", "close"],
+  fancyboxInstances.push(
+    Fancybox.bind(".moment-images a[data-fancybox]", {
+      ...commonConfig,
+      source: (el) => {
+        return el.getAttribute("data-src") || el.getAttribute("href");
       },
-    },
-    // 动画效果
-    animated: true,
-    // 是否支持拖拽
-    dragToClose: true,
-    // 是否支持键盘导航
-    keyboard: {
-      Escape: "close",
-      Delete: "close",
-      Backspace: "close",
-      PageUp: "next",
-      PageDown: "prev",
-      ArrowUp: "next",
-      ArrowDown: "prev",
-      ArrowRight: "next",
-      ArrowLeft: "prev",
-    },
-    // 自适应图片大小
-    fitToView: true,
-    // 图片预加载
-    preload: 3,
-    // 循环浏览
-    infinite: true,
-    // 智能图片适配
-    Panzoom: {
-      maxScale: 3,
-      minScale: 1,
-    },
-    // 自定义源获取
-    source: (el) => {
-      return el.getAttribute("data-src") || el.getAttribute("href");
-    },
-    // 禁用标题显示
-    caption: false
-  });
+    })
+  );
   
   // 为单独的 fancybox 图片添加支持
-  Fancybox.bind("[data-fancybox]:not(.moment-images a)", {
-    // 自定义选项
-    Thumbs: {
-      autoStart: true,
-      showOnStart: "yes",
-    },
-    // 工具栏配置
-    Toolbar: {
-      display: {
-        left: ["infobar"],
-        middle: [
-          "zoomIn",
-          "zoomOut",
-          "toggle1to1",
-          "rotateCCW",
-          "rotateCW",
-          "flipX",
-          "flipY",
-        ],
-        right: ["slideshow", "thumbs", "close"],
-      },
-    },
-    // 动画效果
-    animated: true,
-    // 是否支持拖拽
-    dragToClose: true,
-    // 是否支持键盘导航
-    keyboard: {
-      Escape: "close",
-      Delete: "close",
-      Backspace: "close",
-      PageUp: "next",
-      PageDown: "prev",
-      ArrowUp: "next",
-      ArrowDown: "prev",
-      ArrowRight: "next",
-      ArrowLeft: "prev",
-    },
-    // 自适应图片大小
-    fitToView: true,
-    // 图片预加载
-    preload: 3,
-    // 循环浏览
-    infinite: true,
-    // 智能图片适配
-    Panzoom: {
-      maxScale: 3,
-      minScale: 1,
-    },
-    // 禁用标题显示
-    caption: false
+  fancyboxInstances.push(
+    Fancybox.bind("[data-fancybox]:not(.moment-images a)", commonConfig)
+  );
+}
+
+// 清理 Fancybox 实例
+function cleanupFancybox() {
+  fancyboxInstances.forEach(instance => {
+    if (instance && typeof instance.destroy === 'function') {
+      instance.destroy();
+    }
   });
+  fancyboxInstances = [];
 }
 
 const setup = () => {
@@ -1448,10 +1392,12 @@ const setup = () => {
   
   // 在页面视图更改时重新初始化
   window.swup.hooks.on("page:view", () => {
+    // 清理旧实例
+    cleanupFancybox();
     // 等待 DOM 更新后初始化
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       initFancybox();
-    }, 100);
+    });
   });
 }
 
@@ -1468,4 +1414,3 @@ if (window.swup) {
   }
 }
 </script>
-

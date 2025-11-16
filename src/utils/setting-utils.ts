@@ -2,9 +2,10 @@ import {
 	DARK_MODE,
 	DEFAULT_THEME,
 	LIGHT_MODE,
+	WALLPAPER_BANNER,
 } from "@constants/constants";
-import { expressiveCodeConfig } from "@/config";
-import type { LIGHT_DARK_MODE } from "@/types/config";
+import { expressiveCodeConfig, siteConfig } from "@/config";
+import type { LIGHT_DARK_MODE, WALLPAPER_MODE } from "@/types/config";
 
 export function getDefaultHue(): number {
 	const fallback = "250";
@@ -58,13 +59,8 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 		return;
 	}
 
-	// 只在需要主题切换时添加过渡保护
-	if (needsThemeChange) {
-		document.documentElement.classList.add("is-theme-transitioning");
-	}
-
-	// 使用 requestAnimationFrame 确保在下一帧执行，避免闪屏
-	requestAnimationFrame(() => {
+	// 定义实际执行主题切换的函数
+	const performThemeChange = () => {
 		// 应用主题变化
 		if (needsThemeChange) {
 			if (targetIsDark) {
@@ -75,28 +71,54 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 		}
 
 		// Set the theme for Expressive Code based on current mode
-		const expressiveTheme = targetIsDark ? "github-dark" : "github-light";
-		document.documentElement.setAttribute(
-			"data-theme",
-			expressiveTheme,
-		);
-
-		// 强制重新渲染代码块 - 解决从首页进入文章页面时的渲染问题
+		// 只在必要时更新 data-theme 属性以减少重绘
 		if (needsCodeThemeUpdate) {
-			// 触发 expressice code 重新渲染
-			setTimeout(() => {
-				window.dispatchEvent(new CustomEvent('theme-change'));
-			}, 0);
+			const expressiveTheme = targetIsDark ? "github-dark" : "github-light";
+			document.documentElement.setAttribute(
+				"data-theme",
+				expressiveTheme,
+			);
+		}
+	};
+
+	// 检查浏览器是否支持 View Transitions API
+	// @ts-ignore
+	if (needsThemeChange && document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		// 添加标记类，表示正在使用 View Transitions
+		document.documentElement.classList.add("is-theme-transitioning", "use-view-transition");
+		
+		// 使用 View Transitions API 实现平滑过渡
+		// @ts-ignore
+		const transition = document.startViewTransition(() => {
+			performThemeChange();
+		});
+		
+		// 在过渡完成后移除标记类（使用 finished promise 确保完全同步）
+		transition.finished.then(() => {
+			// 使用 microtask 确保在下一个事件循环前完成清理
+			queueMicrotask(() => {
+				document.documentElement.classList.remove("is-theme-transitioning", "use-view-transition");
+			});
+		}).catch(() => {
+			// 如果过渡被中断，也要清理状态
+			document.documentElement.classList.remove("is-theme-transitioning", "use-view-transition");
+		});
+	} else {
+		// 不支持 View Transitions API 或用户偏好减少动画，使用传统方式
+		// 只在需要主题切换时添加过渡保护
+		if (needsThemeChange) {
+			document.documentElement.classList.add("is-theme-transitioning");
 		}
 
-		// 在下一帧快速移除保护类，使用微任务确保DOM更新完成
+		performThemeChange();
+
+		// 使用 requestAnimationFrame 确保在下一帧移除过渡保护类
 		if (needsThemeChange) {
-			// 使用 requestAnimationFrame 确保在下一帧移除过渡保护类
 			requestAnimationFrame(() => {
 				document.documentElement.classList.remove("is-theme-transitioning");
 			});
 		}
-	});
+	}
 }
 
 export function setTheme(theme: LIGHT_DARK_MODE): void {
@@ -106,4 +128,14 @@ export function setTheme(theme: LIGHT_DARK_MODE): void {
 
 export function getStoredTheme(): LIGHT_DARK_MODE {
 	return (localStorage.getItem("theme") as LIGHT_DARK_MODE) || DEFAULT_THEME;
+}
+
+export function getStoredWallpaperMode(): WALLPAPER_MODE {
+	return (localStorage.getItem("wallpaperMode") as WALLPAPER_MODE) || siteConfig.wallpaperMode.defaultMode;
+}
+
+export function setWallpaperMode(mode: WALLPAPER_MODE): void {
+	localStorage.setItem("wallpaperMode", mode);
+	// 触发自定义事件通知其他组件壁纸模式已改变
+	window.dispatchEvent(new CustomEvent('wallpaper-mode-change', { detail: { mode } }));
 }
