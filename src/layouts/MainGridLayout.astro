@@ -726,14 +726,15 @@ const transparentClass = shouldEnableTransparency
 </div>
 
 <!-- The things that should be under the banner, only the TOC for now -->
-<div class="absolute w-full z-0 hidden 2xl:block">
+<!-- 目录的z-index大于主内容区域的以获取显示点击事件 -->
+<div class="absolute w-full z-50 hidden 2xl:block">
     <div class="relative max-w-[var(--page-width)] mx-auto">
         <!-- TOC component --> 
-		 {siteConfig.toc.enable && !siteConfig.toc.useFloatingNav && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 w-[var(--toc-width)] items-center", 
-		     "-right-[var(--toc-width)]", 
+         {siteConfig.toc.enable && !siteConfig.toc.useFloatingNav && <div id="toc-wrapper" class:list={["hidden lg:block transition-all duration-300 absolute top-0 w-[var(--toc-width)] items-center",
+             "-right-[var(--toc-width)] hover:right-[calc(-1*var(--toc-expand-right))]",
 		     {"toc-hide": siteConfig.wallpaperMode.defaultMode === "banner"}]} 
 		 > 
-		     <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar"> 
+		     <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar rounded-[var(--radius-large)] bg-[var(--toc-bg)] hover:bg-[var(--toc-bg-active)]"> 
 		         <div id="toc" class="w-full h-full transition-swup-fade ">       	 
 		             <TOC headings={headings}></TOC> 
 		         </div> 
