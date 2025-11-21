@@ -288,4 +288,12 @@ export const siteConfig: SiteConfig = {
 - **[Yukina](https://github.com/WhitePaper233/yukina)** - 感謝提供設計靈感和創意，幫助塑造了這個專案。Yukina 是一個優雅的部落格模板，展現了出色的設計原則和使用者體驗。
 - **[Firefly](https://github.com/CuteLeaf/Firefly)** - 感謝提供優秀的佈局設計思路，雙側邊欄佈局、文章雙列網格等佈局，及部分小元件的設計與實現，讓 Mizuki 的界面更加豐富。
 
+## 🍀 貢獻者
+
+感謝以下貢獻者對本專案做出的貢獻，如有問題或建議，請提交 [Issue](https://github.com/matsuzaka-yuki/Mizuki/issues) 或 [Pull Request](https://github.com/matsuzaka-yuki/Mizuki/pulls)。
+
+<a href="https://github.com/matsuzaka-yuki/Mizuki/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=matsuzaka-yuki/Mizuki" />
+</a>
+
 ⭐ 如果您覺得這個專案有幫助，請考慮給它一個星標！

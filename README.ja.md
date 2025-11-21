@@ -282,6 +282,14 @@ export const siteConfig: SiteConfig = {
 - **[Yukina](https://github.com/WhitePaper233/yukina)** - このプロジェクトの形成に役立ったデザインのインスピレーションと創造性を提供してくれたことに感謝します。Yukinaは優れたデザイン原則とユーザーエクスペリエンスを示す、エレガントなブログテンプレートです。
 - **[Firefly](https://github.com/CuteLeaf/Firefly)** - 優れたレイアウトデザインのアイデアを提供していただきありがとうございます。デュアルサイドバーレイアウト、記事の2カラムグリッドレイアウト、およびいくつかのウィジェットのデザインと実装により、Mizukiのインターフェースがより豊かになりました。
 
+## 🍀 コントリビューター
+
+このプロジェクトに貢献してくださったすべてのコントリビューターに感謝します。質問や提案がある場合は、[Issue](https://github.com/matsuzaka-yuki/Mizuki/issues)または[Pull Request](https://github.com/matsuzaka-yuki/Mizuki/pulls)を提出してください。
+
+<a href="https://github.com/matsuzaka-yuki/Mizuki/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=matsuzaka-yuki/Mizuki" />
+</a>
+
 ---
 
 ⭐ このプロジェクトが役立つと思ったら、スターを付けることを検討してください！

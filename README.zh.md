@@ -334,6 +334,13 @@ pnpm run sync-content
 - **[Yukina](https://github.com/WhitePaper233/yukina)** - 感谢提供设计灵感和创意，帮助塑造了这个项目。Yukina 是一个优雅的博客模板，展现了出色的设计原则和用户体验。
 - **[Firefly](https://github.com/CuteLeaf/Firefly)** - 感谢提供优秀的布局设计思路，双侧边栏布局、文章双列网格等布局，及部分小组件的设计与实现，让 Mizuki 的界面更加丰富。
 
+## 🍀 贡献者
+
+感谢以下贡献者对本项目做出的贡献，如有问题或建议，请提交 [Issue](https://github.com/matsuzaka-yuki/Mizuki/issues) 或 [Pull Request](https://github.com/matsuzaka-yuki/Mizuki/pulls)。
+
+<a href="https://github.com/matsuzaka-yuki/Mizuki/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=matsuzaka-yuki/Mizuki" />
+</a>
 ---
 
 ⭐ 如果您觉得这个项目有帮助，请考虑给它一个星标!
