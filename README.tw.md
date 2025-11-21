@@ -276,14 +276,16 @@ export const siteConfig: SiteConfig = {
 ## 🙏 致謝
 
 - 基於原始 [Fuwari](https://github.com/saicaca/fuwari) 模板
-- 使用 [Astro](https://astro.build) 和 [Tailwind CSS](https://tailwindcss.com) 構建
 - 靈感來源於 [Yukina](https://github.com/WhitePaper233/yukina) - 一個美麗優雅的部落格模板
+- 部分設計來源於 [Firefly](https://github.com/CuteLeaf/Firefly) 模板
+- 使用 [Pio](https://github.com/Dreamer-Paul/Pio) 實現可愛的 Live2D 看板娘外掛程式
+- 使用 [Astro](https://astro.build) 和 [Tailwind CSS](https://tailwindcss.com) 構建
 - 圖標來自 [Iconify](https://iconify.design/)
 
 ### 特別感謝
 
+- **[Fuwari](https://github.com/saicaca/fuwari)** by saicaca - 本專案所基於的原始模板。感謝您創建了如此漂亮且功能強大的模板。
 - **[Yukina](https://github.com/WhitePaper233/yukina)** - 感謝提供設計靈感和創意，幫助塑造了這個專案。Yukina 是一個優雅的部落格模板，展現了出色的設計原則和使用者體驗。
-
----
+- **[Firefly](https://github.com/CuteLeaf/Firefly)** - 感謝提供優秀的佈局設計思路，雙側邊欄佈局、文章雙列網格等佈局，及部分小元件的設計與實現，讓 Mizuki 的界面更加豐富。
 
 ⭐ 如果您覺得這個專案有幫助，請考慮給它一個星標！
