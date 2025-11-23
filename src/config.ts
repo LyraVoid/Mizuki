@@ -22,7 +22,7 @@ const SITE_TIMEZONE = 8; //设置你的网站时区 from -12 to 12 default in UT
 export const siteConfig: SiteConfig = {
 	title: "逐梦逸风",
 	subtitle: "s' Blog",
-	siteURL: "https://skymzk.netlify.app/", // 请替换为你的站点URL，以斜杠结尾
+	siteURL: "https://966911.xyz/", // 请替换为你的站点URL，以斜杠结尾
 	siteStartDate: "2025-01-01", // 站点开始运行日期，用于站点统计组件计算运行天数
 
 	timeZone: SITE_TIMEZONE,
@@ -230,16 +230,6 @@ export const navBarConfig: NavBarConfig = {
 			icon: "material-symbols:more-horiz",
 			children: [
 				{
-					name: "Projects",
-					url: "/projects/",
-					icon: "material-symbols:work",
-				},
-				{
-					name: "Skills",
-					url: "/skills/",
-					icon: "material-symbols:psychology",
-				},
-				{
 					name: "Timeline",
 					url: "/timeline/",
 					icon: "material-symbols:timeline",
@@ -247,7 +237,7 @@ export const navBarConfig: NavBarConfig = {
 				{
 					name: "统计",
 					url: "https://cloud.umami.is/share/3175f5GafkUm3lNN",
-					icon: "fa6-brands:sellsy",
+					icon: "fa6-solid:chart-bar",
 					external: true,
 				},
 			],	
@@ -266,29 +256,26 @@ export const profileConfig: ProfileConfig = {
 	},
 	links: [
 		{
-			name: "Bilibli",
-			icon: "fa6-brands:bilibili",
-			url: "https://space.bilibili.com/701864046",
-		},
-		{
-			name: "Gitee",
-			icon: "mdi:git",
-			url: "https://gitee.com/matsuzakayuki",
-		},
-		{
 			name: "GitHub",
 			icon: "fa6-brands:github",
-			url: "https://github.com/matsuzaka-yuki",
+			url: "https://github.com/iuiurun",
 		},
 		{
-			name: "Codeberg",
-			icon: "simple-icons:codeberg",
-			url: "https://codeberg.org",
+			name: "Twitter",
+			icon: "fa6-brands:twitter", // Visit https://icones.js.org/ for icon codes
+			// You will need to install the corresponding icon set if it's not already included
+			// `pnpm add @iconify-json/<icon-set-name>`
+			url: "https://twitter.com/skyvless",
 		},
 		{
-			name: "Discord",
-			icon: "fa6-brands:discord",
-			url: "https://discord.gg/MqW6TcQtVM",
+			name: "telegram",
+			icon: "fa6-brands:telegram",
+			url: "https://t.me/skyvless",
+		},
+		{
+			name: "Mail",
+			icon: "material-symbols:outgoing-mail",
+			url: "mailto:skyvless@outlook.com?subject=邮件主题&cc=&body=内容",
 		},
 	],
 };

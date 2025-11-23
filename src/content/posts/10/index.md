@@ -7,6 +7,13 @@ tags: [折腾,博客]
 category: 博客
 draft: false
 ---
+<details markdown><summary>2025-11-22 更换Mizuki主题</summary>
+部署在netlify 
+<a href="/posts/16/">cloudflare saas优选</a>
+Mizuki 文档 https://docs.mizuki.mysqil.com/
+</details>
+
+
 <details markdown><summary>2025-11-19 添加音乐播放器</summary>
 
 ## 添加音乐播放器
