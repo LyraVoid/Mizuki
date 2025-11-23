@@ -1,49 +1,48 @@
 
-This website is built with the **Astro** framework using the [Mizuki](https://github.com/matsuzaka-yuki/mizuki) theme.
-
-::github{repo="matsuzaka-yuki/Mizuki"}
-
-## 🌟 Theme Features
-
-### 🎨 Design & User Experience
-- **Modern & Elegant Design** - Clean, minimalist interface with beautiful typography
-- **Fully Responsive** - Optimized for all devices from mobile to desktop
-- **Dark/Light Mode** - Automatic theme switching with smooth transitions
-- **Beautiful Typography** - Enhanced readability with JetBrains Mono font
-- **Smooth Animations** - Fluid page transitions and interactive elements
-
-### 🔍 Content & Search
-- **Advanced Search** - Powered by [Pagefind](https://pagefind.app/) for fast, accurate results
-- **Enhanced Markdown** - Extended syntax with code highlighting and math support
-- **Interactive Table of Contents** - Auto-scroll navigation for long articles
-- **RSS Feed Generation** - Stay updated with automatic feed generation
-- **Reading Time Estimation** - Know how long articles take to read
-- **Post Categorization** - Organize content with tags and categories
-
-
-
-### 📱 Special Pages
-- **Anime Tracking Page** - Track your anime watching progress with ratings
-- **Friends Links Page** - Showcase friend websites with beautiful cards
-- **Diary/Moments Page** - Share life moments like social media posts
-- **Archive Page** - Organized timeline view of all posts
-- **About Page** - Customizable personal introduction (this page!)
-
-### 🛠 Technical Features
-- **Enhanced Code Blocks** - Powered by [Expressive Code](https://expressive-code.com/)
-- **Math Support** - LaTeX rendering with KaTeX for mathematical expressions
-- **Image Optimization** - PhotoSwipe gallery with lazy loading
-- **SEO Optimized** - Built-in sitemap and meta tags for better search visibility
-- **Performance Optimized** - Fast loading with caching and optimization
-- **Comment System Ready** - Integration support for Twikoo comments
-
-### 🎯 Advanced Markdown Features
-- **Callouts & Admonitions** - Beautiful info boxes with `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`
-- **Mathematical Equations** - Write LaTeX math with `$inline$` and `$$block$$` syntax
-- **GitHub Cards** - Embed repository cards with `::github{repo="user/repo"}`
-- **Syntax Highlighting** - Advanced code highlighting with line numbers
-- **Copy Code Buttons** - Easy code copying functionality
+**更新于：2025/11/23**
 
 ---
 
-*Built with ❤️ using Astro and inspired by modern web design principles.*
+## 👨‍💼关于我
+
+只是一个很普通的人，喜欢分享一些东西，记录生活点滴感悟。
+
+## 🔍联系我
+
+如果您对本隐私政策有任何疑问或关注，请通过以下方式联系我
+
+* 邮箱：skyvless@outlook.com
+* Telegram：https://t.me/skyvless
+
+## ❤️网站性质
+
+本网站是一个静态网站，这意味着：
+
+* 我们不会在服务器端存储您的个人信息
+* 网站内容是预先生成的，不会动态处理用户数据
+* 我们不会主动收集或存储您的个人信息
+
+## 📱第三方服务
+
+### CDN  托管 解析
+
+本网站由以下服务提供商托管：
+
+* [Github](https://github.com/)
+* [Vercel](https://vercel.com/)
+* [huaweicloud](https://www.huaweicloud.com/intl/en-us/)
+
+## 滥用与版权举报
+
+如果您发现网站内容存在滥用、侵权或其他违法违规行为，联系我。
+
+我们将认真对待每一个举报，并在收到举报后及时处理相关问题。
+
+## 🌟博客主题 [Mizuki](https://github.com/matsuzaka-yuki/mizuki)
+::github{repo="matsuzaka-yuki/Mizuki"}
+
+## 🛠博客框架 [Astro](https://astro.build/).
+
+::github{repo="withastro/astro"}
+
+

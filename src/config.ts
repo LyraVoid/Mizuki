@@ -216,12 +216,14 @@ export const navBarConfig: NavBarConfig = {
 			icon: "material-symbols:info",
 		},
 		LinkPreset.Friends,
+		
         {
             name: "开往",
-            url: "https://www.travellings.cn/go.html",
-            icon: "material-symbols:explore", // 推荐使用 explore 作为通用跳转/旅行图标
+            url: "https://www.travellings.cn/train-star.html",
+            icon: "material-symbols:subway", // 推荐使用 explore 作为通用跳转/旅行图标
             external: true,
         },
+		
 		{
 			name: "Others",
 			url: "#",
