@@ -219,13 +219,8 @@ export const navBarConfig: NavBarConfig = {
 		
         {
             name: "开往",
-<<<<<<< HEAD
-            url: "https://www.travellings.cn/train-star.html",
-            icon: "material-symbols:subway", // 推荐使用 explore 作为通用跳转/旅行图标
-=======
             url: "https://www.travellings.cn/train.html",
-            icon: "fa-regular fa-train-subway", 
->>>>>>> 1dd42a902e9b520c422b0ba1f56c574698704796
+            icon: "material-symbols:subway", 
             external: true,
         },
 		

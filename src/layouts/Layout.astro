@@ -176,7 +176,7 @@ if (siteConfig.font) {
 
 <!DOCTYPE html>
 <html lang={siteLang} class="bg-[var(--page-bg)] text-[14px] md:text-[16px]"
-	  data-overlayscrollbars-initialize
+	 
 >
 	<head>
 		<!-- 第三方分析脚本 - 延迟加载优化 -->
@@ -291,7 +291,7 @@ if (siteConfig.font) {
 </head>
 	<body class=" min-h-screen " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  style={bodyFontFamily ? `font-family: ${bodyFontFamily};` : ''}
-		  data-overlayscrollbars-initialize
+		  
 	>
 		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRX3XGVH" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 		
@@ -316,6 +316,36 @@ if (siteConfig.font) {
 	'banner-height-home': `${BANNER_HEIGHT_HOME}vh`,
 	'banner-height': `${BANNER_HEIGHT}vh`,
 }}>
+/* 恢复全局横向滚动条 */
+/* 添加到 <style is:global> 块中 */
+
+/* 针对 Webkit 内核浏览器 (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: 8px; /* 滚动条宽度 */
+    height: 8px; /* 横向滚动条高度 */
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; /* 轨道背景透明 */
+}
+
+::-webkit-scrollbar-thumb {
+    /* 使用一个与主题协调的半透明颜色 */
+    background-color: rgba(156, 163, 175, 0.4); 
+    border-radius: 4px; /* 圆角 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(107, 114, 128, 0.6); /* 悬停时加深 */
+}
+
+/* 针对 Firefox */
+html {
+    /* 允许浏览器使用原生滚动条，并设置样式 */
+    scrollbar-width: thin; 
+    scrollbar-color: rgba(156, 163, 175, 0.4) transparent; 
+}
+
 @tailwind components;
 @layer components {
 	.enable-banner.is-home #banner-wrapper {
