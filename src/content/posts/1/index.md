@@ -17,7 +17,7 @@ https://github.com/saicaca/fuwari
 头像
 ![头像](./txt.png)
 
-
+![头像](./000.png)
 ## 创建文章
 ```
 ---
