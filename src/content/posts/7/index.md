@@ -1,5 +1,5 @@
 ---
-title: ealme UI 用户必看：免 Root 替换系统安装器为 CrossProfileTestApp
+title: realme UI 用户必看：免 Root 替换系统安装器为 CrossProfileTestApp
 published: 2025-08-18T02:50:00
 description: "realme 系统安装器有广告，安装慢，还限制来源，影响体验又添麻烦。"
 image: "./3658ab3.jpg"
