@@ -34,7 +34,12 @@ export function getPostUrlByPermalink(permalink: string): string {
 }
 
 export function getPostUrl(post: CollectionEntry<"posts">): string {
-	// 如果文章有自定义固定链接，优先使用固定链接
+	// 如果文章有自定义 URL，优先使用自定义 URL（完全覆盖）
+	if (post.data.url) {
+		const cleanUrl = post.data.url.replace(/^\/+/, '').replace(/\/+$/, '');
+		return url(`/${cleanUrl}/`);
+	}
+	// 如果文章有自定义固定链接，使用固定链接（在 /posts/ 路径下）
 	if (post.data.permalink) {
 		return getPostUrlByPermalink(post.data.permalink);
 	}
