@@ -68,4 +68,7 @@ image: "https://mesitemsip.oss-cn-beijing.aliyuncs.com/vrchat/2025-11/VRChat_202
 
 ![寄了](https://mesitemsip.oss-cn-beijing.aliyuncs.com/vrchat/2025-11/VRChat_2025-11-14_00-21-16.537_3840x2160.png "寄了")
 
-*没救了喵，珍爱生命，原理赌博喵*
+*没救了喵，珍爱生命，远离赌博喵*
+
+补一张最终热舞赎身的照片，这不是蛮开心的嘛，算不算是恶堕了呢？
+![烧舞](https://mesitemsip.oss-cn-beijing.aliyuncs.com/vrchat/2025-11/shaowu.png "烧舞")
