@@ -327,7 +327,7 @@ export async function GET({
 		});
 	}
 
-	const svg = await satori(template, {
+	const svg = await satori(template as React.ReactElement, {
 		width: 1200,
 		height: 630,
 		fonts,
