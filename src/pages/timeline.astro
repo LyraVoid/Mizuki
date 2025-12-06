@@ -21,21 +21,7 @@ if (!siteConfig.featurePages.timeline) {
 
 // const { lang } = Astro.props;
 
-// 收集所有时间线图标用于预加载
-const allIcons = timelineData
-	.map((item) => item.icon || getTypeIcon(item.type))
-	.filter(Boolean);
-
-// 获取时间线统计信息
-const stats = getTimelineStats();
-// const featuredItems = getFeaturedTimeline();
-const currentItems = getCurrentItems();
-const workExperience = getTotalWorkExperience();
-
-// 获取所有时间线项目（按时间倒序）
-const allTimelineItems = getTimelineByType();
-
-// 类型图标映射
+// 类型图标映射 (moved before usage)
 const getTypeIcon = (type: string) => {
 	switch (type) {
 		case "education":
@@ -50,6 +36,20 @@ const getTypeIcon = (type: string) => {
 			return "material-symbols:event";
 	}
 };
+
+// 收集所有时间线图标用于预加载
+const allIcons = timelineData
+	.map((item) => item.icon || getTypeIcon(item.type))
+	.filter(Boolean);
+
+// 获取时间线统计信息
+const stats = getTimelineStats();
+// const featuredItems = getFeaturedTimeline();
+const currentItems = getCurrentItems();
+const workExperience = getTotalWorkExperience();
+
+// 获取所有时间线项目（按时间倒序）
+const allTimelineItems = getTimelineByType();
 
 // 类型颜色映射
 // const getTypeColor = (type: string) => {
