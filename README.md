@@ -93,6 +93,18 @@ A modern, feature-rich static blog template built with [Astro](https://astro.bui
 - [x] **Performance optimization** with lazy loading and caching
 - [x] **Comment system** with Twikoo integration
 
+### 🎛️ Admin Dashboard
+- [x] **Visual Data Management** - React-based admin panel for Projects/Skills/Timeline CRUD operations
+- [x] **Real-time Editing** - Edit data directly in browser without touching code files
+- [x] **Auto Backup** - Automatic backup file creation on every save
+- [x] **Data Sync** - One-click sync from JSON to TypeScript files
+- [x] **Git Integration** - Built-in version control support
+- [x] **Search & Filter** - Powerful search and multi-dimensional filtering
+- 📖 [Admin Guide](docs/ADMIN_GUIDE.md)
+
+![Admin Dashboard](docs/image/admin/dashboard.png)
+*Admin Dashboard - Visual data management interface*
+
 ## 🚀 Quick Start
 
 ### 📦 Installation
@@ -222,6 +234,7 @@ All commands are run from the project root:
 |:---------------------------|:-----------------------------------------|
 | `pnpm install`             | Install dependencies                     |
 | `pnpm dev`                 | Start local dev server at `localhost:4321` |
+| `pnpm admin`               | Start admin dashboard (ports 3000 \u0026 3001) |
 | `pnpm build`               | Build production site to `./dist/`       |
 | `pnpm preview`             | Preview build locally before deployment  |
 | `pnpm check`               | Run Astro error checking                 |
