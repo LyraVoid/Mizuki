@@ -41,3 +41,6 @@ cache/
 fuwari/
 src/data/myself.ts
 src/pages/myself.astro
+
+# Admin backup files
+*.backup.json
