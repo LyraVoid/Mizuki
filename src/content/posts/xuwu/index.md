@@ -1,6 +1,6 @@
 ---
 title: 我喜欢你，你喜欢我
-published: 2025-12-5
+published: 2025-12-05
 pinned: false
 description: 且当是无病呻吟比较好？
 tags: [caprice, Blogging]
