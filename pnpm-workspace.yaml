@@ -1,3 +1,6 @@
+packages:
+  - 'admin'
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - esbuild

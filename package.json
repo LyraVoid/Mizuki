@@ -19,6 +19,7 @@
 		"format": "biome format --write ./src",
 		"lint": "biome check --write ./src",
 		"preinstall": "npx only-allow pnpm",
+		"admin": "pnpm --filter mizuki-admin dev",
 		"compress-fonts": "node scripts/compress-fonts.js",
 		"test-font-compression": "node scripts/test-font-compression.js"
 	},
