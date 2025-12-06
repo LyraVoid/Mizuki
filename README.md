@@ -102,8 +102,16 @@ A modern, feature-rich static blog template built with [Astro](https://astro.bui
 - [x] **Search & Filter** - Powerful search and multi-dimensional filtering
 - 📖 [Admin Guide](docs/ADMIN_GUIDE.md)
 
+> [!IMPORTANT]
+> **The admin dashboard is for LOCAL DEVELOPMENT ONLY**
+> - Runs on `localhost:3000` (frontend) and `localhost:3001` (backend)
+> - NOT included in production build - Mizuki remains 100% static
+> - JSON data is converted to TypeScript at build time
+> - Final deployment contains NO API endpoints, NO server
+> - Never expose the admin server to the internet
+
 ![Admin Dashboard](docs/image/admin/dashboard.png)
-*Admin Dashboard - Visual data management interface*
+*Admin Dashboard - Visual data management interface (local development only)*
 
 ## 🚀 Quick Start
 
