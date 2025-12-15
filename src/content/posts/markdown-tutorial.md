@@ -11,7 +11,7 @@ sourceLink: "https://github.com/emn178/markdown"
 draft: false
 ---
 
-# Markdown Tutorial
+# Markdown 教程
 
 A markdown example shows how to write a markdown file. This document integrates core syntax and extensions (GMF).
 
@@ -34,9 +34,9 @@ A markdown example shows how to write a markdown file. This document integrates 
   - [Backslash Escapes](#backslash-escapes)
 - [Inline HTML](#inline-html)
 
-## Block Elements
+## 块级元素
 
-### Paragraphs and Line Breaks
+### 段落与换行
 
 #### Paragraphs
 
