@@ -1,3 +1,14 @@
+---
+title: 在浪潮CE520F上安装Debian12 ARM
+published: 2025-12-15
+pinned: true
+description: 飞腾D2000折腾系列1-安装Debian12
+tags: [Markdown, Blogging, D2000,Debian,inspur]
+category: Technology
+licenseName: "Unlicensed"
+author: humanfans
+draft: false
+---
 # 在浪潮CE520F上安装Debian12 ARM
 
 原机主要配置是飞腾D2000  
@@ -40,3 +51,4 @@ sudo apt autoremove 应该就可以了。
 5 kylin 专业版和社区版都支持。专业版重新安装 需要联系客服。  
 6 uos 1070专业版支持的。因为信创机都是绑定硬盘，可以直接激活。  
 7 deepin23 arm 飞腾说他们适配了。但是我安装不上，要不然就是安装完成，配置无法进入。可能要求配置要高一点吧。
+
