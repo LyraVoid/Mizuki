@@ -59,8 +59,13 @@ export const siteConfig: SiteConfig = {
 		userId: "your-bangumi-id", // 在此处设置你的Bangumi用户ID，可以设置为 "sai" 测试
 	},
 
+	bilibili: {
+		vmid: "1129280784", // 在此处设置你的B站UID
+		coverMirror: "", // 可选：封面镜像前缀，留空则直接使用B站地址
+	},
+
 	anime: {
-		mode: "local", // 番剧页面模式："bangumi" 使用Bangumi API，"local" 使用本地配置
+		mode: "bilibili", // 番剧页面模式："bangumi" 使用Bangumi API，"local" 使用本地配置，"bilibili" 使用B站追番
 	},
 
 	// 文章列表布局配置
@@ -172,6 +177,15 @@ export const siteConfig: SiteConfig = {
 		useJapaneseBadge: true, // 使用日语假名标记（あいうえお...）代替数字，开启后会将 1、2、3... 改为 あ、い、う...
 	},
 	showCoverInContent: true, // 在文章内容页显示文章封面
+	// 文章封面配置
+	postCover: {
+		enableRandom: true, // 启用随机封面图片
+		apis: [
+			"https://t.alcy.cc/moez",
+			"https://t.alcy.cc/ycy",
+			"https://www.loliapi.com/acg/",
+		], // 随机封面图片 API 列表
+	},
 	generateOgImages: false, // 启用生成OpenGraph图片功能,注意开启后要渲染很长时间，不建议本地调试的时候开启
 	favicon: [
 		// 留空以使用默认 favicon

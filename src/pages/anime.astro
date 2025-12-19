@@ -18,6 +18,11 @@ const isBothSidebarMode = sidebarLayoutConfig.position === "both";
 const BANGUMI_USER_ID = siteConfig.bangumi?.userId || "your-user-id"; // 用户ID
 const BANGUMI_API_BASE = "https://api.bgm.tv";
 
+// Bilibili 追番 API 配置
+const BILIBILI_USER_ID = siteConfig.bilibili?.vmid || "";
+const BILIBILI_API_BASE = "https://api.bilibili.com/x/space/bangumi/follow/list";
+const BILIBILI_PAGE_SIZE = 30;
+
 // 获取番剧数据模式(不需要更改，请在主配置src/config.ts中修改)
 const ANIME_MODE = siteConfig.anime?.mode || "bangumi";
 
@@ -137,14 +142,148 @@ async function processBangumiData(data: any, status: string) {
 	return detailedItems;
 }
 
+// 获取 Bilibili 追番/追剧数据
+async function fetchBilibiliCollection(
+	vmid: string,
+	status: number,
+	typeNum: number,
+) {
+	let allItems: any[] = [];
+	let page = 1;
+	while (true) {
+		const url = `${BILIBILI_API_BASE}?type=${typeNum}&follow_status=${status}&vmid=${vmid}&ps=${BILIBILI_PAGE_SIZE}&pn=${page}`;
+		const response = await fetch(url);
+		if (!response.ok) {
+			break;
+		}
+		const json = await response.json();
+		if (json?.code !== 0 || !json?.data) {
+			break;
+		}
+		const list = json.data.list || [];
+		if (!Array.isArray(list) || list.length === 0) {
+			break;
+		}
+		allItems = allItems.concat(list);
+		if (list.length < BILIBILI_PAGE_SIZE) {
+			break;
+		}
+		page += 1;
+	}
+	return allItems;
+}
+
+function mapBilibiliItemToAnime(
+	item: any,
+	status: "planned" | "watching" | "completed",
+) {
+	const rawCover: string | undefined = item?.cover;
+	let cover = rawCover || "/assets/anime/default.webp";
+	try {
+		if (rawCover) {
+			const href = new URL(rawCover);
+			href.protocol = "https:";
+			const mirror = siteConfig.bilibili?.coverMirror || "";
+			cover = `${mirror}${href.href}`;
+		}
+	} catch {}
+
+	const totalCount = item?.total_count;
+	const unit = item?.season_type === 1 ? "话" : "集";
+	const totalText =
+		totalCount === -1
+			? "未完结"
+			: typeof totalCount === "number"
+				? `全${totalCount}${unit}`
+				: "";
+
+	const ratingScore = item?.rating?.score;
+
+	// 年份：优先使用 publish.release_date，其次 publish.pub_time，再退回其他字段
+	const publish = item?.publish || {};
+	const publishDate: string =
+		publish.release_date ||
+		publish.pub_time ||
+		item?.pub_time ||
+		"";
+	const year = publishDate ? publishDate.slice(0, 4) : "";
+
+	// 标签：styles 可能是字符串数组，也可能是对象数组
+	let genres: string[] = [];
+	if (Array.isArray(item?.styles)) {
+		genres = item.styles
+			.map((s: any) =>
+				typeof s === "string" ? s : typeof s?.name === "string" ? s.name : "",
+			)
+			.filter((g: string) => g && g.trim().length > 0)
+			.slice(0, 3);
+	}
+
+	// 制作：使用 producers 中的 name，若无则回退到地区名称
+	let studio = "";
+	if (Array.isArray(item?.producers) && item.producers.length > 0) {
+		const producerNames = item.producers
+			.map((p: any) => p?.name || "")
+			.filter((n: string) => n && n.trim().length > 0);
+		if (producerNames.length > 0) {
+			studio = producerNames.join(" / ");
+		}
+	}
+	if (!studio && Array.isArray(item?.areas) && item.areas[0]?.name) {
+		studio = item.areas[0].name;
+	}
+
+	return {
+		title: item?.title || "",
+		status,
+		rating: typeof ratingScore === "number" ? ratingScore : 0,
+		cover,
+		description: (item?.evaluate || "").trimStart(),
+		episodes: totalText,
+		year,
+		genre: genres,
+		studio,
+		link: item?.media_id
+			? `https://www.bilibili.com/bangumi/media/md${item.media_id}`
+			: "#",
+		progress: 0,
+		totalEpisodes:
+			typeof totalCount === "number" && totalCount > 0 ? totalCount : 0,
+		startDate: publishDate,
+		endDate: "",
+	};
+}
+
 // 根据模式获取番剧列表
 let animeList: typeof localAnimeList = [];
 if (ANIME_MODE === "local") {
-	// 使用本地配置
 	animeList = localAnimeList;
+} else if (ANIME_MODE === "bilibili") {
+	if (!BILIBILI_USER_ID) {
+		animeList = [];
+	} else {
+		const wantWatchRaw = await fetchBilibiliCollection(BILIBILI_USER_ID, 1, 1);
+		const watchingRaw = await fetchBilibiliCollection(BILIBILI_USER_ID, 2, 1);
+		const watchedRaw = await fetchBilibiliCollection(BILIBILI_USER_ID, 3, 1);
+
+		const wantWatchList = wantWatchRaw.map((item) =>
+			mapBilibiliItemToAnime(item, "planned"),
+		);
+		const watchingList = watchingRaw.map((item) =>
+			mapBilibiliItemToAnime(item, "watching"),
+		);
+		const watchedList = watchedRaw.map((item) =>
+			mapBilibiliItemToAnime(item, "completed"),
+		);
+
+		animeList = [
+			...watchingList,
+			...wantWatchList,
+			...watchedList,
+		];
+	}
 } else {
 	// 使用Bangumi API（默认模式）
-	// 获取与处理在看列表（type=3）想看列表（type=1）看过列表（type=2）搁置列表（type=4）抛弃列表（type=5）
 	const watchingData = await fetchBangumiCollection(BANGUMI_USER_ID, 2, 3);
 	const plannedData = await fetchBangumiCollection(BANGUMI_USER_ID, 2, 1);
 	const completedData = await fetchBangumiCollection(BANGUMI_USER_ID, 2, 2);

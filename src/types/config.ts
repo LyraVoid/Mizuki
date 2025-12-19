@@ -102,9 +102,15 @@ export type SiteConfig = {
 		userId?: string; // Bangumi用户ID
 	};
 
+	// Bilibili 追番配置
+	bilibili?: {
+		vmid: string;
+		coverMirror?: string;
+	};
+
 	// 添加番剧页面配置
 	anime?: {
-		mode?: "bangumi" | "local"; // 番剧页面模式
+		mode?: "bangumi" | "local" | "bilibili"; // 番剧页面模式
 	};
 
 	// 标签样式配置
@@ -170,6 +176,12 @@ export type SiteConfig = {
 	generateOgImages: boolean;
 	favicon: Favicon[];
 	showLastModified: boolean; // 控制“上次编辑”卡片显示的开关
+
+	// 文章封面配置
+	postCover?: {
+		enableRandom: boolean; // 是否启用随机封面图片
+		apis: string[]; // 随机封面图片 API 列表
+	};
 };
 
 export type Favicon = {

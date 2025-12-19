@@ -132,6 +132,19 @@ const lastModified = dayjs(entry.data.updated || entry.data.published)
 	.utc()
 	.format("YYYY-MM-DDTHH:mm:ss");
 
+// 随机封面配置
+const randomCoverApis = siteConfig.postCover?.apis ?? [];
+const enableRandomCover =
+	siteConfig.postCover?.enableRandom && randomCoverApis.length > 0;
+
+const getRandomCoverUrl = () => {
+	if (!enableRandomCover) return "";
+	const index = Math.floor(Math.random() * randomCoverApis.length);
+	return randomCoverApis[index] ?? "";
+};
+
+const bannerImage = entry.data.image || (enableRandomCover ? getRandomCoverUrl() : undefined);
+
 const jsonLd = {
 	"@context": "https://schema.org",
 	"@type": "BlogPosting",
@@ -152,7 +165,7 @@ const jsonLd = {
 ---
 
 <MainGridLayout
-    banner={entry.data.image}
+    banner={bannerImage}
     title={entry.data.title}
     description={entry.data.description}
     lang={entry.data.lang}

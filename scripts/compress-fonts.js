@@ -558,6 +558,146 @@ async function fetchBangumiAnimeText() {
 	}
 }
 
+// 获取 Bilibili 追番数据中的文字（在字体子集化时保证 B 站追番页面不缺字）
+async function fetchBilibiliAnimeText() {
+	try {
+		// 读取配置文件获取番剧配置
+		const configPath = path.join(__dirname, "../src/config.ts");
+		const configContent = fs.readFileSync(configPath, "utf-8");
+
+		// 检查番剧页面是否启用
+		const featurePagesMatch = configContent.match(
+			/featurePages:\s*\{([\s\S]*?)\}/,
+		);
+		if (featurePagesMatch) {
+			const featureConfig = featurePagesMatch[1];
+			const animeMatch = featureConfig.match(/anime:\s*(true|false)/);
+			if (!animeMatch || animeMatch[1] === "false") {
+				console.log(
+					"ℹ Anime page disabled, skipping Bilibili anime text collection",
+				);
+				return new Set();
+			}
+		}
+
+		// 提取 Bilibili 配置
+		const bilibiliVmidMatch = configContent.match(
+			/bilibili:\s*\{[\s\S]*?vmid:\s*["]([^"']+)["']/,
+		);
+		const animeModeMatch = configContent.match(
+			/anime:\s*\{[\s\S]*?mode:\s*["]([^"']+)["']/,
+		);
+
+		const vmid = bilibiliVmidMatch ? bilibiliVmidMatch[1] : null;
+		const mode = animeModeMatch ? animeModeMatch[1] : "bangumi";
+
+		if (mode !== "bilibili" || !vmid) {
+			console.log(
+				'ℹ Anime mode is not "bilibili" or no Bilibili vmid configured, skipping Bilibili anime text collection',
+			);
+			return new Set();
+		}
+
+		console.log("ℹ Fetching anime data from Bilibili API for font subset...");
+		console.log(`  vmid: ${vmid}`);
+
+		const textSet = new Set();
+		const BILIBILI_API_BASE =
+			"https://api.bilibili.com/x/space/bangumi/follow/list";
+		const PAGE_SIZE = 30;
+
+		async function fetchFollowList(vmid, followStatus, typeNum) {
+			let allItems = [];
+			let page = 1;
+			let hasMore = true;
+
+			while (hasMore) {
+				const controller = new AbortController();
+				const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+				try {
+					const url = `${BILIBILI_API_BASE}?type=${typeNum}&follow_status=${followStatus}&vmid=${vmid}&ps=${PAGE_SIZE}&pn=${page}`;
+					const response = await fetch(url, {
+						signal: controller.signal,
+						headers: {
+							"User-Agent":
+								"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+						},
+					});
+					clearTimeout(timeoutId);
+
+					if (!response.ok) {
+						throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+					}
+
+					const json = await response.json();
+					if (json?.code !== 0 || !json?.data) {
+						break;
+					}
+					const list = json.data.list || [];
+					if (!Array.isArray(list) || list.length === 0) {
+						break;
+					}
+
+					allItems = allItems.concat(list);
+					if (list.length < PAGE_SIZE) {
+						hasMore = false;
+					} else {
+						page += 1;
+					}
+
+					await new Promise((resolve) => setTimeout(resolve, 200));
+				} catch (error) {
+					clearTimeout(timeoutId);
+					console.log(
+						`⚠ Failed to fetch Bilibili follow_status ${followStatus}: ${error.message}`,
+					);
+					break;
+				}
+			}
+
+			return allItems;
+		}
+
+		let totalItems = 0;
+		const statuses = [1, 2, 3]; // 1 想看, 2 在看, 3 已看
+		for (const status of statuses) {
+			const items = await fetchFollowList(vmid, status, 1); // 1=番剧
+			if (!items || items.length === 0) continue;
+			totalItems += items.length;
+
+			items.forEach((item) => {
+				const title = item?.title || "";
+				const evaluate = item?.evaluate || "";
+				const styles = Array.isArray(item?.styles) ? item.styles : [];
+
+				for (const ch of title) textSet.add(ch);
+				for (const ch of evaluate) textSet.add(ch);
+				styles.forEach((s) => {
+					if (s?.name) {
+						for (const ch of s.name) textSet.add(ch);
+					}
+				});
+			});
+		}
+
+		if (totalItems > 0) {
+			console.log(
+				`✓ Successfully processed ${totalItems} anime items from Bilibili API`,
+			);
+		} else {
+			console.log("⚠ No anime data found from Bilibili API");
+		}
+
+		return textSet;
+	} catch (error) {
+		console.log(
+			`⚠ Error processing Bilibili anime config: ${error.message}, skipping Bilibili anime text collection`,
+		);
+		return new Set();
+	}
+}
+
 // 收集所有使用的文字（用于 CJK 字体）
 async function collectText() {
 	const { lang } = await getConfig();
@@ -734,7 +874,54 @@ async function collectText() {
 		}
 	}
 
-	// 4. 读取 content 目录（根据环境变量决定路径）
+	// 4. 读取节日弹窗脚本中的文本（public/js/festival-popup.js）
+	const festivalPopupFile = path.join(
+		__dirname,
+		"../public/js/festival-popup.js",
+	);
+	if (fs.existsSync(festivalPopupFile)) {
+		const content = fs.readFileSync(festivalPopupFile, "utf-8");
+		// 提取字符串字面量中的字符
+		const patterns = [
+			/"([^"\\]|\\.|\\n|\\t)*"/g,
+			/'([^'\\]|\\.|\\n|\\t)*'/g,
+			/`([^`\\]|\\.|\\n|\\t)*`/g,
+		];
+		patterns.forEach((pattern) => {
+			const matches = content.match(pattern);
+			if (matches) {
+				matches.forEach((match) => {
+					let text = match;
+					if (
+						(text.startsWith("\"") && text.endsWith("\"")) ||
+						(text.startsWith("'") && text.endsWith("'")) ||
+						(text.startsWith("`") && text.endsWith("`"))
+					) {
+						text = text.slice(1, -1);
+					}
+					// 处理转义字符
+					text = text
+						.replace(/\\n/g, "\n")
+						.replace(/\\t/g, "\t")
+						.replace(/\\"/g, '"')
+						.replace(/\\'/g, "'");
+
+					for (const char of text) {
+						// 只保留 CJK 及全角标点，避免把无用字符塞进子集
+						if (
+							char.match(
+								/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u3000-\u303f\uff00-\uffef]/,
+							)
+						) {
+							textSet.add(char);
+						}
+					}
+				});
+			}
+		});
+	}
+
+	// 5. 读取 content 目录（根据环境变量决定路径）
 	let contentDir;
 	if (process.env.ENABLE_CONTENT_SYNC === "true" && process.env.CONTENT_DIR) {
 		// 使用环境变量指定的目录（以项目根目录为基准）
@@ -802,14 +989,23 @@ async function collectText() {
 	// 6. 从 Bangumi API 获取番剧数据中的文字
 	const bangumiTextSet = await fetchBangumiAnimeText();
 
-	// 将 Bangumi API 的文字添加到主文字集合中
 	for (const char of bangumiTextSet) {
 		textSet.add(char);
 	}
-
 	if (bangumiTextSet.size > 0) {
 		console.log(
 			`✓ Added ${bangumiTextSet.size} unique characters from anime data`,
+		);
+	}
+
+	// 7. 从 Bilibili API 获取追番数据中的文字（仅在 anime.mode="bilibili" 时生效）
+	const bilibiliTextSet = await fetchBilibiliAnimeText();
+	for (const char of bilibiliTextSet) {
+		textSet.add(char);
+	}
+	if (bilibiliTextSet.size > 0) {
+		console.log(
+			`✓ Added ${bilibiliTextSet.size} unique characters from Bilibili anime data`,
 		);
 	}
 

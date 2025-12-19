@@ -42,13 +42,35 @@ const className = Astro.props.class;
 
 const hasCover = image !== undefined && image !== null && image !== "";
 
+// 随机封面配置
+const randomCoverApis = siteConfig.postCover?.apis ?? [];
+const enableRandomCover =
+	siteConfig.postCover?.enableRandom && randomCoverApis.length > 0;
+
+const getRandomCoverUrl = () => {
+	if (!enableRandomCover) return "";
+	const index = Math.floor(Math.random() * randomCoverApis.length);
+	return randomCoverApis[index] ?? "";
+};
+
+const effectiveImage = hasCover
+	? image
+	: enableRandomCover
+		? getRandomCoverUrl()
+		: image;
+
+const hasEffectiveCover =
+	effectiveImage !== undefined &&
+	effectiveImage !== null &&
+	effectiveImage !== "";
+
 const coverWidth = "28%";
 
 const { remarkPluginFrontmatter } = await render(entry);
 ---
 
 <div class:list={["card-base flex flex-col-reverse md:flex-col w-full rounded-[var(--radius-large)] overflow-hidden relative", className]} style={style}>
-    <div class:list={["pl-6 md:pl-9 pr-6 md:pr-2 pt-6 md:pt-7 pb-6 relative", {"w-full md:w-[calc(100%_-_52px_-_12px)]": !hasCover, "w-full md:w-[calc(100%_-_var(--coverWidth)_-_12px)]": hasCover}]}>
+    <div class:list={["pl-6 md:pl-9 pr-6 md:pr-2 pt-6 md:pt-7 pb-6 relative", {"w-full md:w-[calc(100%_-_52px_-_12px)]": !hasEffectiveCover, "w-full md:w-[calc(100%_-_var(--coverWidth)_-_12px)]": hasEffectiveCover}]}>
         <a href={url}
            class="transition group w-full block font-bold mb-3 text-3xl text-90
         hover:text-[var(--primary)] dark:hover:text-[var(--primary)]
@@ -94,7 +116,7 @@ const { remarkPluginFrontmatter } = await render(entry);
         </div>
     </div>
 
-    {hasCover && <a href={url} aria-label={title}
+    {hasEffectiveCover && <a href={url} aria-label={title}
                     class:list={["group",
                         "max-h-[20vh] md:max-h-none mx-4 mt-4 -mb-2 md:mb-0 md:mx-0 md:mt-0",
                         "md:w-[var(--coverWidth)] relative md:absolute md:top-3 md:bottom-3 md:right-3 rounded-xl overflow-hidden active:scale-95"
@@ -105,12 +127,12 @@ const { remarkPluginFrontmatter } = await render(entry);
                   class="transition opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 text-white text-5xl">
             </Icon>
         </div>
-        <ImageWrapper src={image} basePath={getFileDirFromPath(entry.filePath || '')} alt="Cover Image of the Post"
+        <ImageWrapper src={effectiveImage} basePath={getFileDirFromPath(entry.filePath || '')} alt="Cover Image of the Post"
                   class="w-full h-full">
         </ImageWrapper>
     </a>}
 
-    {!hasCover &&
+    {!hasEffectiveCover &&
         <a href={url} aria-label={title} class="!hidden md:!flex btn-regular w-[3.25rem]
          absolute right-3 top-3 bottom-3 rounded-xl bg-[var(--enter-btn-bg)]
          hover:bg-[var(--enter-btn-bg-hover)] active:bg-[var(--enter-btn-bg-active)] active:scale-95
