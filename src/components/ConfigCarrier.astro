@@ -7,7 +7,15 @@ import { expressiveCodeConfig, siteConfig } from "../config";
 <div id="config-carrier" data-hue={siteConfig.themeColor.hue} data-hide-code-blocks-during-transition={expressiveCodeConfig.hideDuringThemeTransition ? "true" : "false"}>
 </div>
 
-<script is:inline define:vars={{ tocEnable: siteConfig.toc.enable, tocDepth: siteConfig.toc.depth, tocUseJapaneseBadge: siteConfig.toc.useJapaneseBadge }}>
+<script
+	is:inline
+	define:vars={{
+		tocEnable: siteConfig.toc.enable,
+		tocDepth: siteConfig.toc.depth,
+		tocUseJapaneseBadge: siteConfig.toc.useJapaneseBadge,
+		festivalConfig: siteConfig.festivalPopup ?? null,
+	}}
+>
   // 将TOC配置传递到前端
   window.siteConfig = window.siteConfig || {};
   window.siteConfig.toc = {
@@ -16,8 +24,8 @@ import { expressiveCodeConfig, siteConfig } from "../config";
     useJapaneseBadge: tocUseJapaneseBadge
   };
   
-  // 添加调试信息
-  console.log('TOC Config:', window.siteConfig.toc);
+  // 节日弹窗配置
+  window.siteConfig.festivalPopup = festivalConfig || {};
 </script>
 
 <!-- 引入Umami Share工具脚本 -->

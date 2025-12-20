@@ -7,6 +7,65 @@
     return;
   }
 
+  var globalConfig = window.siteConfig || {};
+  var festivalConfig = globalConfig.festivalPopup || {};
+  var popupEnabled =
+    festivalConfig.enable === undefined ? true : !!festivalConfig.enable;
+  if (!popupEnabled) {
+    return;
+  }
+  var mourningEnabled =
+    festivalConfig.enableMourningMode === undefined
+      ? true
+      : !!festivalConfig.enableMourningMode;
+
+  var userBirthdayConfig = festivalConfig.birthday;
+  var birthdayConfig = {
+    enable:
+      !!(
+        userBirthdayConfig &&
+        (userBirthdayConfig.enable === undefined
+          ? true
+          : !!userBirthdayConfig.enable)
+      ),
+    solarDate: userBirthdayConfig ? userBirthdayConfig.solarDate : "",
+    message: userBirthdayConfig ? userBirthdayConfig.message : "",
+    useLunar:
+      userBirthdayConfig && userBirthdayConfig.useLunar === false ? false : true,
+  };
+
+  function parseSolarDate(dateStr) {
+    if (typeof dateStr !== "string") return null;
+    var parts = dateStr.split("-");
+    if (parts.length !== 3) return null;
+    var year = parseInt(parts[0], 10);
+    var month = parseInt(parts[1], 10);
+    var day = parseInt(parts[2], 10);
+    if (
+      isNaN(year) ||
+      isNaN(month) ||
+      isNaN(day) ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > 31
+    ) {
+      return null;
+    }
+    return { year: year, month: month, day: day };
+  }
+
+  if (!birthdayConfig.solarDate) {
+    birthdayConfig.enable = false;
+  }
+  var birthdaySolarParts = birthdayConfig.solarDate
+    ? parseSolarDate(birthdayConfig.solarDate)
+    : null;
+  if (!birthdaySolarParts && birthdayConfig.enable) {
+    birthdayConfig.enable = false;
+    console.warn("[festival-popup] Invalid birthday solarDate, birthday popup disabled.");
+  }
+
   try {
     var d = new Date();
     var m = d.getMonth() + 1;
@@ -15,6 +74,7 @@
 
     // 公祭日
     function setMemorialGray() {
+      if (!mourningEnabled) return;
       document.getElementsByTagName("html")[0].setAttribute("style", "filter: grayscale(60%);");
     }
 
@@ -342,32 +402,47 @@
 
     // 农历节日
     var lunar = calendarFormatter.solar2lunar();
+    var birthLunarRef = null;
+    if (birthdayConfig.enable && birthdaySolarParts && birthdayConfig.useLunar !== false) {
+      try {
+        birthLunarRef = calendarFormatter.solar2lunar(
+          birthdaySolarParts.year,
+          birthdaySolarParts.month,
+          birthdaySolarParts.day
+        );
+      } catch (birthErr) {
+        console.error("Birthday lunar reference error", birthErr);
+      }
+    }
 
-    // 兔兔的农历生日：对应公历 2010-02-09 当天的农历日期
-    // 每年当农历日期与这一天相同时，弹出生日祝福
+    // 生日祝福
     try {
-      var birthLunar = calendarFormatter.solar2lunar(2010, 2, 9);
-      if (
-        lunar["IMonthCn"] === birthLunar.IMonthCn &&
-        lunar["IDayCn"] === birthLunar.IDayCn
-      ) {
-        var age = y - 2010;
-        if (age > 0 && age < 150) {
-          showOnce(
-            "祝兔兔" +
-              age.toString() +
-              "岁生日快乐！🎂🐰🎉\n\n" +
-              "愿你永远保持好奇与热爱，✨\n" +
-              "像现在这样认真生活、认真快乐。💖\n" +
-              "今天可以多偷懒一点，把时间留给自己~ ☕️🍰"
-          );
-        } else {
-          // 防止年份计算异常时依然给个简单祝福
-          showOnce("祝兔兔生日快乐！🎂🐰 愿你天天都被温柔以待～💫");
+      if (birthdayConfig.enable && birthdaySolarParts) {
+        var birthYear = birthdaySolarParts.year;
+        var isBirthdayToday = false;
+        if (birthdayConfig.useLunar === false) {
+          isBirthdayToday =
+            m === birthdaySolarParts.month && dd === birthdaySolarParts.day;
+        } else if (birthLunarRef && lunar) {
+          isBirthdayToday =
+            lunar["IMonthCn"] === birthLunarRef.IMonthCn &&
+            lunar["IDayCn"] === birthLunarRef.IDayCn;
+        }
+
+        if (isBirthdayToday) {
+          var age = y - birthYear;
+          var birthdayMessage = birthdayConfig.message;
+          if (birthdayMessage) {
+            birthdayMessage = birthdayMessage.replace(
+              /\{age\}/g,
+              age > 0 && age < 150 ? age.toString() : ""
+            );
+            showOnce(birthdayMessage);
+          }
         }
       }
     } catch (e) {
-      console.error("Birthday lunar calculation error", e);
+      console.error("Birthday popup error", e);
     }
 
     // 农历采用汉字计算，防止出现闰月导致问题

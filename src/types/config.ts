@@ -124,6 +124,8 @@ export type SiteConfig = {
 		showModeSwitchOnMobile?: "off" | "mobile" | "desktop" | "both"; // 整体布局方案切换按钮显示设置：off=隐藏，mobile=仅移动端，desktop=仅桌面端，both=全部显示
 	};
 
+	festivalPopup?: FestivalPopupConfig;
+
 	banner: {
 		src:
 			| string
@@ -181,6 +183,17 @@ export type SiteConfig = {
 	postCover?: {
 		enableRandom: boolean; // 是否启用随机封面图片
 		apis: string[]; // 随机封面图片 API 列表
+	};
+};
+
+export type FestivalPopupConfig = {
+	enable?: boolean;
+	enableMourningMode?: boolean;
+	birthday?: {
+		enable?: boolean;
+		solarDate: string; // YYYY-MM-DD
+		message?: string; // 支持 {age} 占位符
+		useLunar?: boolean; // 是否按照农历计算生日（默认 true）
 	};
 };
 

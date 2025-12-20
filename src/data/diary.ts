@@ -1,93 +1,86 @@
-// 日记数据配置
-// 用于管理日记页面的数据
+import { getCollection, type CollectionEntry } from "astro:content";
 
-export interface DiaryItem {
-	id: number;
-	content: string;
-	date: string;
-	images?: string[];
-	location?: string;
-	mood?: string;
-	tags?: string[];
-}
+export type DiaryEntry = CollectionEntry<"diary">;
 
-// 示例日记数据
-const diaryData: DiaryItem[] = [
-	{
-		id: 1,
-		content:
-			"The falling speed of cherry blossoms is five centimeters per second!",
-		date: "2025-01-15T10:30:00Z",
-		images: ["/images/diary/sakura.jpg", "/images/diary/1.jpg"],
-	},
-];
+const sortByDateDesc = (entries: DiaryEntry[]) =>
+	entries.sort(
+		(a, b) => b.data.date.getTime() - a.data.date.getTime(),
+	);
+
+const fetchDiaryEntries = async () => {
+	const entries = await getCollection("diary");
+	return sortByDateDesc(entries);
+};
 
 // 获取日记统计数据
-export const getDiaryStats = () => {
-	const total = diaryData.length;
-	const hasImages = diaryData.filter(
-		(item) => item.images && item.images.length > 0,
+export const getDiaryStats = async () => {
+	const entries = await fetchDiaryEntries();
+	const total = entries.length;
+	const hasImages = entries.filter(
+		(item) => item.data.images && item.data.images.length > 0,
 	).length;
-	const hasLocation = diaryData.filter((item) => item.location).length;
-	const hasMood = diaryData.filter((item) => item.mood).length;
+	const hasLocation = entries.filter((item) => !!item.data.location).length;
+	const hasMood = entries.filter((item) => !!item.data.mood).length;
 
 	return {
 		total,
 		hasImages,
 		hasLocation,
 		hasMood,
-		imagePercentage: Math.round((hasImages / total) * 100),
-		locationPercentage: Math.round((hasLocation / total) * 100),
-		moodPercentage: Math.round((hasMood / total) * 100),
+		imagePercentage:
+			total === 0 ? 0 : Math.round((hasImages / total) * 100),
+		locationPercentage:
+			total === 0 ? 0 : Math.round((hasLocation / total) * 100),
+		moodPercentage:
+			total === 0 ? 0 : Math.round((hasMood / total) * 100),
 	};
 };
 
 // 获取日记列表（按时间倒序）
-export const getDiaryList = (limit?: number) => {
-	const sortedData = diaryData.sort(
-		(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-	);
-
+export const getDiaryList = async (limit?: number) => {
+	const entries = await fetchDiaryEntries();
 	if (limit && limit > 0) {
-		return sortedData.slice(0, limit);
+		return entries.slice(0, limit);
 	}
-
-	return sortedData;
+	return entries;
 };
 
 // 获取最新的日记
-export const getLatestDiary = () => {
-	return getDiaryList(1)[0];
+export const getLatestDiary = async () => {
+	const [latest] = await getDiaryList(1);
+	return latest;
 };
 
-// 根据ID获取日记
-export const getDiaryById = (id: number) => {
-	return diaryData.find((item) => item.id === id);
+// 根据ID（slug）获取日记
+export const getDiaryById = async (id: string) => {
+	const entries = await fetchDiaryEntries();
+	return entries.find((item) => item.id === id);
 };
 
 // 获取包含图片的日记
-export const getDiaryWithImages = () => {
-	return diaryData.filter((item) => item.images && item.images.length > 0);
+export const getDiaryWithImages = async () => {
+	const entries = await fetchDiaryEntries();
+	return entries.filter(
+		(item) => item.data.images && item.data.images.length > 0,
+	);
 };
 
 // 根据标签筛选日记
-export const getDiaryByTag = (tag: string) => {
-	return diaryData
-		.filter((item) => item.tags?.includes(tag))
+export const getDiaryByTag = async (tag: string) => {
+	const entries = await fetchDiaryEntries();
+	return entries
+		.filter((item) => item.data.tags?.includes(tag))
 		.sort(
-			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+			(a, b) => b.data.date.getTime() - a.data.date.getTime(),
 		);
 };
 
 // 获取所有标签
-export const getAllTags = () => {
+export const getAllTags = async () => {
+	const entries = await fetchDiaryEntries();
 	const tags = new Set<string>();
-	diaryData.forEach((item) => {
-		if (item.tags) {
-			item.tags.forEach((tag) => tags.add(tag));
-		}
+	entries.forEach((item) => {
+		item.data.tags?.forEach((tag) => tags.add(tag));
 	});
 	return Array.from(tags).sort();
 };
-
-export default diaryData;

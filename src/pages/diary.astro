@@ -11,8 +11,17 @@ if (!siteConfig.featurePages.diary) {
 }
 
 // 获取日记数据
-const moments = getDiaryList();
-const diaryStats = getDiaryStats();
+const diaryEntries = await getDiaryList();
+const diaryStats = await getDiaryStats();
+const moments = await Promise.all(
+	diaryEntries.map(async (entry) => {
+		const { Content } = await entry.render();
+		return {
+			entry,
+			Content,
+		};
+	}),
+);
 
 // 时间格式化函数
 function formatTime(dateString: string): string {
@@ -68,14 +77,16 @@ function formatTime(dateString: string): string {
 				<!-- 短文列表 -->
 				<div class="moments-timeline">
 					<div class="timeline-list space-y-4">
-					{moments.map(moment => (
+					{moments.map(({ entry, Content }) => (
 						<div class="moment-item card-base p-4 md:p-6 lg:p-8 hover:shadow-lg transition-all">
 								<div class="moment-content">
-									<p class="moment-text text-sm md:text-base lg:text-lg text-90 leading-relaxed mb-3 md:mb-4">{moment.content}</p>
+									<div class="moment-text prose prose-sm md:prose-base lg:prose-lg max-w-none text-90 leading-relaxed mb-3 md:mb-4">
+										<Content />
+									</div>
 									
-									{moment.images && moment.images.length > 0 && (
+									{entry.data.images && entry.data.images.length > 0 && (
 				<div class="moment-images grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4 mb-3 md:mb-4">
-					{moment.images.map((image, _index) => (
+					{entry.data.images.map((image, _index) => (
 					<div class="image-item relative rounded-md overflow-hidden aspect-square cursor-pointer hover:scale-105 transition-transform">
 						<img 
 							src={image} 
@@ -89,13 +100,39 @@ function formatTime(dateString: string): string {
 			)}
 								</div>
 								
+								{(entry.data.location || entry.data.mood || entry.data.tags?.length) && (
+									<div class="moment-meta flex flex-wrap gap-2 text-75 text-xs md:text-sm lg:text-base mb-3 md:mb-4">
+										{entry.data.location && (
+											<span class="meta-item inline-flex items-center gap-1 rounded-full border border-[var(--line-divider)] px-3 py-1 bg-[var(--card-bg-muted)]">
+												<span>📍</span>
+												<span>{entry.data.location}</span>
+											</span>
+										)}
+										{entry.data.mood && (
+											<span class="meta-item inline-flex items-center gap-1 rounded-full border border-[var(--line-divider)] px-3 py-1 bg-[var(--card-bg-muted)]">
+												<span>💌</span>
+												<span>{entry.data.mood}</span>
+											</span>
+										)}
+										{entry.data.tags && entry.data.tags.length > 0 && (
+											<span class="meta-tags inline-flex items-center gap-2 flex-wrap">
+												{entry.data.tags.map((tag) => (
+													<span class="tag-badge inline-flex items-center rounded-full bg-[var(--primary-bg-muted)] text-[var(--primary)] px-2 py-0.5 text-xs md:text-sm">
+														#{tag}
+													</span>
+												))}
+											</span>
+										)}
+									</div>
+								)}
+								
 								<hr class="moment-divider border-t border-[var(--line-divider)] my-3 md:my-4" />
 								
 								<div class="moment-footer flex justify-between items-center">
 									<div class="moment-time flex items-center gap-1.5 text-75 text-xs md:text-sm lg:text-base">
 										<i class="time-icon text-xs md:text-sm">🕐</i>
-										<time datetime={moment.date}>
-											{formatTime(moment.date)}
+										<time datetime={entry.data.date.toISOString()}>
+											{formatTime(entry.data.date.toISOString())}
 										</time>
 									</div>
 									
