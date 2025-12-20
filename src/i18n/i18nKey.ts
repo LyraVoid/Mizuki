@@ -72,6 +72,13 @@ enum I18nKey {
 	animeEmpty = "animeEmpty",
 	animeEmptyBangumi = "animeEmptyBangumi",
 	animeEmptyLocal = "animeEmptyLocal",
+	animeEmptyBilibili = "animeEmptyBilibili",
+	animeNeedConfigBangumi = "animeNeedConfigBangumi",
+	animeNeedConfigBilibili = "animeNeedConfigBilibili",
+	animeEpisodeUnitEpisode = "animeEpisodeUnitEpisode",
+	animeEpisodeUnitSeason = "animeEpisodeUnitSeason",
+	animeBilibiliOngoing = "animeBilibiliOngoing",
+	animeBilibiliTotalPrefix = "animeBilibiliTotalPrefix",
 
 	// 短文页面
 	diarySubtitle = "diarySubtitle",

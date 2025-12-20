@@ -74,8 +74,18 @@ export const en: Translation = {
 	[Key.animeEmpty]: "No anime data",
 	[Key.animeEmptyBangumi]:
 		"Please check Bangumi configuration or network connection",
+	[Key.animeEmptyBilibili]:
+		"Please check Bilibili configuration or network connection",
 	[Key.animeEmptyLocal]:
 		"Please add anime information in src/data/anime.ts file",
+	[Key.animeNeedConfigBangumi]:
+		"Please set your Bangumi user ID in src/config.ts",
+	[Key.animeNeedConfigBilibili]:
+		"Please set your Bilibili UID in src/config.ts",
+	[Key.animeEpisodeUnitEpisode]: "episodes",
+	[Key.animeEpisodeUnitSeason]: "episodes",
+	[Key.animeBilibiliOngoing]: "Ongoing",
+	[Key.animeBilibiliTotalPrefix]: "Total ",
 
 	// Diary Page
 	[Key.diarySubtitle]: "Share life anytime, anywhere",

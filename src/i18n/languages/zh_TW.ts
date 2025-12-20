@@ -77,7 +77,14 @@ export const zh_TW: Translation = {
 	[Key.animeStudio]: "製作",
 	[Key.animeEmpty]: "暫無追番數據",
 	[Key.animeEmptyBangumi]: "請檢查 Bangumi 配置或網絡連接",
+	[Key.animeEmptyBilibili]: "請檢查 Bilibili 配置或網絡連接",
 	[Key.animeEmptyLocal]: "請在 src/data/anime.ts 文件中添加番劇信息",
+	[Key.animeNeedConfigBangumi]: "請在 src/config.ts 中設置你的 Bangumi 用戶ID",
+	[Key.animeNeedConfigBilibili]: "請在 src/config.ts 中設置你的 B站 UID",
+	[Key.animeEpisodeUnitEpisode]: "話",
+	[Key.animeEpisodeUnitSeason]: "集",
+	[Key.animeBilibiliOngoing]: "連載中",
+	[Key.animeBilibiliTotalPrefix]: "全",
 
 	// 短文頁面
 	[Key.diarySubtitle]: "隨時隨地，分享生活",

@@ -78,8 +78,18 @@ export const ja: Translation = {
 	[Key.animeEmpty]: "アニメデータなし",
 	[Key.animeEmptyBangumi]:
 		"Bangumiの設定またはネットワーク接続を確認してください",
+	[Key.animeEmptyBilibili]:
+		"Bilibili の設定またはネットワーク接続を確認してください",
 	[Key.animeEmptyLocal]:
 		"src/data/anime.tsファイルにアニメ情報を追加してください",
+	[Key.animeNeedConfigBangumi]:
+		"src/config.ts で Bangumi ユーザーIDを設定してください",
+	[Key.animeNeedConfigBilibili]:
+		"src/config.ts で Bilibili UID を設定してください",
+	[Key.animeEpisodeUnitEpisode]: "話",
+	[Key.animeEpisodeUnitSeason]: "話",
+	[Key.animeBilibiliOngoing]: "連載中",
+	[Key.animeBilibiliTotalPrefix]: "全",
 
 	// 日記ページ
 	[Key.diarySubtitle]: "いつでもどこでも、生活を共有する",

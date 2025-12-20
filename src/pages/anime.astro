@@ -25,6 +25,12 @@ const BILIBILI_PAGE_SIZE = 30;
 
 // 获取番剧数据模式(不需要更改，请在主配置src/config.ts中修改)
 const ANIME_MODE = siteConfig.anime?.mode || "bangumi";
+const requiresBangumiConfig =
+	ANIME_MODE === "bangumi" && BANGUMI_USER_ID === "your-user-id";
+const requiresBilibiliConfig =
+	ANIME_MODE === "bilibili" && !BILIBILI_USER_ID;
+const needRemoteConfigNotice = ANIME_MODE !== "local" &&
+	(requiresBangumiConfig || requiresBilibiliConfig);
 
 // 获取单个条目相关人员信息
 async function fetchSubjectPersons(subjectId: number) {
@@ -189,12 +195,15 @@ function mapBilibiliItemToAnime(
 	} catch {}
 
 	const totalCount = item?.total_count;
-	const unit = item?.season_type === 1 ? "话" : "集";
+	const unit =
+		item?.season_type === 1
+			? i18n(I18nKey.animeEpisodeUnitEpisode)
+			: i18n(I18nKey.animeEpisodeUnitSeason);
 	const totalText =
 		totalCount === -1
-			? "未完结"
+			? i18n(I18nKey.animeBilibiliOngoing)
 			: typeof totalCount === "number"
-				? `全${totalCount}${unit}`
+				? `${i18n(I18nKey.animeBilibiliTotalPrefix)}${totalCount}${unit}`
 				: "";
 
 	const ratingScore = item?.rating?.score;
@@ -411,14 +420,16 @@ function getStatusInfo(status: string) {
       <!-- 动漫列表 -->
       <div class="mb-8">
         
-        {ANIME_MODE !== 'local' && BANGUMI_USER_ID === 'your-user-id' ? (
+        {needRemoteConfigNotice ? (
           <div class="text-center py-12">
             <div class="text-5xl mb-4">😢</div>
             <h3 class="text-xl font-medium text-black/80 dark:text-white/80 mb-2">
               {i18n(I18nKey.animeEmpty)}
             </h3>
             <p class="text-black/60 dark:text-white/60">
-              请在 src/config.ts 文件中设置你的 Bangumi 用户ID
+              {ANIME_MODE === 'bilibili'
+                ? i18n(I18nKey.animeNeedConfigBilibili)
+                : i18n(I18nKey.animeNeedConfigBangumi)}
             </p>
           </div>
         ) : animeList.length > 0 ? (
@@ -512,7 +523,11 @@ function getStatusInfo(status: string) {
               {i18n(I18nKey.animeEmpty)}
             </h3>
             <p class="text-black/60 dark:text-white/60">
-              {ANIME_MODE === 'local' ? i18n(I18nKey.animeEmptyLocal) : i18n(I18nKey.animeEmptyBangumi)}
+              {ANIME_MODE === 'local'
+                ? i18n(I18nKey.animeEmptyLocal)
+                : ANIME_MODE === 'bilibili'
+                  ? i18n(I18nKey.animeEmptyBilibili)
+                  : i18n(I18nKey.animeEmptyBangumi)}
             </p>
           </div>
         )}
