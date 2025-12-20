@@ -99,7 +99,7 @@ export const siteConfig: SiteConfig = {
 		enable: false,
 		enableMourningMode: true,
 		birthday: {
-			enable: true,
+			enable: false,
 			solarDate: "2025-01-01",
 			message:
 				"祝你{age}岁生日快乐！🎂🎉\n\n愿你永远保持好奇与热爱，✨\n像现在这样认真生活、认真快乐。💖\n今天可以多偷懒一点，把时间留给自己~ ☕️🍰",
