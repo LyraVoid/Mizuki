@@ -96,7 +96,7 @@ export const siteConfig: SiteConfig = {
 	},
 
 	festivalPopup: {
-		enable: true,
+		enable: false,
 		enableMourningMode: true,
 		birthday: {
 			enable: true,
