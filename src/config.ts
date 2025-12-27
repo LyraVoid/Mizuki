@@ -170,7 +170,8 @@ export const siteConfig: SiteConfig = {
 		depth: 2, // 目录深度，1-6，1 表示只显示 h1 标题，2 表示显示 h1 和 h2 标题，依此类推
 		useJapaneseBadge: true, // 使用日语假名标记（あいうえお...）代替数字，开启后会将 1、2、3... 改为 あ、い、う...
 	},
-	generateOgImages: true, // 启用生成OpenGraph图片功能,注意开启后要渲染很长时间，不建议本地调试的时候开启
+	showCoverInContent: true, // 在文章内容页显示文章封面
+	generateOgImages: false, // 启用生成OpenGraph图片功能,注意开启后要渲染很长时间，不建议本地调试的时候开启
 	favicon: [
 		// 留空以使用默认 favicon
 		{
@@ -414,7 +415,7 @@ export const commentConfig: CommentConfig = {
 	enable: true, // 启用评论功能。当设置为 false 时，评论组件将不会显示在文章区域。
 	twikoo: {
 		envId: "https://twikoo.vercel.app",
-		lang: "zh_CN", // 设置 Twikoo 评论系统语言为英文
+		lang: SITE_LANG, // 设置 Twikoo 评论系统语言为英文
 	},
 };
 
