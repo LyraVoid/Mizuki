@@ -3,7 +3,6 @@ import { onMount } from "svelte";
 
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import { getPostUrl } from "../utils/url-utils";
 
 export let tags: string[];
 export let categories: string[];
@@ -16,12 +15,14 @@ const uncategorized = params.get("uncategorized");
 
 interface Post {
 	id: string;
+	url?: string; // 预计算的文章 URL
 	data: {
 		title: string;
 		tags: string[];
 		category?: string;
 		published: Date;
-		permalink?: string; // 添加 permalink 字段
+		alias?: string;
+		permalink?: string; // 自定义固定链接
 	};
 }
 
@@ -111,7 +112,7 @@ onMount(async () => {
 
             {#each group.posts as post}
                 <a
-                        href={getPostUrl(post)}
+                        href={post.url || `/posts/${post.id}/`}
                         aria-label={post.data.title}
                         class="group btn-plain !block h-10 w-full rounded-lg hover:text-[initial]"
                 >

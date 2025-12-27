@@ -225,7 +225,7 @@ All commands are run from the project root:
 | `pnpm build`               | Build production site to `./dist/`       |
 | `pnpm preview`             | Preview build locally before deployment  |
 | `pnpm check`               | Run Astro error checking                 |
-| `pnpm format`              | Format code with Biome                   |
+| `pnpm format`              | Format code with Prettier                   |
 | `pnpm lint`                | Check and fix code issues                |
 | `pnpm new-post <filename>` | Create a new blog post                   |
 | `pnpm astro ...`           | Run Astro CLI commands                   |

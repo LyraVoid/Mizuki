@@ -169,11 +169,17 @@ function togglePlaylist() {
 }
 
 function toggleShuffle() {
-	isShuffled = !isShuffled;
+    isShuffled = !isShuffled;
+    if (isShuffled) {
+        isRepeating = 0;
+    }
 }
 
 function toggleRepeat() {
-	isRepeating = (isRepeating + 1) % 3;
+    isRepeating = (isRepeating + 1) % 3;
+    if (isRepeating !== 0) {
+        isShuffled = false;
+    }
 }
 
 function previousSong() {
@@ -230,7 +236,6 @@ function loadSong(song: typeof currentSong) {
 	currentSong = { ...song };
 	if (song.url) {
 		isLoading = true;
-		audio.pause();
 		audio.currentTime = 0;
 		currentTime = 0;
 		duration = song.duration ?? 0;
@@ -247,6 +252,9 @@ function loadSong(song: typeof currentSong) {
 	}
 }
 
+// 标记是否因浏览器策略导致自动播放失败
+let autoplayFailed = false;
+
 function handleLoadSuccess() {
 	isLoading = false;
 	if (audio?.duration && audio.duration > 1) {
@@ -254,6 +262,27 @@ function handleLoadSuccess() {
 		if (playlist[currentIndex]) playlist[currentIndex].duration = duration;
 		currentSong.duration = duration;
 	}
+
+    if (isPlaying) {
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch((error) => {
+                console.warn("自动播放被拦截，等待用户交互:", error);
+                autoplayFailed = true;
+            });
+        }
+    }
+}
+
+function handleUserInteraction() {
+    if (autoplayFailed && audio && isPlaying) {
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                autoplayFailed = false;
+            }).catch(() => {});
+        }
+    }
 }
 
 function handleLoadError(_event: Event) {
@@ -285,16 +314,56 @@ function setProgress(event: MouseEvent) {
 	currentTime = newTime;
 }
 
-function setVolume(event: MouseEvent) {
-	if (!audio || !volumeBar) return;
-	const rect = volumeBar.getBoundingClientRect();
-	const percent = Math.max(
-		0,
-		Math.min(1, (event.clientX - rect.left) / rect.width),
-	);
-	volume = percent;
-	audio.volume = volume;
-	isMuted = volume === 0;
+let isVolumeDragging = false;
+let isMouseDown = false;
+let volumeBarRect: DOMRect | null = null;
+let rafId: number | null = null;
+
+function startVolumeDrag(event: MouseEvent) {
+    if (!volumeBar) return;
+    
+    isMouseDown = true; 
+
+    volumeBarRect = volumeBar.getBoundingClientRect();
+    
+    updateVolumeLogic(event.clientX);
+}
+
+function handleVolumeMove(event: MouseEvent) {
+    if (!isMouseDown) return;
+    isVolumeDragging = true; 
+    if (rafId) return;
+
+    rafId = requestAnimationFrame(() => {
+        updateVolumeLogic(event.clientX);
+        rafId = null;
+    });
+}
+
+function stopVolumeDrag() {
+    isMouseDown = false;
+    isVolumeDragging = false;
+    volumeBarRect = null;
+    
+    if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+    }
+}
+
+function updateVolumeLogic(clientX: number) {
+    if (!audio || !volumeBar) return;
+
+    const rect = volumeBarRect || volumeBar.getBoundingClientRect();
+    
+    const percent = Math.max(
+        0,
+        Math.min(1, (clientX - rect.left) / rect.width),
+    );
+
+    volume = percent;
+    audio.volume = volume;
+    isMuted = volume === 0;
 }
 
 function toggleMute() {
@@ -327,7 +396,6 @@ function handleAudioEvents() {
 			audio.play().catch(() => {});
 		} else if (
 			isRepeating === 2 ||
-			currentIndex < playlist.length - 1 ||
 			isShuffled
 		) {
 			nextSong();
@@ -342,10 +410,17 @@ function handleAudioEvents() {
 	audio.addEventListener("waiting", () => {});
 }
 
+const interactionEvents = ['click', 'keydown', 'touchstart'];
+
 onMount(() => {
 	audio = new Audio();
 	audio.volume = volume;
 	handleAudioEvents();
+
+    interactionEvents.forEach(event => {
+        document.addEventListener(event, handleUserInteraction, { capture: true });
+    });
+
 	if (!musicPlayerConfig.enable) {
 		return;
 	}
@@ -363,12 +438,23 @@ onMount(() => {
 });
 
 onDestroy(() => {
-	if (audio) {
+    if (typeof document !== 'undefined') {
+        interactionEvents.forEach(event => {
+            document.removeEventListener(event, handleUserInteraction, { capture: true });
+        });
+    }
+    
+    if (audio) {
 		audio.pause();
 		audio.src = "";
 	}
 });
 </script>
+
+<svelte:window 
+    on:mousemove={handleVolumeMove} 
+    on:mouseup={stopVolumeDrag} 
+/>
 
 {#if musicPlayerConfig.enable}
 {#if showError}
@@ -499,8 +585,10 @@ onDestroy(() => {
                     <Icon icon="material-symbols:visibility-off" class="text-lg" />
                 </button>
                 <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
-                        on:click={toggleExpanded}>
-                    <Icon icon="material-symbols:expand-more" class="text-lg" />
+                        class:text-[var(--primary)]={showPlaylist}
+                        on:click={togglePlaylist}
+                        title="播放列表">
+                    <Icon icon="material-symbols:queue-music" class="text-lg" />
                 </button>
             </div>
         </div>
@@ -585,7 +673,7 @@ onDestroy(() => {
             </button>
             <div class="flex-1 h-2 bg-[var(--btn-regular-bg)] rounded-full cursor-pointer"
                  bind:this={volumeBar}
-                 on:click={setVolume}
+                 on:mousedown={startVolumeDrag}
                  on:keydown={(e) => {
                      if (e.key === 'Enter' || e.key === ' ') {
                          e.preventDefault();
@@ -598,13 +686,15 @@ onDestroy(() => {
                  aria-valuemin="0"
                  aria-valuemax="100"
                  aria-valuenow={volume * 100}>
-                <div class="h-full bg-[var(--primary)] rounded-full transition-all duration-100"
+                <div class="h-full bg-[var(--primary)] rounded-full transition-all"
+                     class:duration-100={!isVolumeDragging}
+                     class:duration-0={isVolumeDragging}
                      style="width: {volume * 100}%"></div>
             </div>
-            <button class="btn-plain w-8 h-8 rounded-lg"
-                    class:text-[var(--primary)]={showPlaylist}
-                    on:click={togglePlaylist}>
-                <Icon icon="material-symbols:queue-music" class="text-lg" />
+            <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
+                    on:click={toggleExpanded}
+                    title="收起播放器">
+                <Icon icon="material-symbols:expand-more" class="text-lg" />
             </button>
         </div>
     </div>

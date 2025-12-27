@@ -8,12 +8,13 @@ interface Props {
 	alt?: string;
 	position?: string;
 	basePath?: string;
+	loading?: "eager" | "lazy";
 }
 
 import { Image } from "astro:assets";
 import { url } from "../../utils/url-utils";
 
-const { id, src, alt, position = "center", basePath = "/" } = Astro.props;
+const { id, src, alt, position = "center", basePath = "/", loading = "lazy" } = Astro.props;
 const className = Astro.props.class;
 
 const isLocal = !(
@@ -50,6 +51,6 @@ const imageStyle = `object-position: ${position}`;
 ---
 <div id={id} class:list={[className, 'overflow-hidden relative']}>
     <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
-    {isLocal && img && <Image src={img} alt={alt || ""} class={imageClass} style={imageStyle}/>}
-    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle}/>}
+    {isLocal && img && <Image src={img} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading}/>}
+    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading}/>}
 </div>

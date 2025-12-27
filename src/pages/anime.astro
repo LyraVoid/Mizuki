@@ -11,11 +11,6 @@ if (!siteConfig.featurePages.anime) {
 	return Astro.redirect("/404/");
 }
 
-// 检查番剧页面是否启用
-if (!siteConfig.featurePages.anime) {
-	return Astro.redirect("/404/");
-}
-
 // 检查是否为双侧边栏模式
 const isBothSidebarMode = sidebarLayoutConfig.position === "both";
 

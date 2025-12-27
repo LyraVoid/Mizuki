@@ -9,21 +9,21 @@
   --breakpoint-mobile: 768px;
   --breakpoint-tablet: 1024px;
   --breakpoint-desktop: 1025px;
-  
+
   /* 间距变量 */
   --widget-gap-mobile: 0.75rem;
   --widget-gap-tablet: 1rem;
   --widget-gap-desktop: 1.25rem;
-  
+
   /* 动画变量 */
   --widget-animation-duration: 0.3s;
   --widget-animation-timing: ease-in-out;
-  
+
   /* 侧边栏宽度 */
   --sidebar-width-mobile: 100%;
   --sidebar-width-tablet: 280px;
   --sidebar-width-desktop: 320px;
-  
+
   /* 组件最小高度 */
   --widget-min-height: 60px;
   --widget-max-height-mobile: 200px;
@@ -208,18 +208,13 @@
 }
 
 .widget-loading::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   animation: shimmer 1.5s infinite;
 }
 
@@ -263,30 +258,25 @@
   .widget-container:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
-  
+
   .widget-container.widget-hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
-  
+
   .widget-error {
     border-color: #f87171;
     background-color: #450a0a;
     color: #fca5a5;
   }
-  
+
   .widget-empty {
     border-color: #4b5563;
     background-color: #111827;
     color: #9ca3af;
   }
-  
+
   .widget-loading::before {
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.1),
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   }
 }
 
@@ -295,7 +285,7 @@
   .widget-container {
     border: 2px solid currentColor;
   }
-  
+
   .widget-container:hover {
     border-width: 3px;
   }
@@ -310,12 +300,12 @@
     animation: none;
     transition: none;
   }
-  
+
   .widget-container {
     opacity: 1;
     transform: none;
   }
-  
+
   .widget-container:hover {
     transform: none;
   }
@@ -347,7 +337,7 @@
 }
 
 [data-debug="true"] .widget-container::before {
-  content: attr(data-widget-type) ' [' attr(data-widget-order) ']';
+  content: attr(data-widget-type) " [" attr(data-widget-order) "]";
   position: absolute;
   top: -1px;
   left: -1px;

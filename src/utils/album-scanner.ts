@@ -151,7 +151,9 @@ function processExternalPhotos(
 
 	externalPhotos.forEach((photo, index) => {
 		if (!photo.src) {
-			console.warn(`相册 ${albumId} 的第 ${index + 1} 张照片缺少 src 字段`);
+			console.warn(
+				`相册 ${albumId} 的第 ${index + 1} 张照片缺少 src 字段`,
+			);
 			return;
 		}
 

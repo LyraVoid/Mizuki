@@ -226,7 +226,8 @@ export const zh_CN: Translation = {
 	[Key.rssBenefit2]: "在一个地方管理多个网站的订阅",
 	[Key.rssBenefit3]: "避免错过重要更新和文章",
 	[Key.rssBenefit4]: "享受无广告的纯净阅读体验",
-	[Key.rssHowToUse]: "推荐使用 Feedly、Inoreader 或其他 RSS 阅读器来订阅本站。",
+	[Key.rssHowToUse]:
+		"推荐使用 Feedly、Inoreader 或其他 RSS 阅读器来订阅本站。",
 	[Key.rssCopied]: "RSS 链接已复制到剪贴板！",
 	[Key.rssCopyFailed]: "复制失败，请手动复制链接",
 

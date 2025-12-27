@@ -1,7 +1,13 @@
 ---
+/**
+ * 处理 permalink 的文章（包括全局 permalink 和自定义 permalink）
+ * 全局 permalink 启用时，所有文章链接在根目录下生成
+ * 例如：%post_id% => /1/, %year%-%postname% => /2024-my-post/
+ * 自定义 permalink 也在根目录下
+ * 例如：permalink: "custom-page" => /custom-page/
+ */
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
-// import path from "node:path";
 import Comment from "@components/comment/index.astro";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
@@ -10,83 +16,50 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
-import {
-	// getDir,
-	getFileDirFromPath,
-	getPostUrlBySlug,
-	removeFileExtension,
-} from "@utils/url-utils";
-import {
-	hasCustomPermalink,
-	initPostIdMap,
-} from "@utils/permalink-utils";
+import { getFileDirFromPath, getPostUrlBySlug } from "@utils/url-utils";
+import { initPostIdMap, hasCustomPermalink, generatePermalinkSlug } from "@utils/permalink-utils";
+import { permalinkConfig } from "@/config";
 import { Icon } from "astro-icon/components";
 import CryptoJS from "crypto-js";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { licenseConfig, permalinkConfig } from "src/config";
-import ImageWrapper from "../../components/misc/ImageWrapper.astro";
-import PostMetadata from "../../components/PostMeta.astro";
-import { profileConfig, siteConfig } from "../../config";
-import { formatDateToYYYYMMDD } from "../../utils/date-utils";
+import { licenseConfig } from "src/config";
+import ImageWrapper from "../components/misc/ImageWrapper.astro";
+import PostMetadata from "../components/PostMeta.astro";
+import { profileConfig, siteConfig } from "../config";
+import { formatDateToYYYYMMDD } from "../utils/date-utils";
 
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
 
-	// 初始化文章 ID 映射（用于 %post_id% 占位符）
+	// 初始化文章 ID 映射
 	initPostIdMap(blogEntries);
 
 	const paths: {
-		params: { slug: string };
+		params: { permalink: string };
 		props: { entry: CollectionEntry<"posts"> };
 	}[] = [];
 
 	for (const entry of blogEntries) {
-		// 将 id 转换为 slug（移除扩展名）以匹配路由参数
-		const defaultSlug = removeFileExtension(entry.id);
+		let permalink: string | null = null;
 
-		// 如果文章有自定义 permalink，不在 /posts/ 下创建路径
-		// 而是通过根目录的 [permalink].astro 处理
+		// 优先使用自定义 permalink
 		if (hasCustomPermalink(entry)) {
-			// 仍然需要在 /posts/ 下创建默认路径以便兼容旧链接
-			paths.push({
-				params: { slug: defaultSlug },
-				props: { entry },
-			});
-			continue;
+			permalink = entry.data.permalink!
+				.replace(/^\/+/, "")
+				.replace(/\/+$/, "");
+		}
+		// 其次使用全局 permalink（如果启用）
+		else if (permalinkConfig.enable) {
+			permalink = generatePermalinkSlug(entry);
 		}
 
-		// 如果全局 permalink 功能启用，不在 /posts/ 下创建路径
-		// 而是通过根目录的 [permalink].astro 处理
-		if (permalinkConfig.enable) {
-			// 仍然保留默认 slug 路径以便兼容旧链接
+		// 只处理有 permalink 的文章
+		if (permalink) {
 			paths.push({
-				params: { slug: defaultSlug },
+				params: { permalink },
 				props: { entry },
 			});
-		} else {
-			// 全局 permalink 功能未启用
-			// 为每篇文章创建默认的 slug 路径
-			paths.push({
-				params: { slug: defaultSlug },
-				props: { entry },
-			});
-
-			// 如果文章有 alias，也创建对应的路径
-			if (entry.data.alias) {
-				// 移除开头的斜杠和结尾的斜杠
-				// 同时移除可能的 "posts/" 前缀，避免重复
-				let alias = entry.data.alias
-					.replace(/^\/+/, "")
-					.replace(/\/+$/, "");
-				if (alias.startsWith("posts/")) {
-					alias = alias.replace(/^posts\//, "");
-				}
-				paths.push({
-					params: { slug: alias },
-					props: { entry },
-				});
-			}
 		}
 	}
 
@@ -103,11 +76,8 @@ let encryptedContent = "";
 let isEncrypted = entry.data.encrypted && entry.data.password;
 
 if (isEncrypted) {
-    // 添加一个固定的前缀用于解密验证
     const contentToEncrypt = "MIZUKI-VERIFY:" + entry.body;
-
-    // 直接使用 CryptoJS 默认的 AES 加密
-	encryptedContent = CryptoJS.AES.encrypt(
+    encryptedContent = CryptoJS.AES.encrypt(
         contentToEncrypt,
         String(entry.data.password)
     ).toString();
@@ -133,7 +103,6 @@ const jsonLd = {
 	inLanguage: entry.data.lang
 		? entry.data.lang.replace("_", "-")
 		: siteConfig.lang.replace("_", "-"),
-	// TODO include cover image here
 };
 ---
 
@@ -147,10 +116,9 @@ const jsonLd = {
     headings={headings}
 >
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    <!-- 引入右侧边栏布局管理器 -->
-  <script>
-    import('../../scripts/right-sidebar-layout.js');
-  </script>
+    <script>
+    import('../scripts/right-sidebar-layout.js');
+    </script>
     <div
         class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"
     >
@@ -225,13 +193,11 @@ const jsonLd = {
                     id={entry.id}
                 />
                 {
-                    (!entry.data.image|| (entry.data.image && !siteConfig.showCoverInContent)) && (
+                    (!entry.data.image || (entry.data.image && !siteConfig.showCoverInContent)) && (
                         <div class="mt-4 border-[var(--line-divider)] border-dashed border-b-[1px] mb-5" />
                     )
                 }
             </div>
-
-            <!-- always show cover as long as it has one -->
 
             {
                 entry.data.image && siteConfig.showCoverInContent && (

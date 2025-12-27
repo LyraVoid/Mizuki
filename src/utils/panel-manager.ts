@@ -21,9 +21,10 @@ class PanelManager {
 	private animateIn(panel: HTMLElement): Promise<void> {
 		return new Promise((resolve) => {
 			// 检查是否正在主题切换，如果是则跳过动画
-			const isThemeTransitioning = document.documentElement.classList.contains(
-				"is-theme-transitioning",
-			);
+			const isThemeTransitioning =
+				document.documentElement.classList.contains(
+					"is-theme-transitioning",
+				);
 
 			if (isThemeTransitioning) {
 				// 主题切换期间，直接显示面板，不设置pointer-events: none
@@ -62,9 +63,10 @@ class PanelManager {
 	private animateOut(panel: HTMLElement): Promise<void> {
 		return new Promise((resolve) => {
 			// 检查是否正在主题切换
-			const isThemeTransitioning = document.documentElement.classList.contains(
-				"is-theme-transitioning",
-			);
+			const isThemeTransitioning =
+				document.documentElement.classList.contains(
+					"is-theme-transitioning",
+				);
 
 			if (isThemeTransitioning) {
 				// 主题切换期间，直接关闭面板，不设置pointer-events: none
@@ -97,7 +99,10 @@ class PanelManager {
 	 * @param forceState 强制设置状态 (可选)
 	 * @returns 浮窗最终状态 (true: 打开, false: 关闭)
 	 */
-	async togglePanel(panelId: PanelId, forceState?: boolean): Promise<boolean> {
+	async togglePanel(
+		panelId: PanelId,
+		forceState?: boolean,
+	): Promise<boolean> {
 		const panel = document.getElementById(panelId);
 		if (!panel) {
 			console.warn(`Panel ${panelId} not found`);

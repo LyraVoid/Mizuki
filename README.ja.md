@@ -211,7 +211,7 @@ Mizukiは標準のGitHub Flavored Markdownを超える拡張機能をサポー�
 | `pnpm build`               | 本番サイトを`./dist/`にビルド              |
 | `pnpm preview`             | デプロイ前にビルドをローカルでプレビュー     |
 | `pnpm check`               | Astroエラーチェックを実行                  |
-| `pnpm format`              | Biomeでコードをフォーマット                |
+| `pnpm format`              | Prettierでコードをフォーマット                |
 | `pnpm lint`                | コードの問題をチェックして修正              |
 | `pnpm new-post <ファイル名>` | 新しいブログ投稿を作成                     |
 | `pnpm astro ...`           | Astro CLIコマンドを実行                   |

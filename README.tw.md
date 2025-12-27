@@ -217,7 +217,7 @@ Mizuki 支援超越標準 GitHub Flavored Markdown 的增強功能：
 | `pnpm build`               | 構建生產網站到 `./dist/`               |
 | `pnpm preview`             | 在部署前本地預覽構建                   |
 | `pnpm check`               | 運行 Astro 錯誤檢查                    |
-| `pnpm format`              | 使用 Biome 格式化程式碼                |
+| `pnpm format`              | 使用 Prettier 格式化程式碼                |
 | `pnpm lint`                | 檢查並修復程式碼問題                   |
 | `pnpm new-post <檔案名>`   | 創建新部落格文章                       |
 | `pnpm astro ...`           | 運行 Astro CLI 命令                    |

@@ -2,136 +2,146 @@
 
 /* 主要内容区域的过渡动画 - 参考yukina的侧滑效果 */
 .transition-main {
-    transition: 
-        opacity 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition:
+    opacity 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* 离开动画 - 内容向右上滑出并淡出 */
 .transition-leaving {
-    transition:
-        transform 300ms cubic-bezier(0.55, 0.055, 0.675, 0.19),
-        opacity 300ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  transition:
+    transform 300ms cubic-bezier(0.55, 0.055, 0.675, 0.19),
+    opacity 300ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }
 
 html.is-changing .transition-main {
-    transition: 
-        opacity 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-        transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition:
+    opacity 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 html.is-leaving .transition-main {
-    transition: 
-        opacity 300ms cubic-bezier(0.55, 0.055, 0.675, 0.19),
-        transform 300ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  transition:
+    opacity 300ms cubic-bezier(0.55, 0.055, 0.675, 0.19),
+    transform 300ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }
 
 /* 进入动画 - 从右下角轻微滑入，模仿yukina效果 */
 html.is-animating .transition-main {
-    opacity: 0;
-    transform: translateY(1.5rem) translateX(0.5rem);
+  opacity: 0;
+  transform: translateY(1.5rem) translateX(0.5rem);
 }
 
 /* 离开动画 - 向左上角滑出 */
 html.is-animating.is-leaving .transition-leaving {
-    transform: translateY(-1rem) translateX(-0.5rem);
-    opacity: 0;
+  transform: translateY(-1rem) translateX(-0.5rem);
+  opacity: 0;
 }
 
 /* Swup fade 动画 - 保持兼容性 */
 html.is-changing .transition-swup-fade {
-    transition: all 300ms ease-out;
+  transition: all 300ms ease-out;
 }
 
 html.is-animating .transition-swup-fade {
-    opacity: 0;
-    transform: translateY(1.5rem);
+  opacity: 0;
+  transform: translateY(1.5rem);
 }
 
 /* 增强的淡入动画 - 添加侧滑效果 */
 @keyframes fade-in-up {
-    from {
-        opacity: 0;
-        transform: translateY(1.5rem) translateX(0.5rem);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) translateX(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem) translateX(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
 }
 
 @keyframes fade-out-down {
-    from {
-        opacity: 1;
-        transform: translateY(0) translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(-1rem) translateX(-0.5rem);
-    }
+  from {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-1rem) translateX(-0.5rem);
+  }
 }
 
 /* 页面加载动画 - yukina风格 */
 .onload-animation {
-    opacity: 0;
-    animation: fade-in-up 300ms ease-out forwards;
+  opacity: 0;
+  animation: fade-in-up 300ms ease-out forwards;
 }
 
 .onload-animation-fade-in {
-    opacity: 0;
-    animation: fade-in 300ms ease-in forwards;
+  opacity: 0;
+  animation: fade-in 300ms ease-in forwards;
 }
 
 @keyframes fade-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* 渐进式动画延迟 */
-.onload-animation:nth-child(1) { animation-delay: 0ms; }
-.onload-animation:nth-child(2) { animation-delay: 50ms; }
-.onload-animation:nth-child(3) { animation-delay: 100ms; }
-.onload-animation:nth-child(4) { animation-delay: 150ms; }
-.onload-animation:nth-child(5) { animation-delay: 200ms; }
+.onload-animation:nth-child(1) {
+  animation-delay: 0ms;
+}
+.onload-animation:nth-child(2) {
+  animation-delay: 50ms;
+}
+.onload-animation:nth-child(3) {
+  animation-delay: 100ms;
+}
+.onload-animation:nth-child(4) {
+  animation-delay: 150ms;
+}
+.onload-animation:nth-child(5) {
+  animation-delay: 200ms;
+}
 
 /* 特殊元素的动画 */
 .transition-slide-in {
-    opacity: 0;
-    transform: translateY(20px) translateX(8px);
-    transition: all 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  transform: translateY(20px) translateX(8px);
+  transition: all 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .transition-slide-in.active {
-    opacity: 1;
-    transform: translateY(0) translateX(0);
+  opacity: 1;
+  transform: translateY(0) translateX(0);
 }
 
 /* 卡片动画 */
 .card-animation {
-    opacity: 0;
-    transform: translateY(30px) translateX(10px) scale(0.98);
-    transition: all 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  transform: translateY(30px) translateX(10px) scale(0.98);
+  transition: all 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .card-animation.visible {
-    opacity: 1;
-    transform: translateY(0) translateX(0) scale(1);
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
 }
 
 /* 导航动画 */
 .nav-animation {
-    opacity: 0;
-    transform: translateX(-20px);
-    transition: all 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .nav-animation.loaded {
-    opacity: 1;
-    transform: translateX(0);
+  opacity: 1;
+  transform: translateX(0);
 }
 
 /* 性能优化 */
@@ -140,54 +150,54 @@ html.is-animating .transition-swup-fade {
 .onload-animation,
 .transition-slide-in,
 .card-animation {
-    backface-visibility: hidden;
-    -webkit-font-smoothing: antialiased;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-    /* 移动端优化：减少动画幅度，避免闪烁 */
-    html.is-animating .transition-main {
-        transform: translateY(0.5rem) translateX(0.2rem);
-    }
-    
-    html.is-animating.is-leaving .transition-leaving {
-        transform: translateY(-0.4rem) translateX(-0.2rem);
-    }
-    
-    .transition-slide-in {
-        transform: translateY(8px) translateX(3px);
-    }
-    
-    .card-animation {
-        transform: translateY(10px) translateX(3px) scale(0.99);
-    }
-    
-    /* 移动端优化：添加硬件加速和性能优化 */
-    .transition-main,
-    .transition-leaving,
-    .onload-animation,
-    .transition-slide-in,
-    .card-animation {
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        -webkit-perspective: 1000;
-        perspective: 1000;
-    }
+  /* 移动端优化：减少动画幅度，避免闪烁 */
+  html.is-animating .transition-main {
+    transform: translateY(0.5rem) translateX(0.2rem);
+  }
+
+  html.is-animating.is-leaving .transition-leaving {
+    transform: translateY(-0.4rem) translateX(-0.2rem);
+  }
+
+  .transition-slide-in {
+    transform: translateY(8px) translateX(3px);
+  }
+
+  .card-animation {
+    transform: translateY(10px) translateX(3px) scale(0.99);
+  }
+
+  /* 移动端优化：添加硬件加速和性能优化 */
+  .transition-main,
+  .transition-leaving,
+  .onload-animation,
+  .transition-slide-in,
+  .card-animation {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
+  }
 }
 
 /* 减少动画的用户偏好设置 */
 @media (prefers-reduced-motion: reduce) {
-    .transition-main,
-    .transition-leaving,
-    .onload-animation,
-    .transition-slide-in,
-    .card-animation,
-    .nav-animation {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
+  .transition-main,
+  .transition-leaving,
+  .onload-animation,
+  .transition-slide-in,
+  .card-animation,
+  .nav-animation {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

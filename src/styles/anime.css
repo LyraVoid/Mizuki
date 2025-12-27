@@ -2,355 +2,377 @@
 
 /* 只在包含 anime-page 类的页面中应用这些样式 */
 .anime-page .anime-header {
-	background: var(--card-bg);
-	border: 1px solid var(--line-divider);
-	position: relative;
-	backdrop-filter: blur(10px);
+  background: var(--card-bg);
+  border: 1px solid var(--line-divider);
+  position: relative;
+  backdrop-filter: blur(10px);
 }
 
 /* 统计卡片样式 */
 .anime-page .stat-card {
-	@apply bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-xl p-4 flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:shadow-lg;
-	border: 1px solid var(--line-divider);
-	background: linear-gradient(135deg, var(--card-bg) 0%, var(--card-bg-transparent) 100%);
+  @apply bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-xl p-4 flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:shadow-lg;
+  border: 1px solid var(--line-divider);
+  background: linear-gradient(135deg, var(--card-bg) 0%, var(--card-bg-transparent) 100%);
 }
 
 .anime-page .stat-card:hover {
-	transform: translateY(-2px) scale(1.02);
-	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .anime-page .stat-icon {
-	@apply w-12 h-12 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-md;
-	background: linear-gradient(135deg, var(--primary), oklch(from var(--primary) calc(l + 0.1) c calc(h + 30)));
+  @apply w-12 h-12 rounded-lg flex items-center justify-center text-white text-xl font-bold shadow-md;
+  background: linear-gradient(135deg, var(--primary), oklch(from var(--primary) calc(l + 0.1) c calc(h + 30)));
 }
 
 .anime-page .stat-content {
-	@apply flex-1;
+  @apply flex-1;
 }
 
 .anime-page .stat-number {
-	@apply text-2xl font-bold text-black/90 dark:text-white/90;
-	background: linear-gradient(135deg, var(--primary), oklch(from var(--primary) calc(l + 0.1) c calc(h + 30)));
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
+  @apply text-2xl font-bold text-black/90 dark:text-white/90;
+  background: linear-gradient(135deg, var(--primary), oklch(from var(--primary) calc(l + 0.1) c calc(h + 30)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .anime-page .stat-label {
-	@apply text-sm text-black/75 dark:text-white/75;
+  @apply text-sm text-black/75 dark:text-white/75;
 }
 
 /* 动漫网格布局 */
 .anime-page .anime-grid {
-	@apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6;
+  @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6;
 }
 
 /* 动漫卡片样式 */
 .anime-page .anime-card {
-	@apply relative overflow-hidden transition-all duration-500 hover:scale-[1.02];
-	background: var(--card-bg);
-	border: 1px solid var(--line-divider);
-	border-radius: var(--radius-large);
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-	backdrop-filter: blur(10px);
+  @apply relative overflow-hidden transition-all duration-500 hover:scale-[1.02];
+  background: var(--card-bg);
+  border: 1px solid var(--line-divider);
+  border-radius: var(--radius-large);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
 }
 
 .anime-page .anime-card:hover {
-	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-	border-color: var(--primary);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary);
 }
 
 .anime-page .anime-card-inner {
-	@apply p-0;
+  @apply p-0;
 }
 
 /* 封面容器 */
 .anime-page .anime-cover-container {
-	@apply relative overflow-hidden;
-	aspect-ratio: 16/9;
-	background: linear-gradient(135deg, var(--primary)/10, var(--primary)/5);
+  @apply relative overflow-hidden;
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, var(--primary) / 10, var(--primary) / 5);
 }
 
 .anime-page .anime-cover-link {
-	@apply block w-full h-full relative overflow-hidden;
+  @apply block w-full h-full relative overflow-hidden;
 }
 
 .anime-page .anime-cover {
-	@apply w-full h-full object-cover transition-all duration-700;
-	filter: brightness(0.9) contrast(1.1);
+  @apply w-full h-full object-cover transition-all duration-700;
+  filter: brightness(0.9) contrast(1.1);
 }
 
 .anime-page .anime-cover-link:hover .anime-cover {
-	@apply scale-110;
+  @apply scale-110;
 }
 
 .anime-page .anime-cover-overlay {
-	@apply absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-all duration-500 flex items-center justify-center;
+  @apply absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-all duration-500 flex items-center justify-center;
 }
 
 .anime-page .anime-cover-link:hover .anime-cover-overlay {
-	@apply opacity-100;
+  @apply opacity-100;
 }
 
 .anime-page .play-button {
-	@apply w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white transform scale-75 transition-all duration-500;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  @apply w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white transform scale-75 transition-all duration-500;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .anime-page .anime-cover-link:hover .play-button {
-	@apply scale-100;
+  @apply scale-100;
 }
 
 .anime-page .play-button:hover {
-	background: var(--primary);
-	transform: scale(1.1);
+  background: var(--primary);
+  transform: scale(1.1);
 }
 
 /* 状态标签 */
 .anime-page .anime-status {
-	@apply absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 backdrop-blur-sm;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  @apply absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 backdrop-blur-sm;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .anime-page .status-icon {
-	@apply text-xs;
+  @apply text-xs;
 }
 
 .anime-page .status-text {
-	@apply font-medium;
+  @apply font-medium;
 }
 
 /* 评分标签 */
 .anime-page .anime-rating {
-	@apply absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded-full text-sm flex items-center gap-1;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  @apply absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded-full text-sm flex items-center gap-1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .anime-page .rating-text {
-	@apply font-medium;
+  @apply font-medium;
 }
 
 /* 内容区域 */
 .anime-page .anime-content {
-	@apply p-6;
-	background: linear-gradient(to bottom, transparent, var(--card-bg)/50);
+  @apply p-6;
+  background: linear-gradient(to bottom, transparent, var(--card-bg) / 50);
 }
 
 .anime-page .anime-title {
-	@apply text-xl font-bold text-black/90 dark:text-white/90 mb-2;
-	background: linear-gradient(135deg, var(--deep-text), var(--primary));
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
-	display: -webkit-box;
-	-webkit-line-clamp: 1;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
+  @apply text-xl font-bold text-black/90 dark:text-white/90 mb-2;
+  background: linear-gradient(135deg, var(--deep-text), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .anime-page .anime-description {
-	@apply text-black/75 dark:text-white/75 text-sm mb-4;
-	display: -webkit-box;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
+  @apply text-black/75 dark:text-white/75 text-sm mb-4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* 进度条 */
 .anime-page .anime-progress {
-	@apply mb-4;
+  @apply mb-4;
 }
 
 .anime-page .progress-info {
-	@apply flex justify-between items-center mb-2 text-sm;
+  @apply flex justify-between items-center mb-2 text-sm;
 }
 
 .anime-page .progress-text {
-	@apply text-black/75 dark:text-white/75 font-medium;
+  @apply text-black/75 dark:text-white/75 font-medium;
 }
 
 .anime-page .progress-percent {
-	@apply text-[var(--primary)] font-bold;
+  @apply text-[var(--primary)] font-bold;
 }
 
 .anime-page .progress-bar {
-	@apply w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden;
-	background: linear-gradient(90deg, var(--btn-regular-bg), var(--btn-regular-bg-hover));
+  @apply w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden;
+  background: linear-gradient(90deg, var(--btn-regular-bg), var(--btn-regular-bg-hover));
 }
 
 .anime-page .progress-fill {
-	@apply h-full transition-all duration-1000 ease-out;
-	background: linear-gradient(90deg, var(--primary), oklch(from var(--primary) calc(l + 0.1) c calc(h + 30)));
-	box-shadow: 0 0 10px var(--primary)/50;
+  @apply h-full transition-all duration-1000 ease-out;
+  background: linear-gradient(90deg, var(--primary), oklch(from var(--primary) calc(l + 0.1) c calc(h + 30)));
+  box-shadow: 0 0 10px var(--primary) / 50;
 }
 
 /* 元信息 */
 .anime-page .anime-meta {
-	@apply space-y-2 text-sm;
+  @apply space-y-2 text-sm;
 }
 
 .anime-page .meta-row {
-	@apply flex items-center justify-between;
+  @apply flex items-center justify-between;
 }
 
 .anime-page .meta-label {
-	@apply text-black/50 dark:text-white/50 font-medium;
+  @apply text-black/50 dark:text-white/50 font-medium;
 }
 
 .anime-page .meta-value {
-	@apply text-black/75 dark:text-white/75;
+  @apply text-black/75 dark:text-white/75;
 }
 
 .anime-page .genre-tags {
-	@apply flex gap-1 flex-wrap;
+  @apply flex gap-1 flex-wrap;
 }
 
 .anime-page .genre-tag {
-	@apply px-2 py-1 bg-[var(--btn-regular-bg)] text-black/75 dark:text-white/75 rounded-md text-xs font-medium transition-all duration-300 hover:bg-[var(--primary)] hover:text-white;
-	border: 1px solid var(--line-divider);
+  @apply px-2 py-1 bg-[var(--btn-regular-bg)] text-black/75 dark:text-white/75 rounded-md text-xs font-medium transition-all duration-300 hover:bg-[var(--primary)] hover:text-white;
+  border: 1px solid var(--line-divider);
 }
 
 .anime-page .genre-tag:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-	.anime-page .anime-grid {
-		@apply grid-cols-1;
-	}
-	
-	.anime-page .stat-card {
-		@apply p-3;
-	}
-	
-	.anime-page .stat-icon {
-		@apply w-10 h-10 text-lg;
-	}
-	
-	.anime-page .stat-number {
-		@apply text-xl;
-	}
-	
-	.anime-page .anime-content {
-		@apply p-4;
-	}
-	
-	.anime-page .anime-title {
-		@apply text-lg;
-	}
+  .anime-page .anime-grid {
+    @apply grid-cols-1;
+  }
+
+  .anime-page .stat-card {
+    @apply p-3;
+  }
+
+  .anime-page .stat-icon {
+    @apply w-10 h-10 text-lg;
+  }
+
+  .anime-page .stat-number {
+    @apply text-xl;
+  }
+
+  .anime-page .anime-content {
+    @apply p-4;
+  }
+
+  .anime-page .anime-title {
+    @apply text-lg;
+  }
 }
 
 /* 暗色主题优化 */
 :root.dark .anime-page .anime-card {
-	@apply shadow-lg shadow-black/20;
-	background: linear-gradient(135deg, var(--card-bg), var(--card-bg-transparent));
+  @apply shadow-lg shadow-black/20;
+  background: linear-gradient(135deg, var(--card-bg), var(--card-bg-transparent));
 }
 
 :root.dark .anime-page .anime-cover-overlay {
-	@apply bg-gradient-to-t from-black/80 via-black/20 to-transparent;
+  @apply bg-gradient-to-t from-black/80 via-black/20 to-transparent;
 }
 
 :root.dark .anime-page .stat-card {
-	background: linear-gradient(135deg, var(--card-bg)/80, var(--card-bg-transparent));
-	border-color: var(--line-divider);
+  background: linear-gradient(135deg, var(--card-bg) / 80, var(--card-bg-transparent));
+  border-color: var(--line-divider);
 }
 
 /* 动画效果 */
 .anime-page .anime-card {
-	animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-	opacity: 0;
-	transform: translateY(30px);
+  animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0;
+  transform: translateY(30px);
 }
 
-.anime-page .anime-card:nth-child(1) { animation-delay: 0.1s; }
-.anime-page .anime-card:nth-child(2) { animation-delay: 0.2s; }
-.anime-page .anime-card:nth-child(3) { animation-delay: 0.3s; }
-.anime-page .anime-card:nth-child(4) { animation-delay: 0.4s; }
-.anime-page .anime-card:nth-child(5) { animation-delay: 0.5s; }
-.anime-page .anime-card:nth-child(6) { animation-delay: 0.6s; }
+.anime-page .anime-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.anime-page .anime-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.anime-page .anime-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.anime-page .anime-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.anime-page .anime-card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.anime-page .anime-card:nth-child(6) {
+  animation-delay: 0.6s;
+}
 
 @keyframes fadeInUp {
-	from {
-		opacity: 0;
-		transform: translateY(30px) scale(0.95);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0) scale(1);
-	}
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* 统计卡片动画 */
 .anime-page .stat-card {
-	animation: slideInLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-	opacity: 0;
-	transform: translateX(-30px);
+  animation: slideInLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0;
+  transform: translateX(-30px);
 }
 
-.anime-page .stat-card:nth-child(1) { animation-delay: 0.1s; }
-.anime-page .stat-card:nth-child(2) { animation-delay: 0.2s; }
-.anime-page .stat-card:nth-child(3) { animation-delay: 0.3s; }
-.anime-page .stat-card:nth-child(4) { animation-delay: 0.4s; }
+.anime-page .stat-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.anime-page .stat-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.anime-page .stat-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.anime-page .stat-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
 
 @keyframes slideInLeft {
-	from {
-		opacity: 0;
-		transform: translateX(-30px);
-	}
-	to {
-		opacity: 1;
-		transform: translateX(0);
-	}
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* 特殊效果 */
 .anime-page .anime-card::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 1px;
-	background: linear-gradient(90deg, transparent, var(--primary), transparent);
-	opacity: 0;
-	transition: opacity 0.3s ease;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .anime-page .anime-card:hover::before {
-	opacity: 1;
+  opacity: 1;
 }
 
 /* 毛玻璃效果增强 */
 .anime-page .anime-header,
 .anime-page .stat-card,
 .anime-page .anime-card {
-	backdrop-filter: blur(20px) saturate(180%);
-	-webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 /* 渐变边框效果 */
 .anime-page .anime-card {
-	position: relative;
-	background: var(--card-bg);
+  position: relative;
+  background: var(--card-bg);
 }
 
 .anime-page .anime-card::after {
-	content: '';
-	position: absolute;
-	inset: 0;
-	padding: 1px;
-	background: linear-gradient(135deg, var(--primary)/20, transparent, var(--primary)/20);
-	border-radius: inherit;
-	mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-	mask-composite: xor;
-	-webkit-mask-composite: xor;
-	opacity: 0;
-	transition: opacity 0.3s ease;
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--primary) / 20, transparent, var(--primary) / 20);
+  border-radius: inherit;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask-composite: xor;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .anime-page .anime-card:hover::after {
-	opacity: 1;
+  opacity: 1;
 }

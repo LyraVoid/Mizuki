@@ -126,7 +126,7 @@ export default defineConfig({
 |--------|---------|------|
 | `build.yml` | Push/PR 到 main | CI 测试，检查构建 |
 | `deploy.yml` | Push 到 main | 构建并部署到 pages 分支 |
-| `biome.yml` | Push/PR | 代码格式和质量检查 |
+| `format.yml` | Push/PR | 代码格式和质量检查 |
 
 ---
 

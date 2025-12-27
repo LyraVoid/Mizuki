@@ -573,6 +573,7 @@ const transparentClass = shouldEnableTransparency
                                     class:list={["block lg:hidden object-cover h-full w-full transition-transform duration-500 ease-out"]}
                                     src={Array.isArray(bannerImages.mobile) ? bannerImages.mobile[index] : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')} 
                                     position={siteConfig.banner.position}
+                                    loading={index === 0 ? "eager" : "lazy"}
                                 />
                             )}
                             <!-- Desktop: use desktop-specific images -->
@@ -582,6 +583,7 @@ const transparentClass = shouldEnableTransparency
                                     class:list={["hidden lg:block object-cover h-full w-full transition-transform duration-500 ease-out"]}
                                     src={Array.isArray(bannerImages.desktop) ? bannerImages.desktop[index] : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')} 
                                     position={siteConfig.banner.position}
+                                    loading={index === 0 ? "eager" : "lazy"}
                                 />
                             )}
                         </li>
@@ -598,6 +600,7 @@ const transparentClass = shouldEnableTransparency
                     class:list={["block lg:hidden object-cover h-full w-full transition duration-700 opacity-100"]}
                     src={(Array.isArray(bannerImages.mobile) ? bannerImages.mobile[0] : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')) || (Array.isArray(bannerImages.desktop) ? bannerImages.desktop[0] : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')) || ''} 
                     position={siteConfig.banner.position}
+                    loading="eager"
                 />
                 <!-- Desktop: use desktop-specific image -->
                 <ImageWrapper 
@@ -606,6 +609,7 @@ const transparentClass = shouldEnableTransparency
                     class:list={["hidden lg:block object-cover h-full transition duration-700 opacity-100"]}
                     src={(Array.isArray(bannerImages.desktop) ? bannerImages.desktop[0] : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')) || (Array.isArray(bannerImages.mobile) ? bannerImages.mobile[0] : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')) || ''} 
                     position={siteConfig.banner.position}
+                    loading="eager"
                 />
             </div>
     )}

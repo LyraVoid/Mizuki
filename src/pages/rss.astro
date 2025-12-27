@@ -109,7 +109,7 @@ const recentPosts = posts.slice(0, 6);
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        const init = () => {
             const copyBtn = document.getElementById('copy-rss-btn');
             if (copyBtn) {
                 copyBtn.addEventListener('click', async function() {
@@ -135,6 +135,9 @@ const recentPosts = posts.slice(0, 6);
                     }
                 });
             }
-        });
+        }
+        init();
+        document.addEventListener("astro:after-swap", init);
     </script>
+
 </MainGridLayout>

@@ -203,7 +203,7 @@ class FloatingTOC {
                 if (id) {
                     const element = document.getElementById(id);
                     if (element) {
-                        const top = element.getBoundingClientRect().top + window.pageYOffset - 80;
+                        const top = element.getBoundingClientRect().top + window.scrollY - 80;
                         window.scrollTo({ top, behavior: 'smooth' });
                         this.close();
                     }

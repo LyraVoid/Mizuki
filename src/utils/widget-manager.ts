@@ -105,7 +105,10 @@ export class WidgetManager {
 	 * @param component 组件配置
 	 * @param index 组件在列表中的索引
 	 */
-	getComponentClass(component: WidgetComponentConfig, _index: number): string {
+	getComponentClass(
+		component: WidgetComponentConfig,
+		_index: number,
+	): string {
 		const classes: string[] = [];
 
 		// 添加基础类名
@@ -246,7 +249,10 @@ export class WidgetManager {
 	 * @param componentType 组件类型
 	 * @param newOrder 新的排序值
 	 */
-	reorderComponent(componentType: WidgetComponentType, newOrder: number): void {
+	reorderComponent(
+		componentType: WidgetComponentType,
+		newOrder: number,
+	): void {
 		const component = this.config.components.find(
 			(c) => c.type === componentType,
 		);

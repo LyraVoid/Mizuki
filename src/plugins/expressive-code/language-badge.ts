@@ -6,41 +6,43 @@ import { definePlugin } from "@expressive-code/core";
 export function pluginLanguageBadge() {
 	return definePlugin({
 		name: "Language Badge",
+		hooks: {
+			postprocessRenderedBlock: ({ codeBlock, renderData }) => {
+				// 把语言信息添加到 .frame 上
+				const language = codeBlock.language;
+				if (language && renderData.blockAst.properties) {
+					renderData.blockAst.properties["data-language"] = language;
+				}
+			},
+		},
 		baseStyles: ({}) => `
-      [data-language]::before {
-        position: absolute;
-        z-index: 2;
-        right: 0.5rem;
-        top: 0.5rem;
-        padding: 0.1rem 0.5rem;
-        content: attr(data-language);
-        font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-        font-size: 0.75rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: var(--btn-content);
-        background: var(--btn-regular-bg);
-        border-radius: 0.5rem;
-        pointer-events: none;
-        transition: opacity 0.3s;
-        opacity: 0;
-      }
-      
-      .frame:not(.has-title):not(.is-terminal) {
-        @media (hover: none) {
-          & [data-language]::before {
-            opacity: 1;
-            margin-right: 3rem;
-          }
-          & [data-language]:active::before {
-            opacity: 0;
-          }
+      .frame[data-language]:not(.has-title):not(.is-terminal) {
+        position: relative;
+        
+        &::after {
+          position: absolute;
+          z-index: 2;
+          right: 0.5rem;
+          top: 0.5rem;
+          padding: 0.1rem 0.5rem;
+          content: attr(data-language);
+          font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          font-size: 0.75rem;
+          font-weight: bold;
+          text-transform: uppercase;
+          color: var(--btn-content);
+          background: var(--btn-regular-bg);
+          border-radius: 0.5rem;
+          pointer-events: none;
+          transition: opacity 0.3s;
+          opacity: 0;
         }
+        
         @media (hover: hover) {
-          & [data-language]::before {
+          &::after {
             opacity: 1;
           }
-          &:hover [data-language]::before {
+          &:hover::after {
             opacity: 0;
           }
         }

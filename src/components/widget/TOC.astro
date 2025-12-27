@@ -173,7 +173,7 @@ class TableOfContents extends HTMLElement {
             if (targetElement) {
                 // 计算目标位置，与移动端保持一致
                 const navbarHeight = 80; // 导航栏高度
-                const targetTop = targetElement.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+                const targetTop = targetElement.getBoundingClientRect().top + window.scrollY - navbarHeight;
                 
                 // 使用与移动端相同的滚动方式
                 window.scrollTo({

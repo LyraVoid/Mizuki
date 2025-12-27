@@ -1,7 +1,7 @@
 {
 	"name": "mizuki",
 	"type": "module",
-	"version": "7.6.0",
+	"version": "7.6.5",
 	"scripts": {
 		"sync-content": "node scripts/sync-content.js",
 		"init-content": "node scripts/init-content-repo.js",
@@ -16,8 +16,8 @@
 		"astro": "astro",
 		"type-check": "tsc --noEmit --isolatedDeclarations",
 		"new-post": "node scripts/new-post.js",
-		"format": "biome format --write ./src",
-		"lint": "biome check --write ./src",
+		"format": "prettier --write ./src",
+		"lint": "eslint ./src --fix",
 		"preinstall": "npx only-allow pnpm",
 		"compress-fonts": "node scripts/compress-fonts.js",
 		"test-font-compression": "node scripts/test-font-compression.js"
@@ -37,15 +37,14 @@
 		"@iconify-json/fa6-brands": "^1.2.6",
 		"@iconify-json/fa6-regular": "^1.2.4",
 		"@iconify-json/fa6-solid": "^1.2.4",
-		"@iconify-json/material-symbols": "^1.2.48",
+		"@iconify-json/material-symbols": "^1.2.49",
 		"@iconify-json/simple-icons": "^1.2.61",
 		"@iconify/svelte": "^4.2.0",
 		"@swup/astro": "^1.7.0",
 		"@tailwindcss/typography": "^0.5.19",
-		"astro": "5.16.3",
+		"astro": "5.16.4",
 		"astro-expressive-code": "^0.41.3",
 		"astro-icon": "^1.1.5",
-		"bcryptjs": "^3.0.3",
 		"crypto-js": "^4.2.0",
 		"dayjs": "^1.11.19",
 		"hastscript": "^9.0.1",
@@ -71,14 +70,13 @@
 		"satori": "^0.18.3",
 		"sharp": "^0.34.5",
 		"stylus": "^0.64.0",
-		"svelte": "^5.45.3",
+		"svelte": "^5.45.5",
 		"tailwindcss": "^3.4.18",
 		"typescript": "^5.9.3",
 		"unist-util-visit": "^5.0.0"
 	},
 	"devDependencies": {
 		"@astrojs/ts-plugin": "^1.10.6",
-		"@biomejs/biome": "2.3.8",
 		"@iconify-json/mdi": "^1.2.3",
 		"@rollup/plugin-yaml": "^4.1.2",
 		"@types/hast": "^3.0.4",
@@ -87,7 +85,13 @@
 		"@types/sanitize-html": "^2.16.0",
 		"fontmin": "^1.1.1",
 		"postcss-import": "^16.1.1",
-		"postcss-nesting": "^13.0.2"
+		"postcss-nesting": "^13.0.2",
+		"prettier": "^3.7.4"
 	},
-	"packageManager": "pnpm@10.22.0"
+	"packageManager": "pnpm@10.22.0",
+	"pnpm": {
+    "overrides": {
+      "@emmetio/css-parser": "https://codeload.github.com/ramya-rao-a/css-parser/tar.gz/370c480ac103bd17c7bcfb34bf5d577dc40d3660"
+    }
+  }
 }

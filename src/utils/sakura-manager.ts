@@ -149,7 +149,8 @@ function getRandom(option: string, config: SakuraConfig): any {
 			break;
 		case "s":
 			ret =
-				config.size.min + Math.random() * (config.size.max - config.size.min);
+				config.size.min +
+				Math.random() * (config.size.max - config.size.min);
 			break;
 		case "r":
 			ret = Math.random() * 6;
@@ -169,7 +170,8 @@ function getRandom(option: string, config: SakuraConfig): any {
 		case "fny":
 			random =
 				config.speed.vertical.min +
-				Math.random() * (config.speed.vertical.max - config.speed.vertical.min);
+				Math.random() *
+					(config.speed.vertical.max - config.speed.vertical.min);
 			ret = (_x: number, y: number) => y + random;
 			break;
 		case "fnr":

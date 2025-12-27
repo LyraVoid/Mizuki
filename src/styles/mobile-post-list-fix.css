@@ -11,12 +11,12 @@
     opacity: 0;
     transition: opacity 0.1s ease-in-out;
   }
-  
+
   /* JavaScript初始化完成后显示内容 */
   #post-list-container.js-initialized {
     opacity: 1;
   }
-  
+
   /* 确保移动端使用紧凑的列表布局 */
   #post-list-container {
     display: flex !important;
@@ -27,7 +27,7 @@
     background: transparent !important;
     min-height: auto !important;
   }
-  
+
   /* 覆盖所有可能的网格模式 */
   #post-list-container.grid-mode {
     display: flex !important;
@@ -36,25 +36,25 @@
     grid-template-columns: none !important;
     grid-auto-rows: auto !important;
   }
-  
+
   /* 优化文章卡片间距 */
   #post-list-container .post-card-item {
     margin-bottom: 0 !important;
     margin-top: 0 !important;
     padding: 0.75rem 1rem !important;
   }
-  
+
   /* 优化卡片边框和圆角 */
   #post-list-container .card-base {
     margin-bottom: 0 !important;
     border-radius: var(--radius-large) !important;
   }
-  
+
   /* 移除不必要的分隔线 */
   #post-list-container > div.border-t-\[1px\] {
     display: none !important;
   }
-  
+
   /* 增加文章列表容器的底部间距，与分页按钮保持适当距离 */
   #post-list-container {
     margin-bottom: 2rem !important; /* 增加到2rem，约32px */
@@ -67,7 +67,6 @@
     transition: all 0.3s ease-in-out;
   }
 }
-
 
 /* 全局规则：确保所有 wallpaper-transparent 模式下的卡片都透明 */
 body.wallpaper-transparent .card-base,
@@ -120,7 +119,7 @@ body.wallpaper-transparent .card-base .card-base,
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
   }
-  
+
   :root.dark body.wallpaper-transparent .card-base,
   :root.dark body.wallpaper-transparent #post-list-container .card-base,
   :root.dark body.wallpaper-transparent .post-card-item .card-base {
@@ -141,7 +140,7 @@ body.wallpaper-transparent .card-base .card-base,
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
   }
-  
+
   :root.dark body.wallpaper-transparent .card-base,
   :root.dark body.wallpaper-transparent #post-list-container .card-base,
   :root.dark body.wallpaper-transparent .post-card-item .card-base {

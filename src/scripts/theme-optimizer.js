@@ -139,7 +139,11 @@ class ThemeOptimizer {
 			// 如果正在切换主题，确保样式立即应用
 			codeBlocks.forEach((block) => {
 				if (block.classList.contains("hide-during-transition")) {
-					block.style.setProperty("content-visibility", "hidden", "important");
+					block.style.setProperty(
+						"content-visibility",
+						"hidden",
+						"important",
+					);
 					block.style.setProperty("opacity", "0.99", "important");
 				}
 			});
@@ -161,10 +165,12 @@ class ThemeOptimizer {
 			const configCarrier = document.getElementById("config-carrier");
 			if (
 				configCarrier &&
-				configCarrier.dataset.hideCodeBlocksDuringTransition !== undefined
+				configCarrier.dataset.hideCodeBlocksDuringTransition !==
+					undefined
 			) {
 				this.hideCodeBlocksDuringTransition =
-					configCarrier.dataset.hideCodeBlocksDuringTransition === "true";
+					configCarrier.dataset.hideCodeBlocksDuringTransition ===
+					"true";
 			}
 		} catch (error) {
 			this.hideCodeBlocksDuringTransition = true; // 默认启用隐藏
@@ -227,7 +233,10 @@ class ThemeOptimizer {
 						this.visibleBlocks.add(entry.target);
 						// 如果有待处理的主题更新，立即应用
 						if (this.pendingThemeUpdate) {
-							this.applyThemeToBlock(entry.target, this.pendingThemeUpdate);
+							this.applyThemeToBlock(
+								entry.target,
+								this.pendingThemeUpdate,
+							);
 						}
 					} else {
 						this.visibleBlocks.delete(entry.target);
@@ -280,7 +289,8 @@ class ThemeOptimizer {
 					mutation.type === "attributes" &&
 					mutation.attributeName === "data-theme"
 				) {
-					const newTheme = document.documentElement.getAttribute("data-theme");
+					const newTheme =
+						document.documentElement.getAttribute("data-theme");
 					this.handleThemeChange(newTheme);
 					break;
 				}
@@ -344,8 +354,12 @@ class ThemeOptimizer {
 					mutation.target === document.documentElement
 				) {
 					const classList = document.documentElement.classList;
-					const isTransitioning = classList.contains("is-theme-transitioning");
-					const useViewTransition = classList.contains("use-view-transition");
+					const isTransitioning = classList.contains(
+						"is-theme-transitioning",
+					);
+					const useViewTransition = classList.contains(
+						"use-view-transition",
+					);
 
 					if (isTransitioning && !this.isOptimizing) {
 						this.optimizeThemeSwitch(useViewTransition);
@@ -502,9 +516,12 @@ class ThemeOptimizer {
 
 				// 恢复隐藏的元素
 				if (this.hiddenElements) {
-					this.hiddenElements.forEach(({ element, originalVisibility }) => {
-						element.style.contentVisibility = originalVisibility || "";
-					});
+					this.hiddenElements.forEach(
+						({ element, originalVisibility }) => {
+							element.style.contentVisibility =
+								originalVisibility || "";
+						},
+					);
 					this.hiddenElements = null;
 				}
 

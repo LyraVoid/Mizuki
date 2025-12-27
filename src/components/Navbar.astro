@@ -175,7 +175,7 @@ function initSemifullScrollDetection() {
     let ticking = false;
     
     function updateNavbarState() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
         const threshold = 50; // 滚动阈值，可以根据需要调整
         
         if (navbar && scrollTop > threshold) {

@@ -9,6 +9,7 @@ import sanitizeHtml from "sanitize-html";
 import { siteConfig } from "@/config";
 import { getSortedPosts } from "@/utils/content-utils";
 import { getPostUrl } from "@/utils/url-utils";
+import { initPostIdMap } from "@/utils/permalink-utils";
 
 const markdownParser = new MarkdownIt();
 
@@ -23,7 +24,13 @@ export async function GET(context: APIContext) {
 	}
 
 	// Use the same ordering as site listing (pinned first, then by published desc)
-	const posts = (await getSortedPosts()).filter((post) => !post.data.encrypted);
+	const posts = (await getSortedPosts()).filter(
+		(post) => !post.data.encrypted,
+	);
+
+	// 初始化文章 ID 映射（用于 permalink 功能）
+	initPostIdMap(posts);
+
 	const feed: RSSFeedItem[] = [];
 
 	for (const post of posts) {
@@ -51,7 +58,9 @@ export async function GET(context: APIContext) {
 					const prefixRemoved = src.slice(2);
 					// Check if this post is in a subdirectory (like bestimageapi/index.md)
 					const postPath = post.id; // This gives us the full path like "bestimageapi/index.md"
-					const postDir = postPath.includes("/") ? postPath.split("/")[0] : "";
+					const postDir = postPath.includes("/")
+						? postPath.split("/")[0]
+						: "";
 
 					if (postDir) {
 						// For posts in subdirectories
@@ -67,7 +76,9 @@ export async function GET(context: APIContext) {
 				} else {
 					// Handle direct filename (no ./ prefix) - assume it's in the same directory as the post
 					const postPath = post.id; // This gives us the full path like "bestimageapi/index.md"
-					const postDir = postPath.includes("/") ? postPath.split("/")[0] : "";
+					const postDir = postPath.includes("/")
+						? postPath.split("/")[0]
+						: "";
 
 					if (postDir) {
 						// For posts in subdirectories
@@ -83,7 +94,10 @@ export async function GET(context: APIContext) {
 				);
 				if (imageMod) {
 					const optimizedImg = await getImage({ src: imageMod });
-					img.setAttribute("src", new URL(optimizedImg.src, context.site).href);
+					img.setAttribute(
+						"src",
+						new URL(optimizedImg.src, context.site).href,
+					);
 				} else {
 					// Debug: log the failed import path
 					console.log(

@@ -17,8 +17,7 @@ const className = Astro.props.class;
 document.addEventListener("click", function (e: MouseEvent) {
     const target = e.target as Element | null;
     if (target && target.classList.contains("copy-btn")) {
-        const preEle = target.closest("pre");
-        const codeEle = preEle?.querySelector("code");
+        const codeEle = target.parentElement?.querySelector("code");
         
         // 精确的代码提取逻辑
         let code = '';

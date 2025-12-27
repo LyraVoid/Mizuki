@@ -1,161 +1,158 @@
 .expressive-code {
-    @apply relative;
-    
-    .frame {
-        @apply !shadow-none;
-    }
+  @apply relative;
 
-    .title {
-        font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
+  .frame {
+    @apply !shadow-none;
+  }
+
+  .title {
+    font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
 }
 
 /* 代码块折叠功能 - frame作为折叠按钮 */
 .expressive-code.collapsible .frame {
-    transition: background-color 0.2s ease;
-    position: relative;
+  transition: background-color 0.2s ease;
+  position: relative;
 }
 
 /* 允许代码文本被选择 */
 .expressive-code .frame pre,
 .expressive-code .frame code {
-    user-select: text;
+  user-select: text;
 }
 
 /* 代码行号不可选，但行内容可选 */
 .expressive-code code span.line::before {
-    user-select: none;
+  user-select: none;
 }
 
 .expressive-code.collapsible .frame:hover {
-    background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.03);
+  background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.03);
 }
 
 /* 折叠按钮 - 在右上角复制按钮旁边 */
 .expressive-code.collapsible .collapse-toggle-btn {
-    all: initial;
-    opacity: 0;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-    position: absolute;
-    active:scale-90;
-    height: 2rem;
-    width: 2rem;
-    top: 0.75rem;
-    right: 3.5rem;
-    font-size: 0.875rem;
-    border-radius: 0.5rem;
-    transition: all 0.15s ease-in-out;
-    z-index: 20;
-    cursor: pointer;
-    background: var(--btn-regular-bg);
-    color: var(--btn-content); /* 设置文字颜色，SVG 的 currentColor 会继承这个值 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  all: initial;
+  opacity: 0;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  active: scale-90;
+  height: 2rem;
+  width: 2rem;
+  top: 0.75rem;
+  right: 3.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease-in-out;
+  z-index: 20;
+  cursor: pointer;
+  background: var(--btn-regular-bg);
+  color: var(--btn-content); /* 设置文字颜色，SVG 的 currentColor 会继承这个值 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .expressive-code.collapsible .collapse-toggle-btn:hover {
-    background: var(--btn-regular-bg-hover);
+  background: var(--btn-regular-bg-hover);
 }
 
 .expressive-code.collapsible .collapse-toggle-btn:active {
-    transform: scale(0.9);
+  transform: scale(0.9);
 }
 
 .expressive-code.collapsible .frame:hover .collapse-toggle-btn {
-    opacity: 1;
+  opacity: 1;
 }
 
 /* 按钮图标 */
 .expressive-code.collapsible .collapse-toggle-btn svg {
-    width: 1rem;
-    height: 1rem;
-    fill: var(--btn-content);
-    transition: transform 0.3s ease;
-    pointer-events: none;
+  width: 1rem;
+  height: 1rem;
+  fill: var(--btn-content);
+  transition: transform 0.3s ease;
+  pointer-events: none;
 }
 
 .expressive-code.collapsed .collapse-toggle-btn svg {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
 /* 代码内容折叠状态 - 显示前3行 */
 .expressive-code.collapsed .frame pre {
-    max-height: 5rem;
-    overflow: hidden;
+  max-height: 5rem;
+  overflow: hidden;
 }
 
 .expressive-code.collapsed .frame pre::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2.5rem;
-    background: linear-gradient(to bottom, 
-        transparent 0%, 
-        var(--codeblock-bg) 90%
-    );
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2.5rem;
+  background: linear-gradient(to bottom, transparent 0%, var(--codeblock-bg) 90%);
+  pointer-events: none;
 }
 
 /* 展开状态 */
 .expressive-code.expanded .frame pre {
-    max-height: none;
+  max-height: none;
 }
 
 .expressive-code.collapsible .frame pre {
-    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
 @media (max-width: 768px) {
-    .expressive-code.collapsible .collapse-toggle-btn {
-        right: 3rem;
-    }
-    
-    .expressive-code.collapsed .frame pre {
-        max-height: 4.5rem;
-    }
-    
-    .expressive-code [data-language]::before {
-        display: none !important;
-    }
+  .expressive-code.collapsible .collapse-toggle-btn {
+    right: 3rem;
+  }
+
+  .expressive-code.collapsed .frame pre {
+    max-height: 4.5rem;
+  }
+
+  .expressive-code [data-language]::before {
+    display: none !important;
+  }
 }
 
 /* 主题适配 - 确保文字可读 */
 @media (prefers-color-scheme: light) {
-    /* 折叠按钮适配 */
-    .expressive-code.collapsible .collapse-toggle-btn {
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* 复制按钮适配 */
-    .custom-md .copy-btn {
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1) !important;
-    }
+  /* 折叠按钮适配 */
+  .expressive-code.collapsible .collapse-toggle-btn {
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* 复制按钮适配 */
+  .custom-md .copy-btn {
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1) !important;
+  }
 }
 
 /* 支持 Astro 的主题切换（非 dark 类时） */
 :root:not(.dark) .expressive-code.collapsible .collapse-toggle-btn {
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 :root:not(.dark) .custom-md .copy-btn {
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* 打印样式 - 自动展开所有代码块 */
 @media print {
-    .expressive-code.collapsed .frame pre {
-        max-height: none !important;
-    }
-    
-    .expressive-code.collapsed .frame pre::after {
-        display: none !important;
-    }
-    
-    .expressive-code.collapsible .collapse-toggle-btn {
-        display: none !important;
-    }
+  .expressive-code.collapsed .frame pre {
+    max-height: none !important;
+  }
+
+  .expressive-code.collapsed .frame pre::after {
+    display: none !important;
+  }
+
+  .expressive-code.collapsible .collapse-toggle-btn {
+    display: none !important;
+  }
 }

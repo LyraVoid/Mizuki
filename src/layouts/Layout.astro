@@ -1,8 +1,4 @@
 ---
-// 只加载最常用的字体权重，减少加载时间
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/700.css";
-
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import MusicPlayer from "@components/widget/MusicPlayer.svelte";
 import Pio from "@components/widget/Pio.svelte"; // 使用 Svelte 版本的 Pio 组件
@@ -27,8 +23,6 @@ import {
 import { defaultFavicons } from "../constants/icon";
 import type { Favicon } from "../types/config";
 import { pathsEqual, url } from "../utils/url-utils";
-
-import "katex/dist/katex.css";
 import "../styles/mobile-navbar.css";
 import "../styles/wallpaper-navbar-transparent.css";
 import "../styles/fancybox-custom.css";
@@ -59,6 +53,7 @@ const configHue = siteConfig.themeColor.hue;
 // 获取导航栏透明模式配置
 const navbarTransparentMode =
 	siteConfig.banner?.navbar?.transparentMode || "semi";
+
 // 判断是否应该显示顶部高光效果（只在full和semifull模式下显示）
 const shouldShowTopHighlight =
 	navbarTransparentMode === "full" || navbarTransparentMode === "semifull";
@@ -140,21 +135,18 @@ const umamiScripts = umamiConfig.scripts || ""; // 获取Umami scripts配置
 let bodyFontFamily = "";
 if (siteConfig.font) {
 	const fonts: string[] = [];
-
 	// 先添加 ASCII 字体（优先级最高）
 	if (siteConfig.font.asciiFont?.fontFamily) {
 		const asciiFont = siteConfig.font.asciiFont.fontFamily;
 		// 如果字体名包含空格，需要用引号包围
 		fonts.push(asciiFont.includes(" ") ? `"${asciiFont}"` : asciiFont);
 	}
-
 	// 再添加 CJK 字体（作为回退）
 	if (siteConfig.font.cjkFont?.fontFamily) {
 		const cjkFont = siteConfig.font.cjkFont.fontFamily;
 		// 如果字体名包含空格，需要用引号包围
 		fonts.push(cjkFont.includes(" ") ? `"${cjkFont}"` : cjkFont);
 	}
-
 	// 添加系统字体作为最终回退
 	fonts.push(
 		"system-ui",
@@ -169,15 +161,16 @@ if (siteConfig.font) {
 		"'Helvetica Neue'",
 		"sans-serif",
 	);
-
 	// 组合成完整的 font-family 字符串
 	bodyFontFamily = fonts.join(", ");
 }
 ---
 
-<!DOCTYPE html>
-<html lang={siteLang} class="bg-[var(--page-bg)] text-[14px] md:text-[16px]"
-	  data-overlayscrollbars-initialize
+<!doctype html>
+<html
+	lang={siteLang}
+	class="bg-[var(--page-bg)] text-[14px] md:text-[16px]"
+	data-overlayscrollbars-initialize
 >
 	<head>
 		<!-- 第三方分析脚本 - 延迟加载优化 -->
@@ -185,14 +178,38 @@ if (siteConfig.font) {
 			// 使用 requestIdleCallback 延迟加载第三方脚本
 			function loadAnalytics() {
 				// Google Tag Manager
-				(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-KRX3XGVH');
-				
+				(function (w, d, s, l, i) {
+					w[l] = w[l] || [];
+					w[l].push({
+						"gtm.start": new Date().getTime(),
+						event: "gtm.js",
+					});
+					var f = d.getElementsByTagName(s)[0],
+						j = d.createElement(s),
+						dl = l != "dataLayer" ? "&l=" + l : "";
+					j.async = true;
+					j.src =
+						"https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+					f.parentNode.insertBefore(j, f);
+				})(window, document, "script", "dataLayer", "GTM-KRX3XGVH");
+
 				// Clarity
-				(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "tjr3vkhj8i");
+				(function (c, l, a, r, i, t, y) {
+					c[a] =
+						c[a] ||
+						function () {
+							(c[a].q = c[a].q || []).push(arguments);
+						};
+					t = l.createElement(r);
+					t.async = 1;
+					t.src = "https://www.clarity.ms/tag/" + i;
+					y = l.getElementsByTagName(r)[0];
+					y.parentNode.insertBefore(t, y);
+				})(window, document, "clarity", "script", "tjr3vkhj8i");
 			}
-			
+
 			// 在浏览器空闲时加载，或者在 3 秒后加载
-			if ('requestIdleCallback' in window) {
+			if ("requestIdleCallback" in window) {
 				requestIdleCallback(loadAnalytics, { timeout: 3000 });
 			} else {
 				setTimeout(loadAnalytics, 3000);
@@ -200,18 +217,21 @@ if (siteConfig.font) {
 		</script>
 
 		<title>{pageTitle}</title>
-
 		<meta charset="UTF-8" />
-		<meta name="description" content={description || pageTitle}>
-		{siteConfig.keywords && siteConfig.keywords.length > 0 && (
-			<meta name="keywords" content={siteConfig.keywords.join(', ')} />
-		)}
-		<meta name="author" content={profileConfig.name}>
-
-		<meta property="og:site_name" content={siteConfig.title}>
-		<meta property="og:url" content={Astro.url}>
-		<meta property="og:title" content={pageTitle}>
-		<meta property="og:description" content={description || pageTitle}>
+		<meta name="description" content={description || pageTitle} />
+		{
+			siteConfig.keywords && siteConfig.keywords.length > 0 && (
+				<meta
+					name="keywords"
+					content={siteConfig.keywords.join(", ")}
+				/>
+			)
+		}
+		<meta name="author" content={profileConfig.name} />
+		<meta property="og:site_name" content={siteConfig.title} />
+		<meta property="og:url" content={Astro.url} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description || pageTitle} />
 		{ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
 		{
 			setOGTypeArticle ? (
@@ -220,947 +240,1080 @@ if (siteConfig.font) {
 				<meta property="og:type" content="website" />
 			)
 		}
-
-		<meta name="twitter:card" content="summary_large_image">
-		<meta property="twitter:url" content={Astro.url}>
-		<meta name="twitter:title" content={pageTitle}>
-		<meta name="twitter:description" content={description || pageTitle}>
-
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={Astro.url} />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={description || pageTitle} />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		{favicons.map(favicon => (
-			<link rel="icon"
-				  href={favicon.src.startsWith('/') ? url(favicon.src) : favicon.src}
-				  sizes={favicon.sizes}
-				  media={favicon.theme && `(prefers-color-scheme: ${favicon.theme})`}
-			/>
-		))}
+		{
+			favicons.map((favicon) => (
+				<link
+					rel="icon"
+					href={
+						favicon.src.startsWith("/")
+							? url(favicon.src)
+							: favicon.src
+					}
+					sizes={favicon.sizes}
+					media={
+						favicon.theme &&
+						`(prefers-color-scheme: ${favicon.theme})`
+					}
+				/>
+			))
+		}
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
+		<script
+			is:inline
+			define:vars={{
+				DEFAULT_THEME,
+				LIGHT_MODE,
+				DARK_MODE,
+				BANNER_HEIGHT_EXTEND,
+				PAGE_WIDTH,
+				configHue,
+			}}
+		>
 			// Load the theme from local storage
-			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
+			const theme = localStorage.getItem("theme") || DEFAULT_THEME;
 			let isDark = false;
 			switch (theme) {
 				case LIGHT_MODE:
-					document.documentElement.classList.remove('dark');
+					document.documentElement.classList.remove("dark");
 					isDark = false;
-					break
+					break;
 				case DARK_MODE:
-					document.documentElement.classList.add('dark');
+					document.documentElement.classList.add("dark");
 					isDark = true;
-					break
+					break;
 			}
-			
+
 			// Set the theme for Expressive Code based on current mode
 			const expressiveTheme = isDark ? "github-dark" : "github-light";
-			const currentTheme = document.documentElement.getAttribute("data-theme");
-			
+			const currentTheme =
+				document.documentElement.getAttribute("data-theme");
 			// 只在主题不同时才更新，避免触发不必要的重绘
 			if (currentTheme !== expressiveTheme) {
-				document.documentElement.setAttribute("data-theme", expressiveTheme);
+				document.documentElement.setAttribute(
+					"data-theme",
+					expressiveTheme,
+				);
 			}
 
 			// Load the hue from local storage
-			const hue = localStorage.getItem('hue') || configHue;
-			document.documentElement.style.setProperty('--hue', hue);
+			const hue = localStorage.getItem("hue") || configHue;
+			document.documentElement.style.setProperty("--hue", hue);
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
-			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
-			offset = offset - offset % 4;
-			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+			let offset = Math.floor(
+				window.innerHeight * (BANNER_HEIGHT_EXTEND / 100),
+			);
+			offset = offset - (offset % 4);
+			document.documentElement.style.setProperty(
+				"--banner-height-extend",
+				`${offset}px`,
+			);
 		</script>
-		<style define:vars={{
-			configHue,
-			'page-width': `${PAGE_WIDTH}rem`,
-		}}></style>  <!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
+		<style
+			define:vars={{
+				configHue,
+				"page-width": `${PAGE_WIDTH}rem`,
+			}}
+		></style>
 
-
-
-		<slot name="head"></slot>
+		<!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
+		<slot name="head" />
 
 		<!-- Pio 看板娘样式 - 仅在启用时加载 -->
-		{pioConfig.enable && <link rel="stylesheet" href="/pio/static/pio.css" />}
+		{
+			pioConfig.enable && (
+				<link rel="stylesheet" href="/pio/static/pio.css" />
+			)
+		}
 
-		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title={profileConfig.name}
+			href={`${Astro.site}rss.xml`}
+		/>
 
 		<!-- Umami Analytics -->
 		{umamiEnabled && umamiScripts && <Fragment set:html={umamiScripts} />}
-
-</head>
-	<body class=" min-h-screen " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
-		  style={bodyFontFamily ? `font-family: ${bodyFontFamily};` : ''}
-		  data-overlayscrollbars-initialize
+	</head>
+	<body
+		class="min-h-screen"
+		class:list={[
+			{ "lg:is-home": isHomePage, "enable-banner": enableBanner },
+		]}
+		style={bodyFontFamily ? `font-family: ${bodyFontFamily};` : ""}
+		data-overlayscrollbars-initialize
 	>
-		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRX3XGVH" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-		
+		<noscript
+			><iframe
+				src="https://www.googletagmanager.com/ns.html?id=GTM-KRX3XGVH"
+				height="0"
+				width="0"
+				style="display:none;visibility:hidden"></iframe></noscript
+		>
 		<!-- 页面顶部渐变高光效果 - 只在full和semifull模式下显示 -->
-		{shouldShowTopHighlight && <div class="top-gradient-highlight"></div>}
-		<ConfigCarrier></ConfigCarrier>
+		{shouldShowTopHighlight && <div class="top-gradient-highlight" />}
+
+		<ConfigCarrier />
 		<slot />
-		
+
 		<!-- Music Player - 仅在启用时加载 -->
-		{musicPlayerConfig.enable && <MusicPlayer client:load />}
-		
+		{musicPlayerConfig.enable && <MusicPlayer client:idle />}
+
 		<!-- Pio 看板娘组件 - 仅在启用时加载 -->
-		{pioConfig.enable && <Pio client:load />}
-		
+		{pioConfig.enable && <Pio client:idle />}
+
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
 	</body>
 </html>
 
-<style is:global define:vars={{
-	bannerOffset,
-	'banner-height-home': `${BANNER_HEIGHT_HOME}vh`,
-	'banner-height': `${BANNER_HEIGHT}vh`,
-}}>
-@tailwind components;
-@layer components {
-	.enable-banner.is-home #banner-wrapper {
-		@apply h-[var(--banner-height-home)] translate-y-[var(--banner-height-extend)]
-	}
-	.enable-banner #banner-wrapper {
-		@apply h-[var(--banner-height-home)]
-	}
-
-	.enable-banner.is-home #banner {
-		@apply h-[var(--banner-height-home)] translate-y-0
-	}
-	.enable-banner #banner {
-		@apply h-[var(--banner-height-home)] translate-y-[var(--bannerOffset)]
-	}
-	.enable-banner.is-home #main-grid {
-		@apply translate-y-[var(--banner-height-extend)];
-	}
-	.enable-banner #top-row {
-		@apply h-[calc(var(--banner-height-home)_-_4.5rem)] transition-all duration-300
-	}
-	.enable-banner.is-home #sidebar-sticky {
-		@apply top-[calc(1rem_-_var(--banner-height-extend))]
-	}
-	.navbar-hidden {
-		@apply opacity-0 -translate-y-16
-	}
-	
-	/* Water waves animation */
-	.waves > .parallax use {
-		animation: wave 25s cubic-bezier(0.5, 0.5, 0.45, 0.5) infinite;
-	}
-
-	@keyframes wave {
-		0% {
-			transform: translate3d(-90px, 0, 0);
+<style
+	is:global
+	define:vars={{
+		bannerOffset,
+		"banner-height-home": `${BANNER_HEIGHT_HOME}vh`,
+		"banner-height": `${BANNER_HEIGHT}vh`,
+	}}
+>
+	@tailwind components;
+	@layer components {
+		.enable-banner.is-home #banner-wrapper {
+			@apply h-[var(--banner-height-home)] translate-y-[var(--banner-height-extend)];
 		}
-		100% {
-			transform: translate3d(85px, 0, 0);
+		.enable-banner #banner-wrapper {
+			@apply h-[var(--banner-height-home)];
+		}
+		.enable-banner.is-home #banner {
+			@apply h-[var(--banner-height-home)] translate-y-0;
+		}
+		.enable-banner #banner {
+			@apply h-[var(--banner-height-home)] translate-y-[var(--bannerOffset)];
+		}
+		.enable-banner.is-home #main-grid {
+			@apply translate-y-[var(--banner-height-extend)];
+		}
+		.enable-banner #top-row {
+			@apply h-[calc(var(--banner-height-home)_-_4.5rem)] transition-all duration-300;
+		}
+		.enable-banner.is-home #sidebar-sticky {
+			@apply top-[calc(1rem_-_var(--banner-height-extend))];
+		}
+		.navbar-hidden {
+			@apply opacity-0 -translate-y-16;
+		}
+
+		/* Water waves animation */
+		.waves > .parallax use {
+			animation: wave 25s cubic-bezier(0.5, 0.5, 0.45, 0.5) infinite;
+		}
+		@keyframes wave {
+			0% {
+				transform: translate3d(-90px, 0, 0);
+			}
+			100% {
+				transform: translate3d(85px, 0, 0);
+			}
 		}
 	}
-}
 </style>
 
 <script>
-// import { animationManager } from '../utils/animation-utils';
-import 'overlayscrollbars/overlayscrollbars.css';
-// import {
-// 	OverlayScrollbars,
-// 	// ScrollbarsHidingPlugin,
-// 	// SizeObserverPlugin,
-// 	// ClickScrollPlugin
-// } from 'overlayscrollbars';
-// import {getHue, getStoredTheme, setHue, setTheme} from "../utils/setting-utils";
-import {pathsEqual, url} from "../utils/url-utils";
-import {
-	// BANNER_HEIGHT,
-	// BANNER_HEIGHT_HOME,
-	// BANNER_HEIGHT_EXTEND,
-	// MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
-	DARK_MODE,
-	DEFAULT_THEME
-} from "../constants/constants";
+	// import { animationManager } from '../utils/animation-utils';
+	import "overlayscrollbars/overlayscrollbars.css";
+	// import {
+	//  OverlayScrollbars,
+	//  // ScrollbarsHidingPlugin,
+	//  // SizeObserverPlugin,
+	//  // ClickScrollPlugin
+	// } from 'overlayscrollbars';
+	// import {getHue, getStoredTheme, setHue, setTheme} from "../utils/setting-utils";
+	import { pathsEqual, url } from "../utils/url-utils";
+	import {
+		// BANNER_HEIGHT,
+		// BANNER_HEIGHT_HOME,
+		// BANNER_HEIGHT_EXTEND,
+		// MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
+		DARK_MODE,
+		DEFAULT_THEME,
+	} from "../constants/constants";
 
-const BANNER_HEIGHT = 35;
-const BANNER_HEIGHT_EXTEND = 30;
-const BANNER_HEIGHT_HOME = BANNER_HEIGHT + BANNER_HEIGHT_EXTEND;
-// const MAIN_PANEL_OVERLAPS_BANNER_HEIGHT = 3.5;
-import { siteConfig } from '../config';
-import { widgetConfigs } from "../config";
-import { initSakura } from "../utils/sakura-manager";
+	const BANNER_HEIGHT = 35;
+	const BANNER_HEIGHT_EXTEND = 30;
+	const BANNER_HEIGHT_HOME = BANNER_HEIGHT + BANNER_HEIGHT_EXTEND;
 
-// const setTimeout = window.setTimeout;
-// @ts-ignore
-const setTimeout = (callback: any, delay: any) => window.setTimeout(callback, delay);
+	// const MAIN_PANEL_OVERLAPS_BANNER_HEIGHT = 3.5;
+	import { siteConfig } from "../config";
+	import { widgetConfigs } from "../config";
+	import { initSakura } from "../utils/sakura-manager";
 
-/* Preload fonts */
-// (async function() {
-// 	try {
-// 		await Promise.all([
-// 			document.fonts.load("400 1em Roboto"),
-// 			document.fonts.load("700 1em Roboto"),
-// 		]);
-// 		document.body.classList.remove("hidden");
-// 	} catch (error) {
-// 		console.log("Failed to load fonts:", error);
-// 	}
-// })();
+	// const setTimeout = window.setTimeout;
+	// @ts-ignore
+	const setTimeout = (callback: any, delay: any) =>
+		window.setTimeout(callback, delay);
 
-/* TODO This is a temporary solution for style flicker issue when the transition is activated */
-/* issue link: https://github.com/withastro/astro/issues/8711, the solution get from here too */
-/* update: fixed in Astro 3.2.4 */
-/*
+	/* Preload fonts */
+	// (async function() {
+	//  try {
+	//      await Promise.all([
+	//          document.fonts.load("400 1em Roboto"),
+	//          document.fonts.load("700 1em Roboto"),
+	//      ]);
+	//      document.body.classList.remove("hidden");
+	//  } catch (error) {
+	//      console.log("Failed to load fonts:", error);
+	//  }
+	// })();
+
+	/* TODO This is a temporary solution for style flicker issue when the transition is activated */
+	/* issue link: https://github.com/withastro/astro/issues/8711, the solution get from here too */
+	/* update: fixed in Astro 3.2.4 */
+	/*
 function disableAnimation() {
-	const css = document.createElement('style')
-	css.appendChild(
-		document.createTextNode(
-			`*{
+    const css = document.createElement('style')
+    css.appendChild(
+        document.createTextNode(
+            `*{
               -webkit-transition:none!important;
               -moz-transition:none!important;
               -o-transition:none!important;
               -ms-transition:none!important;
               transition:none!important
               }`
-		)
-	)
-	document.head.appendChild(css)
+        )
+    )
+    document.head.appendChild(css)
 
-	return () => {
-		// Force restyle
-		;(() => window.getComputedStyle(document.body))()
-
-		// Wait for next tick before removing
-		setTimeout(() => {
-			document.head.removeChild(css)
-		}, 1)
-	}
+    return () => {
+        // Force restyle
+        ;(() => window.getComputedStyle(document.body))()
+        // Wait for next tick before removing
+        setTimeout(() => {
+            document.head.removeChild(css)
+        }, 1)
+    }
 }
 */
 
-const bannerEnabled = !!document.getElementById('banner-wrapper')
+	const bannerEnabled = !!document.getElementById("banner-wrapper");
 
-// 导入面板管理器
-async function initializePanelManager() {
-	try {
-		// @ts-ignore
-		const { panelManager } = await import('../utils/panel-manager.js');
-		
-		function setClickOutsideToClose(panel: string, ignores: string[]) {
-			document.addEventListener("click", async event => {
-				// @ts-ignore
-				// let _panelDom = document.getElementById(panel);
-				let tDom = event.target;
-				if (!(tDom instanceof Node)) return;		// Ensure the event target is an HTML Node
-				for (let ig of ignores) {
-					let ie = document.getElementById(ig)
-					if (ie == tDom || (ie?.contains(tDom))) {
-						return;
+	// 导入面板管理器
+	async function initializePanelManager() {
+		try {
+			// @ts-ignore
+			const { panelManager } = await import("../utils/panel-manager.js");
+
+			function setClickOutsideToClose(panel: string, ignores: string[]) {
+				document.addEventListener("click", async (event) => {
+					// @ts-ignore
+					// let _panelDom = document.getElementById(panel);
+					let tDom = event.target;
+					if (!(tDom instanceof Node)) return; // Ensure the event target is an HTML Node
+					for (let ig of ignores) {
+						let ie = document.getElementById(ig);
+						if (ie == tDom || ie?.contains(tDom)) {
+							return;
+						}
 					}
-				}
-				await panelManager.closePanel(panel as any);
+					await panelManager.closePanel(panel as any);
+				});
+			}
+
+			setClickOutsideToClose("display-setting", [
+				"display-setting",
+				"display-settings-switch",
+			]);
+			setClickOutsideToClose("nav-menu-panel", [
+				"nav-menu-panel",
+				"nav-menu-switch",
+			]);
+			setClickOutsideToClose("search-panel", [
+				"search-panel",
+				"search-bar",
+				"search-switch",
+			]);
+			setClickOutsideToClose("mobile-toc-panel", [
+				"mobile-toc-panel",
+				"mobile-toc-switch",
+			]);
+			setClickOutsideToClose("wallpaper-mode-panel", [
+				"wallpaper-mode-panel",
+				"wallpaper-mode-switch",
+			]);
+
+			return panelManager;
+		} catch (error) {
+			console.error("Failed to initialize panel manager:", error);
+			return null;
+		}
+	}
+
+	initializePanelManager();
+
+	// function _loadTheme() {
+	//  const theme = getStoredTheme()
+	//  setTheme(theme)
+	// }
+
+	// function _loadHue() {
+	//  setHue(getHue())
+	// }
+
+	function initCustomScrollbar() {
+		// 完全禁用OverlayScrollbars的body初始化，避免导致页面重新加载
+		// 只处理katex元素的滚动条
+		const katexElements = document.querySelectorAll(
+			".katex-display:not([data-scrollbar-initialized])",
+		) as NodeListOf<HTMLElement>;
+
+		katexElements.forEach((element) => {
+			if (!element.parentNode) return;
+
+			const container = document.createElement("div");
+			container.className = "katex-display-container";
+			element.parentNode.insertBefore(container, element);
+			container.appendChild(element);
+
+			// 使用简单的CSS滚动条而不是OverlayScrollbars
+			container.style.cssText = `
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0,0,0,0.3) transparent;
+        `;
+
+			// 为webkit浏览器添加自定义滚动条样式
+			const style = document.createElement("style");
+			style.textContent = `
+            .katex-display-container::-webkit-scrollbar {
+                height: 6px;
+            }
+            .katex-display-container::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .katex-display-container::-webkit-scrollbar-thumb {
+                background: rgba(0,0,0,0.3);
+                border-radius: 3px;
+            }
+            .katex-display-container::-webkit-scrollbar-thumb:hover {
+                background: rgba(0,0,0,0.5);
+            }
+        `;
+
+			if (!document.head.querySelector("style[data-katex-scrollbar]")) {
+				style.setAttribute("data-katex-scrollbar", "true");
+				document.head.appendChild(style);
+			}
+
+			element.setAttribute("data-scrollbar-initialized", "true");
+		});
+	}
+
+	function showBanner() {
+		// 使用requestAnimationFrame优化DOM操作
+		requestAnimationFrame(() => {
+			// Handle single image banner (desktop)
+			const banner = document.getElementById("banner");
+			if (banner) {
+				banner.classList.remove("opacity-0", "scale-105");
+			}
+
+			// Handle mobile single image banner - 使用与电脑端相同的逻辑
+			const mobileBanner = document.querySelector(
+				'.block.lg\\:hidden[alt="Mobile banner image of the blog"]',
+			);
+			if (mobileBanner && !document.getElementById("banner-carousel")) {
+				// 移动端使用与电脑端相同的初始化逻辑
+				mobileBanner.classList.remove("opacity-0", "scale-105");
+				mobileBanner.classList.add("opacity-100");
+			}
+
+			// Handle carousel banner - 立即初始化，移除延迟
+			const carousel = document.getElementById("banner-carousel");
+			if (carousel) {
+				// 立即初始化轮播，移除延迟以改善流畅性
+				initCarousel();
+			}
+		});
+	}
+
+	function initCarousel() {
+		const carouselItems = document.querySelectorAll(".carousel-item");
+		// 根据屏幕尺寸过滤有效的轮播项
+		const isMobile = window.innerWidth < 1024; // lg breakpoint
+		const validItems = Array.from(carouselItems).filter((item) => {
+			if (isMobile) {
+				// 移动端：只显示有mobile图片的项目
+				return item.querySelector(".block.lg\\:hidden");
+			} else {
+				// 桌面端：只显示有desktop图片的项目
+				return item.querySelector(".hidden.lg\\:block");
+			}
+		});
+
+		// Check if carousel is disabled but we have multiple images - show random image
+		if (validItems.length > 1 && !siteConfig.banner.carousel?.enable) {
+			// Hide all images first
+			carouselItems.forEach((item, _index) => {
+				item.classList.add("opacity-0", "scale-110");
+				item.classList.remove("opacity-100", "scale-100");
 			});
+
+			// Show random valid image
+			const randomIndex = Math.floor(Math.random() * validItems.length);
+			const randomItem = validItems[randomIndex];
+			randomItem.classList.add("opacity-100", "scale-100");
+			randomItem.classList.remove("opacity-0", "scale-110");
+			return;
 		}
-		setClickOutsideToClose("display-setting", ["display-setting", "display-settings-switch"])
-		setClickOutsideToClose("nav-menu-panel", ["nav-menu-panel", "nav-menu-switch"])
-		setClickOutsideToClose("search-panel", ["search-panel", "search-bar", "search-switch"])
-		setClickOutsideToClose("mobile-toc-panel", ["mobile-toc-panel", "mobile-toc-switch"])
-		setClickOutsideToClose("wallpaper-mode-panel", ["wallpaper-mode-panel", "wallpaper-mode-switch"])
-		
-		return panelManager;
-	} catch (error) {
-		console.error('Failed to initialize panel manager:', error);
-		return null;
-	}
-}
 
-initializePanelManager();
+		if (validItems.length > 1 && siteConfig.banner.carousel?.enable) {
+			let currentIndex = 0;
+			const interval = siteConfig.banner.carousel?.interval || 6;
+			let carouselInterval: any;
+			let isPaused = false;
 
+			// 移动端触摸手势支持
+			let startX = 0;
+			let startY = 0;
+			let isSwiping = false;
 
-// function _loadTheme() {
-// 	const theme = getStoredTheme()
-// 	setTheme(theme)
-// }
+			const carousel = document.getElementById("banner-carousel");
 
-// function _loadHue() {
-// 	setHue(getHue())
-// }
+			// 切换图片的函数 - 基于有效项目
+			function switchToSlide(index: number) {
+				// 隐藏当前图片
+				const currentItem = validItems[currentIndex];
+				currentItem.classList.remove("opacity-100", "scale-100");
+				currentItem.classList.add("opacity-0", "scale-110");
 
-function initCustomScrollbar() {
-	// 完全禁用OverlayScrollbars的body初始化，避免导致页面重新加载
-	// 只处理katex元素的滚动条
-	const katexElements = document.querySelectorAll('.katex-display:not([data-scrollbar-initialized])') as NodeListOf<HTMLElement>;
-	katexElements.forEach(element => {
-		if (!element.parentNode) return;
+				// 更新索引
+				currentIndex = index;
 
-		const container = document.createElement('div');
-		container.className = 'katex-display-container';
-		element.parentNode.insertBefore(container, element);
-		container.appendChild(element);
-
-		// 使用简单的CSS滚动条而不是OverlayScrollbars
-		container.style.cssText = `
-			overflow-x: auto;
-			scrollbar-width: thin;
-			scrollbar-color: rgba(0,0,0,0.3) transparent;
-		`;
-		
-		// 为webkit浏览器添加自定义滚动条样式
-		const style = document.createElement('style');
-		style.textContent = `
-			.katex-display-container::-webkit-scrollbar {
-				height: 6px;
+				// 显示新图片
+				const nextItem = validItems[currentIndex];
+				nextItem.classList.add("opacity-100", "scale-100");
+				nextItem.classList.remove("opacity-0", "scale-110");
 			}
-			.katex-display-container::-webkit-scrollbar-track {
-				background: transparent;
+
+			// 初始化：隐藏所有图片，只显示第一张有效图片
+			carouselItems.forEach((item) => {
+				item.classList.add("opacity-0", "scale-110");
+				item.classList.remove("opacity-100", "scale-100");
+			});
+
+			// 显示第一张有效图片
+			if (validItems.length > 0) {
+				validItems[0].classList.add("opacity-100", "scale-100");
+				validItems[0].classList.remove("opacity-0", "scale-110");
 			}
-			.katex-display-container::-webkit-scrollbar-thumb {
-				background: rgba(0,0,0,0.3);
-				border-radius: 3px;
+
+			// 移动端触摸事件
+			if (carousel && "ontouchstart" in window) {
+				carousel.addEventListener(
+					"touchstart",
+					(e) => {
+						startX = e.touches[0].clientX;
+						startY = e.touches[0].clientY;
+						isSwiping = false;
+						isPaused = true;
+						clearInterval(carouselInterval);
+					},
+					{ passive: true },
+				);
+
+				carousel.addEventListener(
+					"touchmove",
+					(e) => {
+						if (!startX || !startY) return;
+
+						const diffX = Math.abs(e.touches[0].clientX - startX);
+						const diffY = Math.abs(e.touches[0].clientY - startY);
+
+						// 判断是否为水平滑动
+						if (diffX > diffY && diffX > 30) {
+							isSwiping = true;
+							e.preventDefault();
+						}
+					},
+					{ passive: false },
+				);
+
+				carousel.addEventListener(
+					"touchend",
+					(e) => {
+						if (!startX || !startY || !isSwiping) {
+							isPaused = false;
+							startCarousel();
+							return;
+						}
+
+						const endX = e.changedTouches[0].clientX;
+						const diffX = startX - endX;
+
+						// 滑动距离超过50px才切换
+						if (Math.abs(diffX) > 50) {
+							if (diffX > 0) {
+								// 向左滑动，显示下一张
+								const nextIndex =
+									(currentIndex + 1) % validItems.length;
+								switchToSlide(nextIndex);
+							} else {
+								// 向右滑动，显示上一张
+								const prevIndex =
+									(currentIndex - 1 + validItems.length) %
+									validItems.length;
+								switchToSlide(prevIndex);
+							}
+						}
+
+						startX = 0;
+						startY = 0;
+						isSwiping = false;
+						isPaused = false;
+						// 重新开始自动轮播
+						startCarousel();
+					},
+					{ passive: true },
+				);
 			}
-			.katex-display-container::-webkit-scrollbar-thumb:hover {
-				background: rgba(0,0,0,0.5);
-			}
-		`;
-		if (!document.head.querySelector('style[data-katex-scrollbar]')) {
-			style.setAttribute('data-katex-scrollbar', 'true');
-			document.head.appendChild(style);
-		}
 
-		element.setAttribute('data-scrollbar-initialized', 'true');
-	});
-}
-
-function showBanner() {
-	// 使用requestAnimationFrame优化DOM操作
-	requestAnimationFrame(() => {
-		// Handle single image banner (desktop)
-		const banner = document.getElementById('banner');
-		if (banner) {
-			banner.classList.remove('opacity-0', 'scale-105');
-		}
-
-		// Handle mobile single image banner - 使用与电脑端相同的逻辑
-		const mobileBanner = document.querySelector('.block.lg\\:hidden[alt="Mobile banner image of the blog"]');
-		if (mobileBanner && !document.getElementById('banner-carousel')) {
-			// 移动端使用与电脑端相同的初始化逻辑
-			mobileBanner.classList.remove('opacity-0', 'scale-105');
-			mobileBanner.classList.add('opacity-100');
-		}
-
-		// Handle carousel banner - 立即初始化，移除延迟
-		const carousel = document.getElementById('banner-carousel');
-		if (carousel) {
-			// 立即初始化轮播，移除延迟以改善流畅性
-			initCarousel();
-		}
-	});
-}
-
-function initCarousel() {
-	const carouselItems = document.querySelectorAll('.carousel-item');
-	
-	// 根据屏幕尺寸过滤有效的轮播项
-	const isMobile = window.innerWidth < 1024; // lg breakpoint
-	const validItems = Array.from(carouselItems).filter(item => {
-		if (isMobile) {
-			// 移动端：只显示有mobile图片的项目
-			return item.querySelector('.block.lg\\:hidden');
-		} else {
-			// 桌面端：只显示有desktop图片的项目
-			return item.querySelector('.hidden.lg\\:block');
-		}
-	});
-	
-	// Check if carousel is disabled but we have multiple images - show random image
-	if (validItems.length > 1 && !siteConfig.banner.carousel?.enable) {
-		// Hide all images first
-		carouselItems.forEach((item, _index) => {
-			item.classList.add('opacity-0', 'scale-110');
-			item.classList.remove('opacity-100', 'scale-100');
-		});
-		
-		// Show random valid image
-		const randomIndex = Math.floor(Math.random() * validItems.length);
-		const randomItem = validItems[randomIndex];
-		
-		randomItem.classList.add('opacity-100', 'scale-100');
-		randomItem.classList.remove('opacity-0', 'scale-110');
-		return;
-	}
-	
-	if (validItems.length > 1 && siteConfig.banner.carousel?.enable) {
-		let currentIndex = 0;
-		const interval = siteConfig.banner.carousel?.interval || 6;
-		let carouselInterval: any;
-		let isPaused = false;
-
-		// 移动端触摸手势支持
-		let startX = 0;
-		let startY = 0;
-		let isSwiping = false;
-		const carousel = document.getElementById('banner-carousel');
-
-		// 切换图片的函数 - 基于有效项目
-		function switchToSlide(index: number) {
-			// 隐藏当前图片
-			const currentItem = validItems[currentIndex];
-			currentItem.classList.remove('opacity-100', 'scale-100');
-			currentItem.classList.add('opacity-0', 'scale-110');
-
-			// 更新索引
-			currentIndex = index;
-			
-			// 显示新图片
-			const nextItem = validItems[currentIndex];
-			nextItem.classList.add('opacity-100', 'scale-100');
-			nextItem.classList.remove('opacity-0', 'scale-110');
-		}
-
-		// 初始化：隐藏所有图片，只显示第一张有效图片
-		carouselItems.forEach((item) => {
-			item.classList.add('opacity-0', 'scale-110');
-			item.classList.remove('opacity-100', 'scale-100');
-		});
-		
-		// 显示第一张有效图片
-		if (validItems.length > 0) {
-			validItems[0].classList.add('opacity-100', 'scale-100');
-			validItems[0].classList.remove('opacity-0', 'scale-110');
-		}
-
-		// 移动端触摸事件
-		if (carousel && 'ontouchstart' in window) {
-			carousel.addEventListener('touchstart', (e) => {
-				startX = e.touches[0].clientX;
-				startY = e.touches[0].clientY;
-				isSwiping = false;
-				isPaused = true;
+			// 开始轮播的函数
+			function startCarousel() {
 				clearInterval(carouselInterval);
-			}, { passive: true });
+				carouselInterval = setInterval(() => {
+					if (!isPaused) {
+						const nextIndex =
+							(currentIndex + 1) % validItems.length;
+						switchToSlide(nextIndex);
+					}
+				}, interval * 1000);
+			}
 
-			carousel.addEventListener('touchmove', (e) => {
-				if (!startX || !startY) return;
-				
-				const diffX = Math.abs(e.touches[0].clientX - startX);
-				const diffY = Math.abs(e.touches[0].clientY - startY);
-				
-				// 判断是否为水平滑动
-				if (diffX > diffY && diffX > 30) {
-					isSwiping = true;
-					e.preventDefault();
-				}
-			}, { passive: false });
-
-			carousel.addEventListener('touchend', (e) => {
-				if (!startX || !startY || !isSwiping) {
+			// 鼠标悬停暂停（桌面端）
+			if (carousel) {
+				carousel.addEventListener("mouseenter", () => {
+					isPaused = true;
+					clearInterval(carouselInterval);
+				});
+				carousel.addEventListener("mouseleave", () => {
 					isPaused = false;
 					startCarousel();
-					return;
-				}
-				
-				const endX = e.changedTouches[0].clientX;
-				const diffX = startX - endX;
-				
-				// 滑动距离超过50px才切换
-				if (Math.abs(diffX) > 50) {
-					if (diffX > 0) {
-					// 向左滑动，显示下一张
-					const nextIndex = (currentIndex + 1) % validItems.length;
-					switchToSlide(nextIndex);
-				} else {
-					// 向右滑动，显示上一张
-					const prevIndex = (currentIndex - 1 + validItems.length) % validItems.length;
-					switchToSlide(prevIndex);
-				}
-				}
-				
-				startX = 0;
-				startY = 0;
-				isSwiping = false;
-				isPaused = false;
-				
-				// 重新开始自动轮播
-				startCarousel();
-			}, { passive: true });
+				});
+			}
+
+			// 开始自动轮播
+			startCarousel();
 		}
-
-		// 开始轮播的函数
-		function startCarousel() {
-			clearInterval(carouselInterval);
-			carouselInterval = setInterval(() => {
-				if (!isPaused) {
-					const nextIndex = (currentIndex + 1) % validItems.length;
-					switchToSlide(nextIndex);
-				}
-			}, interval * 1000);
-		}
-
-		// 鼠标悬停暂停（桌面端）
-		if (carousel) {
-			carousel.addEventListener('mouseenter', () => {
-				isPaused = true;
-				clearInterval(carouselInterval);
-			});
-
-			carousel.addEventListener('mouseleave', () => {
-				isPaused = false;
-				startCarousel();
-			});
-		}
-
-		// 开始自动轮播
-		startCarousel();
 	}
-}
 
-function setupSakura() {
-	const sakuraConfig = (widgetConfigs as any)?.sakura;
-	if (!sakuraConfig || !sakuraConfig.enable) return;
-	if ((window as any).sakuraInitialized) return;
-	initSakura(sakuraConfig);
-	(window as any).sakuraInitialized = true;
-}
+	function setupSakura() {
+		const sakuraConfig = (widgetConfigs as any)?.sakura;
+		if (!sakuraConfig || !sakuraConfig.enable) return;
+		if ((window as any).sakuraInitialized) return;
+		initSakura(sakuraConfig);
+		(window as any).sakuraInitialized = true;
+	}
 
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', setupSakura);
-} else {
-	setupSakura();
-}
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", setupSakura);
+	} else {
+		setupSakura();
+	}
 
-const setup = () => {
-	// TODO: temp solution to change the height of the banner
-/*
-	window.swup.hooks.on('animation:out:start', () => {
-		const path = window.location.pathname
-		const body = document.querySelector('body')
-		if (path[path.length - 1] === '/' && !body.classList.contains('is-home')) {
-			body.classList.add('is-home')
-		} else if (path[path.length - 1] !== '/' && body.classList.contains('is-home')) {
-			body.classList.remove('is-home')
-		}
-	})
-*/
-	window.swup.hooks.on('link:click', () => {
-		// Remove the delay for the first time page load
-		document.documentElement.style.setProperty('--content-delay', '0ms')
+	let fancyboxSelectors: string[] = [];
+	let Fancybox: any;
 
-		// 简化navbar处理逻辑
-		if (bannerEnabled) {
-			const navbar = document.getElementById('navbar-wrapper')
-			if (navbar && document.body.classList.contains('lg:is-home')) {
-				const threshold = window.innerHeight * (BANNER_HEIGHT / 100) - 88
-				if (document.documentElement.scrollTop >= threshold) {
-					navbar.classList.add('navbar-hidden')
-				}
-			}
+	// 数学公式按需加载
+	function checkKatex() {
+		if (document.querySelector(".katex")) {
+			import("katex/dist/katex.css");
 		}
-	})
-	window.swup.hooks.on('content:replace', () => {
-		// 只处理新的katex元素的滚动条，使用原生CSS滚动条
-		initCustomScrollbar();
-		
-		// 检查当前页面是否为文章页面（有TOC元素）
-		const tocWrapper = document.getElementById('toc-wrapper');
-		const isArticlePage = tocWrapper !== null;
-		
-		// 只在文章页面重新初始化 TOC 组件
-		if (isArticlePage) {
-			const tocElement = document.querySelector('table-of-contents');
-			if (tocElement && typeof (tocElement as any).init === 'function') {
-				setTimeout(() => {
-					(tocElement as any).init();
-				}, 100);
-			}
-			
-			// 重新初始化移动端 TOC 组件
-			if (typeof (window as any).mobileTOCInit === 'function') {
-				setTimeout(() => {
-					(window as any).mobileTOCInit();
-				}, 100);
-			}
-		}
-		
-		
-		
-		// 重新初始化semifull模式的滚动检测
-		const navbar = document.getElementById('navbar')
-		if (navbar) {
-			const transparentMode = navbar.getAttribute('data-transparent-mode')
-			
-			if (transparentMode === 'semifull') {
-				// 重新调用初始化函数来重新绑定滚动事件
-				if (typeof (window as any).initSemifullScrollDetection === 'function') {
-					(window as any).initSemifullScrollDetection()
-				}
-			}
-		}
-	})
-	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
-		// change banner height immediately when a link is clicked
-		const bodyElement = document.querySelector('body')
-		const isHomePage = pathsEqual(visit.to.url, url('/'))
-		
-		if (isHomePage) {
-			bodyElement!.classList.add('lg:is-home');
-		} else {
-			bodyElement!.classList.remove('lg:is-home');
+	}
+
+	// 图片灯箱按需加载
+	async function initFancybox() {
+		const albumImagesSelector =
+			".custom-md img, #post-cover img, .moment-images img";
+		const albumLinksSelector = ".moment-images a[data-fancybox]";
+		const singleFancyboxSelector = "[data-fancybox]:not(.moment-images a)";
+
+		const hasImages =
+			document.querySelector(albumImagesSelector) ||
+			document.querySelector(albumLinksSelector) ||
+			document.querySelector(singleFancyboxSelector);
+
+		if (!hasImages) return;
+
+		if (!Fancybox) {
+			const mod = await import("@fancyapps/ui");
+			Fancybox = mod.Fancybox;
+			await import("@fancyapps/ui/dist/fancybox/fancybox.css");
 		}
 
-		// Control banner text visibility based on page
-		const bannerTextOverlay = document.querySelector('.banner-text-overlay')
-		if (bannerTextOverlay) {
-			if (isHomePage) {
-				bannerTextOverlay.classList.remove('hidden')
-			} else {
-				bannerTextOverlay.classList.add('hidden')
-			}
+		if (fancyboxSelectors.length > 0) {
+			return; // 已经初始化，直接返回
 		}
 
-		// Control navbar transparency based on page
-		const navbar = document.getElementById('navbar')
-		if (navbar) {
-			navbar.setAttribute('data-is-home', isHomePage.toString())
-			
-			// 重新初始化semifull模式的滚动检测
-			const transparentMode = navbar.getAttribute('data-transparent-mode')
-			if (transparentMode === 'semifull') {
-				// 重新调用初始化函数来重新绑定滚动事件
-				if (typeof window.initSemifullScrollDetection === 'function') {
-					window.initSemifullScrollDetection()
-				}
-			}
-		}
+		const commonConfig = {
+			Thumbs: { autoStart: true, showOnStart: "yes" },
+			Toolbar: {
+				display: {
+					left: ["infobar"],
+					middle: [
+						"zoomIn",
+						"zoomOut",
+						"toggle1to1",
+						"rotateCCW",
+						"rotateCW",
+						"flipX",
+						"flipY",
+					],
+					right: ["slideshow", "thumbs", "close"],
+				},
+			},
+			animated: true,
+			dragToClose: true,
+			keyboard: {
+				Escape: "close",
+				Delete: "close",
+				Backspace: "close",
+				PageUp: "next",
+				PageDown: "prev",
+				ArrowUp: "next",
+				ArrowDown: "prev",
+				ArrowRight: "next",
+				ArrowLeft: "prev",
+			},
+			fitToView: true,
+			preload: 3,
+			infinite: true,
+			Panzoom: { maxScale: 3, minScale: 1 },
+			caption: false,
+		};
 
-		// Control mobile banner visibility based on page with improved staging animation
-		const bannerWrapper = document.getElementById('banner-wrapper')
-		const mainContentWrapper = document.querySelector('.absolute.w-full.z-30')
-		
-		if (bannerWrapper && mainContentWrapper) {
-			if (isHomePage) {
-				// 首页：延迟移除隐藏类，让banner和内容优雅地出现
-				setTimeout(() => {
-					bannerWrapper.classList.remove('mobile-hide-banner')
-				}, 100)
-				setTimeout(() => {
-					mainContentWrapper.classList.remove('mobile-main-no-banner')
-				}, 150)
-			} else {
-				// 非首页：分阶段隐藏，先隐藏banner，再移动内容
-				bannerWrapper.classList.add('mobile-hide-banner')
-				// 延迟移动内容，让banner先完全消失
-				setTimeout(() => {
-					mainContentWrapper.classList.add('mobile-main-no-banner')
-				}, 100)
-			}
-		}
-
-		// increase the page height during page transition to prevent the scrolling animation from jumping
-		const heightExtend = document.getElementById('page-height-extend')
-		if (heightExtend) {
-			heightExtend.classList.remove('hidden')
-		}
-
-		// Hide the TOC while scrolling back to top
-		let toc = document.getElementById('toc-wrapper');
-		if (toc) {
-			toc.classList.add('toc-not-ready')
-		}
-	});
-	window.swup.hooks.on('page:view', () => {
-		// hide the temp high element when the transition is done
-		const heightExtend = document.getElementById('page-height-extend')
-		if (heightExtend) {
-			heightExtend.classList.remove('hidden')
-		}
-		
-		// 确保页面滚动到顶部，特别是移动端banner关闭时
-		window.scrollTo({
-			top: 0,
-			behavior: 'instant'
+		// 绑定相册/文章图片
+		Fancybox.bind(albumImagesSelector, {
+			...commonConfig,
+			groupAll: true,
+			Carousel: {
+				transition: "slide",
+				preload: 2,
+			},
 		});
-		
-		// 同步主题状态 - 解决从首页进入文章页面时代码块渲染问题
-		const storedTheme = localStorage.getItem('theme') || DEFAULT_THEME;
-		const isDark = storedTheme === DARK_MODE;
-		const expectedTheme = isDark ? 'github-dark' : 'github-light';
-		const currentTheme = document.documentElement.getAttribute('data-theme');
-		const hasDarkClass = document.documentElement.classList.contains('dark');
-		
-		// 如果主题不匹配，使用批量更新减少重绘
-		if (currentTheme !== expectedTheme || hasDarkClass !== isDark) {
-			// 使用 requestAnimationFrame 批量更新，减少重绘
-			requestAnimationFrame(() => {
-				// 同步 data-theme 属性
-				if (currentTheme !== expectedTheme) {
-					document.documentElement.setAttribute('data-theme', expectedTheme);
-				}
-				// 同步 dark class
-				if (hasDarkClass !== isDark) {
-					if (isDark) {
-						document.documentElement.classList.add('dark');
-					} else {
-						document.documentElement.classList.remove('dark');
+		fancyboxSelectors.push(albumImagesSelector);
+
+		Fancybox.bind(albumLinksSelector, {
+			...commonConfig,
+			source: (el: any) => {
+				return el.getAttribute("data-src") || el.getAttribute("href");
+			},
+		});
+		fancyboxSelectors.push(albumLinksSelector);
+
+		// 绑定单独的 fancybox 图片
+		Fancybox.bind(singleFancyboxSelector, commonConfig);
+		fancyboxSelectors.push(singleFancyboxSelector);
+	}
+
+	// 清理 Fancybox 实例
+	function cleanupFancybox() {
+		if (!Fancybox) return; // 如果从未加载过，无需清理
+		fancyboxSelectors.forEach((selector) => {
+			Fancybox.unbind(selector);
+		});
+		fancyboxSelectors = [];
+	}
+
+	const setup = () => {
+		// TODO: temp solution to change the height of the banner
+		/*
+    window.swup.hooks.on('animation:out:start', () => {
+        const path = window.location.pathname
+        const body = document.querySelector('body')
+        if (path[path.length - 1] === '/' && !body.classList.contains('is-home')) {
+            body.classList.add('is-home')
+        } else if (path[path.length - 1] !== '/' && body.classList.contains('is-home')) {
+            body.classList.remove('is-home')
+        }
+    })
+*/
+		window.swup.hooks.on("link:click", () => {
+			// Remove the delay for the first time page load
+			document.documentElement.style.setProperty(
+				"--content-delay",
+				"0ms",
+			);
+
+			// 简化navbar处理逻辑
+			if (bannerEnabled) {
+				const navbar = document.getElementById("navbar-wrapper");
+				if (navbar && document.body.classList.contains("lg:is-home")) {
+					const threshold =
+						window.innerHeight * (BANNER_HEIGHT / 100) - 88;
+					if (document.documentElement.scrollTop >= threshold) {
+						navbar.classList.add("navbar-hidden");
 					}
 				}
+			}
+		});
+
+		window.swup.hooks.on("content:replace", () => {
+			// 初始化新页面的图片、公式、滚动条和TOC
+			initFancybox();
+			checkKatex();
+			initCustomScrollbar();
+
+			// 检查当前页面是否为文章页面（有TOC元素）
+			const tocWrapper = document.getElementById("toc-wrapper");
+			const isArticlePage = tocWrapper !== null;
+
+			// 只在文章页面重新初始化 TOC 组件
+			if (isArticlePage) {
+				const tocElement = document.querySelector("table-of-contents");
+				if (
+					tocElement &&
+					typeof (tocElement as any).init === "function"
+				) {
+					setTimeout(() => {
+						(tocElement as any).init();
+					}, 100);
+				}
+
+				// 重新初始化移动端 TOC 组件
+				if (typeof (window as any).mobileTOCInit === "function") {
+					setTimeout(() => {
+						(window as any).mobileTOCInit();
+					}, 100);
+				}
+			}
+
+			// 重新初始化semifull模式的滚动检测
+			const navbar = document.getElementById("navbar");
+			if (navbar) {
+				const transparentMode = navbar.getAttribute(
+					"data-transparent-mode",
+				);
+				if (transparentMode === "semifull") {
+					// 重新调用初始化函数来重新绑定滚动事件
+					if (
+						typeof (window as any).initSemifullScrollDetection ===
+						"function"
+					) {
+						(window as any).initSemifullScrollDetection();
+					}
+				}
+			}
+		});
+
+		window.swup.hooks.on(
+			"visit:start",
+			(visit: { to: { url: string } }) => {
+				// 清理上一页的 Fancybox
+				cleanupFancybox();
+
+				// 处理 Banner class 和显示状态
+				const bodyElement = document.querySelector("body");
+				const isHomePage = pathsEqual(visit.to.url, url("/"));
+				if (bodyElement) {
+					if (isHomePage) {
+						bodyElement.classList.add("lg:is-home");
+					} else {
+						bodyElement.classList.remove("lg:is-home");
+					}
+				}
+
+				// Control banner text visibility based on page
+				const bannerTextOverlay = document.querySelector(
+					".banner-text-overlay",
+				);
+				if (bannerTextOverlay) {
+					if (isHomePage) {
+						bannerTextOverlay.classList.remove("hidden");
+					} else {
+						bannerTextOverlay.classList.add("hidden");
+					}
+				}
+
+				// Control navbar transparency based on page
+				const navbar = document.getElementById("navbar");
+				if (navbar) {
+					navbar.setAttribute("data-is-home", isHomePage.toString());
+					// 重新初始化semifull模式的滚动检测
+					const transparentMode = navbar.getAttribute(
+						"data-transparent-mode",
+					);
+					if (transparentMode === "semifull") {
+						// 重新调用初始化函数来重新绑定滚动事件
+						if (
+							typeof (window as any)
+								.initSemifullScrollDetection === "function"
+						) {
+							(window as any).initSemifullScrollDetection();
+						}
+					}
+				}
+
+				// Control mobile banner visibility based on page with improved staging animation
+				const bannerWrapper = document.getElementById("banner-wrapper");
+				const mainContentWrapper = document.querySelector(
+					".absolute.w-full.z-30",
+				);
+
+				if (bannerWrapper && mainContentWrapper) {
+					if (isHomePage) {
+						// 首页：延迟移除隐藏类，让banner和内容优雅地出现
+						setTimeout(() => {
+							bannerWrapper.classList.remove(
+								"mobile-hide-banner",
+							);
+						}, 100);
+						setTimeout(() => {
+							mainContentWrapper.classList.remove(
+								"mobile-main-no-banner",
+							);
+						}, 150);
+					} else {
+						// 非首页：分阶段隐藏，先隐藏banner，再移动内容
+						bannerWrapper.classList.add("mobile-hide-banner");
+						// 延迟移动内容，让banner先完全消失
+						setTimeout(() => {
+							mainContentWrapper.classList.add(
+								"mobile-main-no-banner",
+							);
+						}, 100);
+					}
+				}
+
+				// increase the page height during page transition to prevent the scrolling animation from jumping
+				const heightExtend =
+					document.getElementById("page-height-extend");
+				if (heightExtend) {
+					heightExtend.classList.remove("hidden");
+				}
+
+				// Hide the TOC while scrolling back to top
+				let toc = document.getElementById("toc-wrapper");
+				if (toc) {
+					toc.classList.add("toc-not-ready");
+				}
+			},
+		);
+
+		window.swup.hooks.on("page:view", () => {
+			// hide the temp high element when the transition is done
+			const heightExtend = document.getElementById("page-height-extend");
+			if (heightExtend) {
+				heightExtend.classList.remove("hidden");
+			}
+
+			// 确保页面滚动到顶部，特别是移动端banner关闭时
+			window.scrollTo({
+				top: 0,
+				behavior: "instant",
 			});
-		}
-		
-		// 检查当前页面是否为文章页面，如果是则触发自定义事件用于初始化评论系统
-		setTimeout(() => {
-			if (document.getElementById('tcomment')) {
-				// 触发自定义事件，通知评论系统页面已完全加载
-				const pageLoadedEvent = new CustomEvent('mizuki:page:loaded', {
-					detail: {
-						path: window.location.pathname,
-						timestamp: Date.now()
+
+			// 同步主题状态 - 解决从首页进入文章页面时代码块渲染问题
+			const storedTheme = localStorage.getItem("theme") || DEFAULT_THEME;
+			const isDark = storedTheme === DARK_MODE;
+			const expectedTheme = isDark ? "github-dark" : "github-light";
+
+			const currentTheme =
+				document.documentElement.getAttribute("data-theme");
+			const hasDarkClass =
+				document.documentElement.classList.contains("dark");
+
+			// 如果主题不匹配，使用批量更新减少重绘
+			if (currentTheme !== expectedTheme || hasDarkClass !== isDark) {
+				// 使用 requestAnimationFrame 批量更新，减少重绘
+				requestAnimationFrame(() => {
+					// 同步 data-theme 属性
+					if (currentTheme !== expectedTheme) {
+						document.documentElement.setAttribute(
+							"data-theme",
+							expectedTheme,
+						);
+					}
+					// 同步 dark class
+					if (hasDarkClass !== isDark) {
+						if (isDark) {
+							document.documentElement.classList.add("dark");
+						} else {
+							document.documentElement.classList.remove("dark");
+						}
 					}
 				});
-				document.dispatchEvent(pageLoadedEvent);
-				console.log('Layout: 触发 mizuki:page:loaded 事件，路径:', window.location.pathname);
-			}
-		}, 300);
-	});
-	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
-		setTimeout(() => {
-			const heightExtend = document.getElementById('page-height-extend')
-			if (heightExtend) {
-				heightExtend.classList.add('hidden')
 			}
 
-            // Just make the transition looks better
-            const toc = document.getElementById('toc-wrapper');
-            if (toc) {
-                toc.classList.remove('toc-not-ready')
-            }
-        }, 200)
-	});
-}
-if (window?.swup?.hooks) {
-	setup()
-} else {
-	document.addEventListener('swup:enable', setup)
-}
+			// 检查当前页面是否为文章页面，如果是则触发自定义事件用于初始化评论系统
+			setTimeout(() => {
+				if (document.getElementById("tcomment")) {
+					// 触发自定义事件，通知评论系统页面已完全加载
+					const pageLoadedEvent = new CustomEvent(
+						"mizuki:page:loaded",
+						{
+							detail: {
+								path: window.location.pathname,
+								timestamp: Date.now(),
+							},
+						},
+					);
+					document.dispatchEvent(pageLoadedEvent);
+					console.log(
+						"Layout: 触发 mizuki:page:loaded 事件，路径:",
+						window.location.pathname,
+					);
+				}
+			}, 300);
+		});
 
-let backToTopBtn = document.getElementById('back-to-top-btn');
-let toc = document.getElementById('toc-wrapper');
-let navbar = document.getElementById('navbar-wrapper')
+		window.swup.hooks.on("visit:end", (_visit: { to: { url: string } }) => {
+			setTimeout(() => {
+				const heightExtend =
+					document.getElementById("page-height-extend");
+				if (heightExtend) {
+					heightExtend.classList.add("hidden");
+				}
 
-// 节流函数
-function throttle(func: Function, limit: number) {
-	let inThrottle: boolean;
-	return function(this: any) {
-		const args = arguments;
-		const context = this;
-		if (!inThrottle) {
-			func.apply(context, args);
-			inThrottle = true;
-			setTimeout(() => inThrottle = false, limit);
+				// Just make the transition looks better
+				const toc = document.getElementById("toc-wrapper");
+				if (toc) {
+					toc.classList.remove("toc-not-ready");
+				}
+			}, 200);
+		});
+	};
+
+	if (window?.swup?.hooks) {
+		initFancybox();
+		checkKatex();
+		setup();
+	} else {
+		document.addEventListener("swup:enable", setup);
+		// 监听 DOM 加载 (确保首屏也能加载优化组件)
+		if (document.readyState === "loading") {
+			document.addEventListener("DOMContentLoaded", () => {
+				initFancybox();
+				checkKatex();
+			});
+		} else {
+			initFancybox();
+			checkKatex();
 		}
 	}
-}
 
-function scrollFunction() {
-	const scrollTop = document.documentElement.scrollTop;
-	const bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100);
+	let backToTopBtn = document.getElementById("back-to-top-btn");
+	let toc = document.getElementById("toc-wrapper");
+	let navbar = document.getElementById("navbar-wrapper");
 
-	// 批量处理DOM操作
-	requestAnimationFrame(() => {
-		if (backToTopBtn) {
-			if (scrollTop > bannerHeight) {
-				backToTopBtn.classList.remove('hide')
-			} else {
-				backToTopBtn.classList.add('hide')
+	// 节流函数
+	function throttle(func: Function, limit: number) {
+		let inThrottle: boolean;
+		return function (this: any) {
+			const args = arguments;
+			const context = this;
+			if (!inThrottle) {
+				func.apply(context, args);
+				inThrottle = true;
+				setTimeout(() => (inThrottle = false), limit);
 			}
-		}
+		};
+	}
 
-		if (bannerEnabled && toc) {
-			if (scrollTop > bannerHeight) {
-				toc.classList.remove('toc-hide')
-			} else {
-				toc.classList.add('toc-hide')
+	function scrollFunction() {
+		const scrollTop = document.documentElement.scrollTop;
+		const bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100);
+
+		// 批量处理DOM操作
+		requestAnimationFrame(() => {
+			if (backToTopBtn) {
+				if (scrollTop > bannerHeight) {
+					backToTopBtn.classList.remove("hide");
+				} else {
+					backToTopBtn.classList.add("hide");
+				}
 			}
-		}
 
-		if (bannerEnabled && navbar) {
-			const isHome = document.body.classList.contains('lg:is-home') && window.innerWidth >= 1024;
-			const currentBannerHeight = isHome ? BANNER_HEIGHT_HOME : BANNER_HEIGHT;
-			const threshold = window.innerHeight * (currentBannerHeight / 100) - 88;
-			
-			if (scrollTop >= threshold) {
-				navbar.classList.add('navbar-hidden')
-			} else {
-				navbar.classList.remove('navbar-hidden')
+			if (bannerEnabled && toc) {
+				if (scrollTop > bannerHeight) {
+					toc.classList.remove("toc-hide");
+				} else {
+					toc.classList.add("toc-hide");
+				}
 			}
-		}
-	});
-}
 
-// 使用节流优化滚动性能
-window.onscroll = throttle(scrollFunction, 16); // 约60fps
+			if (bannerEnabled && navbar) {
+				const isHome =
+					document.body.classList.contains("lg:is-home") &&
+					window.innerWidth >= 1024;
+				const currentBannerHeight = isHome
+					? BANNER_HEIGHT_HOME
+					: BANNER_HEIGHT;
 
-window.onresize = () => {
-	// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
-	let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
-	offset = offset - offset % 4;
-	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
-}
+				const threshold =
+					window.innerHeight * (currentBannerHeight / 100) - 88;
+				if (scrollTop >= threshold) {
+					navbar.classList.add("navbar-hidden");
+				} else {
+					navbar.classList.remove("navbar-hidden");
+				}
+			}
+		});
+	}
 
-// 页面加载完成后初始化banner和轮播图
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', async () => {
+	// 使用节流优化滚动性能
+	window.onscroll = throttle(scrollFunction, 16); // 约60fps
+
+	window.onresize = () => {
+		// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
+		let offset = Math.floor(
+			window.innerHeight * (BANNER_HEIGHT_EXTEND / 100),
+		);
+		offset = offset - (offset % 4);
+		document.documentElement.style.setProperty(
+			"--banner-height-extend",
+			`${offset}px`,
+		);
+	};
+
+	// 页面加载完成后初始化banner和轮播图
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", async () => {
+			showBanner();
+			// 初始化面板管理器
+			try {
+				await import("../utils/panel-manager.js");
+				console.log("Panel manager initialized");
+			} catch (error) {
+				console.error("Failed to initialize panel manager:", error);
+			}
+		});
+	} else {
 		showBanner();
-		// 初始化面板管理器
-		try {
-			await import('../utils/panel-manager.js');
-			console.log('Panel manager initialized');
-		} catch (error) {
-			console.error('Failed to initialize panel manager:', error);
-		}
-	});
-} else {
-	showBanner();
-	// 页面已经加载完成，立即初始化面板管理器
-	(async () => {
-		try {
-			await import('../utils/panel-manager.js');
-			console.log('Panel manager initialized');
-		} catch (error) {
-			console.error('Failed to initialize panel manager:', error);
-		}
-	})();
-}
-
+		// 页面已经加载完成，立即初始化面板管理器
+		(async () => {
+			try {
+				await import("../utils/panel-manager.js");
+				console.log("Panel manager initialized");
+			} catch (error) {
+				console.error("Failed to initialize panel manager:", error);
+			}
+		})();
+	}
 </script>
 
 <!-- 代码块折叠功能 -->
 <script>
-import '../scripts/code-collapse.js';
+	import "../scripts/code-collapse.js";
 </script>
 
 <!-- 主题切换综合性能优化器（包含代码块优化、重型元素优化、性能诊断） -->
 <script>
-import '../scripts/theme-optimizer.js';
-</script>
-
-<script>
-import { Fancybox } from "@fancyapps/ui";
-import "@fancyapps/ui/dist/fancybox/fancybox.css";
-
-// 存储 Fancybox 绑定的选择器
-let fancyboxSelectors: string[] = [];
-
-function initFancybox() {
-  // 不需要关闭所有实例，只需检查是否已经初始化
-  if (fancyboxSelectors.length > 0) {
-    return; // 已经初始化，直接返回
-  }
-  
-  // 通用配置
-  const commonConfig = {
-    Thumbs: {
-      autoStart: true,
-      showOnStart: "yes",
-    },
-    Toolbar: {
-      display: {
-        left: ["infobar"],
-        middle: [
-          "zoomIn",
-          "zoomOut",
-          "toggle1to1",
-          "rotateCCW",
-          "rotateCW",
-          "flipX",
-          "flipY",
-        ],
-        right: ["slideshow", "thumbs", "close"],
-      },
-    },
-    animated: true,
-    dragToClose: true,
-    keyboard: {
-      Escape: "close",
-      Delete: "close",
-      Backspace: "close",
-      PageUp: "next",
-      PageDown: "prev",
-      ArrowUp: "next",
-      ArrowDown: "prev",
-      ArrowRight: "next",
-      ArrowLeft: "prev",
-    },
-    fitToView: true,
-    preload: 3,
-    infinite: true,
-    Panzoom: {
-      maxScale: 3,
-      minScale: 1,
-    },
-    caption: false
-  };
-  
-  // 存储 Fancybox 绑定的选择器
-  // let fancyboxSelectors: string[] = [];
-
-  // 为相册图片添加 Fancybox 支持
-  const albumImagesSelector = ".custom-md img, #post-cover img, .moment-images img";
-  Fancybox.bind(albumImagesSelector, {
-    ...commonConfig,
-    groupAll: true,
-    Carousel: {
-      transition: "slide",
-      preload: 2,
-    },
-  } as any);
-  fancyboxSelectors.push(albumImagesSelector);
-
-  // 为相册中的链接添加 Fancybox 支持
-  const albumLinksSelector = ".moment-images a[data-fancybox]";
-  Fancybox.bind(albumLinksSelector, {
-    ...commonConfig,
-    source: (el: any) => {
-      return el.getAttribute("data-src") || el.getAttribute("href");
-    },
-  } as any);
-  fancyboxSelectors.push(albumLinksSelector);
-
-  // 为单独的 fancybox 图片添加支持
-  const singleFancyboxSelector = "[data-fancybox]:not(.moment-images a)";
-  Fancybox.bind(singleFancyboxSelector, commonConfig as any);
-  fancyboxSelectors.push(singleFancyboxSelector);
-}
-
-// 清理 Fancybox 实例
-function cleanupFancybox() {
-  fancyboxSelectors.forEach(selector => {
-    Fancybox.unbind(selector);
-  });
-  fancyboxSelectors = [];
-}
-
-const setup = () => {
-  // 初始化 Fancybox
-  initFancybox();
-  
-  // 在页面视图更改时重新初始化
-  window.swup.hooks.on("page:view", () => {
-    // 清理旧实例
-    cleanupFancybox();
-    // 等待 DOM 更新后初始化
-    requestAnimationFrame(() => {
-      initFancybox();
-    });
-  });
-}
-
-if (window.swup) {
-  setup()
-} else {
-  document.addEventListener("swup:enable", setup)
-  
-  // 如果 swup 尚未初始化，则直接初始化
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initFancybox);
-  } else {
-    initFancybox();
-  }
-}
+	import "../scripts/theme-optimizer.js";
 </script>

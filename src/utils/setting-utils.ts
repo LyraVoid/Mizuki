@@ -77,8 +77,13 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 		// Set the theme for Expressive Code based on current mode
 		// 只在必要时更新 data-theme 属性以减少重绘
 		if (needsCodeThemeUpdate) {
-			const expressiveTheme = targetIsDark ? "github-dark" : "github-light";
-			document.documentElement.setAttribute("data-theme", expressiveTheme);
+			const expressiveTheme = targetIsDark
+				? "github-dark"
+				: "github-light";
+			document.documentElement.setAttribute(
+				"data-theme",
+				expressiveTheme,
+			);
 		}
 	};
 
@@ -129,7 +134,9 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 		// 使用 requestAnimationFrame 确保在下一帧移除过渡保护类
 		if (needsThemeChange) {
 			requestAnimationFrame(() => {
-				document.documentElement.classList.remove("is-theme-transitioning");
+				document.documentElement.classList.remove(
+					"is-theme-transitioning",
+				);
 			});
 		}
 	}

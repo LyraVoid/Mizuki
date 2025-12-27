@@ -1,7 +1,8 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-import { getCategoryUrl } from "@utils/url-utils";
+import { getCategoryUrl, getPostUrl } from "@utils/url-utils";
+import { initPostIdMap } from "@utils/permalink-utils";
 
 // // Retrieve posts and sort them by publication date
 async function getRawSortedPosts() {
@@ -14,7 +15,20 @@ async function getRawSortedPosts() {
 		if (a.data.pinned && !b.data.pinned) return -1;
 		if (!a.data.pinned && b.data.pinned) return 1;
 
-		// 如果置顶状态相同，则按发布日期排序
+		// 如果置顶状态相同，优先按 Priority 排序（数值越小越靠前）
+		if (a.data.pinned && b.data.pinned) {
+			const priorityA = a.data.priority;
+			const priorityB = b.data.priority;
+			if (priorityA !== undefined && priorityB !== undefined) {
+				if (priorityA !== priorityB) return priorityA - priorityB;
+			} else if (priorityA !== undefined) {
+				return -1;
+			} else if (priorityB !== undefined) {
+				return 1;
+			}
+		}
+
+		// 否则按发布日期排序
 		const dateA = new Date(a.data.published);
 		const dateB = new Date(b.data.published);
 		return dateA > dateB ? -1 : 1;
@@ -39,14 +53,19 @@ export async function getSortedPosts() {
 export type PostForList = {
 	id: string;
 	data: CollectionEntry<"posts">["data"];
+	url?: string; // 预计算的文章 URL
 };
 export async function getSortedPostsList(): Promise<PostForList[]> {
 	const sortedFullPosts = await getRawSortedPosts();
 
-	// delete post.body
+	// 初始化文章 ID 映射（用于 permalink 功能）
+	initPostIdMap(sortedFullPosts);
+
+	// delete post.body，并预计算 URL
 	const sortedPostsList = sortedFullPosts.map((post) => ({
 		id: post.id,
 		data: post.data,
+		url: getPostUrl(post),
 	}));
 
 	return sortedPostsList;
