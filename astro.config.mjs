@@ -28,12 +28,7 @@ import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 
 // https://astro.build/config
 export default defineConfig({
-<<<<<<< HEAD
-	site: "https://heronesukun.top/",
-
-=======
 	site: siteConfig.siteURL,
->>>>>>> upstream/master
 	base: "/",
 	trailingSlash: "always",
 
@@ -59,25 +54,11 @@ export default defineConfig({
 			animateHistoryBrowsing: false,
 			skipPopStateHandling: (event) => {
 				// 跳过锚点链接的处理，让浏览器原生处理
-<<<<<<< HEAD
-				return event.state?.url?.includes("#");
-			},
-		}),
-		icon({
-			include: {
-				"preprocess: vitePreprocess(),": ["*"],
-				"fa6-brands": ["*"],
-				"fa6-regular": ["*"],
-				"fa6-solid": ["*"],
-				mdi: ["*"],
-				"simple-icons": ["*"],
-=======
 				return (
 					event.state &&
 					event.state.url &&
 					event.state.url.includes("#")
 				);
->>>>>>> upstream/master
 			},
 		}),
 		icon(),

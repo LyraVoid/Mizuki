@@ -19,23 +19,15 @@ import { LinkPreset } from "./types/config";
 // 移除i18n导入以避免循环依赖
 
 // 定义站点语言
-<<<<<<< HEAD
 const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
-
+const SITE_TIMEZONE = 8; //设置你的网站时区 from -12 to 12 default in UTC+8
 export const siteConfig: SiteConfig = {
 	title: "HiroNeri",
 	subtitle: "HiroHero? NeNeNe!",
-=======
-const SITE_LANG = "en"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
-const SITE_TIMEZONE = 8; //设置你的网站时区 from -12 to 12 default in UTC+8
-export const siteConfig: SiteConfig = {
-	title: "Mizuki",
-	subtitle: "One demo website",
-	siteURL: "https://mizuki.mysqil.com/", // 请替换为你的站点URL，以斜杠结尾
-	siteStartDate: "2025-01-01", // 站点开始运行日期，用于站点统计组件计算运行天数
+	siteURL: "https://heronesukun.com/", // 请替换为你的站点URL，以斜杠结尾
+	siteStartDate: "2025-11-04", // 站点开始运行日期，用于站点统计组件计算运行天数
 
 	timeZone: SITE_TIMEZONE,
->>>>>>> upstream/master
 
 	lang: SITE_LANG,
 
@@ -146,7 +138,6 @@ export const siteConfig: SiteConfig = {
 
 		homeText: {
 			enable: true, // 在主页显示自定义文本
-<<<<<<< HEAD
 			title: "HiroHero? NeNeNe!", // 主页横幅主标题
 
 			subtitle: [
@@ -154,16 +145,6 @@ export const siteConfig: SiteConfig = {
 				"你这家伙,满脑子都是你自己呢",
 				"欧内该,和我玩一辈子的VRC吧",
 				"可以来拾音的个人站视奸一辈子吗？",
-=======
-			title: "美しいミズキ", // 主页横幅主标题
-
-			subtitle: [
-				"特別なことはないけど、君がいると十分です",
-				"今でもあなたは私の光",
-				"君ってさ、知らないうちに私の毎日になってたよ",
-				"君と話すと、なんか毎日がちょっと楽しくなるんだ",
-				"今日はなんでもない日。でも、ちょっとだけいい日",
->>>>>>> upstream/master
 			],
 			typewriter: {
 				enable: true, // 启用副标题打字机效果
@@ -465,16 +446,11 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 };
 
 export const footerConfig: FooterConfig = {
-<<<<<<< HEAD
 	enable: true, // 是否启用Footer HTML注入功能
-	customHtml: "",
-=======
-	enable: false, // 是否启用Footer HTML注入功能
 	customHtml: "", // HTML格式的自定义页脚信息，例如备案号等，默认留空
 	// 也可以直接编辑 FooterConfig.html 文件来添加备案号等自定义内容
 	// 注意：若 customHtml 不为空，则使用 customHtml 中的内容；若 customHtml 留空，则使用 FooterConfig.html 文件中的内容
 	// FooterConfig.html 可能会在未来的某个版本弃用
->>>>>>> upstream/master
 };
 
 /**
