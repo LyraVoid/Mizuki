@@ -1,223 +1,255 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { getPostUrlBySlug } from "@utils/url-utils";
+import type { Page } from "astro";
+import { sidebarLayoutConfig, siteConfig } from "../config";
 import PostCard from "./PostCard.astro";
-import { siteConfig } from "../config";
+
+interface Props {
+	page: Page<CollectionEntry<"posts">>;
+}
 
 const { page } = Astro.props;
 
-let delay = 0;
-const interval = 50;
+// 检查是否启用双侧边栏
+const isBothSidebars = sidebarLayoutConfig.position === "both";
+
+// 根据配置设置初始布局模式
+const defaultLayout = siteConfig.postListLayout.defaultMode || "list";
+const initialLayoutClass = defaultLayout === "grid" ? "grid-mode" : "list-mode";
 ---
-<div 
-  id="post-list-container"
-  class="transition flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-0 md:py-0 md:bg-transparent gap-2 md:gap-4 mb-4 list-mode md:list-mode"
-  data-default-layout={siteConfig.postListLayout.defaultMode}
+
+<div
+	id="post-list-container"
+	class={`transition-all duration-500 ease-in-out rounded-[var(--radius-large)] bg-[var(--card-bg)] md:bg-transparent mb-4 ${initialLayoutClass}`}
+	data-default-layout={defaultLayout}
+	data-both-sidebars={isBothSidebars}
 >
-    {page.data.map((entry: CollectionEntry<"posts">) => (
-        <PostCard
-                entry={entry}
-                title={entry.data.title}
-                tags={entry.data.tags}
-                category={entry.data.category}
-                published={entry.data.published}
-                updated={entry.data.updated}
-                url={getPostUrlBySlug(entry.slug)}
-                image={entry.data.image}
-                description={entry.data.description}
-                draft={entry.data.draft}
-                pinned={entry.data.pinned}
-                class:list="onload-animation"
-                style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
-        ></PostCard>
-    ))}
+	{
+		page.data.map((entry, index) => (
+			<PostCard
+				entry={entry}
+				class:list="onload-animation"
+				style={`--i: ${index}; --interval: 50ms;`}
+			/>
+		))
+	}
 </div>
 
 <script>
-  // 动态布局切换脚本
-  function initLayout() {
-    // 延迟执行以确保DOM已完全加载
-    setTimeout(() => {
-      const postListContainer = document.getElementById("post-list-container");
-      if (!postListContainer) {
-        console.warn("post-list-container not found, retrying...");
-        // 如果找不到容器，延迟重试
-        setTimeout(initLayout, 100);
-        return;
-      }
+	// 动态布局切换脚本
+	function initLayout() {
+		requestAnimationFrame(() => {
+			const postListContainer = document.getElementById(
+				"post-list-container",
+			);
+			if (!postListContainer) return;
 
-      // 从localStorage读取用户偏好
-      const savedLayout = localStorage.getItem("postListLayout");
-      const defaultLayout = postListContainer.getAttribute("data-default-layout") || "list";
-      const currentLayout = savedLayout || defaultLayout;
+			// 读取偏好
+			const savedLayout = localStorage.getItem("postListLayout");
+			const defaultLayout =
+				postListContainer.getAttribute("data-default-layout") || "list";
+			const currentLayout = savedLayout || defaultLayout;
 
-      console.log("Initializing layout:", { savedLayout, defaultLayout, currentLayout });
+			// 检查现有状态是否一致，避免重复初始化
+			const hasGridClass =
+				postListContainer.classList.contains("grid-mode");
+			const isClassCorrect =
+				(currentLayout === "grid" && hasGridClass) ||
+				(currentLayout === "list" && !hasGridClass);
 
-      // 移动端由CSS处理，桌面端才需要JavaScript初始化
-      const isDesktop = window.innerWidth >= 769;
-      if (isDesktop) {
-        updatePostListLayout(currentLayout);
-      } else {
-        // 移动端：只添加初始化标记，不更改布局（CSS已处理）
-        postListContainer.classList.add("js-initialized");
-      }
-      
-      // 发布布局初始化事件
-      publishLayoutInit();
-    }, 50);
-  }
+			if (isClassCorrect) {
+				postListContainer.classList.add("js-initialized");
+				publishLayoutInit();
+				return;
+			}
 
-  function updatePostListLayout(layout: string) {
-    const postListContainer = document.getElementById("post-list-container");
-    if (!postListContainer) return;
+			// 桌面端执行布局更新，移动端由 CSS 处理
+			if (window.innerWidth >= 769) {
+				updatePostListLayout(currentLayout);
+			} else {
+				postListContainer.classList.add("js-initialized");
+			}
 
-    // 移除现有布局类
-    postListContainer.classList.remove("list-mode", "grid-mode");
-    
-    // 添加新布局类
-    if (layout === "grid") {
-      postListContainer.classList.add("grid-mode");
-      // 网格模式：双列布局
-      postListContainer.classList.add("grid", "grid-cols-1", "md:grid-cols-2", "gap-6");
-      postListContainer.classList.remove("flex", "flex-col");
-    } else {
-      postListContainer.classList.add("list-mode");
-      // 列表模式：单列布局
-      postListContainer.classList.add("flex", "flex-col");
-      postListContainer.classList.remove("grid", "grid-cols-1", "md:grid-cols-2", "gap-6");
-    }
-    
-    // 添加初始化完成标记，用于移除闪烁保护
-    postListContainer.classList.add("js-initialized");
-  }
+			publishLayoutInit();
+		});
+	}
 
-  // 监听布局变化事件
-  window.addEventListener("layoutChange", (event: any) => {
-    updatePostListLayout(event.detail.layout);
-  });
+	function updatePostListLayout(layout: string) {
+		const container = document.getElementById("post-list-container");
+		if (!container) return;
 
-  // 监听窗口大小变化，调整布局（CSS已处理移动端，这里只处理桌面端切换）
-  window.addEventListener("resize", () => {
-    const isDesktop = window.innerWidth >= 769;
-    const savedLayout = localStorage.getItem("postListLayout");
-    const defaultLayout = document.getElementById("post-list-container")?.getAttribute("data-default-layout") || "list";
-    const currentLayout = savedLayout || defaultLayout;
-    
-    if (isDesktop) {
-      updatePostListLayout(currentLayout);
-    }
-    // 移动端由CSS处理，不需要JavaScript干预
-  });
+		container.classList.add("layout-switching");
 
-  // 页面加载时初始化布局
-  document.addEventListener("DOMContentLoaded", initLayout);
-  
-  // 如果页面已经加载完成，直接初始化
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initLayout);
-  } else {
-    initLayout();
-  }
+		// 切换布局模式类名
+		if (layout === "grid") {
+			container.classList.remove("list-mode");
+			container.classList.add("grid-mode");
 
-  // 监听Swup页面切换事件
-  function setupSwupListeners() {
-    function trySetupSwup() {
-      if (typeof window !== "undefined" && (window as any).swup) {
-        const swup = (window as any).swup;
-        
-        // 页面内容替换后重新初始化布局
-        swup.hooks.on("content:replace", () => {
-          setTimeout(() => {
-            console.log("Swup content:replace - reinitializing layout");
-            initLayout();
-          }, 100);
-        });
-        
-        // 页面视图切换后重新初始化布局
-        swup.hooks.on("page:view", () => {
-          setTimeout(() => {
-            console.log("Swup page:view - reinitializing layout");
-            initLayout();
-          }, 100);
-        });
-        
-        // 动画进入结束后重新初始化布局
-        swup.hooks.on("animation:in:end", () => {
-          setTimeout(() => {
-            console.log("Swup animation:in:end - reinitializing layout");
-            initLayout();
-          }, 50);
-        });
-        
-        console.log("Swup layout listeners registered");
-        return true;
-      }
-      return false;
-    }
-    
-    // 尝试立即设置Swup监听器
-    if (!trySetupSwup()) {
-      // 如果Swup尚未初始化，延迟重试
-      let retryCount = 0;
-      const maxRetries = 10;
-      const retryInterval = setInterval(() => {
-        if (trySetupSwup()) {
-          clearInterval(retryInterval);
-        } else if (++retryCount >= maxRetries) {
-          clearInterval(retryInterval);
-          // 降级处理：监听普通页面切换事件
-          window.addEventListener("popstate", () => {
-            setTimeout(() => {
-              console.log("Popstate - reinitializing layout");
-              initLayout();
-            }, 100);
-          });
-          
-          // 监听路由变化（适用于Astro的客户端导航）
-          if (window.location) {
-            const originalPushState = history.pushState;
-            const originalReplaceState = history.replaceState;
-            
-            history.pushState = function(...args) {
-              originalPushState.apply(this, args);
-              setTimeout(() => {
-                console.log("PushState - reinitializing layout");
-                initLayout();
-              }, 100);
-            };
-            
-            history.replaceState = function(...args) {
-              originalReplaceState.apply(this, args);
-              setTimeout(() => {
-                console.log("ReplaceState - reinitializing layout");
-                initLayout();
-              }, 100);
-            };
-          }
-          
-          console.log("Fallback layout listeners registered");
-        }
-      }, 100);
-    }
-  }
-  
-  // 延迟设置Swup监听器，确保Swup已初始化
-  setTimeout(setupSwupListeners, 200);
+			// Grid 模式下隐藏右侧栏
+			const rightSidebar = document.querySelector(
+				".right-sidebar-container",
+			);
+			if (rightSidebar) rightSidebar.classList.add("hidden-in-grid-mode");
 
-  // 发布布局初始化完成事件，通知LayoutSwitchButton
-  function publishLayoutInit() {
-    const postListContainer = document.getElementById("post-list-container");
-    if (postListContainer) {
-      const isGridMode = postListContainer.classList.contains("grid-mode");
-      const currentLayout = isGridMode ? "grid" : "list";
-      
-      const event = new CustomEvent("layoutInit", {
-        detail: { layout: currentLayout }
-      });
-      window.dispatchEvent(event);
-    }
-  }
-  
-  // 在布局初始化后发布事件
-  setTimeout(publishLayoutInit, 150);
+			const mainGrid = document.getElementById("main-grid");
+			if (mainGrid) mainGrid.setAttribute("data-layout-mode", "grid");
+		} else {
+			container.classList.remove("grid-mode");
+			container.classList.add("list-mode");
+
+			// List 模式下显示右侧栏
+			const rightSidebar = document.querySelector(
+				".right-sidebar-container",
+			);
+			if (rightSidebar)
+				rightSidebar.classList.remove("hidden-in-grid-mode");
+
+			const mainGrid = document.getElementById("main-grid");
+			if (mainGrid) mainGrid.setAttribute("data-layout-mode", "list");
+		}
+
+		container.classList.add("js-initialized");
+
+		// 移除切换动画类
+		setTimeout(() => {
+			container.classList.remove("layout-switching");
+		}, 500);
+	}
+
+	// 监听布局变化
+	window.addEventListener("layoutChange", (event: any) => {
+		if (event.detail?.layout) updatePostListLayout(event.detail.layout);
+	});
+
+	// Resize 防抖
+	let resizeTimeout: number | undefined;
+	window.addEventListener("resize", () => {
+		clearTimeout(resizeTimeout);
+		resizeTimeout = window.setTimeout(() => {
+			if (window.innerWidth >= 769) {
+				const savedLayout = localStorage.getItem("postListLayout");
+				const defaultLayout =
+					document
+						.getElementById("post-list-container")
+						?.getAttribute("data-default-layout") || "list";
+				updatePostListLayout(savedLayout || defaultLayout);
+			}
+		}, 100);
+	});
+
+	// 初始化
+	document.addEventListener("DOMContentLoaded", initLayout);
+	if (document.readyState !== "loading") initLayout();
+
+	// Swup 集成
+	function setupSwupListeners() {
+		if ((window as any)._postListSwupListenerAttached) return;
+
+		function trySetupSwup() {
+			if (typeof window !== "undefined" && (window as any).swup) {
+				(window as any).swup.hooks.on("content:replace", initLayout);
+				(window as any)._postListSwupListenerAttached = true;
+				return true;
+			}
+			return false;
+		}
+
+		if (!trySetupSwup()) {
+			let retryCount = 0;
+			const retryInterval = setInterval(() => {
+				if (trySetupSwup() || ++retryCount >= 10) {
+					clearInterval(retryInterval);
+					if (retryCount >= 10) {
+						window.addEventListener("popstate", () =>
+							requestAnimationFrame(initLayout),
+						);
+					}
+				}
+			}, 100);
+		}
+	}
+	setTimeout(setupSwupListeners, 200);
+
+	function publishLayoutInit() {
+		const container = document.getElementById("post-list-container");
+		if (container) {
+			const layout = container.classList.contains("grid-mode")
+				? "grid"
+				: "list";
+			window.dispatchEvent(
+				new CustomEvent("layoutInit", { detail: { layout } }),
+			);
+		}
+	}
+	setTimeout(publishLayoutInit, 150);
 </script>
+
+<style>
+	/* 基础容器 */
+	#post-list-container {
+		min-height: 200px;
+		transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	/* 布局模式 - 列表模式 */
+	#post-list-container.list-mode {
+		@apply flex flex-col gap-4;
+	}
+
+	/* 布局模式 - 网格模式 (仅在桌面端生效，移动端强制单列) */
+	#post-list-container.grid-mode {
+		@apply grid grid-cols-1 md:grid-cols-2 gap-6;
+	}
+
+	/* 内容可见性 (视口外不渲染) */
+	#post-list-container > :global(*) {
+		content-visibility: auto;
+		contain-intrinsic-size: 200px;
+		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		opacity: 0;
+		animation: fadeInSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+		animation-delay: calc(
+			var(--content-delay) + var(--i) * var(--interval)
+		);
+	}
+
+	/* 网格模式动画调整 */
+	#post-list-container.grid-mode > :global(*) {
+		animation-name: fadeInScale;
+	}
+
+	/* 布局切换时的过渡状态 */
+	#post-list-container.layout-switching {
+		opacity: 0.95;
+	}
+
+	#post-list-container.layout-switching > :global(*) {
+		animation-delay: calc(var(--i) * 50ms);
+	}
+
+	#post-list-container.layout-switching > :global(*) {
+		transform: scale(0.98);
+	}
+
+	@keyframes fadeInScale {
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	@keyframes fadeInSlide {
+		from {
+			opacity: 0;
+			transform: translateX(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+</style>

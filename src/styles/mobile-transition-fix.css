@@ -23,67 +23,67 @@
     perspective: 1000;
     will-change: transform, opacity;
   }
-  
+
   /* 优化页面切换动画 */
   html.is-changing .transition-main {
-    transition: 
+    transition:
       opacity 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
       transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
-  
+
   html.is-leaving .transition-main {
-    transition: 
+    transition:
       opacity 200ms cubic-bezier(0.55, 0.055, 0.675, 0.19),
       transform 200ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
   }
-  
+
   /* 减少移动端动画幅度 */
   html.is-animating .transition-main {
     opacity: 0;
     transform: translateY(0.5rem) translateX(0.2rem);
   }
-  
+
   html.is-animating.is-leaving .transition-leaving {
     transform: translateY(-0.4rem) translateX(-0.2rem);
     opacity: 0;
   }
-  
+
   /* 优化侧边栏动画 */
   #dynamic-sidebar {
     transition: all 0.2s ease-in-out;
   }
-  
+
   .widget-container {
     transition: all 0.2s ease-in-out;
   }
-  
+
   /* 防止页面加载时的闪烁 */
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+
   /* 优化网格布局切换 */
   #main-grid {
     transition: all 0.3s ease-in-out;
   }
-  
+
   /* 防止图片加载时的闪烁 */
   img {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
   }
-  
+
   /* 优化滚动行为 */
   html {
     scroll-behavior: smooth;
   }
-  
+
   /* 减少动画元素的数量 */
   .onload-animation {
     animation-duration: 0.3s;
   }
-  
+
   /* 优化字体渲染 */
   * {
     -webkit-font-smoothing: antialiased;
@@ -98,16 +98,16 @@
   html.is-animating .transition-main {
     transform: translateY(0.3rem) translateX(0.1rem);
   }
-  
+
   html.is-animating.is-leaving .transition-leaving {
     transform: translateY(-0.2rem) translateX(-0.1rem);
   }
-  
+
   /* 简化侧边栏动画 */
   #dynamic-sidebar {
     transition: all 0.15s ease-in-out;
   }
-  
+
   .widget-container {
     transition: all 0.15s ease-in-out;
   }

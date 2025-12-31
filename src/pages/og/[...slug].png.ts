@@ -4,6 +4,7 @@ import * as fs from "node:fs";
 import type { APIContext, GetStaticPaths } from "astro";
 import satori from "satori";
 import sharp from "sharp";
+import { removeFileExtension } from "@/utils/url-utils";
 
 import { profileConfig, siteConfig } from "../../config";
 
@@ -26,10 +27,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	const allPosts = await getCollection("posts");
 	const publishedPosts = allPosts.filter((post) => !post.data.draft);
 
-	return publishedPosts.map((post) => ({
-		params: { slug: post.slug },
-		props: { post },
-	}));
+	return publishedPosts.map((post) => {
+		// 将 id 转换为 slug（移除扩展名）以匹配路由参数
+		const slug = removeFileExtension(post.id);
+		return {
+			params: { slug },
+			props: { post },
+		};
+	});
 };
 
 let fontCache: { regular: Buffer | null; bold: Buffer | null } | null = null;
@@ -98,13 +103,14 @@ export async function GET({
 	const { post } = props;
 
 	// Try to fetch fonts from Google Fonts (woff2) at runtime.
-	const { regular: fontRegular, bold: fontBold } = await fetchNotoSansSCFonts();
+	const { regular: fontRegular, bold: fontBold } =
+		await fetchNotoSansSCFonts();
 
 	// Avatar + icon: still read from disk (small assets)
 	const avatarBuffer = fs.readFileSync(`./src/${profileConfig.avatar}`);
 	const avatarBase64 = `data:image/png;base64,${avatarBuffer.toString("base64")}`;
 
-	let iconPath = "./public/favicon/favicon-dark-192.png";
+	let iconPath = "./public/favicon/favicon.ico";
 	if (siteConfig.favicon.length > 0) {
 		iconPath = `./public${siteConfig.favicon[0].src}`;
 	}
@@ -199,7 +205,8 @@ export async function GET({
 												style: {
 													width: "10px",
 													height: "68px",
-													backgroundColor: primaryColor,
+													backgroundColor:
+														primaryColor,
 													borderRadius: "6px",
 													marginTop: "14px",
 												},
@@ -293,7 +300,10 @@ export async function GET({
 							{
 								type: "div",
 								props: {
-									style: { fontSize: "28px", color: subtleTextColor },
+									style: {
+										fontSize: "28px",
+										color: subtleTextColor,
+									},
 									children: pubDate,
 								},
 							},

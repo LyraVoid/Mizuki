@@ -162,6 +162,12 @@ const getIconStyle = () => {
     document.head.appendChild(script);
     window.iconifyLoaded = true;
   }
+  
+  // 监听页面导航
+  if (typeof window !== 'undefined' && !(window as any).iconifyLoaded) {
+    // 如果页面加载时没有触发 load 事件（可能是 SPA 导航）
+    (window as any).iconifyLoaded = true;
+  }
 </script>
 
 <style>

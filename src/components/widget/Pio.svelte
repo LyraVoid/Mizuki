@@ -1,5 +1,5 @@
 <script>
-import { onMount, onDestroy } from "svelte";
+import { onDestroy, onMount } from "svelte";
 import { pioConfig } from "@/config";
 
 // 将配置转换为 Pio 插件需要的格式
@@ -80,6 +80,11 @@ function loadPioAssets() {
 
 onMount(() => {
 	if (!pioConfig.enable) return;
+
+	// 如果配置了手机端隐藏，且当前屏幕宽度小于 1280px (平板/手机)，则直接终止，不加载脚本
+    if (pioConfig.hiddenOnMobile && window.matchMedia("(max-width: 1280px)").matches) {
+        return;
+    }
 
 	// 加载资源并初始化
 	loadPioAssets();

@@ -3,7 +3,6 @@ import { onMount } from "svelte";
 
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import { getPostUrlBySlug } from "../utils/url-utils";
 
 export let tags: string[];
 export let categories: string[];
@@ -15,12 +14,15 @@ categories = params.has("category") ? params.getAll("category") : [];
 const uncategorized = params.get("uncategorized");
 
 interface Post {
-	slug: string;
+	id: string;
+	url?: string; // 预计算的文章 URL
 	data: {
 		title: string;
 		tags: string[];
 		category?: string;
 		published: Date;
+		alias?: string;
+		permalink?: string; // 自定义固定链接
 	};
 }
 
@@ -61,6 +63,11 @@ onMount(async () => {
 	if (uncategorized) {
 		filteredPosts = filteredPosts.filter((post) => !post.data.category);
 	}
+
+	// 按发布时间倒序排序，确保不受置顶影响
+	filteredPosts = filteredPosts
+		.slice()
+		.sort((a, b) => b.data.published.getTime() - a.data.published.getTime());
 
 	const grouped = filteredPosts.reduce(
 		(acc, post) => {
@@ -105,7 +112,7 @@ onMount(async () => {
 
             {#each group.posts as post}
                 <a
-                        href={getPostUrlBySlug(post.slug)}
+                        href={post.url || `/posts/${post.id}/`}
                         aria-label={post.data.title}
                         class="group btn-plain !block h-10 w-full rounded-lg hover:text-[initial]"
                 >

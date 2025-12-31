@@ -58,7 +58,7 @@
   }
 </style>
 
-<script>
+<script is:inline>
   // 动画测试函数
   function testSlideIn() {
     const content = document.getElementById('test-content');
@@ -89,6 +89,11 @@
     
     content.className = 'test-content transition-slide-in is-active';
   }
+  
+  // 暴露函数给全局作用域以便HTML中的onclick可以调用
+  window.testSlideIn = testSlideIn;
+  window.testSlideOut = testSlideOut;
+  window.resetAnimation = resetAnimation;
 
   // 页面加载时自动触发滑入动画
   document.addEventListener('DOMContentLoaded', () => {

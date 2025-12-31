@@ -105,26 +105,26 @@
   .albums-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .masonry-layout {
     columns: 1;
   }
-  
+
   .photo-gallery[data-columns="3"],
   .photo-gallery[data-columns="4"] {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .lightbox-content {
     padding: 1rem;
   }
-  
+
   #lightbox-prev,
   #lightbox-next {
     width: 2.5rem;
     height: 2.5rem;
   }
-  
+
   #lightbox-info {
     position: static;
     margin-top: 1rem;
@@ -135,7 +135,7 @@
   .photo-gallery {
     grid-template-columns: 1fr !important;
   }
-  
+
   .masonry-layout {
     columns: 1;
   }
@@ -184,7 +184,7 @@
 }
 
 .album-filter-tag::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -216,13 +216,13 @@
   button {
     display: none !important;
   }
-  
+
   .photo-gallery {
     display: block !important;
     columns: 2;
     column-gap: 1rem;
   }
-  
+
   .photo-item {
     break-inside: avoid;
     margin-bottom: 1rem;

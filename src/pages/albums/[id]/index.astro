@@ -1,10 +1,16 @@
 ---
-import type { GetStaticPaths } from "astro";
-import type { AlbumGroup } from "../../../data/1";
+import { siteConfig } from "../../../config";
 import I18nKey from "../../../i18n/i18nKey";
 import { i18n } from "../../../i18n/translation";
 import MainGridLayout from "../../../layouts/MainGridLayout.astro";
+// import type { GetStaticPaths } from "astro";
+import type { AlbumGroup, Photo } from "../../../types/album";
 import { scanAlbums } from "../../../utils/album-scanner";
+
+// 检查相册页面是否启用
+if (!siteConfig.featurePages.albums) {
+	return Astro.redirect("/404/");
+}
 
 export const getStaticPaths = async () => {
 	const albumsData = await scanAlbums();
@@ -71,7 +77,7 @@ if (!album) {
         <!-- 标签 -->
         {album.tags && album.tags.length > 0 && (
           <div class="flex flex-wrap gap-2 mt-4">
-            {album.tags.map(tag => (
+            {album.tags.map((tag: string) => (
               <span class="btn-regular h-8 text-sm px-3 rounded-lg">
                 {tag}
               </span>
@@ -86,7 +92,7 @@ if (!album) {
         data-layout={album.layout || 'grid'}
         data-columns={album.columns || 3}
       >
-        {album.photos.map((photo, index) => (
+        {album.photos.map((photo: Photo, _index: number) => (
           <figure class="photo-item group relative overflow-hidden rounded-lg">
             <a 
               href="javascript:void(0)"

@@ -106,7 +106,8 @@ export class AnimationManager {
 		animatedElements.forEach((element, index) => {
 			const htmlElement = element as HTMLElement;
 			const delay =
-				Number.parseInt(htmlElement.style.animationDelay, 10) || index * 50;
+				Number.parseInt(htmlElement.style.animationDelay, 10) ||
+				index * 50;
 
 			// 重置动画
 			htmlElement.style.opacity = "0";
@@ -221,16 +222,31 @@ export class AnimationManager {
 		}, delay);
 	}
 
+	// batchAnimate is deprecated, use staggerAnimations instead
+	// batchAnimate(
+	// 	elements: NodeListOf<Element> | Element[],
+	// 	config: AnimationConfig & { stagger?: number } = {},
+	// ): void {
+	// 	const { stagger = 50, ...animationConfig } = config;
+	//
+	// 	elements.forEach((element, index) => {
+	// 		this.createAnimation(element as HTMLElement, {
+	// 			...animationConfig,
+	// 			delay: (animationConfig.delay || 0) + index * stagger,
+	// 		});
+	// 	});
+	// }
+
 	/**
 	 * 批量动画
 	 */
-	batchAnimate(
-		elements: NodeListOf<Element> | Element[],
+	staggerAnimations(
+		elements: NodeListOf<Element> | HTMLElement[],
 		config: AnimationConfig & { stagger?: number } = {},
 	): void {
 		const { stagger = 50, ...animationConfig } = config;
 
-		elements.forEach((element, index) => {
+		elements.forEach((element: Element | HTMLElement, index: number) => {
 			this.createAnimation(element as HTMLElement, {
 				...animationConfig,
 				delay: (animationConfig.delay || 0) + index * stagger,

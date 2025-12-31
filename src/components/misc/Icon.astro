@@ -38,7 +38,7 @@ const combinedStyle = `${colorStyle}${style}`;
 const combinedClass = `${sizeClass} ${className}`.trim();
 
 // 生成唯一ID
-const iconId = `icon-${Math.random().toString(36).substr(2, 9)}`;
+const iconId = `icon-${Math.random().toString(36).substring(2, 9)}`;
 ---
 
 <span 
@@ -63,7 +63,7 @@ const iconId = `icon-${Math.random().toString(36).substr(2, 9)}`;
   ></iconify-icon>
 </span>
 
-<script define:vars={{ iconId, icon }}>
+<script is:inline define:vars={{ iconId, icon }}>
   // 图标加载和显示逻辑
   (function() {
     const container = document.querySelector(`[data-icon-container="${iconId}"]`);

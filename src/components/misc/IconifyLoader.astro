@@ -12,7 +12,7 @@ const { preloadIcons = [], timeout = 10000, retryCount = 3 } = Astro.props;
 ---
 
 <!-- Iconify图标库加载器 -->
-<script define:vars={{ preloadIcons, timeout, retryCount }}>
+<script is:inline define:vars={{ preloadIcons, timeout, retryCount }}>
   // 全局图标加载逻辑
   (function() {
     'use strict';
@@ -243,9 +243,11 @@ const { preloadIcons = [], timeout = 10000, retryCount = 3 } = Astro.props;
     }
 
     // 导出便捷函数到全局
-    window.loadIconify = () => window.__iconifyLoader.load();
-    window.preloadIcons = (icons) => window.__iconifyLoader.addToPreloadQueue(icons);
-    window.onIconifyReady = (callback) => window.__iconifyLoader.onLoad(callback);
+    window.loadIconify = () => window.__iconifyLoader?.load();
+    window.preloadIcons = (icons) => window.__iconifyLoader?.addToPreloadQueue(icons);
+    window.onIconifyReady = (callback) => {
+      return window.__iconifyLoader?.onLoad ? window.__iconifyLoader.onLoad(callback) : null;
+    };
 
     // 页面可见性变化时重新检查
     document.addEventListener('visibilitychange', () => {

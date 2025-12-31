@@ -265,11 +265,15 @@ a.card-github.fetch-error
   align-items: center
   min-height: 100px
   font-family: inherit
+  position: relative;
+  overflow: hidden;
 
   svg
     max-width: 100%
     height: auto
     border-radius: 0.5rem
+    user-select: none;
+    pointer-events: all;
 
 .mermaid-loading
   display: flex
@@ -329,3 +333,23 @@ a.card-github.fetch-error
 
   .mermaid svg
     max-height: 400px
+
+
+.mermaid-zoom-wrapper
+  transform-origin: 0 0;
+  transition: transform 120ms ease-out;
+  will-change: transform;
+  cursor: grab;
+  background: transparent;
+
+.mermaid-zoom-wrapper:active
+  cursor: grabbing;
+
+.mermaid-zoom-controls
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 30;
+  user-select: none;

@@ -1,49 +1,48 @@
 ---
 import { Icon } from "astro-icon/components";
-import { profileConfig } from "../config";
+import { umamiConfig } from "../config";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { formatDateToYYYYMMDD } from "../utils/date-utils";
 import { getCategoryUrl, getTagUrl } from "../utils/url-utils";
 
-import { umamiConfig } from '../config';
-
 // 解析 umami
 const umamiEnabled = umamiConfig.enabled || false;
-const umamiWebsiteId = umamiConfig.scripts.match(/data-website-id="([^"]+)"/)?.[1] || "";
+const umamiWebsiteId =
+	umamiConfig.scripts.match(/data-website-id="([^"]+)"/)?.[1] || "";
 const umamiApiKey = umamiConfig.apiKey || "";
 const umamiBaseUrl = umamiConfig.baseUrl || "";
 
 export interface Props {
-  published: Date;
-  updated?: Date;
-  category?: string;
-  tags?: string[];
-  hideUpdateDate?: boolean;
-  hideTagsForMobile?: boolean;
-  isHome?: boolean;
-  className?: string;
-  slug?: string;
-  showOnlyBasicMeta?: boolean; // 新增属性，控制是否只显示基本元数据
-  words?: number; // 字数统计
-  minutes?: number; // 阅读时间（分钟）
-  showWordCount?: boolean; // 是否显示字数统计
+	published: Date;
+	updated?: Date;
+	category?: string;
+	tags?: string[];
+	hideUpdateDate?: boolean;
+	hideTagsForMobile?: boolean;
+	isHome?: boolean;
+	className?: string;
+	id?: string;
+	showOnlyBasicMeta?: boolean; // 新增属性，控制是否只显示基本元数据
+	words?: number; // 字数统计
+	minutes?: number; // 阅读时间（分钟）
+	showWordCount?: boolean; // 是否显示字数统计
 }
 
 const {
-  published,
-  updated,
-  category,
-  tags,
-  hideUpdateDate,
-  hideTagsForMobile,
-  isHome,
-  className = "",
-  slug,
-  showOnlyBasicMeta = false, // 默认为false，保持原有行为
-  words,
-  minutes,
-  showWordCount = false // 默认不显示字数统计
+	published,
+	updated,
+	category,
+	tags,
+	hideUpdateDate,
+	hideTagsForMobile,
+	isHome,
+	className = "",
+	id,
+	showOnlyBasicMeta = false, // 默认为false，保持原有行为
+	words,
+	// minutes,
+	showWordCount = false, // 默认不显示字数统计
 } = Astro.props;
 ---
 
@@ -115,7 +114,7 @@ const {
     )}
     
     <!-- 访问量（首页不显示，且umami.enabled为true时显示） -->
-    {!isHome && umamiEnabled && slug && (
+    {!isHome && umamiEnabled && id && (
         <div class="flex items-center">
             <div class="meta-icon">
                 <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
@@ -126,8 +125,8 @@ const {
 </div>
 
 <!-- 只有在非首页且启用umami且有slug时才加载脚本 -->
-{!isHome && umamiEnabled && slug && (
-    <script define:vars={{ slug, umamiBaseUrl, umamiApiKey, umamiWebsiteId, umamiConfig }}>
+{!isHome && umamiEnabled && id && (
+    <script is:inline define:vars={{ id, umamiBaseUrl, umamiApiKey, umamiWebsiteId, umamiConfig }}>
         // 客户端统计文案生成函数
         function generateStatsText(pageViews, visitors) {
             return `浏览量 ${pageViews} · 访客 ${visitors}`;
@@ -135,13 +134,12 @@ const {
         
         // 获取访问量统计
         async function fetchPageViews(isRetry = false) {
-            if (!umamiConfig.enabled) {
-                return;
-            }
+            // @ts-ignore
+            if (!umamiConfig.enabled || !umamiWebsiteId || !id || !isRetry) return;
             
             try {
                 // 构造文章页面的URL路径
-                const pageUrl = `/posts/${slug}/`;
+                const pageUrl = `/posts/${id}/`;
                 
                 // 调用全局工具获取特定页面的 Umami 统计数据
                 const stats = await getUmamiPageStats(umamiBaseUrl, umamiApiKey, umamiWebsiteId, pageUrl);

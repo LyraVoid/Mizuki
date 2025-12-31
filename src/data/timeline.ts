@@ -206,14 +206,14 @@ export const timelineData: TimelineItem[] = [
 		icon: "material-symbols:code",
 		color: "#7C3AED",
 	},
-
 ];
 
 // Get timeline statistics
 export const getTimelineStats = () => {
 	const total = timelineData.length;
 	const byType = {
-		education: timelineData.filter((item) => item.type === "education").length,
+		education: timelineData.filter((item) => item.type === "education")
+			.length,
 		work: timelineData.filter((item) => item.type === "work").length,
 		project: timelineData.filter((item) => item.type === "project").length,
 		achievement: timelineData.filter((item) => item.type === "achievement")
@@ -228,14 +228,16 @@ export const getTimelineByType = (type?: string) => {
 	if (!type || type === "all") {
 		return timelineData.sort(
 			(a, b) =>
-				new Date(b.startDate).getTime() - new Date(a.startDate).getTime(),
+				new Date(b.startDate).getTime() -
+				new Date(a.startDate).getTime(),
 		);
 	}
 	return timelineData
 		.filter((item) => item.type === type)
 		.sort(
 			(a, b) =>
-				new Date(b.startDate).getTime() - new Date(a.startDate).getTime(),
+				new Date(b.startDate).getTime() -
+				new Date(a.startDate).getTime(),
 		);
 };
 
@@ -245,7 +247,8 @@ export const getFeaturedTimeline = () => {
 		.filter((item) => item.featured)
 		.sort(
 			(a, b) =>
-				new Date(b.startDate).getTime() - new Date(a.startDate).getTime(),
+				new Date(b.startDate).getTime() -
+				new Date(a.startDate).getTime(),
 		);
 };
 

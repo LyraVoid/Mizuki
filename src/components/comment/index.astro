@@ -1,16 +1,18 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { commentConfig } from "@/config";
+import { removeFileExtension } from "@/utils/url-utils";
 import Twikoo from "./Twikoo.astro";
 
 interface Props {
 	post: CollectionEntry<"posts">;
 }
 
-const { id, data, slug } = Astro.props.post;
+const { id, data: _data } = Astro.props.post;
 
+const slug = removeFileExtension(id);
 const path = `/posts/${slug}`;
-const url = `${Astro.site?.href}${path}`;
+// const url = `${Astro.site?.href}${path}`;
 
 let commentService = "";
 if (commentConfig?.enable && commentConfig?.twikoo) {

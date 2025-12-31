@@ -1,56 +1,166 @@
 ---
+import type { CollectionEntry } from "astro:content";
+import { render } from "astro:content";
 import path from "node:path";
 import Comment from "@components/comment/index.astro";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import PasswordProtection from "@components/PasswordProtection.astro";
+import SharePoster from "@components/misc/SharePoster.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
-import { getDir, getPostUrlBySlug } from "@utils/url-utils";
+import {
+	// getDir,
+	getFileDirFromPath,
+	getPostUrlBySlug,
+	removeFileExtension,
+} from "@utils/url-utils";
+import {
+	hasCustomPermalink,
+	initPostIdMap,
+} from "@utils/permalink-utils";
 import { Icon } from "astro-icon/components";
-import bcryptjs from "bcryptjs";
 import CryptoJS from "crypto-js";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { licenseConfig } from "src/config";
+import { licenseConfig, permalinkConfig, shareConfig } from "src/config";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
+
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
-	return blogEntries.map((entry) => ({
-		params: { slug: entry.slug },
-		props: { entry },
-	}));
+
+	// 初始化文章 ID 映射（用于 %post_id% 占位符）
+	initPostIdMap(blogEntries);
+
+	const paths: {
+		params: { slug: string };
+		props: { entry: CollectionEntry<"posts"> };
+	}[] = [];
+
+	for (const entry of blogEntries) {
+		// 将 id 转换为 slug（移除扩展名）以匹配路由参数
+		const defaultSlug = removeFileExtension(entry.id);
+
+		// 如果文章有自定义 permalink，不在 /posts/ 下创建路径
+		// 而是通过根目录的 [permalink].astro 处理
+		if (hasCustomPermalink(entry)) {
+			// 仍然需要在 /posts/ 下创建默认路径以便兼容旧链接
+			paths.push({
+				params: { slug: defaultSlug },
+				props: { entry },
+			});
+			continue;
+		}
+
+		// 如果全局 permalink 功能启用，不在 /posts/ 下创建路径
+		// 而是通过根目录的 [permalink].astro 处理
+		if (permalinkConfig.enable) {
+			// 仍然保留默认 slug 路径以便兼容旧链接
+			paths.push({
+				params: { slug: defaultSlug },
+				props: { entry },
+			});
+		} else {
+			// 全局 permalink 功能未启用
+			// 为每篇文章创建默认的 slug 路径
+			paths.push({
+				params: { slug: defaultSlug },
+				props: { entry },
+			});
+
+			// 如果文章有 alias，也创建对应的路径
+			if (entry.data.alias) {
+				// 移除开头的斜杠和结尾的斜杠
+				// 同时移除可能的 "posts/" 前缀，避免重复
+				let alias = entry.data.alias
+					.replace(/^\/+/, "")
+					.replace(/\/+$/, "");
+				if (alias.startsWith("posts/")) {
+					alias = alias.replace(/^posts\//, "");
+				}
+				paths.push({
+					params: { slug: alias },
+					props: { entry },
+				});
+			}
+		}
+	}
+
+	return paths;
 }
 
 const { entry } = Astro.props;
-const { Content, headings } = await entry.render();
+const { Content, headings } = await render(entry);
 
-const { remarkPluginFrontmatter } = await entry.render();
+const { remarkPluginFrontmatter } = await render(entry);
+
+// Process cover image for SharePoster
+let posterCoverUrl = entry.data.image;
+if (entry.data.image) {
+	const isLocal = !(
+		entry.data.image.startsWith("/") ||
+		entry.data.image.startsWith("http") ||
+		entry.data.image.startsWith("https") ||
+		entry.data.image.startsWith("data:")
+	);
+	if (isLocal) {
+		const basePath = getFileDirFromPath(entry.filePath || "");
+		const files = import.meta.glob<ImageMetadata>("../../**", {
+			import: "default",
+		});
+		let normalizedPath = path
+			.normalize(path.join("../../", basePath, entry.data.image))
+			.replace(/\\/g, "/");
+		const file = files[normalizedPath];
+		if (file) {
+			const img = await file();
+			posterCoverUrl = img.src;
+		}
+	}
+}
+
+// Process avatar image for SharePoster
+let posterAvatarUrl = profileConfig.avatar;
+if (profileConfig.avatar) {
+	const isLocal = !(
+		profileConfig.avatar.startsWith("/") ||
+		profileConfig.avatar.startsWith("http") ||
+		profileConfig.avatar.startsWith("https") ||
+		profileConfig.avatar.startsWith("data:")
+	);
+	if (isLocal) {
+		const files = import.meta.glob<ImageMetadata>("../../**", {
+			import: "default",
+		});
+		let normalizedPath = path
+			.normalize(path.join("../../", profileConfig.avatar))
+			.replace(/\\/g, "/");
+		const file = files[normalizedPath];
+		if (file) {
+			const img = await file();
+			posterAvatarUrl = img.src;
+		}
+	}
+}
 
 // 处理加密逻辑
 let encryptedContent = "";
-let passwordHash = "";
 let isEncrypted = entry.data.encrypted && entry.data.password;
 
 if (isEncrypted) {
-	// 对于加密文章，我们将使用内容进行加密
-	// 在客户端解密后，会通过JavaScript重新渲染
-	const contentToEncrypt = entry.body;
+    // 添加一个固定的前缀用于解密验证
+    const contentToEncrypt = "MIZUKI-VERIFY:" + entry.body;
 
-	// 使用AES加密内容
+    // 直接使用 CryptoJS 默认的 AES 加密
 	encryptedContent = CryptoJS.AES.encrypt(
-		contentToEncrypt,
-		entry.data.password,
-	).toString();
-
-	// 生成密码哈希
-	const saltRounds = 10;
-	passwordHash = bcryptjs.hashSync(entry.data.password, saltRounds);
+        contentToEncrypt,
+        String(entry.data.password)
+    ).toString();
 }
 
 dayjs.extend(utc);
@@ -83,15 +193,14 @@ const jsonLd = {
     description={entry.data.description}
     lang={entry.data.lang}
     setOGTypeArticle={true}
-    postSlug={entry.slug}
+    postSlug={entry.id}
     headings={headings}
 >
-    <script
-        is:inline
-        slot="head"
-        type="application/ld+json"
-        set:html={JSON.stringify(jsonLd)}
-    />
+    <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <!-- 引入右侧边栏布局管理器 -->
+  <script>
+    import('../../scripts/right-sidebar-layout.js');
+  </script>
     <div
         class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"
     >
@@ -158,15 +267,15 @@ const jsonLd = {
             <!-- metadata -->
             <div class="onload-animation">
                 <PostMetadata
-                    class="mb-5"
+                    className="mb-5"
                     published={entry.data.published}
                     updated={entry.data.updated}
                     tags={entry.data.tags}
-                    category={entry.data.category}
-                    slug={entry.slug}
+                    category={entry.data.category || undefined}
+                    id={entry.id}
                 />
                 {
-                    !entry.data.image && (
+                    (!entry.data.image|| (entry.data.image && !siteConfig.showCoverInContent)) && (
                         <div class="mt-4 border-[var(--line-divider)] border-dashed border-b-[1px] mb-5" />
                     )
                 }
@@ -175,13 +284,13 @@ const jsonLd = {
             <!-- always show cover as long as it has one -->
 
             {
-                entry.data.image && (
+                entry.data.image && siteConfig.showCoverInContent && (
                     <>
                         <div class="mt-4" />
                         <ImageWrapper
                             id="post-cover"
                             src={entry.data.image}
-                            basePath={path.join("content/posts/", getDir(entry.id))}
+                            basePath={getFileDirFromPath(entry.filePath || '')}
                             class="mb-8 rounded-xl banner-container onload-animation"
                         />
                     </>
@@ -192,17 +301,53 @@ const jsonLd = {
                 isEncrypted ? (
                     <PasswordProtection
                         encryptedContent={encryptedContent}
-                        passwordHash={passwordHash}
                     />
                 ) : (
                     <>
                         <Markdown class="mb-6 markdown-content onload-animation">
                             <Content />
                         </Markdown>
+                        
+                        {shareConfig.enable && (
+                            <div class="p-6 bg-[var(--license-block-bg)] rounded-xl mb-6 onload-animation">
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                    <div class="flex items-center gap-3 flex-1">
+                                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-[var(--enter-btn-bg)]">
+                                            <Icon
+                                                name="material-symbols:share"
+                                                class="text-3xl text-[var(--primary)]"
+                                            />
+                                        </div>
+                                        <div class="flex flex-col gap-1">
+                                            <div class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75">
+                                                {i18n(I18nKey.shareOnSocial)}
+                                            </div>
+                                            <p class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75">
+                                                {i18n(I18nKey.shareOnSocialDescription)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <SharePoster
+                                            client:load
+                                            title={entry.data.title}
+                                            author={entry.data.author || profileConfig.name}
+                                            description={entry.data.description || ""}
+                                            pubDate={formatDateToYYYYMMDD(entry.data.published)}
+                                            coverImage={posterCoverUrl}
+                                            url={Astro.url.toString()}
+                                            siteTitle={siteConfig.title}
+                                            avatar={posterAvatarUrl}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {licenseConfig.enable && (
                             <License
                                 title={entry.data.title}
-                                slug={entry.slug}
+                                id={entry.id}
                                 pubDate={entry.data.published}
                                 author={entry.data.author}
                                 sourceLink={entry.data.sourceLink}
@@ -288,21 +433,19 @@ const jsonLd = {
                     }
                     setInterval(runtime, 1000);
                 </script>
-                <div class="card-base p-1 mb-0.1">
-                    <div class="flex items-center gap-2">
-                        <div class="transition h-9 w-9 rounded-lg overflow-hidden relative flex items-center justify-center mr-0">
-                            <Icon
-                                name="material-symbols:history-rounded"
-                                class="text-4xl text-[var(--primary)] transition-transform group-hover:translate-x-0.5 bg-[var(--enter-btn-bg)] p-2 rounded-md"
-                            />
-                        </div>
-                       
-                        <div class="flex flex-col gap-0.1">
-                            <div id="modifiedtime" class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75"></div>
-                            <p class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75">
-                                {i18n(I18nKey.lastModifiedOutdated)}
-                            </p>
-                        </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-[var(--enter-btn-bg)]">
+                        <Icon
+                            name="material-symbols:history-rounded"
+                            class="text-3xl text-[var(--primary)]"
+                        />
+                    </div>
+                   
+                    <div class="flex flex-col gap-1">
+                        <div id="modifiedtime" class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75"></div>
+                        <p class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75">
+                            {i18n(I18nKey.lastModifiedOutdated)}
+                        </p>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,10 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
 ---
 
 <MainGridLayout title={i18n(I18nKey.notFound)} description={i18n(I18nKey.notFoundDescription)}>
+    <!-- 引入右侧边栏布局管理器 -->
+  <script>
+    import('../scripts/right-sidebar-layout.js');
+  </script>
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-96">
         <div class="card-base z-10 px-9 py-12 relative w-full flex flex-col items-center justify-center text-center">
             <!-- 404 大号数字 -->
@@ -31,7 +35,7 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
             <!-- 返回首页按钮 -->
             <a 
                 href="/" 
-                class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-[var(--radius-large)] hover:bg-[var(--primary-dark)] transition-colors duration-200 font-medium"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-[var(--radius-large)] hover:opacity-95 transition-colors transition-transform duration-200 font-medium"
             >
                 <Icon name="material-symbols:home" class="text-xl" />
                 {i18n(I18nKey.backToHome)}

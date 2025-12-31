@@ -119,9 +119,10 @@ const {
 
 <script>
   // 获取组件元素
-  const scrollbarEl = document.currentScript?.parentElement?.querySelector('.custom-scrollbar');
+  const scrollbarEl = document.currentScript?.parentElement?.querySelector('.custom-scrollbar') as HTMLElement | null;
   
   if (scrollbarEl) {
+    const el = scrollbarEl;
     // 创建滚动条轨道和拇指元素
     const track = document.createElement('div');
     const thumb = document.createElement('div');
@@ -147,7 +148,7 @@ const {
     thumb.style.zIndex = '10';
     
     // 根据方向设置轨道和拇指的位置和尺寸
-    if (scrollbarEl.dataset.orientation === 'horizontal') {
+    if (el.dataset.orientation === 'horizontal') {
       track.style.bottom = '2px';
       track.style.left = '0';
       track.style.right = '0';
@@ -168,15 +169,15 @@ const {
     }
     
     // 添加轨道和拇指到滚动条容器
-    scrollbarEl.appendChild(track);
-    scrollbarEl.appendChild(thumb);
+    el.appendChild(track);
+    el.appendChild(thumb);
     
     // 更新滚动条位置和尺寸的函数
     function updateScrollbar() {
-      if (scrollbarEl.dataset.orientation === 'horizontal') {
-        const scrollWidth = scrollbarEl.scrollWidth;
-        const clientWidth = scrollbarEl.clientWidth;
-        const scrollLeft = scrollbarEl.scrollLeft;
+      if (el.dataset.orientation === 'horizontal') {
+        const scrollWidth = el.scrollWidth;
+        const clientWidth = el.clientWidth;
+        const scrollLeft = el.scrollLeft;
         
         if (scrollWidth > clientWidth) {
           const thumbWidth = Math.max(20, (clientWidth / scrollWidth) * clientWidth);
@@ -186,9 +187,9 @@ const {
           thumb.style.left = `${thumbLeft}px`;
         }
       } else {
-        const scrollHeight = scrollbarEl.scrollHeight;
-        const clientHeight = scrollbarEl.clientHeight;
-        const scrollTop = scrollbarEl.scrollTop;
+        const scrollHeight = el.scrollHeight;
+        const clientHeight = el.clientHeight;
+        const scrollTop = el.scrollTop;
         
         if (scrollHeight > clientHeight) {
           const thumbHeight = Math.max(20, (clientHeight / scrollHeight) * clientHeight);
@@ -228,10 +229,10 @@ const {
     updateTheme();
     
     // 事件监听
-    scrollbarEl.addEventListener('scroll', updateScrollbar);
-    scrollbarEl.addEventListener('mouseenter', showScrollbar);
-    scrollbarEl.addEventListener('mouseleave', hideScrollbar);
-    scrollbarEl.addEventListener('mousedown', showScrollbar);
+    el.addEventListener('scroll', updateScrollbar);
+    el.addEventListener('mouseenter', showScrollbar);
+    el.addEventListener('mouseleave', hideScrollbar);
+    el.addEventListener('mousedown', showScrollbar);
     window.addEventListener('mouseup', hideScrollbar);
     
     // 监听主题变化

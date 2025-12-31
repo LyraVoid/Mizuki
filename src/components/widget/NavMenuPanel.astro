@@ -1,23 +1,54 @@
 ---
 import { Icon } from "astro-icon/components";
-import { type NavBarLink, LinkPreset } from "../../types/config";
 import { LinkPresets } from "../../constants/link-presets";
+import I18nKey from "../../i18n/i18nKey";
+import { i18n } from "../../i18n/translation";
+import { LinkPreset, type NavBarLink } from "../../types/config";
 import { url } from "../../utils/url-utils";
 
 interface Props {
 	links: NavBarLink[];
 }
 
+// 国际化标题映射
+const navTitleMap: Record<string, string> = {
+	Links: I18nKey.navLinks,
+	My: I18nKey.navMy,
+	About: I18nKey.navAbout,
+	Others: I18nKey.navOthers,
+	Anime: I18nKey.anime,
+	Diary: I18nKey.diary,
+	Gallery: I18nKey.albums,
+	Devices: I18nKey.devices,
+	Projects: I18nKey.projects,
+	Skills: I18nKey.skills,
+	Timeline: I18nKey.timeline,
+	Friends: I18nKey.friends,
+};
+
+// 获取国际化的标题
+const getLocalizedName = (name: string): string => {
+	const keyValue = navTitleMap[name];
+	if (keyValue) {
+		return i18n(keyValue as I18nKey);
+	}
+	return name;
+};
+
+type ProcessedNavBarLink = Omit<NavBarLink, "children"> & {
+	children?: ProcessedNavBarLink[];
+};
+
 // 处理links中的LinkPreset转换
-const processedLinks = Astro.props.links.map(
-	(link: NavBarLink): NavBarLink => ({
+const processedLinks: ProcessedNavBarLink[] = Astro.props.links.map(
+	(link: NavBarLink): ProcessedNavBarLink => ({
 		...link,
 		children: link.children?.map(
-			(child: NavBarLink | LinkPreset): NavBarLink => {
+			(child: NavBarLink | LinkPreset): ProcessedNavBarLink => {
 				if (typeof child === "number") {
-					return LinkPresets[child];
+					return LinkPresets[child] as ProcessedNavBarLink;
 				}
-				return child;
+				return child as ProcessedNavBarLink;
 			},
 		),
 	}),
@@ -37,7 +68,7 @@ const processedLinks = Astro.props.links.map(
                     >
                         <div class="flex items-center transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
                             {link.icon && <Icon name={link.icon} class="text-[1.1rem] mr-2" />}
-                            {link.name}
+                            {getLocalizedName(link.name)}
                         </div>
                         <Icon name="material-symbols:keyboard-arrow-down-rounded"
                               class="transition text-[1.25rem] text-[var(--primary)] mobile-dropdown-arrow duration-200"
@@ -52,7 +83,7 @@ const processedLinks = Astro.props.links.map(
                             >
                                 <div class="flex items-center transition text-black/60 dark:text-white/60 font-medium group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
                                     {child.icon && <Icon name={child.icon} class="text-[1.1rem] mr-2" />}
-                                    {child.name}
+                                    {getLocalizedName(child.name)}
                                 </div>
                                 {child.external && <Icon name="fa6-solid:arrow-up-right-from-square"
                                       class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1"
@@ -70,7 +101,7 @@ const processedLinks = Astro.props.links.map(
                 >
                     <div class="flex items-center transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
                         {link.icon && <Icon name={link.icon} class="text-[1.1rem] mr-2" />}
-                        {link.name}
+                        {getLocalizedName(link.name)}
                     </div>
                     {!link.external && <Icon name="material-symbols:chevron-right-rounded"
                           class="transition text-[1.25rem] text-[var(--primary)]"

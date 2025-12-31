@@ -8,6 +8,12 @@ export const en: Translation = {
 	[Key.search]: "Search",
 	[Key.other]: "Other",
 
+	// Navigation bar titles
+	[Key.navLinks]: "Links",
+	[Key.navMy]: "My",
+	[Key.navAbout]: "About",
+	[Key.navOthers]: "Others",
+
 	[Key.tags]: "Tags",
 	[Key.categories]: "Categories",
 	[Key.recentPosts]: "Recent Posts",
@@ -20,6 +26,14 @@ export const en: Translation = {
 
 	[Key.comments]: "Comments",
 	[Key.friends]: "Friends",
+	[Key.friendsSubtitle]: "Discover more excellent websites",
+	[Key.friendsSearchPlaceholder]: "Search friend name or description...",
+	[Key.friendsFilterAll]: "All",
+	[Key.friendsNoResults]: "No matching friends found",
+	[Key.friendsVisit]: "Visit",
+	[Key.friendsCopyLink]: "Copy Link",
+	[Key.friendsCopySuccess]: "Copied",
+	[Key.friendsTags]: "Tags",
 	[Key.untitled]: "Untitled",
 	[Key.uncategorized]: "Uncategorized",
 	[Key.noTags]: "No Tags",
@@ -44,6 +58,7 @@ export const en: Translation = {
 	[Key.license]: "License",
 	[Key.anime]: "Anime",
 	[Key.diary]: "Diary",
+	[Key.gallery]: "Gallery",
 
 	// Anime Page
 	[Key.animeTitle]: "My Anime List",
@@ -65,7 +80,6 @@ export const en: Translation = {
 	// Diary Page
 	[Key.diarySubtitle]: "Share life anytime, anywhere",
 	[Key.diaryCount]: "diary entries",
-	[Key.diaryImage]: "Image",
 	[Key.diaryReply]: "Reply",
 	[Key.diaryTips]: "Only show the latest 30 diary entries",
 	[Key.diaryMinutesAgo]: "minutes ago",
@@ -89,6 +103,10 @@ export const en: Translation = {
 	[Key.albumsEmptyDesc]:
 		"No albums have been created yet. Go add some beautiful memories!",
 	[Key.albumsBackToList]: "Back to Albums",
+
+	// Devices Page
+	[Key.devices]: "My Devices",
+	[Key.devicesSubtitle]: "Here are the devices I use in my daily life",
 	[Key.albumsPhotoCount]: "photo",
 	[Key.albumsPhotosCount]: "photos",
 
@@ -155,7 +173,8 @@ export const en: Translation = {
 		"Atom (Atom Syndication Format) is an XML-based standard for describing feeds and their items. With Atom, you can:",
 	[Key.atomBenefit1]:
 		"Get the latest website content in time without manually visiting",
-	[Key.atomBenefit2]: "Manage subscriptions to multiple websites in one place",
+	[Key.atomBenefit2]:
+		"Manage subscriptions to multiple websites in one place",
 	[Key.atomBenefit3]: "Avoid missing important updates and articles",
 	[Key.atomBenefit4]: "Enjoy an ad-free, clean reading experience",
 	[Key.atomHowToUse]:
@@ -235,7 +254,8 @@ export const en: Translation = {
 	[Key.passwordUnlockButton]: "Unlock",
 	[Key.copyFailed]: "Copy failed:",
 	[Key.syntaxHighlightFailed]: "Syntax highlighting failed:",
-	[Key.autoSyntaxHighlightFailed]: "Automatic syntax highlighting also failed:",
+	[Key.autoSyntaxHighlightFailed]:
+		"Automatic syntax highlighting also failed:",
 	[Key.decryptionError]: "An error occurred during decryption:",
 
 	// Last Modified Time Card
@@ -247,4 +267,47 @@ export const en: Translation = {
 	[Key.hour]: "h",
 	[Key.minute]: "min",
 	[Key.second]: "s",
+
+	// Site Stats
+	[Key.siteStats]: "Site Statistics",
+	[Key.siteStatsPostCount]: "Posts",
+	[Key.siteStatsCategoryCount]: "Categories",
+	[Key.siteStatsTagCount]: "Tags",
+	[Key.siteStatsTotalWords]: "Total Words",
+	[Key.siteStatsRunningDays]: "Running Time",
+	[Key.siteStatsLastUpdate]: "Last Activity",
+	[Key.siteStatsDaysAgo]: "{days} days ago",
+	[Key.siteStatsDays]: "{days} days",
+
+	// Calendar Component
+	[Key.calendarSunday]: "Sun",
+	[Key.calendarMonday]: "Mon",
+	[Key.calendarTuesday]: "Tue",
+	[Key.calendarWednesday]: "Wed",
+	[Key.calendarThursday]: "Thu",
+	[Key.calendarFriday]: "Fri",
+	[Key.calendarSaturday]: "Sat",
+	[Key.calendarJanuary]: "Jan",
+	[Key.calendarFebruary]: "Feb",
+	[Key.calendarMarch]: "Mar",
+	[Key.calendarApril]: "Apr",
+	[Key.calendarMay]: "May",
+	[Key.calendarJune]: "Jun",
+	[Key.calendarJuly]: "Jul",
+	[Key.calendarAugust]: "Aug",
+	[Key.calendarSeptember]: "Sep",
+	[Key.calendarOctober]: "Oct",
+	[Key.calendarNovember]: "Nov",
+	[Key.calendarDecember]: "Dec",
+
+	// Share Functionality
+	[Key.shareArticle]: "Share",
+	[Key.generatingPoster]: "Generating poster...",
+	[Key.copied]: "Copied",
+	[Key.copyLink]: "Copy Link",
+	[Key.savePoster]: "Save Poster",
+	[Key.scanToRead]: "Scan to Read",
+	[Key.shareOnSocial]: "Share",
+	[Key.shareOnSocialDescription]:
+		"If this article helped you, please share it with others!",
 };

@@ -6,18 +6,6 @@ export function pluginCustomCopyButton() {
 		name: "Custom Copy Button",
 		hooks: {
 			postprocessRenderedBlock: (context) => {
-				function traverse(node: Element) {
-					if (node.type === "element" && node.tagName === "pre") {
-						processCodeBlock(node);
-						return;
-					}
-					if (node.children) {
-						for (const child of node.children) {
-							if (child.type === "element") traverse(child);
-						}
-					}
-				}
-
 				function processCodeBlock(node: Element) {
 					const copyButton = {
 						type: "element" as const,
@@ -40,7 +28,10 @@ export function pluginCustomCopyButton() {
 										properties: {
 											viewBox: "0 -960 960 960",
 											xmlns: "http://www.w3.org/2000/svg",
-											className: ["copy-btn-icon", "copy-icon"],
+											className: [
+												"copy-btn-icon",
+												"copy-icon",
+											],
 										},
 										children: [
 											{
@@ -59,7 +50,10 @@ export function pluginCustomCopyButton() {
 										properties: {
 											viewBox: "0 -960 960 960",
 											xmlns: "http://www.w3.org/2000/svg",
-											className: ["copy-btn-icon", "success-icon"],
+											className: [
+												"copy-btn-icon",
+												"success-icon",
+											],
 										},
 										children: [
 											{
@@ -82,8 +76,7 @@ export function pluginCustomCopyButton() {
 					}
 					node.children.push(copyButton);
 				}
-
-				traverse(context.renderData.blockAst);
+				processCodeBlock(context.renderData.blockAst);
 			},
 		},
 	});

@@ -8,6 +8,12 @@ export const zh_TW: Translation = {
 	[Key.search]: "搜尋",
 	[Key.other]: "其他",
 
+	// 導航欄標題
+	[Key.navLinks]: "連結",
+	[Key.navMy]: "我的",
+	[Key.navAbout]: "關於",
+	[Key.navOthers]: "其他",
+
 	[Key.tags]: "標籤",
 	[Key.categories]: "分類",
 	[Key.recentPosts]: "最新文章",
@@ -20,6 +26,14 @@ export const zh_TW: Translation = {
 
 	[Key.comments]: "評論",
 	[Key.friends]: "友鏈",
+	[Key.friendsSubtitle]: "發現更多優秀網站",
+	[Key.friendsSearchPlaceholder]: "搜索友鏈名稱或描述...",
+	[Key.friendsFilterAll]: "全部",
+	[Key.friendsNoResults]: "未找到匹配的友鏈",
+	[Key.friendsVisit]: "訪問",
+	[Key.friendsCopyLink]: "複製鏈接",
+	[Key.friendsCopySuccess]: "已複製",
+	[Key.friendsTags]: "標籤",
 	[Key.untitled]: "無標題",
 	[Key.uncategorized]: "未分類",
 	[Key.noTags]: "無標籤",
@@ -44,6 +58,11 @@ export const zh_TW: Translation = {
 	[Key.license]: "許可協議",
 	[Key.anime]: "追番",
 	[Key.diary]: "日記",
+	[Key.gallery]: "相冊",
+
+	// 設備頁面
+	[Key.devices]: "我的設備",
+	[Key.devicesSubtitle]: "這裡展示了我日常使用的各類設備",
 
 	// 番劇頁面
 	[Key.animeTitle]: "我的追番記錄",
@@ -63,7 +82,6 @@ export const zh_TW: Translation = {
 	// 短文頁面
 	[Key.diarySubtitle]: "隨時隨地，分享生活",
 	[Key.diaryCount]: "條短文",
-	[Key.diaryImage]: "圖片",
 	[Key.diaryReply]: "回復",
 	[Key.diaryTips]: "只展示最近30條日記",
 	[Key.diaryMinutesAgo]: "分鐘前",
@@ -131,7 +149,8 @@ export const zh_TW: Translation = {
 	[Key.rssBenefit2]: "在一個地方管理多個網站的訂閱",
 	[Key.rssBenefit3]: "避免錯過重要更新和文章",
 	[Key.rssBenefit4]: "享受無廣告的純淨閱讀體驗",
-	[Key.rssHowToUse]: "推薦使用 Feedly、Inoreader 或其他 RSS 閱讀器來訂閱本站。",
+	[Key.rssHowToUse]:
+		"推薦使用 Feedly、Inoreader 或其他 RSS 閱讀器來訂閱本站。",
 	[Key.rssCopied]: "RSS 鏈接已複製到剪貼板！",
 	[Key.rssCopyFailed]: "複製失敗，請手動複製鏈接",
 
@@ -150,7 +169,8 @@ export const zh_TW: Translation = {
 	[Key.atomBenefit2]: "在一個地方管理多個網站的訂閱",
 	[Key.atomBenefit3]: "避免錯過重要更新和文章",
 	[Key.atomBenefit4]: "享受無廣告的純淨閱讀體驗",
-	[Key.atomHowToUse]: "推薦使用 Feedly、Inoreader 或其他 Atom 閱讀器來訂閱本站。",
+	[Key.atomHowToUse]:
+		"推薦使用 Feedly、Inoreader 或其他 Atom 閱讀器來訂閱本站。",
 	[Key.atomCopied]: "Atom 鏈接已複製到剪貼板！",
 	[Key.atomCopyFailed]: "複製失敗，請手動複製鏈接",
 
@@ -238,4 +258,47 @@ export const zh_TW: Translation = {
 	[Key.wallpaperBanner]: "橫幅模式",
 	[Key.wallpaperFullscreen]: "全屏模式",
 	[Key.wallpaperNone]: "隱藏壁紙",
+
+	// 站點統計
+	[Key.siteStats]: "站點統計",
+	[Key.siteStatsPostCount]: "文章數",
+	[Key.siteStatsCategoryCount]: "分類數",
+	[Key.siteStatsTagCount]: "標籤數",
+	[Key.siteStatsTotalWords]: "總字數",
+	[Key.siteStatsRunningDays]: "運行天數",
+	[Key.siteStatsLastUpdate]: "最後活動",
+	[Key.siteStatsDaysAgo]: "{days} 天前",
+	[Key.siteStatsDays]: "{days} 天",
+
+	// 日曆組件
+	[Key.calendarSunday]: "日",
+	[Key.calendarMonday]: "一",
+	[Key.calendarTuesday]: "二",
+	[Key.calendarWednesday]: "三",
+	[Key.calendarThursday]: "四",
+	[Key.calendarFriday]: "五",
+	[Key.calendarSaturday]: "六",
+	[Key.calendarJanuary]: "1月",
+	[Key.calendarFebruary]: "2月",
+	[Key.calendarMarch]: "3月",
+	[Key.calendarApril]: "4月",
+	[Key.calendarMay]: "5月",
+	[Key.calendarJune]: "6月",
+	[Key.calendarJuly]: "7月",
+	[Key.calendarAugust]: "8月",
+	[Key.calendarSeptember]: "9月",
+	[Key.calendarOctober]: "10月",
+	[Key.calendarNovember]: "11月",
+	[Key.calendarDecember]: "12月",
+
+	// 分享功能
+	[Key.shareArticle]: "分享",
+	[Key.generatingPoster]: "正在生成海報...",
+	[Key.copied]: "已複製",
+	[Key.copyLink]: "複製連結",
+	[Key.savePoster]: "儲存海報",
+	[Key.scanToRead]: "掃碼閱讀",
+	[Key.shareOnSocial]: "分享",
+	[Key.shareOnSocialDescription]:
+		"如果這篇文章對你有幫助，歡迎分享給更多人！",
 };

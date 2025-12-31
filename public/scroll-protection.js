@@ -23,18 +23,24 @@
 	function checkIsTOCNavigation() {
 		// 检查调用堆栈，看是否来自TOC组件
 		const stack = new Error().stack;
-		if (stack && (stack.includes('handleAnchorClick') || stack.includes('TOC.astro'))) {
+		if (
+			stack &&
+			(stack.includes("handleAnchorClick") || stack.includes("TOC.astro"))
+		) {
 			return true;
 		}
 
 		// 检查最近是否有TOC点击事件
-		if (window.tocClickTimestamp && Date.now() - window.tocClickTimestamp < 1000) {
+		if (
+			window.tocClickTimestamp &&
+			Date.now() - window.tocClickTimestamp < 1000
+		) {
 			return true;
 		}
 
 		// 检查是否在TOC元素上
 		const activeElement = document.activeElement;
-		if (activeElement && activeElement.closest('#toc, .table-of-contents')) {
+		if (activeElement && activeElement.closest("#toc, .table-of-contents")) {
 			return true;
 		}
 
@@ -75,7 +81,7 @@
 		// 检查是否是TOC或MD导航触发的滚动
 		const isTOCNavigation = checkIsTOCNavigation();
 		if (isTOCNavigation) {
-			console.log('[强力滚动保护] 检测到TOC导航，允许滚动');
+			console.log("[强力滚动保护] 检测到TOC导航，允许滚动");
 			return true;
 		}
 
@@ -163,9 +169,12 @@
 			const target = event.target;
 
 			// 检查是否点击了TOC导航
-			if (target.closest('#toc, .table-of-contents') && target.closest('a[href^="#"]')) {
+			if (
+				target.closest("#toc, .table-of-contents") &&
+				target.closest('a[href^="#"]')
+			) {
 				window.tocClickTimestamp = Date.now();
-				console.log('[强力滚动保护] 检测到TOC导航点击');
+				console.log("[强力滚动保护] 检测到TOC导航点击");
 				return; // 不启动保护，允许TOC正常工作
 			}
 

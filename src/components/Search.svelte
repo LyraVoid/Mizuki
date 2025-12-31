@@ -2,10 +2,11 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import Icon from "@iconify/svelte";
+import { navigateToPage } from "@utils/navigation-utils";
 import { url } from "@utils/url-utils.ts";
 import { onMount } from "svelte";
 import type { SearchResult } from "@/global";
-import { navigateToPage } from "@utils/navigation-utils";
+import { panelManager } from "../utils/panel-manager.js";
 
 let keywordDesktop = "";
 let keywordMobile = "";
@@ -32,27 +33,20 @@ const fakeResult: SearchResult[] = [
 	},
 ];
 
-const togglePanel = () => {
-	const panel = document.getElementById("search-panel");
-	panel?.classList.toggle("float-panel-closed");
+const togglePanel = async () => {
+	await panelManager.togglePanel("search-panel");
 };
 
-const setPanelVisibility = (show: boolean, isDesktop: boolean): void => {
-	const panel = document.getElementById("search-panel");
-	if (!panel || !isDesktop) return;
-
-	if (show) {
-		panel.classList.remove("float-panel-closed");
-	} else {
-		panel.classList.add("float-panel-closed");
-	}
+const setPanelVisibility = async (
+	show: boolean,
+	isDesktop: boolean,
+): Promise<void> => {
+	if (!isDesktop) return;
+	await panelManager.togglePanel("search-panel", show);
 };
 
-const closeSearchPanel = (): void => {
-	const panel = document.getElementById("search-panel");
-	if (panel) {
-		panel.classList.add("float-panel-closed");
-	}
+const closeSearchPanel = async (): Promise<void> => {
+	await panelManager.closePanel("search-panel");
 	// 清空搜索关键词和结果
 	keywordDesktop = "";
 	keywordMobile = "";

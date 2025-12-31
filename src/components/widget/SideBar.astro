@@ -2,22 +2,32 @@
 import type { MarkdownHeading } from "astro";
 import { widgetManager } from "../../utils/widget-manager";
 import Announcement from "./Announcement.astro";
+import Calendar from "./Calendar.astro";
 import Categories from "./Categories.astro";
 import MusicPlayer from "./MusicPlayer.svelte";
 import Profile from "./Profile.astro";
+import SiteStats from "./SiteStats.astro";
 import Tags from "./Tags.astro";
 import TOC from "./TOC.astro";
 
 interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
+	isBothSidebarMode?: boolean;
 }
 
 const { class: className, headings } = Astro.props;
 
 // 获取配置的组件列表
-const topComponents = widgetManager.getComponentsByPosition("top");
-const stickyComponents = widgetManager.getComponentsByPosition("sticky");
+// 在双侧边栏模式下，桌面端只获取左侧组件
+// 手机端仍然获取所有组件（不指定sidebar参数）以保持原有布局
+const isBothSidebarMode = Astro.props.isBothSidebarMode ?? false;
+const topComponents = isBothSidebarMode
+	? widgetManager.getComponentsByPosition("top", "left")
+	: widgetManager.getComponentsByPosition("top");
+const stickyComponents = isBothSidebarMode
+	? widgetManager.getComponentsByPosition("sticky", "left")
+	: widgetManager.getComponentsByPosition("sticky");
 
 // 组件映射表
 const componentMap = {
@@ -27,6 +37,8 @@ const componentMap = {
 	tags: Tags,
 	toc: TOC,
 	"music-player": MusicPlayer,
+	"site-stats": SiteStats,
+	calendar: Calendar,
 };
 
 // 渲染组件的辅助函数
@@ -81,19 +93,19 @@ function renderComponent(component: any, index: number, _components: any[]) {
 <!-- 响应式样式和JavaScript -->
 <style>
 	/* 响应式断点样式 */
-	@media (max-width: 768px) {
+	@media (max-width: 1280px) {
 		#sidebar {
 			display: var(--sidebar-mobile-display, block);
 		}
 	}
 	
-	@media (min-width: 769px) and (max-width: 1024px) {
+	@media (min-width: 769px) and (max-width: 1279px) {
 		#sidebar {
 			display: var(--sidebar-tablet-display, block);
 		}
 	}
-	
-	@media (min-width: 1025px) {
+
+	@media (min-width: 1280px) {
 		#sidebar {
 			display: var(--sidebar-desktop-display, block);
 		}
@@ -128,7 +140,7 @@ function renderComponent(component: any, index: number, _components: any[]) {
 			const breakpoints = widgetManager.getBreakpoints();
 			const width = window.innerWidth;
 			
-			let deviceType: 'mobile' | 'tablet' | 'desktop';
+			let deviceType;
 			if (width < breakpoints.mobile) {
 				deviceType = 'mobile';
 			} else if (width < breakpoints.tablet) {

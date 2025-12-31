@@ -1,5 +1,5 @@
 import { getImage } from "astro:assets";
-import { getCollection } from "astro:content";
+// import { getCollection } from "astro:content";
 import type { RSSFeedItem } from "@astrojs/rss";
 import rss from "@astrojs/rss";
 import type { APIContext, ImageMetadata } from "astro";
@@ -8,6 +8,8 @@ import { parse as htmlParser } from "node-html-parser";
 import sanitizeHtml from "sanitize-html";
 import { siteConfig } from "@/config";
 import { getSortedPosts } from "@/utils/content-utils";
+import { getPostUrl } from "@/utils/url-utils";
+import { initPostIdMap } from "@/utils/permalink-utils";
 
 const markdownParser = new MarkdownIt();
 
@@ -22,12 +24,18 @@ export async function GET(context: APIContext) {
 	}
 
 	// Use the same ordering as site listing (pinned first, then by published desc)
-	const posts = (await getSortedPosts()).filter((post) => !post.data.encrypted);
+	const posts = (await getSortedPosts()).filter(
+		(post) => !post.data.encrypted,
+	);
+
+	// 初始化文章 ID 映射（用于 permalink 功能）
+	initPostIdMap(posts);
+
 	const feed: RSSFeedItem[] = [];
 
 	for (const post of posts) {
 		// convert markdown to html string, ensure post.body is a string
-        const body = markdownParser.render(String(post.body ?? ""));
+		const body = markdownParser.render(String(post.body ?? ""));
 		// convert html string to DOM-like structure
 		const html = htmlParser.parse(body);
 		// hold all img tags in variable images
@@ -50,7 +58,9 @@ export async function GET(context: APIContext) {
 					const prefixRemoved = src.slice(2);
 					// Check if this post is in a subdirectory (like bestimageapi/index.md)
 					const postPath = post.id; // This gives us the full path like "bestimageapi/index.md"
-					const postDir = postPath.includes("/") ? postPath.split("/")[0] : "";
+					const postDir = postPath.includes("/")
+						? postPath.split("/")[0]
+						: "";
 
 					if (postDir) {
 						// For posts in subdirectories
@@ -66,7 +76,9 @@ export async function GET(context: APIContext) {
 				} else {
 					// Handle direct filename (no ./ prefix) - assume it's in the same directory as the post
 					const postPath = post.id; // This gives us the full path like "bestimageapi/index.md"
-					const postDir = postPath.includes("/") ? postPath.split("/")[0] : "";
+					const postDir = postPath.includes("/")
+						? postPath.split("/")[0]
+						: "";
 
 					if (postDir) {
 						// For posts in subdirectories
@@ -82,7 +94,10 @@ export async function GET(context: APIContext) {
 				);
 				if (imageMod) {
 					const optimizedImg = await getImage({ src: imageMod });
-					img.setAttribute("src", new URL(optimizedImg.src, context.site).href);
+					img.setAttribute(
+						"src",
+						new URL(optimizedImg.src, context.site).href,
+					);
 				} else {
 					// Debug: log the failed import path
 					console.log(
@@ -99,7 +114,7 @@ export async function GET(context: APIContext) {
 			title: post.data.title,
 			description: post.data.description,
 			pubDate: post.data.published,
-			link: `/posts/${post.slug}/`,
+			link: getPostUrl(post),
 			// sanitize the new html string with corrected image paths
 			content: sanitizeHtml(html.toString(), {
 				allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
