@@ -1,13 +1,9 @@
 ---
 import { getEntry, render } from "astro:content";
 import Markdown from "@components/misc/Markdown.astro";
-<<<<<<< HEAD
-import { siteConfig } from "../config";
-=======
 // import Icon from "../components/misc/Icon.astro";
 import { siteConfig } from "../config";
 import { getShuffledFriendsList } from "../data/friends";
->>>>>>> upstream/master
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
@@ -24,48 +20,7 @@ if (!friendsPost) {
 }
 
 const { Content } = await render(friendsPost);
-<<<<<<< HEAD
-const items = [
-	{
-		title: "Astro",
-		imgurl: "https://avatars.githubusercontent.com/u/44914786?v=4&s=640",
-		desc: "The web framework for content-driven websites. ⭐️ Star to support our work!",
-		siteurl: "https://github.com/withastro/astro",
-		tags: ["Framework"],
-	},
-	{
-		title: "Mizuki Docs",
-		imgurl:
-			"http://q.qlogo.cn/headimg_dl?dst_uin=3231515355&spec=640&img_type=jpg",
-		desc: "Mizuki User Manual",
-		siteurl: "https://docs.mizuki.mysqil.com",
-		tags: ["Docs"],
-	},
-	{
-		title: "Cyber Neko",
-		imgurl: "https://avatars.githubusercontent.com/u/51205428?v=4",
-		desc: "可爱赛博猫猫",
-		siteurl: "https://github.com/byteTravell3r",
-		tags: ["cyberNeko"],
-	},
-	{
-		title: "123SummerTime",
-		imgurl: "https://123summertime.top/images/static/avatar.jpg",
-		desc: "夏神",
-		siteurl: "https://123summertime.top",
-		tags: ["vrchatFriend"],
-	},
-	{
-		title: "粟悟饭与龟波功",
-		imgurl: "https://ooo.0x0.ooo/2025/03/30/O0OCxU.jpg",
-		desc: "有着绝绝牛牛子的伪人",
-		siteurl: "https://www.jjnnz.sbs/",
-		tags: ["vrchatFriend"],
-	},
-];
-=======
 const friendsList = getShuffledFriendsList();
->>>>>>> upstream/master
 
 // 获取所有标签
 const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
