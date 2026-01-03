@@ -153,14 +153,15 @@
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
 
     /* 外观设置 */
     border: 1px solid var(--line-divider);
     border-radius: var(--radius-large);
     border-spacing: 0;
     border-collapse: separate;
-    margin: 1.5rem 0;
+    margin: 0;
     background-color: var(--card-bg);
 
     /* --- 滚动条样式 --- */
@@ -170,7 +171,7 @@
     }
     &::-webkit-scrollbar-track {
       background: transparent;
-      margin: 0 calc(var(--radius-large) + 2px); 
+      margin: 0 calc(var(--radius-large) + 2px);
     }
     &::-webkit-scrollbar-thumb {
       background: var(--scrollbar-bg);
@@ -182,9 +183,15 @@
     &::-webkit-scrollbar-thumb:active {
       background: var(--scrollbar-bg-active);
     }
+
+    /* PC端使用 display: table 以对齐外边框 */
+    @media (min-width: 768px) {
+      display: table;
+    }
   }
 
-  th, td {
+  th,
+  td {
     padding: 0.75rem 1rem;
     white-space: nowrap;
     border-bottom: 1px solid var(--line-divider);

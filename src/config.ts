@@ -10,6 +10,7 @@ import type {
 	PermalinkConfig,
 	ProfileConfig,
 	SakuraConfig,
+	ShareConfig,
 	SidebarLayoutConfig,
 	SiteConfig,
 } from "./types/config";
@@ -447,6 +448,10 @@ export const commentConfig: CommentConfig = {
 	},
 };
 
+export const shareConfig: ShareConfig = {
+	enable: true, // 启用分享功能。当设置为 false 时，分享组件将不会显示在文章区域，且不会加载分享组件使用的库
+};
+
 export const announcementConfig: AnnouncementConfig = {
 	title: "公告", // 公告标题
 	content: "Welcome to my blog! This is a sample announcement.", // 公告内容
@@ -690,6 +695,7 @@ export const widgetConfigs = {
 	sakura: sakuraConfig,
 	fullscreenWallpaper: fullscreenWallpaperConfig,
 	pio: pioConfig, // 添加 pio 配置
+	share: shareConfig, // 添加分享配置
 } as const;
 
 export const umamiConfig = {

@@ -100,6 +100,7 @@ export type SiteConfig = {
 	// 添加bangumi配置
 	bangumi?: {
 		userId?: string; // Bangumi用户ID
+		fetchOnDev?: boolean;
 	};
 
 	// 添加番剧页面配置
@@ -440,4 +441,11 @@ export type PioConfig = {
 			text?: string; // 自定义文本
 		}>;
 	};
+};
+
+/**
+ * 分享组件配置
+ */
+export type ShareConfig = {
+	enable: boolean; // 是否启用分享功能
 };

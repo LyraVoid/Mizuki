@@ -10,7 +10,8 @@
 		"dev": "astro dev",
 		"start": "astro dev",
 		"check": "astro check",
-		"build": "astro build && pagefind --site dist && node scripts/compress-fonts.js",
+		"update-anime": "node scripts/update-bangumi.mjs",
+		"build": "node scripts/update-bangumi.mjs && astro build && pagefind --site dist && node scripts/compress-fonts.js",
 		"submit": "node scripts/indexnow-submit.js",
 		"preview": "astro preview",
 		"astro": "astro",
@@ -56,6 +57,7 @@
 		"overlayscrollbars": "^2.13.0",
 		"pagefind": "^1.4.0",
 		"photoswipe": "^5.4.4",
+		"qrcode": "^1.5.4",
 		"reading-time": "^1.5.0",
 		"rehype-autolink-headings": "^7.1.0",
 		"rehype-components": "^0.3.0",
@@ -70,7 +72,7 @@
 		"satori": "^0.18.3",
 		"sharp": "^0.34.5",
 		"stylus": "^0.64.0",
-		"svelte": "^5.45.5",
+		"svelte": "^5.46.1",
 		"tailwindcss": "^3.4.18",
 		"typescript": "^5.9.3",
 		"unist-util-visit": "^5.0.0"
@@ -82,6 +84,7 @@
 		"@types/hast": "^3.0.4",
 		"@types/markdown-it": "^14.1.2",
 		"@types/mdast": "^4.0.4",
+		"@types/qrcode": "^1.5.6",
 		"@types/sanitize-html": "^2.16.0",
 		"fontmin": "^1.1.1",
 		"postcss-import": "^16.1.1",
@@ -90,8 +93,8 @@
 	},
 	"packageManager": "pnpm@10.22.0",
 	"pnpm": {
-    "overrides": {
-      "@emmetio/css-parser": "https://codeload.github.com/ramya-rao-a/css-parser/tar.gz/370c480ac103bd17c7bcfb34bf5d577dc40d3660"
-    }
-  }
+		"overrides": {
+			"@emmetio/css-parser": "https://codeload.github.com/ramya-rao-a/css-parser/tar.gz/370c480ac103bd17c7bcfb34bf5d577dc40d3660"
+		}
+	}
 }

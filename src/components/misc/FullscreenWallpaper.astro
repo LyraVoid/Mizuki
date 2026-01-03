@@ -1,5 +1,4 @@
 ---
-// import { Image } from "astro:assets";
 import { siteConfig } from "../../config";
 import type { FullscreenWallpaperConfig } from "../../types/config";
 
@@ -14,89 +13,75 @@ const { config, className } = Astro.props;
 const getImageSources = async () => {
 	let srcConfig = config.src;
 
-	// 如果启用了图片API，使用API图片
+	// API 图片逻辑
 	if (siteConfig.banner.imageApi?.enable && siteConfig.banner.imageApi?.url) {
 		try {
 			const response = await fetch(siteConfig.banner.imageApi.url);
 			const text = await response.text();
 			const apiImages = text.split("\n").filter((line) => line.trim());
-
 			if (apiImages.length > 0) {
-				// 将API图片同时用于桌面端和移动端
-				return {
-					desktop: apiImages,
-					mobile: apiImages,
-				};
+				return { desktop: apiImages, mobile: apiImages };
 			}
 		} catch (error) {
-			console.warn("Failed to fetch images from API for wallpaper:", error);
+			console.warn("Failed to fetch images from API:", error);
 		}
 	}
 
-	const toArray = (src: string | string[] | undefined): string[] => {
-		if (Array.isArray(src)) return src;
-		if (typeof src === "string") return [src];
-		return [];
-	};
-	if (
-		typeof srcConfig === "object" &&
-		srcConfig !== null &&
-		!Array.isArray(srcConfig) &&
-		("desktop" in srcConfig || "mobile" in srcConfig)
-	) {
-		const srcObj = srcConfig as {
-			desktop?: string | string[];
-			mobile?: string | string[];
-		};
-		const desktop = toArray(srcObj.desktop);
-		const mobile = toArray(srcObj.mobile);
+	const toArray = (src: string | string[] | undefined): string[] => 
+		Array.isArray(src) ? src : (typeof src === "string" ? [src] : []);
+
+	if (typeof srcConfig === "object" && srcConfig !== null && !Array.isArray(srcConfig)) {
+		const desktop = toArray(srcConfig.desktop);
+		const mobile = toArray(srcConfig.mobile);
 		return {
 			desktop: desktop.length > 0 ? desktop : mobile,
 			mobile: mobile.length > 0 ? mobile : desktop,
 		};
 	}
+
 	// 如果是字符串或字符串数组，同时用于桌面端和移动端
 	const allImages = toArray(srcConfig as string | string[]);
-	return {
-		desktop: allImages,
-		mobile: allImages,
-	};
+	return { desktop: allImages, mobile: allImages };
 };
 
 const imageSources = await getImageSources();
 const hasDesktopImages = imageSources.desktop.length > 0;
 const hasMobileImages = imageSources.mobile.length > 0;
 
-// 如果没有任何图片源，不渲染
-if (!hasDesktopImages && !hasMobileImages) {
-	return null;
-}
+if (!hasDesktopImages && !hasMobileImages) return null;
 
-// 轮播相关逻辑
-const isCarouselEnabled =
-	config.carousel?.enable &&
+// 轮播配置
+const isCarouselEnabled = config.carousel?.enable && 
 	(imageSources.desktop.length > 1 || imageSources.mobile.length > 1);
 const carouselInterval = config.carousel?.interval || 5;
 
-// 样式相关
+// 样式配置
 const position = config.position || "center";
 const zIndex = config.zIndex || -1;
 const opacity = config.opacity || 0.8;
 const blur = config.blur || 0;
-
-// 生成位置类名
-const getPositionClass = (pos: string) => {
-	switch (pos) {
-		case "top":
-			return "object-top";
-		case "bottom":
-			return "object-bottom";
-		default:
-			return "object-center";
+const positionClass = (() => {
+	switch (position) {
+		case "top": return "object-top";
+		case "bottom": return "object-bottom";
+		default: return "object-center";
 	}
-};
+})();
 
-const positionClass = getPositionClass(position);
+const renderGroups = [
+	{
+		key: 'desktop',
+		images: imageSources.desktop,
+		containerClass: "hidden lg:block",
+		hasImages: hasDesktopImages
+	},
+	{
+		key: 'mobile',
+		images: imageSources.mobile,
+		containerClass: "block lg:hidden",
+		hasImages: hasMobileImages
+	}
+];
 ---
 
 <div 
@@ -104,126 +89,132 @@ const positionClass = getPositionClass(position);
 		"fixed inset-0 w-full h-full overflow-hidden pointer-events-none",
 		className
 	]}
-	style={`z-index: ${zIndex}; opacity: ${opacity};`}
+	style={`z-index: ${zIndex}; opacity: ${opacity}; transform: translateZ(0); perspective: 1000px;`}
 	data-fullscreen-wallpaper
 >
-<script is:inline>
-// 根据 localStorage 立即设置全屏壁纸初始显示状态，避免闪烁
-(function() {
-	const wallpaperMode = localStorage.getItem('wallpaperMode') || 'banner';
-	const fullscreenWallpaper = document.currentScript.parentElement;
-	if (wallpaperMode !== 'fullscreen') {
-		fullscreenWallpaper.style.display = 'none';
-	}
-})();
-</script>
-	<!-- 桌面端壁纸 -->
-	{hasDesktopImages && (
-		<div class="hidden lg:block w-full h-full relative">
-			{imageSources.desktop.map((src, index) => {
-				const isLocal = !src.startsWith("http");
-				const imageClass = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}`;
-				
-				if (isLocal) {
-					// 对于本地图片，使用img标签而不是Image组件
-					return (
-						<img
-							src={src}
-							alt={`Desktop wallpaper ${index + 1}`}
-							class={imageClass}
-							data-carousel-item={isCarouselEnabled ? index : undefined}
-							style={blur > 0 ? `filter: blur(${blur}px);` : undefined}
-						/>
-					);
-				} else {
-					return (
-						<img
-							src={src}
-							alt={`Desktop wallpaper ${index + 1}`}
-							class={imageClass}
-							data-carousel-item={isCarouselEnabled ? index : undefined}
-							style={blur > 0 ? `filter: blur(${blur}px);` : undefined}
-						/>
-					);
-				}
-			})}
-		</div>
-	)}
+	<script is:inline>
+	// 立即执行脚本：防止闪烁
+	(function() {
+		const mode = localStorage.getItem('wallpaperMode') || 'banner';
+		if (mode !== 'fullscreen') {
+			document.currentScript.parentElement.style.display = 'none';
+		}
+	})();
+	</script>
 
-	<!-- 移动端壁纸 -->
-	{hasMobileImages && (
-		<div class="block lg:hidden w-full h-full relative">
-			{imageSources.mobile.map((src, index) => {
-				const isLocal = !src.startsWith("http");
-				const imageClass = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}`;
-				
-				if (isLocal) {
-					// 对于本地图片，使用img标签而不是Image组件
-					return (
-						<img
-							src={src}
-							alt={`Mobile wallpaper ${index + 1}`}
-							class={imageClass}
-							data-carousel-item={isCarouselEnabled ? index : undefined}
-							style={blur > 0 ? `filter: blur(${blur}px);` : undefined}
-						/>
-					);
-				} else {
-					return (
-						<img
-							src={src}
-							alt={`Mobile wallpaper ${index + 1}`}
-							class={imageClass}
-							data-carousel-item={isCarouselEnabled ? index : undefined}
-							style={blur > 0 ? `filter: blur(${blur}px);` : undefined}
-						/>
-					);
-				}
-			})}
+	{renderGroups.map(group => group.hasImages && (
+		<div class={`${group.containerClass} w-full h-full relative`} style="transform: translateZ(0);">
+			{group.images.map((src, index) => (
+				<img
+					src={src}
+					alt={`${group.key} wallpaper ${index + 1}`}
+					class={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}`}
+					data-carousel-item={isCarouselEnabled ? index : undefined}
+					style={`transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blur > 0 ? `filter: blur(${blur}px);` : ''}; opacity: ${index === 0 ? 1 : 0};`}
+					decoding="async"
+					loading={index === 0 ? "eager" : "lazy"} 
+				/>
+			))}
 		</div>
-	)}
+	))}
 </div>
 
 {isCarouselEnabled && (
 	<script is:inline define:vars={{ carouselInterval }}>
-		// 全屏壁纸轮播逻辑
 		function initFullscreenWallpaperCarousel() {
-			const wallpaperContainer = document.querySelector('[data-fullscreen-wallpaper]');
-			if (!wallpaperContainer) return;
+			const container = document.querySelector('[data-fullscreen-wallpaper]');
+			if (!container) return;
 
-			const desktopItems = wallpaperContainer.querySelectorAll('.hidden.lg\\:block [data-carousel-item]');
-			const mobileItems = wallpaperContainer.querySelectorAll('.block.lg\\:hidden [data-carousel-item]');
+			if (window.__wallpaper_cleanup) {
+				window.__wallpaper_cleanup();
+				window.__wallpaper_cleanup = null;
+			}
 
-			function startCarousel(items) {
-				if (items.length <= 1) return;
+			const STORAGE_KEY = 'mizuki_wallpaper_index';
+			let savedIndex = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0');
 
-				let currentIndex = 0;
+			const groups = [
+				container.querySelectorAll('.hidden.lg\\:block [data-carousel-item]'),
+				container.querySelectorAll('.block.lg\\:hidden [data-carousel-item]')
+			];
+
+			const state = groups.map(items => {
+				const safeIndex = (savedIndex >= 0 && savedIndex < items.length) ? savedIndex : 0;
+				return {
+					items,
+					currentIndex: safeIndex,
+					timer: null,
+					active: items.length > 1
+				};
+			});
+
+			// 初始化显示：根据 savedIndex 立即修正图片显示
+			function initImage(stateItem) {
+				const { items, currentIndex } = stateItem;
+				// 立即设置样式，防止视觉上跳回第一张
+				for (let i = 0; i < items.length; i++) {
+					items[i].style.opacity = i === currentIndex ? '1' : '0';
+				}
+			}
+
+			// 切换下一张
+			function switchNextImage(stateItem) {
+				const { items, currentIndex } = stateItem;
+				const nextIndex = (currentIndex + 1) % items.length;
 				
-				// 初始化：显示第一张，隐藏其他
-				items.forEach((item, index) => {
-					item.style.opacity = index === 0 ? '1' : '0';
+				items[currentIndex].style.opacity = '0';
+				items[nextIndex].style.opacity = '1';
+				
+				stateItem.currentIndex = nextIndex;
+
+				sessionStorage.setItem(STORAGE_KEY, nextIndex.toString());
+			}
+
+			function start() {
+				state.forEach(s => {
+					if (s.active && !s.timer) {
+						s.timer = setInterval(() => {
+							if (!document.body.contains(s.items[0])) {
+								stop();
+								return;
+							}
+							switchNextImage(s);
+						}, carouselInterval * 1000);
+					}
 				});
-
-				// 开始轮播
-				setInterval(() => {
-					// 隐藏当前图片
-					items[currentIndex].style.opacity = '0';
-					
-					// 切换到下一张
-					currentIndex = (currentIndex + 1) % items.length;
-					
-					// 显示下一张图片
-					items[currentIndex].style.opacity = '1';
-				}, carouselInterval * 1000);
 			}
 
-			// 分别为桌面端和移动端启动轮播
-			if (desktopItems.length > 0) {
-				startCarousel(desktopItems);
+			function stop() {
+				state.forEach(s => {
+					if (s.timer) {
+						clearInterval(s.timer);
+						s.timer = null;
+					}
+				});
 			}
-			if (mobileItems.length > 0) {
-				startCarousel(mobileItems);
-			}
+
+			const handleVisibilityChange = () => {
+				if (document.hidden) {
+					stop();
+				} else {
+					const exists = state.some(s => s.items.length > 0 && document.body.contains(s.items[0]));
+					if (exists) start();
+				}
+			};
+
+			// 初始化状态
+			state.forEach(s => {
+				if (s.items.length > 0) initImage(s);
+			});
+
+			start();
+
+			document.addEventListener('visibilitychange', handleVisibilityChange);
+
+			window.__wallpaper_cleanup = () => {
+				stop();
+				document.removeEventListener('visibilitychange', handleVisibilityChange);
+			};
 		}
 
 		// 页面加载完成后初始化轮播

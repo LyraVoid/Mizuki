@@ -302,4 +302,15 @@ export const ja: Translation = {
 	[Key.calendarOctober]: "10月",
 	[Key.calendarNovember]: "11月",
 	[Key.calendarDecember]: "12月",
+
+	// シェア機能
+	[Key.shareArticle]: "シェア",
+	[Key.generatingPoster]: "ポスターを生成中...",
+	[Key.copied]: "コピーしました",
+	[Key.copyLink]: "リンクをコピー",
+	[Key.savePoster]: "ポスターを保存",
+	[Key.scanToRead]: "QRコードで読む",
+	[Key.shareOnSocial]: "シェア",
+	[Key.shareOnSocialDescription]:
+		"この記事が役に立った場合は、ぜひ他の人とシェアしてください！",
 };

@@ -5,206 +5,101 @@ import localAnimeList from "../data/anime";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
+import fs from "node:fs";
+import path from "node:path";
+import "../styles/anime.css";
 
-// 检查番剧页面是否启用
+interface AnimeItem {
+	title: string;
+	cover: string;
+	link: string;
+	status: string;
+	rating: number;
+	progress: number;
+	totalEpisodes: number;
+	description: string;
+	year: string;
+	studio: string;
+	genre: string[];
+}
+
 if (!siteConfig.featurePages.anime) {
 	return Astro.redirect("/404/");
 }
 
-// 检查是否为双侧边栏模式
 const isBothSidebarMode = sidebarLayoutConfig.position === "both";
-
-// Bangumi API配置
-const BANGUMI_USER_ID = siteConfig.bangumi?.userId || "your-user-id"; // 用户ID
-const BANGUMI_API_BASE = "https://api.bgm.tv";
-
-// 获取番剧数据模式(不需要更改，请在主配置src/config.ts中修改)
+const BANGUMI_USER_ID = siteConfig.bangumi?.userId || "your-user-id";
 const ANIME_MODE = siteConfig.anime?.mode || "bangumi";
 
-// 获取单个条目相关人员信息
-async function fetchSubjectPersons(subjectId: number) {
-	try {
-		const response = await fetch(
-			`${BANGUMI_API_BASE}/v0/subjects/${subjectId}/persons`,
-		);
-		const data = await response.json();
-		return Array.isArray(data) ? data : [];
-	} catch (error) {
-		console.error(`Error fetching subject ${subjectId} persons:`, error);
-		return [];
-	}
-}
+let animeList: AnimeItem[] = [];
 
-// 获取Bangumi收藏列表
-async function fetchBangumiCollection(
-	userId: string,
-	subjectType: number,
-	type: number,
-) {
-	try {
-		let allData: any[] = [];
-		let offset = 0;
-		const limit = 50; // 每页获取的数量
-		let hasMore = true;
-
-		// 循环获取所有数据
-		while (hasMore) {
-			const response = await fetch(
-				`${BANGUMI_API_BASE}/v0/users/${userId}/collections?subject_type=${subjectType}&type=${type}&limit=${limit}&offset=${offset}`,
-			);
-			if (!response.ok) {
-				throw new Error(`Bangumi API error: ${response.status}`);
-			}
-			const data = await response.json();
-
-			// 添加当前页数据到总数据中
-			if (data.data && data.data.length > 0) {
-				allData = [...allData, ...data.data];
-			}
-			if (!data.data || data.data.length < limit) {
-				hasMore = false;
-			} else {
-				offset += limit;
-			}
-			// 防止请求过于频繁
-			await new Promise((resolve) => setTimeout(resolve, 100));
-		}
-		return { data: allData };
-	} catch (error) {
-		console.error("Error fetching Bangumi data:", error);
-		return null;
-	}
-}
-
-// 获取Bangumi数据转换为页面所需格式
-async function processBangumiData(data: any, status: string) {
-	if (!data || !data.data) return [];
-
-	// 为每个条目获取详细信息
-	const detailedItems = await Promise.all(
-		data.data.map(async (item: any) => {
-			// 获取相关人员信息
-			const subjectPersons = await fetchSubjectPersons(item.subject_id);
-			// 获取年份信息
-			const year = item.subject?.date || "Unknown";
-			// 获取评分
-			const rating = item.rate ? Number.parseFloat(item.rate.toFixed(1)) : 0;
-			// 获取进度信息
-			const progress = item.ep_status || 0;
-			const totalEpisodes = item.subject?.eps || progress;
-			// 从相关人员中获取制作方信息
-			let studio = "Unknown";
-			if (Array.isArray(subjectPersons)) {
-				// 定义筛选优先级顺序
-				const priorities = ["动画制作", "製作", "制作"];
-				for (const relation of priorities) {
-					const match = subjectPersons.find(
-						(person) => person.relation === relation,
-					);
-					if (match?.name) {
-						studio = match.name;
-						break;
-					}
-				}
-			}
-
-			return {
-				title: item.subject?.name_cn || item.subject?.name || "Unknown Title",
-				status: status,
-				rating: rating,
-				cover: item.subject?.images?.medium || "/assets/anime/default.webp",
-				description: (
-					item.subject?.short_summary ||
-					item.subject?.name_cn ||
-					""
-				).trimStart(),
-				episodes: `${totalEpisodes} episodes`,
-				year: year,
-				genre: item.subject?.tags
-					? item.subject.tags.slice(0, 3).map((tag: any) => tag.name)
-					: ["Unknown"],
-				studio: studio,
-				link: item.subject?.id
-					? `https://bgm.tv/subject/${item.subject.id}`
-					: "#",
-				progress: progress,
-				totalEpisodes: totalEpisodes,
-				startDate: item.subject?.date || "",
-				endDate: item.subject?.date || "",
-			};
-		}),
-	);
-	return detailedItems;
-}
-
-// 根据模式获取番剧列表
-let animeList: typeof localAnimeList = [];
 if (ANIME_MODE === "local") {
-	// 使用本地配置
 	animeList = localAnimeList;
 } else {
-	// 使用Bangumi API（默认模式）
-	// 获取与处理在看列表（type=3）想看列表（type=1）看过列表（type=2）搁置列表（type=4）抛弃列表（type=5）
-	const watchingData = await fetchBangumiCollection(BANGUMI_USER_ID, 2, 3);
-	const plannedData = await fetchBangumiCollection(BANGUMI_USER_ID, 2, 1);
-	const completedData = await fetchBangumiCollection(BANGUMI_USER_ID, 2, 2);
-	const onHoldData = await fetchBangumiCollection(BANGUMI_USER_ID, 2, 4);
-	const droppedData = await fetchBangumiCollection(BANGUMI_USER_ID, 2, 5);
+	const isDev = import.meta.env.DEV;
+	const shouldFetchOnDev = siteConfig.bangumi?.fetchOnDev ?? false;
+	const skipLoad = isDev && !shouldFetchOnDev;
 
-	const watchingList = watchingData
-		? await processBangumiData(watchingData, "watching")
-		: [];
-	const plannedList = plannedData
-		? await processBangumiData(plannedData, "planned")
-		: [];
-	const completedList = completedData
-		? await processBangumiData(completedData, "completed")
-		: [];
-	const onHoldList = onHoldData
-		? await processBangumiData(onHoldData, "onhold")
-		: [];
-	const droppedList = droppedData
-		? await processBangumiData(droppedData, "dropped")
-		: [];
-
-	animeList = [
-		...watchingList,
-		...plannedList,
-		...completedList,
-		...onHoldList,
-		...droppedList,
-	];
+	if (skipLoad) {
+		console.log("[Dev] Skipping Bangumi data load (fetchOnDev is off).");
+		animeList = [];
+	} else {
+		try {
+			const dataPath = path.join(
+				process.cwd(),
+				"src/data/bangumi-data.json",
+			);
+			if (fs.existsSync(dataPath)) {
+				const fileContent = fs.readFileSync(dataPath, "utf-8");
+				const rawData = JSON.parse(fileContent);
+				animeList = rawData.map((item: any) => ({
+					title: item.title || "Unknown",
+					cover: item.cover || "",
+					link: item.link || "",
+					status: item.status || "planned",
+					rating: Number(item.rating) || 0,
+					progress: Number(item.progress) || 0,
+					totalEpisodes: Number(item.totalEpisodes) || 12,
+					description: item.description || "",
+					year: item.year || "",
+					studio: item.studio || "",
+					genre: Array.isArray(item.genre) ? item.genre : [],
+				}));
+			} else {
+				console.warn(`Bangumi data file not found at ${dataPath}.`);
+				animeList = [];
+			}
+		} catch (error) {
+			console.error("Failed to load anime data:", error);
+			animeList = [];
+		}
+	}
 }
 
-// 获取状态的翻译文本和样式
 function getStatusInfo(status: string) {
 	switch (status) {
 		case "watching":
 			return {
 				text: i18n(I18nKey.animeStatusWatching),
-				class:
-					"bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+				class: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
 				icon: "▶",
 			};
 		case "completed":
 			return {
 				text: i18n(I18nKey.animeStatusCompleted),
-				class:
-					"bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+				class: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
 				icon: "✓",
 			};
 		case "planned":
 			return {
 				text: i18n(I18nKey.animeStatusPlanned),
-				class:
-					"bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-				icon: "⏰",
+				class: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+				icon: "❤",
 			};
 		case "onhold":
 			return {
 				text: i18n(I18nKey.animeStatusOnHold),
-				class:
-					"bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+				class: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
 				icon: "⏸",
 			};
 		case "dropped":
@@ -222,692 +117,805 @@ function getStatusInfo(status: string) {
 	}
 }
 
-// 计算统计数据
-// const stats = {
-// 	total: animeList.length,
-// 	watching: animeList.filter((anime) => anime.status === "watching").length,
-// 	completed: animeList.filter((anime) => anime.status === "completed").length,
-// 	avgRating: (() => {
-// 		const ratedAnime = animeList.filter((anime) => anime.rating > 0);
-// 		if (ratedAnime.length === 0) return "0.0";
-// 		return (
-// 			ratedAnime.reduce((sum, anime) => sum + anime.rating, 0) /
-// 			ratedAnime.length
-// 		).toFixed(1);
-// 	})(),
-// };
+const INITIAL_DISPLAY_COUNT = 24;
+const visibleAnimeList = animeList.slice(0, INITIAL_DISPLAY_COUNT);
+const hiddenAnimeList = animeList.slice(INITIAL_DISPLAY_COUNT);
 ---
 
-<MainGridLayout title={i18n(I18nKey.anime)} description={i18n(I18nKey.animeSubtitle)}>
-  <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-    <div class="card-base z-10 px-9 py-6 relative w-full">
-      <!-- 页面标题 -->
-      <div class="relative w-full mb-8">
-        <div class="mb-6">
-          <h1 class="text-4xl font-bold text-black/90 dark:text-white/90 mb-2 relative
+<MainGridLayout
+	title={i18n(I18nKey.anime)}
+	description={i18n(I18nKey.animeSubtitle)}
+>
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
+		<div class="card-base anime-card-base z-10 px-9 py-6 relative w-full">
+			<div class="relative w-full mb-8">
+				<div class="mb-6">
+					<h1
+						class="text-4xl font-bold text-black/90 dark:text-white/90 mb-2 relative
                     before:w-1 before:h-8 before:rounded-md before:bg-[var(--primary)]
-                    before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4">
-            {i18n(I18nKey.animeTitle)}
-          </h1>
-          <p class="text-black/75 dark:text-white/75">{i18n(I18nKey.animeSubtitle)}</p>
-        </div>
-        
-        <!-- 过滤按钮 - 参考Firefly设计 -->
-        <div class="mb-6">
-          <div class="filter-container flex flex-wrap gap-2">
-            <button class="filter-tag active" data-status="all">{i18n(I18nKey.animeFilterAll)}</button>
-            <button class="filter-tag" data-status="watching">{i18n(I18nKey.animeStatusWatching)}</button>
-            <button class="filter-tag" data-status="planned">{i18n(I18nKey.animeStatusPlanned)}</button>
-            <button class="filter-tag" data-status="completed">{i18n(I18nKey.animeStatusCompleted)}</button>
-            {ANIME_MODE === 'bangumi' && (
-              <>
-                <button class="filter-tag" data-status="onhold">{i18n(I18nKey.animeStatusOnHold)}</button>
-                <button class="filter-tag" data-status="dropped">{i18n(I18nKey.animeStatusDropped)}</button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+                    before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4"
+					>
+						{i18n(I18nKey.animeTitle)}
+					</h1>
+					<p class="text-black/75 dark:text-white/75">
+						{i18n(I18nKey.animeSubtitle)}
+					</p>
+				</div>
 
-      <!-- 动漫列表 -->
-      <div class="mb-8">
-        
-        {ANIME_MODE !== 'local' && BANGUMI_USER_ID === 'your-user-id' ? (
-          <div class="text-center py-12">
-            <div class="text-5xl mb-4">😢</div>
-            <h3 class="text-xl font-medium text-black/80 dark:text-white/80 mb-2">
-              {i18n(I18nKey.animeEmpty)}
-            </h3>
-            <p class="text-black/60 dark:text-white/60">
-              请在 src/config.ts 文件中设置你的 Bangumi 用户ID
-            </p>
-          </div>
-        ) : animeList.length > 0 ? (
-          <div id="anime-list-container" class={`anime-grid-container grid gap-4 md:gap-6 list-mode ${
-            isBothSidebarMode 
-              ? "both-sidebar" 
-              : "single-sidebar"
-          }`}>
-            {animeList.map(anime => {
-              const statusInfo = getStatusInfo(anime.status);
-              const progressPercent = anime.totalEpisodes > 0 ? (anime.progress / anime.totalEpisodes) * 100 : 0;
-              
-              return (
-                <div class="group relative bg-[var(--card-bg)] border border-[var(--line-divider)] rounded-[var(--radius-large)] overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02]" data-anime-status={anime.status}>
-                  <!-- 封面区域 - 竖屏比例 -->
-                  <div class="relative aspect-[2/3] overflow-hidden">
-                    <a href={anime.link} target="_blank" rel="noopener noreferrer" class="block w-full h-full">
-                      <ImageWrapper 
-                        src={anime.cover} 
-                        alt={anime.title}
-                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                          <div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M8 5v14l11-7z"/>
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                    </a>
-                    
-                    <!-- 状态标签 -->
-                    <div class={`absolute top-2 left-2 px-2 py-1 rounded-md text-xs font-medium ${statusInfo.class}`}>
-                      <span class="mr-1">{statusInfo.icon}</span>
-                      <span>{statusInfo.text}</span>
-                    </div>
-                    
-                    <!-- 评分 -->
-                    <div class="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
-                      <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                      </svg>
-                      <span>{anime.rating}</span>
-                    </div>
-                    
-                    <!-- 进度条 - 在封面底部 -->
-                    {anime.status === 'watching' && (
-                      <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                        <div class="w-full bg-white/20 rounded-full h-1.5 mb-1">
-                          <div class="bg-gradient-to-r from-emerald-400 to-teal-400 h-1.5 rounded-full transition-all duration-300" style={`width: ${progressPercent}%`}></div>
-                        </div>
-                        <div class="text-white text-xs font-medium">
-                          {anime.progress}/{anime.totalEpisodes} ({Math.round(progressPercent)}%)
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <!-- 内容区域 - 紧凑设计 -->
-                  <div class="p-3">
-                    <h3 class="text-sm font-bold text-black/90 dark:text-white/90 mb-1 line-clamp-2 leading-tight">{anime.title}</h3>
-                    <p class="text-black/60 dark:text-white/60 text-xs mb-2 line-clamp-2">{anime.description}</p>
-                    
-                    <!-- 详细信息 - 更紧凑 -->
-                    <div class="space-y-1 text-xs">
-                      <div class="flex justify-between">
-                        <span class="text-black/50 dark:text-white/50">{i18n(I18nKey.animeYear)}</span>
-                        <span class="text-black/70 dark:text-white/70">{anime.year}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-black/50 dark:text-white/50">{i18n(I18nKey.animeStudio)}</span>
-                        <span class="text-black/70 dark:text-white/70 truncate ml-2">{anime.studio}</span>
-                      </div>
-                      <div class="flex flex-wrap gap-1 mt-2">
-                        {anime.genre.map(g => (
-                          <span class="px-1.5 py-0.5 bg-[var(--btn-regular-bg)] text-black/70 dark:text-white/70 rounded text-xs">{g}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div class="text-center py-12">
-            <div class="text-5xl mb-4">😢</div>
-            <h3 class="text-xl font-medium text-black/80 dark:text-white/80 mb-2">
-              {i18n(I18nKey.animeEmpty)}
-            </h3>
-            <p class="text-black/60 dark:text-white/60">
-              {ANIME_MODE === 'local' ? i18n(I18nKey.animeEmptyLocal) : i18n(I18nKey.animeEmptyBangumi)}
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
+				<div class="mb-6">
+					<div class="anime-filter-container flex flex-wrap gap-2">
+						<button
+							class="anime-filter-tag anime-active"
+							data-status="all"
+							>{i18n(I18nKey.animeFilterAll)}</button
+						>
+						<button class="anime-filter-tag" data-status="watching"
+							>{i18n(I18nKey.animeStatusWatching)}</button
+						>
+						<button class="anime-filter-tag" data-status="planned"
+							>{i18n(I18nKey.animeStatusPlanned)}</button
+						>
+						<button class="anime-filter-tag" data-status="completed"
+							>{i18n(I18nKey.animeStatusCompleted)}</button
+						>
+						{
+							ANIME_MODE === "bangumi" && (
+								<>
+									<button
+										class="anime-filter-tag"
+										data-status="onhold"
+									>
+										{i18n(I18nKey.animeStatusOnHold)}
+									</button>
+									<button
+										class="anime-filter-tag"
+										data-status="dropped"
+									>
+										{i18n(I18nKey.animeStatusDropped)}
+									</button>
+								</>
+							)
+						}
+					</div>
+				</div>
+			</div>
 
-  <script is:inline define:vars={{ isBothSidebarMode }}>
-  // 动画列表布局切换脚本
-  (function() {
-    // 使用更可靠的初始化检查机制
-    function initAnimeLayout() {
-      const animeListContainer = document.getElementById("anime-list-container");
-      if (!animeListContainer) {
-        return false; // 容器未找到，继续重试
-      }
+			<div class="mb-8">
+				{
+					ANIME_MODE !== "local" &&
+					BANGUMI_USER_ID === "your-user-id" ? (
+						<div class="text-center py-12">
+							<div class="text-5xl mb-4">😢</div>
+							<h3 class="text-xl font-medium text-black/80 dark:text-white/80 mb-2">
+								{i18n(I18nKey.animeEmpty)}
+							</h3>
+							<p class="text-black/60 dark:text-white/60">
+								Please set your Bangumi userId in the
+								src/config.ts file
+							</p>
+						</div>
+					) : visibleAnimeList.length > 0 ? (
+						<>
+							<div
+								id="anime-list-container"
+								class={`anime-grid-container grid gap-4 md:gap-6 opacity-0 transition-opacity duration-300`}
+							>
+								{visibleAnimeList.map((anime) => {
+									const statusInfo = getStatusInfo(
+										anime.status,
+									);
+									const progressPercent =
+										anime.totalEpisodes > 0
+											? (anime.progress /
+													anime.totalEpisodes) *
+												100
+											: 0;
 
-      // 获取当前布局设置
-      const currentLayout = localStorage.getItem("postListLayout") || "list";
-      
-      // 初始化布局（不依赖 window.layoutManager）
-      updateAnimeListLayout(currentLayout);
-      
-      return true; // 初始化成功
-    }
+									return (
+										<div
+											class="group relative bg-[var(--card-bg)] border border-[var(--line-divider)] rounded-[var(--radius-large)] overflow-hidden hover:shadow-lg"
+											data-anime-status={anime.status}
+										>
+											<div class="relative anime-cover-container aspect-[2/3] overflow-hidden">
+												<a
+													href={anime.link}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="block w-full h-full"
+												>
+													<ImageWrapper
+														src={anime.cover}
+														alt={anime.title}
+														class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
+													/>
+													<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+														<div class="absolute inset-0 flex items-center justify-center">
+															<div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+																<svg
+																	class="w-6 h-6 text-gray-800 ml-1"
+																	fill="currentColor"
+																	viewBox="0 0 24 24"
+																>
+																	<path d="M8 5v14l11-7z" />
+																</svg>
+															</div>
+														</div>
+													</div>
+												</a>
 
-    // 尝试初始化，带有指数退避的重试机制
-    let retryCount = 0;
-    const maxRetries = 10;
-    
-    function tryInit() {
-      if (initAnimeLayout()) return;
-      
-      if (retryCount < maxRetries) {
-        retryCount++;
-        const delay = Math.min(100 * Math.pow(1.5, retryCount), 1000);
-        setTimeout(tryInit, delay);
-      } else {
-        console.warn("Failed to initialize anime layout after multiple attempts");
-        // 最后尝试一次强制初始化
-        setTimeout(() => {
-            const animeListContainer = document.getElementById("anime-list-container");
-            if (animeListContainer) {
-                const currentLayout = localStorage.getItem("postListLayout") || "list";
-                updateAnimeListLayout(currentLayout);
-            }
-        }, 2000);
-      }
-    }
-    
-    // 立即尝试第一次
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', tryInit);
-    } else {
-        tryInit();
-    }
+												<div
+													class={`absolute top-2 left-2 px-2 py-1 rounded-md text-xs font-medium ${statusInfo.class}`}
+												>
+													<span class="mr-1">
+														{statusInfo.icon}
+													</span>
+													<span>
+														{statusInfo.text}
+													</span>
+												</div>
 
-    function updateAnimeListLayout(layout) {
-      const animeListContainer = document.getElementById("anime-list-container");
-      if (!animeListContainer) return;
+												<div class="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
+													<svg
+														class="w-3 h-3 text-yellow-400"
+														fill="currentColor"
+														viewBox="0 0 20 20"
+													>
+														<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+													</svg>
+													<span>{anime.rating}</span>
+												</div>
 
-      // 避免重复执行
-      if (animeListContainer.dataset.currentLayout === layout) return;
-      animeListContainer.dataset.currentLayout = layout;
+												{anime.status ===
+													"watching" && (
+													<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+														<div class="w-full bg-white/20 rounded-full h-1.5 mb-1">
+															<div
+																class="bg-gradient-to-r from-emerald-400 to-teal-400 h-1.5 rounded-full transition-all duration-300"
+																style={`width: ${progressPercent}%`}
+															/>
+														</div>
+														<div class="text-white text-xs font-medium">
+															{anime.progress}/
+															{
+																anime.totalEpisodes
+															}{" "}
+															(
+															{Math.round(
+																progressPercent,
+															)}
+															%)
+														</div>
+													</div>
+												)}
+											</div>
 
-      // FLIP 动画技术实现布局切换动画
-      // First: 记录所有卡片的初始位置
-      const animeItems = Array.from(document.querySelectorAll('[data-anime-status]'));
-      const firstPositions = new Map();
-      
-      animeItems.forEach(item => {
-        const rect = item.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-            firstPositions.set(item, {
-                left: rect.left,
-                top: rect.top,
-                width: rect.width,
-                height: rect.height
-            });
-        }
-      });
-      
-      // 暂时禁用过渡
-      const style = document.createElement('style');
-      style.innerHTML = `
-        .anime-item, .anime-item * {
-            transition: none !important;
-        }
-      `;
-      document.head.appendChild(style);
-      
-      // 立即应用布局更改
-      animeListContainer.classList.remove("list-mode", "grid-mode");
-      
-      if (layout === "grid") {
-        animeListContainer.classList.add("grid-mode");
-        animeListContainer.classList.add("grid", "grid-cols-1", "md:grid-cols-2", "lg:grid-cols-3");
-        animeListContainer.classList.remove("flex", "flex-col");
-        
-        const rightSidebar = document.querySelector('.right-sidebar-container');
-        if (rightSidebar) {
-          rightSidebar.style.display = 'none';
-          rightSidebar.classList.add('hidden-in-grid-mode');
-        }
-        
-        const mainGrid = document.getElementById('main-grid');
-        if (mainGrid) {
-          mainGrid.style.gridTemplateColumns = '17.5rem 1fr';
-          mainGrid.classList.add('two-column-layout');
-          mainGrid.setAttribute('data-layout-mode', 'grid');
-        }
-      } else {
-        animeListContainer.classList.add("list-mode");
-        animeListContainer.classList.add("flex", "flex-col");
-        animeListContainer.classList.remove("grid", "grid-cols-1", "md:grid-cols-2", "lg:grid-cols-3");
-        
-        const rightSidebar = document.querySelector('.right-sidebar-container');
-        if (rightSidebar) {
-          rightSidebar.style.display = '';
-          rightSidebar.classList.remove('hidden-in-grid-mode');
-        }
-        
-        const mainGrid = document.getElementById('main-grid');
-        if (mainGrid) {
-          mainGrid.style.gridTemplateColumns = '';
-          mainGrid.classList.remove('two-column-layout');
-          mainGrid.setAttribute('data-layout-mode', 'list');
-        }
-      }
+											<div class="p-3">
+												<h3 class="text-sm font-bold text-black/90 dark:text-white/90 mb-1 leading-tight">
+													{anime.title}
+												</h3>
+												<p
+													class="text-black/60 dark:text-white/60 text-xs mb-2 line-clamp-2"
+													title={anime.description}
+												>
+													{anime.description}
+												</p>
 
-      // 强制重排
-      void animeListContainer.offsetHeight;
+												<div class="space-y-1 text-xs">
+													<div class="flex justify-between items-center">
+														<span class="text-black/50 dark:text-white/50 shrink-0">
+															{i18n(
+																I18nKey.animeYear,
+															)}
+														</span>
+														<span class="text-black/70 dark:text-white/70 truncate ml-2 text-right">
+															{anime.year}
+														</span>
+													</div>
+													<div class="flex justify-between items-start">
+														<span class="text-black/50 dark:text-white/50 shrink-0 mt-0.5">
+															{i18n(
+																I18nKey.animeStudio,
+															)}
+														</span>
+														<span
+															class="text-black/70 dark:text-white/70 text-right ml-2 line-clamp-2 break-words"
+															title={anime.studio}
+														>
+															{anime.studio}
+														</span>
+													</div>
+													<div class="flex flex-wrap gap-1 mt-2">
+														{anime.genre.map(
+															(g) => (
+																<span class="px-1.5 py-0.5 bg-[var(--btn-regular-bg)] text-black/70 dark:text-white/70 rounded text-xs">
+																	{g}
+																</span>
+															),
+														)}
+													</div>
+												</div>
+											</div>
+										</div>
+									);
+								})}
+							</div>
 
-      // 在下一帧执行 Invert & Play
-      requestAnimationFrame(() => {
-          // 移除禁用过渡的样式
-          if (style.parentNode) {
-              style.parentNode.removeChild(style);
-          }
+							<template id="anime-lazy-store">
+								{hiddenAnimeList.map((anime) => {
+									const statusInfo = getStatusInfo(
+										anime.status,
+									);
+									const progressPercent =
+										anime.totalEpisodes > 0
+											? (anime.progress /
+													anime.totalEpisodes) *
+												100
+											: 0;
 
-          animeItems.forEach(item => {
-            const first = firstPositions.get(item);
-            if (!first) return;
-            
-            const last = item.getBoundingClientRect();
-            
-            const deltaX = first.left - last.left;
-            const deltaY = first.top - last.top;
-            const deltaW = first.width / last.width;
-            const deltaH = first.height / last.height;
-            
-            if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1 && Math.abs(deltaW - 1) < 0.01 && Math.abs(deltaH - 1) < 0.01) {
-                return;
-            }
+									return (
+										<div
+											class="group relative bg-[var(--card-bg)] border border-[var(--line-divider)] rounded-[var(--radius-large)] overflow-hidden hover:shadow-lg"
+											data-anime-status={anime.status}
+										>
+											<div class="relative anime-cover-container aspect-[2/3] overflow-hidden">
+												<a
+													href={anime.link}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="block w-full h-full"
+												>
+													<ImageWrapper
+														src={anime.cover}
+														alt={anime.title}
+														class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
+													/>
+													<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+														<div class="absolute inset-0 flex items-center justify-center">
+															<div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+																<svg
+																	class="w-6 h-6 text-gray-800 ml-1"
+																	fill="currentColor"
+																	viewBox="0 0 24 24"
+																>
+																	<path d="M8 5v14l11-7z" />
+																</svg>
+															</div>
+														</div>
+													</div>
+												</a>
 
-            // Invert: 立即应用反向变换（此时没有过渡，因为上面虽然移除了style，但新样式生效需要时间，或者我们可以显式设置 transition: none）
-            item.style.transition = 'none';
-            item.style.transformOrigin = 'top left';
-            item.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${deltaW}, ${deltaH})`;
-          });
-          
-          // 强制重排
-          void animeListContainer.offsetHeight;
-          
-          // Play: 启用过渡并移除变换
-          requestAnimationFrame(() => {
-              animeItems.forEach(item => {
-                  if (!firstPositions.has(item)) return;
-                  
-                  item.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                  item.style.transform = '';
-              });
-              
-              // 动画结束后清理
-              setTimeout(() => {
-                  animeItems.forEach(item => {
-                      item.style.transition = '';
-                      item.style.transformOrigin = '';
-                      item.style.transform = '';
-                  });
-              }, 500);
-          });
-      });
-    }
+												<div
+													class={`absolute top-2 left-2 px-2 py-1 rounded-md text-xs font-medium ${statusInfo.class}`}
+												>
+													<span class="mr-1">
+														{statusInfo.icon}
+													</span>
+													<span>
+														{statusInfo.text}
+													</span>
+												</div>
 
-    // 监听布局变化事件
-    window.addEventListener("layoutChange", (event) => {
-      updateAnimeListLayout(event.detail.layout);
-    });
-  })();
-</script>
+												<div class="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
+													<svg
+														class="w-3 h-3 text-yellow-400"
+														fill="currentColor"
+														viewBox="0 0 20 20"
+													>
+														<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+													</svg>
+													<span>{anime.rating}</span>
+												</div>
 
-<!-- 过滤按钮样式 -->
-  <style>
-    /* 容器查询支持 */
-    .card-base {
-      container-type: inline-size;
-    }
-    
-    /* 番剧网格容器 - 使用容器查询实现响应式列数 */
-    .anime-grid-container {
-      /* 基础配置 - 移动端 */
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    /* 单侧栏模式 - 所有情况下都显示5列 */
-    .anime-grid-container.single-sidebar {
-      @container (min-width: 900px) {
-        grid-template-columns: repeat(5, 1fr);
-      }
-      
-      @container (min-width: 600px) and (max-width: 899px) {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      
-      @container (max-width: 599px) {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    
-    /* 双侧栏模式 */
-    /* list模式显示4列，grid模式显示5列 */
-    .anime-grid-container.both-sidebar {
-      /* grid模式：宽度足够大 - 显示5列 */
-      @container (min-width: 950px) {
-        grid-template-columns: repeat(5, 1fr);
-      }
-      
-      /* list模式：宽度中等 - 显示4列 */
-      @container (min-width: 650px) and (max-width: 949px) {
-        grid-template-columns: repeat(4, 1fr);
-      }
-      
-      @container (min-width: 480px) and (max-width: 649px) {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      
-      @container (max-width: 479px) {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    
-    .filter-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    
-    .filter-tag {
-      padding: 0.5rem 1rem;
-      border: 1px solid var(--line-divider);
-      border-radius: var(--radius-large);
-      background: var(--btn-regular-bg);
-      color: var(--btn-content);
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-    
-    .filter-tag:hover:not(.active) {
-      background: var(--btn-hover-bg);
-      border-color: var(--primary);
-      transform: translateY(-1px);
-    }
-    
-    .filter-tag.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-    
-    .filter-tag.active:hover {
-      background: var(--primary) !important;
-      color: white !important;
-      border-color: var(--primary) !important;
-      transform: translateY(-1px);
-    }
-    
-    /* 动画卡片样式 - 使用 FLIP 动画技术实现洗牌效果 */
-    [data-anime-status] {
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    /* 网格模式下的悬停效果增强 */
-    #anime-list-container.grid-mode [data-anime-status]:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-      z-index: 10;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    /* 列表模式下的悬停效果增强 */
-    #anime-list-container.list-mode [data-anime-status]:hover {
-      transform: translateX(8px) scale(1.01);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      z-index: 10;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    /* 完全隐藏 */
-    [data-anime-status].anime-hidden {
-      display: none;
-    }
-    
-    /* 动画中的卡片 - 使用绝对定位进行位置过渡 */
-    [data-anime-status].anime-animating {
-      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-                  opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    /* 淡出效果（用于要隐藏的卡片） - 缩小并淡出 */
-    [data-anime-status].anime-fade-out {
-      opacity: 0;
-      transform: scale(0.8);
-      pointer-events: none;
-      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                  transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    /* 淡入效果（用于新显示的卡片） - 从小放大并淡入 */
-    [data-anime-status].anime-fade-in {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    
-    [data-anime-status].anime-fade-in-active {
-      opacity: 1;
-      transform: scale(1);
-    }
-  </style>
+												{anime.status ===
+													"watching" && (
+													<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+														<div class="w-full bg-white/20 rounded-full h-1.5 mb-1">
+															<div
+																class="bg-gradient-to-r from-emerald-400 to-teal-400 h-1.5 rounded-full transition-all duration-300"
+																style={`width: ${progressPercent}%`}
+															/>
+														</div>
+														<div class="text-white text-xs font-medium">
+															{anime.progress}/
+															{
+																anime.totalEpisodes
+															}{" "}
+															(
+															{Math.round(
+																progressPercent,
+															)}
+															%)
+														</div>
+													</div>
+												)}
+											</div>
 
-  <!-- 过滤功能脚本 -->
-  <script is:inline>
-    // 事件监听器存储，用于防止重复绑定
-    if (typeof window.animeFilterEventListeners === 'undefined') {
-      window.animeFilterEventListeners = [];
-    }
-    
-    // 初始化过滤功能
-    function initFilterButtons() {
-      const filterTags = document.querySelectorAll('.filter-tag');
-      
-      // 移除之前的事件监听器
-      window.animeFilterEventListeners.forEach(listener => {
-        const [element, type, handler] = listener;
-        element.removeEventListener(type, handler);
-      });
-      window.animeFilterEventListeners = [];
-      
-      // 过滤功能 - 使用 FLIP 技术实现洗牌动画
-      filterTags.forEach(tag => {
-        const clickHandler = function() {
-          // 防止重复点击
-          if (this.classList.contains('active')) return;
-          
-          // 移除所有active类
-          filterTags.forEach(t => t.classList.remove('active'));
-          // 添加active类到当前点击的标签
-          this.classList.add('active');
-          
-          const status = this.getAttribute('data-status');
-          const animeItems = Array.from(document.querySelectorAll('[data-anime-status]'));
-          
-          // FLIP 动画技术
-          // First: 记录所有卡片的初始位置
-          const firstPositions = new Map();
-          animeItems.forEach(item => {
-            const rect = item.getBoundingClientRect();
-            firstPositions.set(item, {
-              left: rect.left,
-              top: rect.top,
-              width: rect.width,
-              height: rect.height
-            });
-          });
-          
-          // 分类卡片
-          const itemsToHide = [];
-          const itemsToShow = [];
-          const itemsToKeep = [];
-          
-          animeItems.forEach(item => {
-            const itemStatus = item.getAttribute('data-anime-status');
-            const shouldShow = status === 'all' || itemStatus === status;
-            const isCurrentlyVisible = !item.classList.contains('anime-hidden');
-            
-            if (shouldShow) {
-              if (isCurrentlyVisible) {
-                itemsToKeep.push(item);
-              } else {
-                itemsToShow.push(item);
-              }
-            } else {
-              if (isCurrentlyVisible) {
-                itemsToHide.push(item);
-              }
-            }
-          });
-          
-          // 为要隐藏的卡片添加淡出效果
-          itemsToHide.forEach(item => {
-            item.classList.add('anime-fade-out');
-          });
-          
-          // 等待淡出完成
-          setTimeout(() => {
-            // Last: 完全隐藏要移除的卡片
-            itemsToHide.forEach(item => {
-              item.classList.add('anime-hidden');
-              item.classList.remove('anime-fade-out');
-            });
-            
-            // 显示新卡片但先设为透明和缩小（在它们的最终位置）
-            itemsToShow.forEach(item => {
-              item.classList.remove('anime-hidden');
-              item.classList.add('anime-fade-in');
-              item.style.opacity = '0';
-              item.style.transform = 'scale(0.8)';
-              item.style.transition = 'none';
-            });
-            
-            // 等待布局更新
-            requestAnimationFrame(() => {
-              // 记录所有卡片的最终位置（包括新显示的卡片）
-              const lastPositions = new Map();
-              [...itemsToKeep, ...itemsToShow].forEach(item => {
-                const rect = item.getBoundingClientRect();
-                lastPositions.set(item, {
-                  left: rect.left,
-                  top: rect.top
-                });
-              });
-              
-              // Invert: 只对保持显示的卡片应用反向变换
-              itemsToKeep.forEach(item => {
-                const first = firstPositions.get(item);
-                const last = lastPositions.get(item);
-                
-                if (first && last) {
-                  const deltaX = first.left - last.left;
-                  const deltaY = first.top - last.top;
-                  
-                  // 立即应用反向变换（不使用过渡）
-                  item.style.transition = 'none';
-                  item.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-                }
-              });
-              
-              // Play: 触发动画
-              requestAnimationFrame(() => {
-                const allItems = [...itemsToKeep, ...itemsToShow];
-                
-                allItems.forEach((item, index) => {
-                  // 错开动画开始时间，创建波浪效果
-                  setTimeout(() => {
-                    item.classList.add('anime-animating');
-                    
-                    // 保持显示的卡片：移动到最终位置
-                    if (itemsToKeep.includes(item)) {
-                      item.style.transition = '';
-                      item.style.transform = '';
-                    }
-                    
-                    // 新显示的卡片：在当前位置淡入并放大
-                    if (itemsToShow.includes(item)) {
-                      item.classList.remove('anime-fade-in');
-                      item.classList.add('anime-fade-in-active');
-                      item.style.transition = '';
-                      item.style.opacity = '1';
-                      item.style.transform = 'scale(1)';
-                    }
-                  }, index * 20); // 每个卡片延迟20ms
-                });
-                
-                // 动画完成后清理
-                setTimeout(() => {
-                  allItems.forEach(item => {
-                    item.classList.remove('anime-animating', 'anime-fade-in-active');
-                    item.style.transition = '';
-                    item.style.transform = '';
-                    item.style.opacity = '';
-                  });
-                }, 500 + allItems.length * 20); // 等待所有动画完成
-              });
-            });
-          }, 300); // 等待淡出动画完成
-        };
-        
-        tag.addEventListener('click', clickHandler);
-        window.animeFilterEventListeners.push([tag, 'click', clickHandler]);
-      });
-      
-      console.log('Filter buttons initialized with', filterTags.length, 'buttons');
-    }
-    
-    // 页面加载时初始化
-    document.addEventListener('DOMContentLoaded', initFilterButtons);
-    
-    // Swup页面切换后重新初始化
-    function setupSwupListeners() {
-      if (window.swup) {
-        // 使用Swup hooks监听页面切换事件
-        window.swup.hooks.on('content:replace', function() {
-          console.log('Swup content replaced - reinitializing filter buttons');
-          setTimeout(initFilterButtons, 150);
-        });
-        
-        window.swup.hooks.on('page:view', function() {
-          console.log('Swup page view - reinitializing filter buttons');
-          setTimeout(initFilterButtons, 150);
-        });
-        
-        window.swup.hooks.on('animation:in:end', function() {
-          console.log('Swup animation ended - reinitializing filter buttons');
-          setTimeout(initFilterButtons, 200);
-        });
-      }
-    }
-    
-    // 初始化Swup监听器
-    if (typeof window !== 'undefined') {
-      if (window.swup) {
-        setupSwupListeners();
-      } else {
-        // 如果Swup尚未初始化，监听启用事件
-        document.addEventListener('swup:enable', function() {
-          console.log('Swup enabled - setting up listeners');
-          setupSwupListeners();
-        });
-      }
-    }
-  </script>
+											<div class="p-3">
+												<h3 class="text-sm font-bold text-black/90 dark:text-white/90 mb-1 leading-tight">
+													{anime.title}
+												</h3>
+												<p
+													class="text-black/60 dark:text-white/60 text-xs mb-2 line-clamp-2"
+													title={anime.description}
+												>
+													{anime.description}
+												</p>
+
+												<div class="space-y-1 text-xs">
+													<div class="flex justify-between items-center">
+														<span class="text-black/50 dark:text-white/50 shrink-0">
+															{i18n(
+																I18nKey.animeYear,
+															)}
+														</span>
+														<span class="text-black/70 dark:text-white/70 truncate ml-2 text-right">
+															{anime.year}
+														</span>
+													</div>
+													<div class="flex justify-between items-start">
+														<span class="text-black/50 dark:text-white/50 shrink-0 mt-0.5">
+															{i18n(
+																I18nKey.animeStudio,
+															)}
+														</span>
+														<span
+															class="text-black/70 dark:text-white/70 text-right ml-2 line-clamp-2 break-words"
+															title={anime.studio}
+														>
+															{anime.studio}
+														</span>
+													</div>
+													<div class="flex flex-wrap gap-1 mt-2">
+														{anime.genre.map(
+															(g) => (
+																<span class="px-1.5 py-0.5 bg-[var(--btn-regular-bg)] text-black/70 dark:text-white/70 rounded text-xs">
+																	{g}
+																</span>
+															),
+														)}
+													</div>
+												</div>
+											</div>
+										</div>
+									);
+								})}
+							</template>
+
+							{hiddenAnimeList.length > 0 && (
+								<div
+									id="infinite-scroll-sentinel"
+									class="w-full h-20 flex items-center justify-center mt-8"
+								>
+									<div class="anime-loading-spinner w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+								</div>
+							)}
+						</>
+					) : (
+						<div class="text-center py-12">
+							<div class="text-5xl mb-4">😢</div>
+							<h3 class="text-xl font-medium text-black/80 dark:text-white/80 mb-2">
+								{i18n(I18nKey.animeEmpty)}
+							</h3>
+							<p class="text-black/60 dark:text-white/60">
+								{ANIME_MODE === "local"
+									? i18n(I18nKey.animeEmptyLocal)
+									: i18n(I18nKey.animeEmptyBangumi)}
+							</p>
+						</div>
+					)
+				}
+			</div>
+		</div>
+	</div>
+
+	<script is:inline define:vars={{ isBothSidebarMode }}>
+		(function () {
+			function initAnimeLayout() {
+				const animeListContainer = document.getElementById(
+					"anime-list-container",
+				);
+				if (!animeListContainer) return false;
+				const currentLayout =
+					localStorage.getItem("postListLayout") || "list";
+				updateAnimeListLayout(currentLayout, false);
+				requestAnimationFrame(() => {
+					animeListContainer.classList.remove("opacity-0");
+				});
+				return true;
+			}
+
+			let retryCount = 0;
+			const maxRetries = 10;
+			function tryInit() {
+				if (initAnimeLayout()) return;
+				if (retryCount < maxRetries) {
+					retryCount++;
+					const delay = Math.min(
+						100 * Math.pow(1.5, retryCount),
+						1000,
+					);
+					setTimeout(tryInit, delay);
+				} else {
+					setTimeout(() => {
+						const animeListContainer = document.getElementById(
+							"anime-list-container",
+						);
+						if (animeListContainer) {
+							const currentLayout =
+								localStorage.getItem("postListLayout") ||
+								"list";
+							updateAnimeListLayout(currentLayout, false);
+							animeListContainer.classList.remove("opacity-0");
+						}
+					}, 2000);
+				}
+			}
+
+			if (document.readyState === "loading") {
+				document.addEventListener("DOMContentLoaded", tryInit);
+			} else {
+				tryInit();
+			}
+
+			function updateAnimeListLayout(layout, shouldAnimate = true) {
+				const animeListContainer = document.getElementById(
+					"anime-list-container",
+				);
+				if (!animeListContainer) return;
+				animeListContainer.dataset.currentLayout = layout;
+
+				const animeItems = Array.from(
+					document.querySelectorAll("[data-anime-status]"),
+				);
+				const visibleItems = animeItems.filter(
+					(item) => item.offsetParent !== null,
+				);
+				const firstPositions = new Map();
+				if (shouldAnimate) {
+					visibleItems.forEach((item) => {
+						const rect = item.getBoundingClientRect();
+						firstPositions.set(item, {
+							left: rect.left,
+							top: rect.top,
+							width: rect.width,
+							height: rect.height,
+						});
+					});
+				}
+
+				const style = document.createElement("style");
+				style.innerHTML = `.anime-grid-container .group { transition: none !important; }`;
+				document.head.appendChild(style);
+				animeListContainer.classList.remove(
+					"anime-list-mode",
+					"anime-grid-mode",
+				);
+				animeListContainer.classList.remove(
+					"grid-cols-1",
+					"md:grid-cols-2",
+					"lg:grid-cols-3",
+				);
+
+				if (layout === "grid") {
+					animeListContainer.classList.add("anime-grid-mode");
+					const rightSidebar = document.querySelector(
+						".right-sidebar-container",
+					);
+					if (rightSidebar) {
+						rightSidebar.style.display = "none";
+						rightSidebar.classList.add("hidden-in-grid-mode");
+					}
+					const mainGrid = document.getElementById("main-grid");
+					if (mainGrid) {
+						mainGrid.style.gridTemplateColumns = "17.5rem 1fr";
+						mainGrid.classList.add("two-column-layout");
+					}
+				} else {
+					animeListContainer.classList.add("anime-list-mode");
+					animeListContainer.classList.add(
+						"grid-cols-1",
+						"lg:grid-cols-2",
+					);
+					const rightSidebar = document.querySelector(
+						".right-sidebar-container",
+					);
+					if (rightSidebar) {
+						rightSidebar.style.display = "";
+						rightSidebar.classList.remove("hidden-in-grid-mode");
+					}
+					const mainGrid = document.getElementById("main-grid");
+					if (mainGrid) {
+						mainGrid.style.gridTemplateColumns = "";
+						mainGrid.classList.remove("two-column-layout");
+					}
+				}
+
+				void animeListContainer.offsetHeight;
+				if (!shouldAnimate) {
+					if (style.parentNode) style.parentNode.removeChild(style);
+					return;
+				}
+
+				requestAnimationFrame(() => {
+					if (style.parentNode) style.parentNode.removeChild(style);
+
+					visibleItems.forEach((item) => {
+						const first = firstPositions.get(item);
+						if (!first) return;
+						const last = item.getBoundingClientRect();
+
+						const deltaX = Math.round(first.left - last.left);
+						const deltaY = Math.round(first.top - last.top);
+						const deltaW = first.width / last.width;
+						const deltaH = first.height / last.height;
+
+						if (
+							Math.abs(deltaX) < 1 &&
+							Math.abs(deltaY) < 1 &&
+							Math.abs(deltaW - 1) < 0.01 &&
+							Math.abs(deltaH - 1) < 0.01
+						)
+							return;
+
+						item.style.willChange = "transform";
+						item.style.transition = "none";
+						item.style.transformOrigin = "top left";
+						item.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${deltaW}, ${deltaH})`;
+					});
+
+					void animeListContainer.offsetHeight;
+					requestAnimationFrame(() => {
+						visibleItems.forEach((item) => {
+							item.style.transition =
+								"transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)";
+							item.style.transform = "";
+						});
+						setTimeout(() => {
+							visibleItems.forEach((item) => {
+								item.style.transition = "";
+								item.style.transformOrigin = "";
+								item.style.transform = "";
+								item.style.willChange = "";
+							});
+						}, 500);
+					});
+				});
+			}
+
+			window.addEventListener("layoutChange", (event) => {
+				updateAnimeListLayout(event.detail.layout);
+			});
+		})();
+	</script>
+
+	<script is:inline>
+		if (typeof window.animeFilterEventListeners === "undefined") {
+			window.animeFilterEventListeners = [];
+		}
+
+		function initFilterButtons() {
+			const filterTags = document.querySelectorAll(".anime-filter-tag");
+			const sentinel = document.getElementById(
+				"infinite-scroll-sentinel",
+			);
+			const listContainer = document.getElementById(
+				"anime-list-container",
+			);
+			const lazyStore = document.getElementById("anime-lazy-store");
+			window.animeFilterEventListeners.forEach((listener) => {
+				const [element, type, handler] = listener;
+				element.removeEventListener(type, handler);
+			});
+			window.animeFilterEventListeners = [];
+
+			filterTags.forEach((tag) => {
+				const clickHandler = function () {
+					if (this.classList.contains("anime-active")) return;
+
+					filterTags.forEach((t) =>
+						t.classList.remove("anime-active"),
+					);
+					this.classList.add("anime-active");
+
+					if (
+						lazyStore &&
+						lazyStore.content.children.length > 0 &&
+						listContainer
+					) {
+						const fragment = document.createDocumentFragment();
+						while (lazyStore.content.firstChild) {
+							const node = lazyStore.content.firstChild;
+							fragment.appendChild(node);
+						}
+						listContainer.appendChild(fragment);
+					}
+
+					if (sentinel) sentinel.style.display = "none";
+					const initialHidden =
+						listContainer.querySelectorAll(".initial-hidden");
+					initialHidden.forEach((el) => {
+						el.classList.remove("hidden", "initial-hidden");
+					});
+
+					const status = this.getAttribute("data-status");
+					const animeItems = Array.from(
+						listContainer.children,
+					).filter((item) => item.hasAttribute("data-anime-status"));
+					const itemsToHide = [];
+					const itemsToShow = [];
+					const itemsToKeep = [];
+					animeItems.forEach((item) => {
+						const itemStatus =
+							item.getAttribute("data-anime-status");
+						const shouldShow =
+							status === "all" || itemStatus === status;
+						const isCurrentlyVisible =
+							!item.classList.contains("anime-hidden");
+
+						if (shouldShow) {
+							isCurrentlyVisible
+								? itemsToKeep.push(item)
+								: itemsToShow.push(item);
+						} else {
+							if (isCurrentlyVisible) itemsToHide.push(item);
+						}
+					});
+					const firstPositions = new Map();
+					itemsToKeep.forEach((item) => {
+						const rect = item.getBoundingClientRect();
+						firstPositions.set(item, {
+							left: rect.left,
+							top: rect.top,
+						});
+					});
+					const runAnimation = () => {
+						itemsToHide.forEach((item) => {
+							item.classList.add("anime-hidden");
+							item.classList.remove("anime-fade-out");
+						});
+						itemsToShow.forEach((item) => {
+							item.classList.remove("anime-hidden");
+							item.classList.add("anime-fade-in");
+							item.style.transition = "none";
+						});
+						itemsToKeep.forEach((item) => {
+							const first = firstPositions.get(item);
+							if (!first) return;
+
+							const rect = item.getBoundingClientRect();
+							const deltaX = Math.round(first.left - rect.left);
+							const deltaY = Math.round(first.top - rect.top);
+
+							if (deltaX !== 0 || deltaY !== 0) {
+								item.style.willChange = "transform";
+								item.style.transition = "none";
+								item.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+							}
+						});
+						requestAnimationFrame(() => {
+							itemsToKeep.forEach((item) => {
+								item.style.transition =
+									"transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+								item.style.transform = "";
+							});
+
+							const STAGGER_LIMIT = 20;
+							itemsToShow.forEach((item, index) => {
+								item.style.transition = "";
+								item.style.willChange = "opacity, transform";
+
+								const delay =
+									index < STAGGER_LIMIT ? index * 30 : 0;
+								item.style.transitionDelay = `${delay}ms`;
+
+								requestAnimationFrame(() => {
+									item.classList.remove("anime-fade-in");
+									item.classList.add("anime-fade-in-active");
+								});
+							});
+
+							setTimeout(
+								() => {
+									[...itemsToKeep, ...itemsToShow].forEach(
+										(item) => {
+											item.classList.remove(
+												"anime-fade-in-active",
+											);
+											item.style.transition = "";
+											item.style.transform = "";
+											item.style.opacity = "";
+											item.style.willChange = "";
+											item.style.transitionDelay = "";
+										},
+									);
+								},
+								600 +
+									(itemsToShow.length > 0
+										? Math.min(itemsToShow.length, 20) * 30
+										: 0),
+							);
+						});
+					};
+
+					if (itemsToHide.length > 0) {
+						itemsToHide.forEach((item) =>
+							item.classList.add("anime-fade-out"),
+						);
+						setTimeout(runAnimation, 200);
+					} else {
+						runAnimation();
+					}
+				};
+
+				tag.addEventListener("click", clickHandler);
+				window.animeFilterEventListeners.push([
+					tag,
+					"click",
+					clickHandler,
+				]);
+			});
+			if (sentinel && lazyStore && listContainer) {
+				const observer = new IntersectionObserver(
+					(entries) => {
+						if (entries[0].isIntersecting) {
+							const BATCH_SIZE = 24;
+							if (lazyStore.content.children.length === 0) {
+								sentinel.style.display = "none";
+								observer.disconnect();
+								return;
+							}
+
+							const fragment = document.createDocumentFragment();
+							let movedCount = 0;
+							while (
+								lazyStore.content.firstChild &&
+								movedCount < BATCH_SIZE
+							) {
+								const node = lazyStore.content.firstChild;
+								if (node.nodeType === 1) {
+									node.classList.add("anime-fade-in-active");
+								}
+								fragment.appendChild(node);
+								movedCount++;
+							}
+
+							requestAnimationFrame(() => {
+								listContainer.appendChild(fragment);
+								if (lazyStore.content.children.length === 0) {
+									sentinel.style.display = "none";
+									observer.disconnect();
+								}
+							});
+						}
+					},
+					{ rootMargin: "200px" },
+				);
+				observer.observe(sentinel);
+			} else if (sentinel) {
+				sentinel.style.display = "none";
+			}
+		}
+
+		document.addEventListener("DOMContentLoaded", initFilterButtons);
+		function setupSwupListeners() {
+			if (window.swup) {
+				window.swup.hooks.on("content:replace", () =>
+					setTimeout(initFilterButtons, 150),
+				);
+				window.swup.hooks.on("page:view", () =>
+					setTimeout(initFilterButtons, 150),
+				);
+			}
+		}
+
+		if (typeof window !== "undefined") {
+			if (window.swup) {
+				setupSwupListeners();
+			} else {
+				document.addEventListener("swup:enable", setupSwupListeners);
+			}
+		}
+	</script>
 </MainGridLayout>

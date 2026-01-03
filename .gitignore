@@ -41,3 +41,6 @@ cache/
 fuwari/
 src/data/myself.ts
 src/pages/myself.astro
+
+# Bangumi generated data
+src/data/bangumi-data.json

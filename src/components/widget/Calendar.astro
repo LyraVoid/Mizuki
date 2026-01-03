@@ -351,16 +351,17 @@ const yearSuffix = isChinese ? "年" : " ";
 			const isSelected = selectedDateKey === dateKey;
 
 			let bgClass =
-				"hover:bg-[var(--btn-plain-bg-hover)] text-neutral-700 dark:text-neutral-300";
+				"hover:bg-[var(--btn-plain-bg-hover)] text-neutral-700 dark:text-neutral-300 border border-transparent";
 
 			if (isSelected) {
-				bgClass = "bg-[var(--primary)] text-white shadow-md";
+				bgClass =
+					"bg-[var(--primary)] text-white shadow-md border border-transparent";
 			} else if (isToday) {
 				bgClass =
-					"text-[var(--primary)] font-bold bg-[var(--primary)]/10 ring-1 ring-[var(--primary)]";
+					"text-[var(--primary)] font-bold bg-[var(--primary)]/10 border border-[var(--primary)]";
 			} else if (hasPost) {
 				bgClass =
-					"font-bold text-neutral-900 dark:text-neutral-100 hover:bg-[var(--btn-plain-bg-hover)]";
+					"font-bold text-neutral-900 dark:text-neutral-100 hover:bg-[var(--btn-plain-bg-hover)] border border-transparent";
 			}
 
 			html += `
