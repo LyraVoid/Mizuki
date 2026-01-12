@@ -112,9 +112,12 @@ function renderComponent(component: any, index: number, _components: any[]) {
 	}
 </style>
 
-<script is:inline>
-	import { widgetManager } from "../../utils/widget-manager";
-	
+<script is:inline define:vars={{
+	breakpoints: widgetManager.getBreakpoints(),
+	mobileShowSidebar: widgetManager.shouldShowSidebar('mobile'),
+	tabletShowSidebar: widgetManager.shouldShowSidebar('tablet'),
+	desktopShowSidebar: widgetManager.shouldShowSidebar('desktop')
+}}>
 	// 响应式布局管理
 	class SidebarManager {
 		constructor() {
@@ -137,7 +140,6 @@ function renderComponent(component: any, index: number, _components: any[]) {
 		}
 		
 		updateResponsiveDisplay() {
-			const breakpoints = widgetManager.getBreakpoints();
 			const width = window.innerWidth;
 			
 			let deviceType;
@@ -149,7 +151,16 @@ function renderComponent(component: any, index: number, _components: any[]) {
 				deviceType = 'desktop';
 			}
 			
-			const shouldShow = widgetManager.shouldShowSidebar(deviceType);
+			// 根据设备类型判断是否显示侧边栏
+			let shouldShow = false;
+			if (deviceType === 'mobile') {
+				shouldShow = mobileShowSidebar;
+			} else if (deviceType === 'tablet') {
+				shouldShow = tabletShowSidebar;
+			} else {
+				shouldShow = desktopShowSidebar;
+			}
+			
 			const sidebar = document.getElementById('sidebar');
 			
 			if (sidebar) {

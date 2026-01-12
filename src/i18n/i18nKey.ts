@@ -103,6 +103,7 @@ enum I18nKey {
 	// 设备页面
 	devices = "devices",
 	devicesSubtitle = "devicesSubtitle",
+	devicesViewDetails = "devicesViewDetails",
 
 	// 项目展示页面
 	projects = "projects",
@@ -293,4 +294,3 @@ enum I18nKey {
 }
 
 export default I18nKey;
-

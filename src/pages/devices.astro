@@ -40,7 +40,7 @@ const brands = Object.keys(devices);
       <div class="mb-6">
         <div class="filter-container flex flex-wrap gap-2">
           {brands.map((brand, index) => (
-            <button 
+            <button
               data-brand={brand}
               class={`filter-tag px-6 py-2.5 rounded-lg font-medium transition-all ${
                 index === 0 ? 'active' : ''
@@ -55,26 +55,26 @@ const brands = Object.keys(devices);
       <!-- 设备列表 -->
       <div id="devices-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {devices[brands[0]].map((device, index) => (
-          <a 
+          <a
             href={device.link}
             target="_blank"
             rel="noopener noreferrer"
             class="device-card group relative overflow-hidden rounded-xl border border-[var(--line-divider)] bg-[var(--card-bg)] transition-all duration-300 hover:border-[var(--primary)]/50 hover:shadow-md hover:shadow-black/5 dark:hover:shadow-white/5 hover:scale-[1.02] hover:-translate-y-0.5 block cursor-pointer"
             style={`animation-delay: ${index * 100}ms`}
           >
-            
+
             <!-- 设备图片区域 -->
             <div class="relative p-6 pb-0">
               <div class="flex justify-center items-center h-48 bg-gradient-to-br from-[var(--card-bg)] to-[var(--btn-regular-bg)] rounded-lg overflow-hidden relative">
                 <div class="absolute inset-0 bg-[var(--primary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <img 
-                  src={device.image} 
+                <img
+                  src={device.image}
                   alt={device.name}
                   class="w-auto h-full max-h-full object-contain group-hover:scale-110 transition-all duration-500 drop-shadow-md relative z-10"
                 />
               </div>
             </div>
-            
+
             <!-- 设备信息区域 -->
             <div class="p-6 pt-4 relative z-10">
               <div class="flex items-start justify-between mb-3">
@@ -85,25 +85,25 @@ const brands = Object.keys(devices);
                   <Icon name="material-symbols:open-in-new" class="text-lg" />
                 </div>
               </div>
-              
+
               <div class="mb-4">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--btn-regular-bg)] text-black/70 dark:text-white/70 text-sm mb-3">
                   <Icon name="material-symbols:settings-suggest-outline" class="text-sm" />
                   <span class="font-medium">{device.specs}</span>
                 </div>
-                
+
                 <p class="text-sm text-black/60 dark:text-white/60 leading-relaxed line-clamp-2">
                   {device.description}
                 </p>
               </div>
-              
+
               <!-- 查看详情按钮 -->
               <div class="flex items-center justify-between pt-3 border-t border-[var(--line-divider)] border-dashed opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <span class="text-sm font-medium text-[var(--primary)]">查看详情</span>
+                <span class="text-sm font-medium text-[var(--primary)]">{i18n(I18nKey.devicesViewDetails)}</span>
                 <Icon name="material-symbols:arrow-forward-rounded" class="text-lg text-[var(--primary)]" />
               </div>
             </div>
-            
+
 
           </a>
         ))}
@@ -111,14 +111,14 @@ const brands = Object.keys(devices);
     </div>
   </div>
 
-  <script is:inline define:vars={{ devices }}>
+  <script is:inline define:vars={{ devices, viewDetailsText: i18n(I18nKey.devicesViewDetails) }}>
     const brandTabs = document.querySelectorAll('.filter-tag');
     const devicesContainer = document.getElementById('devices-container');
 
     brandTabs.forEach(tab => {
       tab.addEventListener('click', () => {
         const brand = tab.dataset.brand;
-        
+
         // 移除所有激活状态
         brandTabs.forEach(t => {
           t.classList.remove('active');
@@ -128,7 +128,7 @@ const brands = Object.keys(devices);
 
         const brandDevices = devices[brand] || [];
         devicesContainer.innerHTML = brandDevices.map((device, index) => `
-          <a 
+          <a
             href="${device.link}"
             target="_blank"
             rel="noopener noreferrer"
@@ -139,14 +139,14 @@ const brands = Object.keys(devices);
             <div class="relative p-6 pb-0">
               <div class="flex justify-center items-center h-48 bg-gradient-to-br from-[var(--card-bg)] to-[var(--btn-regular-bg)] rounded-lg overflow-hidden relative">
                 <div class="absolute inset-0 bg-[var(--primary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <img 
-                  src="${device.image}" 
+                <img
+                  src="${device.image}"
                   alt="${device.name}"
                   class="w-auto h-full max-h-full object-contain group-hover:scale-110 transition-all duration-500 drop-shadow-md relative z-10"
                 />
               </div>
             </div>
-            
+
             <!-- 设备信息区域 -->
             <div class="p-6 pt-4 relative z-10">
               <div class="flex items-start justify-between mb-3">
@@ -159,7 +159,7 @@ const brands = Object.keys(devices);
                   </svg>
                 </div>
               </div>
-              
+
               <div class="mb-4">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--btn-regular-bg)] text-black/70 dark:text-white/70 text-sm mb-3">
                   <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -168,21 +168,21 @@ const brands = Object.keys(devices);
                   </svg>
                   <span class="font-medium">${device.specs}</span>
                 </div>
-                
+
                 <p class="text-sm text-black/60 dark:text-white/60 leading-relaxed line-clamp-2">
                   ${device.description}
                 </p>
               </div>
-              
+
               <!-- 查看详情按钮 -->
               <div class="flex items-center justify-between pt-3 border-t border-[var(--line-divider)] border-dashed opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <span class="text-sm font-medium text-[var(--primary)]">查看详情</span>
+                <span class="text-sm font-medium text-[var(--primary)]">${viewDetailsText}</span>
                 <svg class="w-5 h-5 text-[var(--primary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </div>
             </div>
-            
+
 
           </a>
         `).join('');
@@ -197,7 +197,7 @@ const brands = Object.keys(devices);
       gap: 0.75rem;
       margin-bottom: 1rem;
     }
-    
+
     .filter-tag {
       padding: 0.625rem 1.25rem;
       border: 1px solid var(--line-divider);
@@ -212,7 +212,7 @@ const brands = Object.keys(devices);
       position: relative;
       overflow: hidden;
     }
-    
+
     .filter-tag::before {
       content: '';
       position: absolute;
@@ -225,14 +225,14 @@ const brands = Object.keys(devices);
       transition: opacity 0.3s ease;
       z-index: -1;
     }
-    
+
     .filter-tag:hover:not(.active) {
       background: var(--btn-hover-bg);
       border-color: var(--primary);
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-    
+
     .filter-tag.active {
       background: var(--primary);
       color: white;
@@ -240,12 +240,12 @@ const brands = Object.keys(devices);
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
     }
-    
+
     .filter-tag.active:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 16px rgba(var(--color-primary-rgb), 0.4);
     }
-    
+
     /* 设备卡片动画效果 */
     @keyframes fadeInUp {
       from {
@@ -257,12 +257,12 @@ const brands = Object.keys(devices);
         transform: translateY(0);
       }
     }
-    
+
     .onload-animation {
       animation: fadeInUp 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
       opacity: 0;
     }
-    
+
     /* 卡片内容文本截断 */
     .line-clamp-2 {
       display: -webkit-box;
@@ -270,7 +270,7 @@ const brands = Object.keys(devices);
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    
+
     /* 设备卡片微妙的悬停效果 */
     .device-card::after {
       content: '';
@@ -282,36 +282,36 @@ const brands = Object.keys(devices);
       transition: opacity 0.4s ease;
       pointer-events: none;
     }
-    
+
     .device-card:hover::after {
       opacity: 1;
     }
-    
+
     /* 设备名称和规格的文本样式 */
     .device-card h3 {
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
-    
+
     /* 响应式调整 */
     @media (max-width: 640px) {
       .filter-container {
         gap: 0.5rem;
       }
-      
+
       .filter-tag {
         padding: 0.5rem 1rem;
         font-size: 0.8rem;
       }
-      
+
       .device-card .relative.p-6.pb-0 {
         padding: 1rem 1rem 0;
       }
-      
+
       .device-card .p-6.pt-4 {
         padding: 1rem;
       }
     }
-    
+
     /* 在深色模式下微妙的阴影效果 */
     @media (prefers-color-scheme: dark) {
       .device-card:hover {

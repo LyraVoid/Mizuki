@@ -102,21 +102,65 @@ const renderGroups = [
 	})();
 	</script>
 
-	{renderGroups.map(group => group.hasImages && (
-		<div class={`${group.containerClass} w-full h-full relative`} style="transform: translateZ(0);">
-			{group.images.map((src, index) => (
-				<img
-					src={src}
-					alt={`${group.key} wallpaper ${index + 1}`}
-					class={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}`}
-					data-carousel-item={isCarouselEnabled ? index : undefined}
-					style={`transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blur > 0 ? `filter: blur(${blur}px);` : ''}; opacity: ${index === 0 ? 1 : 0};`}
-					decoding="async"
-					loading={index === 0 ? "eager" : "lazy"} 
-				/>
+	{isCarouselEnabled ? (
+		renderGroups.map(group => group.hasImages && (
+			<div class={`${group.containerClass} w-full h-full relative`} style="transform: translateZ(0);">
+				{group.images.map((src, index) => (
+					<img
+						src={src}
+						alt={`${group.key} wallpaper ${index + 1}`}
+						class={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}`}
+						data-carousel-item={index}
+						style={`transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blur > 0 ? `filter: blur(${blur}px);` : ''}; opacity: ${index === 0 ? 1 : 0};`}
+						decoding="async"
+						loading={index === 0 ? "eager" : "lazy"} 
+					/>
+				))}
+			</div>
+		))
+	) : (
+		<div id="wallpaper-single-container" class="w-full h-full relative">
+			{Array.from({ length: Math.max(imageSources.desktop.length, imageSources.mobile.length) }).map((_, index) => (
+				<template class="wallpaper-group-template">
+					<div class="hidden lg:block w-full h-full relative" style="transform: translateZ(0);">
+						{imageSources.desktop.length > 0 && (
+							<img
+								src={imageSources.desktop[index] || imageSources.desktop[0]}
+								alt="desktop wallpaper"
+								class={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}`}
+								style={`transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blur > 0 ? `filter: blur(${blur}px);` : ''}; opacity: 1;`}
+								decoding="async"
+								loading="eager"
+							/>
+						)}
+					</div>
+					<div class="block lg:hidden w-full h-full relative" style="transform: translateZ(0);">
+						{imageSources.mobile.length > 0 && (
+							<img
+								src={imageSources.mobile[index] || imageSources.mobile[0]}
+								alt="mobile wallpaper"
+								class={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}`}
+								style={`transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blur > 0 ? `filter: blur(${blur}px);` : ''}; opacity: 1;`}
+								decoding="async"
+								loading="eager"
+							/>
+						)}
+					</div>
+				</template>
 			))}
 		</div>
-	))}
+		<script is:inline>
+			(function() {
+				const container = document.getElementById('wallpaper-single-container');
+				const templates = container.querySelectorAll('.wallpaper-group-template');
+				if (templates.length > 0) {
+					const randomIndex = Math.floor(Math.random() * templates.length);
+					const clone = templates[randomIndex].content.cloneNode(true);
+					container.appendChild(clone);
+				}
+			})();
+		</script>
+	)}
 </div>
 
 {isCarouselEnabled && (

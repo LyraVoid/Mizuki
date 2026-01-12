@@ -207,7 +207,8 @@ const transparentClass = shouldEnableTransparency
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
 
-<script is:inline define:vars={{navbarTransparentMode: siteConfig.banner?.navbar?.transparentMode || "semi", defaultWallpaperMode: siteConfig.wallpaperMode.defaultMode, defaultPostListLayout: siteConfig.postListLayout?.defaultMode || "list"}}>
+<script type="module" is:inline define:vars={{navbarTransparentMode: siteConfig.banner?.navbar?.transparentMode || "semi", defaultWallpaperMode: siteConfig.wallpaperMode.defaultMode, defaultPostListLayout: siteConfig.postListLayout?.defaultMode || "list", BANNER_HEIGHT: BANNER_HEIGHT}}>
+
 	// 立即执行，在页面渲染前应用壁纸模式和布局模式，避免闪烁
 	(function() {
 		const wallpaperMode = localStorage.getItem('wallpaperMode') || defaultWallpaperMode;
@@ -544,7 +545,7 @@ const transparentClass = shouldEnableTransparency
 <!-- Banner - 始终渲染，通过 JS 控制显示隐藏 -->
 <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden ${mobileNonHomeBannerClass}`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
 
-    {(bannerImages.desktop && Array.isArray(bannerImages.desktop) && bannerImages.desktop.length > 1) || (bannerImages.mobile && Array.isArray(bannerImages.mobile) && bannerImages.mobile.length > 1) ? (
+    {siteConfig.banner.carousel?.enable && ((bannerImages.desktop && Array.isArray(bannerImages.desktop) && bannerImages.desktop.length > 1) || (bannerImages.mobile && Array.isArray(bannerImages.mobile) && bannerImages.mobile.length > 1)) ? (
         <!-- Carousel mode for multiple images -->
         <div id="banner-carousel" class="relative h-full w-full">
             <ul class="carousel-list h-full w-full">
@@ -593,25 +594,43 @@ const transparentClass = shouldEnableTransparency
         </div>
     ) : (
         <!-- Single image mode -->
-            <div class="relative h-full w-full">
-                <!-- Mobile: use mobile-specific image with same logic as desktop -->
-                <ImageWrapper 
-                    alt="Mobile banner image of the blog" 
-                    class:list={["block lg:hidden object-cover h-full w-full transition duration-700 opacity-100"]}
-                    src={(Array.isArray(bannerImages.mobile) ? bannerImages.mobile[0] : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')) || (Array.isArray(bannerImages.desktop) ? bannerImages.desktop[0] : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')) || ''} 
-                    position={siteConfig.banner.position}
-                    loading="eager"
-                />
-                <!-- Desktop: use desktop-specific image -->
-                <ImageWrapper 
-                    id="banner" 
-                    alt="Desktop banner image of the blog" 
-                    class:list={["hidden lg:block object-cover h-full transition duration-700 opacity-100"]}
-                    src={(Array.isArray(bannerImages.desktop) ? bannerImages.desktop[0] : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')) || (Array.isArray(bannerImages.mobile) ? bannerImages.mobile[0] : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')) || ''} 
-                    position={siteConfig.banner.position}
-                    loading="eager"
-                />
+            <div id="banner-single-container" class="relative h-full w-full">
+                {Array.from({ length: Math.max(
+                    Array.isArray(bannerImages.desktop) ? bannerImages.desktop.length : 1,
+                    Array.isArray(bannerImages.mobile) ? bannerImages.mobile.length : 1
+                ) }).map((_, index) => (
+                    <template class="banner-group-template">
+                        <!-- Mobile: use mobile-specific image with same logic as desktop -->
+                        <ImageWrapper 
+                            alt="Mobile banner image of the blog" 
+                            class:list={["block lg:hidden object-cover h-full w-full transition duration-700 opacity-100"]}
+                            src={(Array.isArray(bannerImages.mobile) ? (bannerImages.mobile[index] || bannerImages.mobile[0]) : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')) || (Array.isArray(bannerImages.desktop) ? (bannerImages.desktop[index] || bannerImages.desktop[0]) : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')) || ''} 
+                            position={siteConfig.banner.position}
+                            loading="eager"
+                        />
+                        <!-- Desktop: use desktop-specific image -->
+                        <ImageWrapper 
+                            id="banner" 
+                            alt="Desktop banner image of the blog" 
+                            class:list={["hidden lg:block object-cover h-full transition duration-700 opacity-100"]}
+                            src={(Array.isArray(bannerImages.desktop) ? (bannerImages.desktop[index] || bannerImages.desktop[0]) : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')) || (Array.isArray(bannerImages.mobile) ? (bannerImages.mobile[index] || bannerImages.mobile[0]) : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')) || ''} 
+                            position={siteConfig.banner.position}
+                            loading="eager"
+                        />
+                    </template>
+                ))}
             </div>
+            <script is:inline>
+                (function() {
+                    const container = document.getElementById('banner-single-container');
+                    const templates = container.querySelectorAll('.banner-group-template');
+                    if (templates.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * templates.length);
+                        const clone = templates[randomIndex].content.cloneNode(true);
+                        container.appendChild(clone);
+                    }
+                })();
+            </script>
     )}
     
     <!-- Home page text overlay -->
