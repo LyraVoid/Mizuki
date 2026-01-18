@@ -15,11 +15,6 @@
   @apply my-4;
 }
 
-#decrypted-content .expressive-code ::selection {
-  @apply bg-[var(--codeblock-selection)];
-  color: #ffffff;
-}
-
 /* frame容器样式 - 与expressive-code.css保持一致 */
 #decrypted-content .expressive-code .frame {
   @apply !shadow-none relative rounded-lg overflow-hidden;
@@ -66,61 +61,6 @@
 
 #decrypted-content .astro-code {
   background: var(--codeblock-bg) !important;
-}
-
-/* 复制按钮样式 - 与markdown.css保持完全一致，使用相同的CSS变量 */
-#decrypted-content .copy-btn {
-  all: initial;
-  @apply opacity-0 absolute active:scale-90 h-8 w-8 top-3 right-3 text-sm rounded-lg transition-all ease-in-out z-20 cursor-pointer;
-  background: var(--btn-regular-bg);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-#decrypted-content .copy-btn:hover {
-  background: var(--btn-regular-bg-hover);
-}
-
-/* 浅色模式适配 */
-@media (prefers-color-scheme: light) {
-  #decrypted-content .copy-btn {
-    box-shadow:
-      0 1px 3px 0 rgba(0, 0, 0, 0.1),
-      0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  }
-}
-
-/* 支持 Astro 的主题切换（非 dark 类时） */
-:root:not(.dark) #decrypted-content .copy-btn {
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px -1px rgba(0, 0, 0, 0.1);
-}
-
-#decrypted-content .frame:hover .copy-btn {
-  opacity: 1;
-}
-
-#decrypted-content .copy-btn-icon {
-  @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none;
-  fill: var(--btn-content);
-}
-
-#decrypted-content .copy-btn .copy-icon {
-  @apply opacity-100;
-  fill: var(--btn-content);
-}
-
-#decrypted-content .copy-btn.success .copy-icon {
-  @apply opacity-0 fill-[var(--deep-text)];
-}
-
-#decrypted-content .copy-btn .success-icon {
-  @apply opacity-0;
-  fill: var(--btn-content);
-}
-
-#decrypted-content .copy-btn.success .success-icon {
-  @apply opacity-100;
 }
 
 /* 代码元素样式 */
@@ -356,12 +296,6 @@
   @apply text-inherit;
 }
 
-/* 确保代码块选择样式正确 */
-#decrypted-content .astro-code ::selection {
-  @apply bg-[var(--codeblock-selection)];
-  color: #ffffff;
-}
-
 /* 语言标识样式 - 模拟expressive-code的language-badge插件 */
 #decrypted-content .frame.has-language-badge [data-language]::before {
   position: absolute;
@@ -403,24 +337,18 @@
   }
 }
 
-/* 移动端适配 - 复制按钮 */
 @media (max-width: 768px) {
-  /* 调整复制按钮大小和位置 */
-  #decrypted-content .copy-btn {
-    width: 1.75rem;
-    height: 1.75rem;
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-
-  /* 调整图标大小 */
-  #decrypted-content .copy-btn-icon {
-    width: 0.875rem;
-    height: 0.875rem;
-  }
-
   /* 在移动端隐藏语言标识（与全局行为一致） */
   #decrypted-content .frame.has-language-badge [data-language]::before {
     display: none !important;
   }
+}
+
+#decrypted-content .expressive-code pre.wrap {
+  padding: 0 !important;
+}
+
+#decrypted-content .expressive-code pre code {
+  background-color: transparent !important;
+  padding: 1rem 0 1rem 0 !important;
 }

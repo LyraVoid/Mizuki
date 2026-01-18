@@ -1,205 +1,195 @@
 <script lang="ts">
 import { onMount } from "svelte";
-import { sidebarLayoutConfig, siteConfig } from "../config";
+import { siteConfig, sidebarLayoutConfig } from "../config";
 
-export let currentLayout: "list" | "grid" = "list";
+type LayoutMode = "list" | "grid";
+
+export let currentLayout: LayoutMode = "list";
 
 let mounted = false;
 let isSmallScreen = false;
 let isSwitching = false;
+let userPreference: LayoutMode = "list";
+let mediaQueryList: MediaQueryList | null = null;
 
-// 检查是否启用双侧边栏
-const isBothSidebars = sidebarLayoutConfig.position === "both";
+const BREAKPOINT = sidebarLayoutConfig.responsive?.breakpoints?.desktop ?? 1280;
 
-function checkScreenSize() {
-	isSmallScreen = window.innerWidth < 1200;
-	if (isSmallScreen) {
-		currentLayout = "list";
-	}
+$: currentLayout = isSmallScreen ? "list" : userPreference;
+
+$: if (mounted) {
+    dispatchLayoutChange(currentLayout);
 }
 
-onMount(() => {
-	mounted = true;
-	checkScreenSize();
+function dispatchLayoutChange(layout: LayoutMode) {
+    if (typeof window !== "undefined") {
+        window.dispatchEvent(
+            new CustomEvent("layoutChange", {
+                detail: { layout },
+            })
+        );
+    }
+}
 
-	// 从localStorage读取用户偏好，如果没有则使用传入的默认值
-	const savedLayout = localStorage.getItem("postListLayout");
-	if (savedLayout && (savedLayout === "list" || savedLayout === "grid")) {
-		currentLayout = savedLayout;
-	} else {
-		// 如果没有保存的偏好，使用传入的默认布局（从props）
-		// currentLayout已经在声明时设置了默认值
-	}
+// 辅助函数：同时更新两种存储
+// sessionStorage 用于判断当前会话状态（关闭标签页失效）
+// localStorage 用于兼容其他组件（如 PostPage.astro）
+// TODO: 使用 sessionStorage 存储状态，关闭标签页即销毁。不应把缓存数据存在访客本地电脑上
+function updateStorage(layout: LayoutMode) {
+    sessionStorage.setItem("postListLayout", layout);
+    localStorage.setItem("postListLayout", layout);
+}
 
-	// 监听窗口大小变化
-	window.addEventListener("resize", checkScreenSize);
-
-	return () => {
-		window.removeEventListener("resize", checkScreenSize);
-	};
-});
+function getSavedSessionLayout(): LayoutMode | null {
+    return sessionStorage.getItem("postListLayout") as LayoutMode;
+}
 
 function switchLayout() {
-	if (!mounted || isSmallScreen || isSwitching) return;
+    if (!mounted || isSmallScreen || isSwitching) return;
 
-	isSwitching = true;
-	currentLayout = currentLayout === "list" ? "grid" : "list";
-	localStorage.setItem("postListLayout", currentLayout);
-
-	// 触发自定义事件，通知父组件布局已改变
-	const event = new CustomEvent("layoutChange", {
-		detail: { layout: currentLayout },
-	});
-	window.dispatchEvent(event);
-
-	// 动画完成后重置状态
-	setTimeout(() => {
-		isSwitching = false;
-	}, 500);
+    isSwitching = true;
+    const newLayout = userPreference === "list" ? "grid" : "list";
+    userPreference = newLayout;
+    
+    // 更新存储
+    updateStorage(newLayout);
 }
 
-// 监听布局变化事件
+function onAnimationEnd() {
+    isSwitching = false;
+}
+
+function handleMediaQueryChange(e: MediaQueryListEvent | MediaQueryList) {
+    isSmallScreen = !e.matches;
+}
+
 onMount(() => {
-	const handleCustomEvent = (
-		event: CustomEvent<{ layout: "list" | "grid" }>,
-	) => {
-		currentLayout = event.detail.layout;
-	};
+    mounted = true;
 
-	window.addEventListener("layoutChange", handleCustomEvent as EventListener);
+    const sessionLayout = getSavedSessionLayout();
+    const defaultLayout = siteConfig.postListLayout.defaultMode as LayoutMode;
+    
+    if (sessionLayout === "list" || sessionLayout === "grid") {
+        userPreference = sessionLayout;
+        
+        if (localStorage.getItem("postListLayout") !== sessionLayout) {
+            localStorage.setItem("postListLayout", sessionLayout);
+        }
+    } else {
+        userPreference = defaultLayout;
+        updateStorage(defaultLayout);
+    }
 
-	return () => {
-		window.removeEventListener(
-			"layoutChange",
-			handleCustomEvent as EventListener,
-		);
-	};
-});
+    mediaQueryList = window.matchMedia(`(min-width: ${BREAKPOINT}px)`);
+    handleMediaQueryChange(mediaQueryList);
 
-// 监听PostPage的布局初始化事件
-onMount(() => {
-	const handleLayoutInit = (
-		event: CustomEvent<{ layout: "list" | "grid" }>,
-	) => {
-		currentLayout = event.detail.layout;
-	};
+    if (mediaQueryList.addEventListener) {
+        mediaQueryList.addEventListener("change", handleMediaQueryChange);
+    } else {
+        mediaQueryList.addListener(handleMediaQueryChange);
+    }
 
-	const handleSwupEvent = () => {
-		// Swup页面切换时重新同步布局状态
-		setTimeout(() => {
-			console.log("Swup event - syncing layout state");
-			const savedLayout = localStorage.getItem("postListLayout");
-			if (savedLayout && (savedLayout === "list" || savedLayout === "grid")) {
-				currentLayout = savedLayout;
-			} else {
-				// 如果没有保存的布局，使用默认布局
-				const defaultLayout = siteConfig.postListLayout.defaultMode;
-				currentLayout = defaultLayout;
-			}
-		}, 200);
-	};
+    const handleCustomEvent = (event: CustomEvent<{ layout: LayoutMode }>) => {
+        if (event.detail?.layout) userPreference = event.detail.layout;
+    };
+    
+    const handleSwupEvent = () => {
+        setTimeout(() => {
+            const saved = getSavedSessionLayout();
+            if (saved === "list" || saved === "grid") {
+                userPreference = saved;
+            } else {
+                 userPreference = siteConfig.postListLayout.defaultMode as LayoutMode;
+            }
+        }, 200);
+    };
 
-	// 监听布局初始化事件
-	window.addEventListener("layoutInit", handleLayoutInit as EventListener);
+    window.addEventListener("layoutChange", handleCustomEvent as EventListener);
+    
+    const setupSwup = () => {
+        const swup = (window as any).swup;
+        if (swup?.hooks) {
+            swup.hooks.on("content:replace", handleSwupEvent);
+            swup.hooks.on("page:view", handleSwupEvent);
+        } else {
+            window.addEventListener("popstate", handleSwupEvent);
+        }
+    };
 
-	// 监听Swup页面切换事件
-	function setupSwupListeners() {
-		if (typeof window !== "undefined" && (window as any).swup) {
-			const swup = (window as any).swup;
+    if ((window as any).swup) {
+        setupSwup();
+    } else {
+        setTimeout(setupSwup, 200);
+    }
 
-			swup.hooks.on("content:replace", handleSwupEvent);
-			swup.hooks.on("page:view", handleSwupEvent);
-			swup.hooks.on("animation:in:end", handleSwupEvent);
-
-			console.log("Swup button listeners registered");
-		} else {
-			// 降级处理：监听普通页面切换事件
-			window.addEventListener("popstate", handleSwupEvent);
-			console.log("Fallback button listeners registered");
-		}
-	}
-
-	// 延迟设置Swup监听器，确保Swup已初始化
-	setTimeout(setupSwupListeners, 200);
-
-	return () => {
-		window.removeEventListener("layoutInit", handleLayoutInit as EventListener);
-
-		if (typeof window !== "undefined" && (window as any).swup) {
-			const swup = (window as any).swup;
-			swup.hooks.off("content:replace", handleSwupEvent);
-			swup.hooks.off("page:view", handleSwupEvent);
-			swup.hooks.off("animation:in:end", handleSwupEvent);
-		} else {
-			window.removeEventListener("popstate", handleSwupEvent);
-		}
-	};
+    return () => {
+        if (mediaQueryList) {
+             if (mediaQueryList.removeEventListener) {
+                mediaQueryList.removeEventListener("change", handleMediaQueryChange);
+            } else {
+                mediaQueryList.removeListener(handleMediaQueryChange);
+            }
+        }
+        window.removeEventListener("layoutChange", handleCustomEvent as EventListener);
+        window.removeEventListener("popstate", handleSwupEvent);
+        
+        const swup = (window as any).swup;
+        if (swup?.hooks) {
+            swup.hooks.off("content:replace", handleSwupEvent);
+            swup.hooks.off("page:view", handleSwupEvent);
+        }
+    };
 });
 </script>
 
 {#if mounted && siteConfig.postListLayout.allowSwitch && !isSmallScreen}
   <button 
-    aria-label="切换文章列表布局" 
+    type="button"
+    aria-label={userPreference === 'list' ? '切换到网格模式' : '切换到列表模式'}
+    aria-pressed={userPreference === 'grid'}
     class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 flex items-center justify-center theme-switch-btn {isSwitching ? 'switching' : ''}" 
     on:click={switchLayout}
     disabled={isSwitching}
-    title={currentLayout === 'list' ? '切换到网格模式' : '切换到列表模式'}
+    title={userPreference === 'list' ? '切换到网格模式' : '切换到列表模式'}
   >
-      {#if currentLayout === 'list'}
-        <!-- 列表图标 -->
-        <svg class="w-5 h-5 icon-transition" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-        </svg>
-    {:else}
-      <!-- 网格图标 -->
-      <svg class="w-5 h-5 icon-transition" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/>
-      </svg>
-    {/if}
+    <div 
+        class="icon-container w-5 h-5 flex items-center justify-center relative"
+        on:animationend={onAnimationEnd}
+    >
+        {#if userPreference === 'list'}
+            <svg class="w-5 h-5 icon-transition" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+            </svg>
+        {:else}
+            <svg class="w-5 h-5 icon-transition" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/>
+            </svg>
+        {/if}
+    </div>
   </button>
 {/if}
 
 <style>
-    /* 确保主题切换按钮的背景色即时更新 */
     .theme-switch-btn::before {
         transition: transform 75ms ease-out, background-color 0ms !important;
     }
 
-    /* 图标过渡动画 */
     .icon-transition {
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     }
-
-    /* 切换中的按钮动画 */
     .switching {
         pointer-events: none;
     }
-
     .switching .icon-transition {
         animation: iconRotate 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
     @keyframes iconRotate {
-        0% {
-            transform: rotate(0deg) scale(1);
-            opacity: 1;
-        }
-        50% {
-            transform: rotate(180deg) scale(0.8);
-            opacity: 0.5;
-        }
-        100% {
-            transform: rotate(360deg) scale(1);
-            opacity: 1;
-        }
+        0% { transform: rotate(0deg) scale(1); opacity: 1; }
+        50% { transform: rotate(180deg) scale(0.8); opacity: 0.5; }
+        100% { transform: rotate(360deg) scale(1); opacity: 1; }
     }
-
-    /* 悬停效果增强 */
     .theme-switch-btn:not(.switching):hover .icon-transition {
         transform: scale(1.1);
     }
-
-    /* 按钮禁用状态 */
     .theme-switch-btn:disabled {
         cursor: not-allowed;
         opacity: 0.7;

@@ -1,7 +1,4 @@
 <script lang="ts">
-// 导入 Svelte 的生命周期函数和过渡效果
-
-// 导入 Icon 组件，用于显示图标
 import Icon from "@iconify/svelte";
 import { onDestroy, onMount } from "svelte";
 import { slide } from "svelte/transition";
@@ -23,6 +20,7 @@ let meting_id = musicPlayerConfig.id ?? "14164869977";
 let meting_server = musicPlayerConfig.server ?? "netease";
 // Meting API 的类型，从配置中获取或使用默认值
 let meting_type = musicPlayerConfig.type ?? "playlist";
+
 // 播放状态，默认为 false (未播放)
 let isPlaying = false;
 // 播放器是否展开，默认为 false
@@ -114,9 +112,9 @@ async function fetchMetingPlaylist() {
 		const res = await fetch(apiUrl);
 		if (!res.ok) throw new Error("meting api error");
 		const list = await res.json();
-		playlist = list.map((song) => {
-			let title = song.name ?? song.title ?? "未知歌曲";
-			let artist = song.artist ?? song.author ?? "未知艺术家";
+		playlist = list.map((song: any) => {
+			let title = song.name ?? song.title ?? i18n(Key.unknownSong);
+		let artist = song.artist ?? song.author ?? i18n(Key.unknownArtist);
 			let dur = song.duration ?? 0;
 			if (dur > 10000) dur = Math.floor(dur / 1000);
 			if (!Number.isFinite(dur) || dur <= 0) dur = 0;
@@ -134,7 +132,7 @@ async function fetchMetingPlaylist() {
 		}
 		isLoading = false;
 	} catch (e) {
-		showErrorMessage("Meting 歌单获取失败");
+		showErrorMessage(i18n(Key.musicPlayerErrorPlaylist));
 		isLoading = false;
 	}
 }
@@ -144,7 +142,7 @@ function togglePlay() {
 	if (isPlaying) {
 		audio.pause();
 	} else {
-		audio.play();
+		audio.play().catch(() => {});
 	}
 }
 
@@ -170,16 +168,16 @@ function togglePlaylist() {
 
 function toggleShuffle() {
     isShuffled = !isShuffled;
-    if (isShuffled) {
+	if (isShuffled) {
         isRepeating = 0;
-    }
+	}
 }
 
 function toggleRepeat() {
     isRepeating = (isRepeating + 1) % 3;
-    if (isRepeating !== 0) {
+	if (isRepeating !== 0) {
         isShuffled = false;
-    }
+	}
 }
 
 function previousSong() {
@@ -188,8 +186,9 @@ function previousSong() {
 	playSong(newIndex);
 }
 
-function nextSong() {
+function nextSong(autoPlay: boolean = true) {
 	if (playlist.length <= 1) return;
+	
 	let newIndex: number;
 	if (isShuffled) {
 		do {
@@ -198,31 +197,18 @@ function nextSong() {
 	} else {
 		newIndex = currentIndex < playlist.length - 1 ? currentIndex + 1 : 0;
 	}
-	playSong(newIndex);
+	playSong(newIndex, autoPlay);
 }
 
-function playSong(index: number) {
+// 记录切歌时的播放意图，用于解决加载失败时的状态传递问题
+let willAutoPlay = false;
+
+function playSong(index: number, autoPlay = true) {
 	if (index < 0 || index >= playlist.length) return;
-	const wasPlaying = isPlaying;
+	
+    willAutoPlay = autoPlay;
 	currentIndex = index;
-	if (audio) audio.pause();
 	loadSong(playlist[currentIndex]);
-	if (wasPlaying || !isPlaying) {
-		setTimeout(() => {
-			if (!audio) return;
-			if (audio.readyState >= 2) {
-				audio.play().catch(() => {});
-			} else {
-				audio.addEventListener(
-					"canplay",
-					() => {
-						audio.play().catch(() => {});
-					},
-					{ once: true },
-				);
-			}
-		}, 100);
-	}
 }
 
 function getAssetPath(path: string): string {
@@ -232,23 +218,14 @@ function getAssetPath(path: string): string {
 }
 
 function loadSong(song: typeof currentSong) {
-	if (!song || !audio) return;
-	currentSong = { ...song };
-	if (song.url) {
-		isLoading = true;
-		audio.currentTime = 0;
-		currentTime = 0;
-		duration = song.duration ?? 0;
-		audio.removeEventListener("loadeddata", handleLoadSuccess);
-		audio.removeEventListener("error", handleLoadError);
-		audio.removeEventListener("loadstart", handleLoadStart);
-		audio.addEventListener("loadeddata", handleLoadSuccess, { once: true });
-		audio.addEventListener("error", handleLoadError, { once: true });
-		audio.addEventListener("loadstart", handleLoadStart, { once: true });
-		audio.src = getAssetPath(song.url);
-		audio.load();
-	} else {
-		isLoading = false;
+	if (!song) return;
+	if (song.url !== currentSong.url) {
+		currentSong = { ...song };
+		if (song.url) {
+			isLoading = true;
+		} else {
+			isLoading = false;
+		}
 	}
 }
 
@@ -263,36 +240,57 @@ function handleLoadSuccess() {
 		currentSong.duration = duration;
 	}
 
-    if (isPlaying) {
+	if (willAutoPlay || isPlaying) {
         const playPromise = audio.play();
-        if (playPromise !== undefined) {
+		if (playPromise !== undefined) {
             playPromise.catch((error) => {
                 console.warn("自动播放被拦截，等待用户交互:", error);
                 autoplayFailed = true;
+				isPlaying = false;
             });
-        }
+		}
     }
 }
 
 function handleUserInteraction() {
-    if (autoplayFailed && audio && isPlaying) {
+    if (autoplayFailed && audio) {
         const playPromise = audio.play();
-        if (playPromise !== undefined) {
+		if (playPromise !== undefined) {
             playPromise.then(() => {
                 autoplayFailed = false;
             }).catch(() => {});
-        }
+		}
     }
 }
 
 function handleLoadError(_event: Event) {
+	if (!currentSong.url) return;
 	isLoading = false;
-	showErrorMessage(`无法播放 "${currentSong.title}"，正在尝试下一首...`);
-	if (playlist.length > 1) setTimeout(() => nextSong(), 1000);
-	else showErrorMessage("播放列表中没有可用的歌曲");
+	showErrorMessage(i18n(Key.musicPlayerErrorSong));
+	
+    const shouldContinue = isPlaying || willAutoPlay;
+	if (playlist.length > 1) {
+		setTimeout(() => nextSong(shouldContinue), 1000);
+	} else {
+		showErrorMessage(i18n(Key.musicPlayerErrorEmpty));
+	}
 }
 
 function handleLoadStart() {}
+
+function handleAudioEnded() {
+	if (isRepeating === 1) {
+		audio.currentTime = 0;
+		audio.play().catch(() => {});
+	} else if (
+		isRepeating === 2 ||
+		isShuffled
+	) {
+		nextSong(true);
+	} else {
+		isPlaying = false;
+	}
+}
 
 function showErrorMessage(message: string) {
 	errorMessage = message;
@@ -315,61 +313,62 @@ function setProgress(event: MouseEvent) {
 }
 
 let isVolumeDragging = false;
-let isMouseDown = false;
+let isPointerDown = false;
 let volumeBarRect: DOMRect | null = null;
 let rafId: number | null = null;
 
-function startVolumeDrag(event: MouseEvent) {
+function startVolumeDrag(event: PointerEvent) {
     if (!volumeBar) return;
+	event.preventDefault();
     
-    isMouseDown = true; 
+    isPointerDown = true; 
+	volumeBar.setPointerCapture(event.pointerId);
 
     volumeBarRect = volumeBar.getBoundingClientRect();
-    
     updateVolumeLogic(event.clientX);
 }
 
-function handleVolumeMove(event: MouseEvent) {
-    if (!isMouseDown) return;
+function handleVolumeMove(event: PointerEvent) {
+    if (!isPointerDown) return;
+	event.preventDefault();
+
     isVolumeDragging = true; 
     if (rafId) return;
 
-    rafId = requestAnimationFrame(() => {
+	rafId = requestAnimationFrame(() => {
         updateVolumeLogic(event.clientX);
         rafId = null;
     });
 }
 
-function stopVolumeDrag() {
-    isMouseDown = false;
+function stopVolumeDrag(event: PointerEvent) {
+    if (!isPointerDown) return;
+	isPointerDown = false;
     isVolumeDragging = false;
     volumeBarRect = null;
-    
-    if (rafId) {
+	if (volumeBar) {
+		volumeBar.releasePointerCapture(event.pointerId);
+	}
+
+	if (rafId) {
         cancelAnimationFrame(rafId);
         rafId = null;
-    }
+	}
 }
 
 function updateVolumeLogic(clientX: number) {
     if (!audio || !volumeBar) return;
 
     const rect = volumeBarRect || volumeBar.getBoundingClientRect();
-    
-    const percent = Math.max(
+	const percent = Math.max(
         0,
         Math.min(1, (clientX - rect.left) / rect.width),
     );
-
-    volume = percent;
-    audio.volume = volume;
-    isMuted = volume === 0;
+	volume = percent;
 }
 
 function toggleMute() {
-	if (!audio) return;
 	isMuted = !isMuted;
-	audio.muted = isMuted;
 }
 
 function formatTime(seconds: number): string {
@@ -379,44 +378,8 @@ function formatTime(seconds: number): string {
 	return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
-function handleAudioEvents() {
-	if (!audio) return;
-	audio.addEventListener("play", () => {
-		isPlaying = true;
-	});
-	audio.addEventListener("pause", () => {
-		isPlaying = false;
-	});
-	audio.addEventListener("timeupdate", () => {
-		currentTime = audio.currentTime;
-	});
-	audio.addEventListener("ended", () => {
-		if (isRepeating === 1) {
-			audio.currentTime = 0;
-			audio.play().catch(() => {});
-		} else if (
-			isRepeating === 2 ||
-			isShuffled
-		) {
-			nextSong();
-		} else {
-			isPlaying = false;
-		}
-	});
-	audio.addEventListener("error", (_event) => {
-		isLoading = false;
-	});
-	audio.addEventListener("stalled", () => {});
-	audio.addEventListener("waiting", () => {});
-}
-
 const interactionEvents = ['click', 'keydown', 'touchstart'];
-
 onMount(() => {
-	audio = new Audio();
-	audio.volume = volume;
-	handleAudioEvents();
-
     interactionEvents.forEach(event => {
         document.addEventListener(event, handleUserInteraction, { capture: true });
     });
@@ -443,17 +406,27 @@ onDestroy(() => {
             document.removeEventListener(event, handleUserInteraction, { capture: true });
         });
     }
-    
-    if (audio) {
-		audio.pause();
-		audio.src = "";
-	}
 });
 </script>
 
+<audio
+	bind:this={audio}
+	src={getAssetPath(currentSong.url)}
+	bind:volume
+	bind:muted={isMuted}
+	on:play={() => isPlaying = true}
+	on:pause={() => isPlaying = false}
+	on:timeupdate={() => currentTime = audio.currentTime}
+	on:ended={handleAudioEnded}
+	on:error={handleLoadError}
+	on:loadeddata={handleLoadSuccess}
+	on:loadstart={handleLoadStart}
+	preload="auto"
+></audio>
+
 <svelte:window 
-    on:mousemove={handleVolumeMove} 
-    on:mouseup={stopVolumeDrag} 
+    on:pointermove={handleVolumeMove} 
+    on:pointerup={stopVolumeDrag} 
 />
 
 {#if musicPlayerConfig.enable}
@@ -472,6 +445,7 @@ onDestroy(() => {
 <div class="music-player fixed bottom-4 right-4 z-50 transition-all duration-300 ease-in-out"
      class:expanded={isExpanded}
      class:hidden-mode={isHidden}>
+
     <!-- 隐藏状态的小圆球 -->
     <div class="orb-player w-12 h-12 bg-[var(--primary)] rounded-full shadow-lg cursor-pointer transition-all duration-500 ease-in-out flex items-center justify-center hover:scale-110 active:scale-95"
          class:opacity-0={!isHidden}
@@ -481,12 +455,12 @@ onDestroy(() => {
          on:keydown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                toggleHidden();
+				toggleHidden();
             }
          }}
          role="button"
          tabindex="0"
-         aria-label="显示音乐播放器">
+         aria-label={i18n(Key.musicPlayerShow)}>
         {#if isLoading}
             <Icon icon="eos-icons:loading" class="text-white text-lg" />
         {:else if isPlaying}
@@ -511,13 +485,13 @@ onDestroy(() => {
                  on:keydown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        togglePlay();
+						togglePlay();
                     }
                  }}
                  role="button"
                  tabindex="0"
-                 aria-label={isPlaying ? '暂停' : '播放'}>
-                <img src={getAssetPath(currentSong.cover)} alt="封面"
+                 aria-label={isPlaying ? i18n(Key.musicPlayerPause) : i18n(Key.musicPlayerPlay)}>
+                <img src={getAssetPath(currentSong.cover)} alt={i18n(Key.musicPlayerCover)}
                      class="w-full h-full object-cover transition-transform duration-300"
                      class:spinning={isPlaying && !isLoading}
                      class:animate-pulse={isLoading} />
@@ -537,19 +511,19 @@ onDestroy(() => {
                  on:keydown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        toggleExpanded();
+						toggleExpanded();
                     }
                  }}
                  role="button"
                  tabindex="0"
-                 aria-label="展开音乐播放器">
+                 aria-label={i18n(Key.musicPlayerExpand)}>
                 <div class="text-sm font-medium text-90 truncate">{currentSong.title}</div>
                 <div class="text-xs text-50 truncate">{currentSong.artist}</div>
             </div>
             <div class="flex items-center gap-1">
                 <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
                         on:click|stopPropagation={toggleHidden}
-                        title="隐藏播放器">
+                        title={i18n(Key.musicPlayerHide)}>
                     <Icon icon="material-symbols:visibility-off" class="text-lg" />
                 </button>
                 <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
@@ -566,7 +540,7 @@ onDestroy(() => {
          class:pointer-events-none={!isExpanded}>
         <div class="flex items-center gap-4 mb-4">
             <div class="cover-container relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
-                <img src={getAssetPath(currentSong.cover)} alt="封面"
+                <img src={getAssetPath(currentSong.cover)} alt={i18n(Key.musicPlayerCover)}
                      class="w-full h-full object-cover transition-transform duration-300"
                      class:spinning={isPlaying && !isLoading}
                      class:animate-pulse={isLoading} />
@@ -581,13 +555,13 @@ onDestroy(() => {
             <div class="flex items-center gap-1">
                 <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
                         on:click={toggleHidden}
-                        title="隐藏播放器">
+                        title={i18n(Key.musicPlayerHide)}>
                     <Icon icon="material-symbols:visibility-off" class="text-lg" />
                 </button>
                 <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
                         class:text-[var(--primary)]={showPlaylist}
                         on:click={togglePlaylist}
-                        title="播放列表">
+                        title={i18n(Key.musicPlayerPlaylist)}>
                     <Icon icon="material-symbols:queue-music" class="text-lg" />
                 </button>
             </div>
@@ -599,18 +573,17 @@ onDestroy(() => {
                  on:keydown={(e) => {
                      if (e.key === 'Enter' || e.key === ' ') {
                          e.preventDefault();
-                         const rect = progressBar.getBoundingClientRect();
                          const percent = 0.5;
                          const newTime = percent * duration;
-                         if (audio) {
+						 if (audio) {
                              audio.currentTime = newTime;
-                             currentTime = newTime;
+							 currentTime = newTime;
                          }
                      }
                  }}
                  role="slider"
                  tabindex="0"
-                 aria-label="播放进度"
+                 aria-label={i18n(Key.musicPlayerProgress)}
                  aria-valuemin="0"
                  aria-valuemax="100"
                  aria-valuenow={duration > 0 ? (currentTime / duration * 100) : 0}>
@@ -619,7 +592,6 @@ onDestroy(() => {
             </div>
         </div>
         <div class="controls flex items-center justify-center gap-2 mb-4">
-            <!-- 随机按钮高亮 -->
             <button class="w-10 h-10 rounded-lg"
                     class:btn-regular={isShuffled}
                     class:btn-plain={!isShuffled}
@@ -643,11 +615,10 @@ onDestroy(() => {
                     <Icon icon="material-symbols:play-arrow" class="text-xl" />
                 {/if}
             </button>
-            <button class="btn-plain w-10 h-10 rounded-lg" on:click={nextSong}
+            <button class="btn-plain w-10 h-10 rounded-lg" on:click={() => nextSong()}
                     disabled={playlist.length <= 1}>
                 <Icon icon="material-symbols:skip-next" class="text-xl" />
             </button>
-            <!-- 循环按钮高亮 -->
             <button class="w-10 h-10 rounded-lg"
                     class:btn-regular={isRepeating > 0}
                     class:btn-plain={isRepeating === 0}
@@ -671,18 +642,18 @@ onDestroy(() => {
                     <Icon icon="material-symbols:volume-up" class="text-lg" />
                 {/if}
             </button>
-            <div class="flex-1 h-2 bg-[var(--btn-regular-bg)] rounded-full cursor-pointer"
+            <div class="flex-1 h-2 bg-[var(--btn-regular-bg)] rounded-full cursor-pointer touch-none"
                  bind:this={volumeBar}
-                 on:mousedown={startVolumeDrag}
+                 on:pointerdown={startVolumeDrag}
                  on:keydown={(e) => {
                      if (e.key === 'Enter' || e.key === ' ') {
                          e.preventDefault();
-                         if (e.key === 'Enter') toggleMute();
+						 if (e.key === 'Enter') toggleMute();
                      }
                  }}
                  role="slider"
                  tabindex="0"
-                 aria-label="音量控制"
+                 aria-label={i18n(Key.musicPlayerVolume)}
                  aria-valuemin="0"
                  aria-valuemax="100"
                  aria-valuenow={volume * 100}>
@@ -693,7 +664,7 @@ onDestroy(() => {
             </div>
             <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
                     on:click={toggleExpanded}
-                    title="收起播放器">
+                    title={i18n(Key.musicPlayerCollapse)}>
                 <Icon icon="material-symbols:expand-more" class="text-lg" />
             </button>
         </div>
@@ -702,7 +673,7 @@ onDestroy(() => {
         <div class="playlist-panel float-panel fixed bottom-20 right-4 w-80 max-h-96 overflow-hidden z-50"
              transition:slide={{ duration: 300, axis: 'y' }}>
             <div class="playlist-header flex items-center justify-between p-4 border-b border-[var(--line-divider)]">
-                <h3 class="text-lg font-semibold text-90">{i18n(Key.playlist)}</h3>
+                <h3 class="text-lg font-semibold text-90">{i18n(Key.musicPlayerPlaylist)}</h3>
                 <button class="btn-plain w-8 h-8 rounded-lg" on:click={togglePlaylist}>
                     <Icon icon="material-symbols:close" class="text-lg" />
                 </button>
@@ -716,7 +687,7 @@ onDestroy(() => {
                          on:keydown={(e) => {
                              if (e.key === 'Enter' || e.key === ' ') {
                                  e.preventDefault();
-                                 playSong(index);
+								 playSong(index);
                              }
                          }}
                          role="button"
@@ -731,9 +702,8 @@ onDestroy(() => {
                                 <span class="text-sm text-[var(--content-meta)]">{index + 1}</span>
                             {/if}
                         </div>
-                        <!-- 歌单列表内封面仍为圆角矩形 -->
                         <div class="w-10 h-10 rounded-lg overflow-hidden bg-[var(--btn-regular-bg)] flex-shrink-0">
-                            <img src={getAssetPath(song.cover)} alt={song.title} class="w-full h-full object-cover" />
+                            <img src={getAssetPath(song.cover)} alt={song.title} loading="lazy" class="w-full h-full object-cover" />
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="font-medium truncate" class:text-[var(--primary)]={index === currentIndex} class:text-90={index !== currentIndex}>
@@ -793,7 +763,7 @@ onDestroy(() => {
     width: 280px;
     position: absolute;
     bottom: 0;
-    right: 0;
+	right: 0;
     /*left: 0;*/
 }
 .expanded-player {
@@ -809,10 +779,10 @@ onDestroy(() => {
 @keyframes pulse {
     0%, 100% {
         opacity: 1;
-    }
+	}
     50% {
         opacity: 0.5;
-    }
+	}
 }
 .progress-section div:hover,
 .bottom-controls > div:hover {
@@ -825,70 +795,70 @@ onDestroy(() => {
         /*left: 8px !important;*/
         bottom: 8px !important;
         right: 8px !important;
-    }
+	}
     .music-player.expanded {
         width: calc(100vw - 16px);
         max-width: none;
         /*left: 8px !important;*/
         right: 8px !important;
-    }
+	}
     .playlist-panel {
         width: calc(100vw - 16px) !important;
         /*left: 8px !important;*/
         right: 8px !important;
         max-width: none;
-    }
+	}
     .controls {
         gap: 8px;
-    }
+	}
     .controls button {
         width: 36px;
         height: 36px;
-    }
+	}
     .controls button:nth-child(3) {
         width: 44px;
         height: 44px;
-    }
+	}
 }
 @media (max-width: 480px) {
     .music-player {
         max-width: 260px;
-    }
+	}
     .song-title {
         font-size: 14px;
-    }
+	}
     .song-artist {
         font-size: 12px;
-    }
+	}
     .controls {
         gap: 6px;
         margin-bottom: 12px;
-    }
+	}
     .controls button {
         width: 32px;
         height: 32px;
-    }
+	}
     .controls button:nth-child(3) {
         width: 40px;
         height: 40px;
-    }
+	}
     .playlist-item {
         padding: 8px 12px;
-    }
+	}
     .playlist-item .w-10 {
         width: 32px;
         height: 32px;
-    }
+	}
 }
 @keyframes slide-up {
     from {
         transform: translateY(100%);
         opacity: 0;
-    }
+	}
     to {
         transform: translateY(0);
         opacity: 1;
-    }
+	}
 }
 .animate-slide-up {
     animation: slide-up 0.3s ease-out;
@@ -897,20 +867,20 @@ onDestroy(() => {
     .music-player button,
     .playlist-item {
         min-height: 44px;
-    }
+	}
     .progress-section > div,
     .bottom-controls > div:nth-child(2) {
         height: 12px;
-    }
+	}
 }
 /* 自定义旋转动画，停止时保持当前位置 */
 @keyframes spin-continuous {
     from {
         transform: rotate(0deg);
-    }
+	}
     to {
         transform: rotate(360deg);
-    }
+	}
 }
 
 .cover-container img {
@@ -925,7 +895,7 @@ onDestroy(() => {
 /* 让主题色按钮更有视觉反馈 */
 button.bg-\[var\(--primary\)\] {
     box-shadow: 0 0 0 2px var(--primary);
-    border: none;
+	border: none;
 }
 </style>
 {/if}

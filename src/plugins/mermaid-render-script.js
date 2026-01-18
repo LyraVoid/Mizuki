@@ -1,6 +1,10 @@
 (() => {
 	// 单例模式：检查是否已经初始化过
 	if (window.mermaidInitialized) {
+		// 如果已经初始化过，只确保 renderMermaidDiagrams 函数可用
+		if (typeof window.renderMermaidDiagrams !== "function") {
+			window.renderMermaidDiagrams = renderMermaidDiagrams;
+		}
 		return;
 	}
 
@@ -491,6 +495,9 @@
 			// 加载并初始化 Mermaid
 			await loadMermaid();
 			await initializeMermaid();
+
+			// 将 renderMermaidDiagrams 暴露到全局作用域，以便在解密后调用
+			window.renderMermaidDiagrams = renderMermaidDiagrams;
 		} catch (error) {
 			console.error("Failed to initialize Mermaid system:", error);
 		}

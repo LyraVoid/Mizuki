@@ -58,11 +58,11 @@ export const zh_TW: Translation = {
 	[Key.license]: "許可協議",
 	[Key.anime]: "追番",
 	[Key.diary]: "日記",
-	[Key.gallery]: "相冊",
 
 	// 設備頁面
 	[Key.devices]: "我的設備",
 	[Key.devicesSubtitle]: "這裡展示了我日常使用的各類設備",
+	[Key.devicesViewDetails]: "查看詳情",
 
 	// 番劇頁面
 	[Key.animeTitle]: "我的追番記錄",
@@ -95,7 +95,28 @@ export const zh_TW: Translation = {
 	[Key.backToHome]: "返回首頁",
 
 	// 音樂播放器
-	[Key.playlist]: "播放列表",
+	[Key.musicPlayer]: "音樂播放器",
+	[Key.musicPlayerShow]: "顯示音樂播放器",
+	[Key.musicPlayerHide]: "隱藏播放器",
+	[Key.musicPlayerExpand]: "展開音樂播放器",
+	[Key.musicPlayerCollapse]: "收起播放器",
+	[Key.musicPlayerPause]: "暫停",
+	[Key.musicPlayerPlay]: "播放",
+	[Key.musicPlayerPrevious]: "上一首",
+	[Key.musicPlayerNext]: "下一首",
+	[Key.musicPlayerShuffle]: "隨機播放",
+	[Key.musicPlayerRepeat]: "列表循環",
+	[Key.musicPlayerRepeatOne]: "單曲循環",
+	[Key.musicPlayerVolume]: "音量控制",
+	[Key.musicPlayerProgress]: "播放進度",
+	[Key.musicPlayerCover]: "封面",
+	[Key.musicPlayerPlaylist]: "播放列表",
+	[Key.musicPlayerLoading]: "載入中...",
+	[Key.musicPlayerErrorPlaylist]: "播放列表獲取失敗",
+	[Key.musicPlayerErrorSong]: "當前歌曲載入失敗，嘗試載入下一首",
+	[Key.musicPlayerErrorEmpty]: "播放列表中沒有可用的歌曲",
+	[Key.unknownSong]: "未知歌曲",
+	[Key.unknownArtist]: "未知藝術家",
 
 	// 相冊頁面
 	[Key.albums]: "相冊",
@@ -301,4 +322,10 @@ export const zh_TW: Translation = {
 	[Key.shareOnSocial]: "分享",
 	[Key.shareOnSocialDescription]:
 		"如果這篇文章對你有幫助，歡迎分享給更多人！",
+
+	// 個人資料統計
+	[Key.profileStatsLoading]: "統計載入中...",
+	[Key.profileStatsPageViews]: "瀏覽量",
+	[Key.profileStatsVisits]: "訪問次數",
+	[Key.profileStatsUnavailable]: "統計不可用",
 };

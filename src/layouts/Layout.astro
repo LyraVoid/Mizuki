@@ -657,22 +657,6 @@ function disableAnimation() {
 			}
 		});
 
-		// Check if carousel is disabled but we have multiple images - show random image
-		if (validItems.length > 1 && !siteConfig.banner.carousel?.enable) {
-			// Hide all images first
-			carouselItems.forEach((item, _index) => {
-				item.classList.add("opacity-0", "scale-110");
-				item.classList.remove("opacity-100", "scale-100");
-			});
-
-			// Show random valid image
-			const randomIndex = Math.floor(Math.random() * validItems.length);
-			const randomItem = validItems[randomIndex];
-			randomItem.classList.add("opacity-100", "scale-100");
-			randomItem.classList.remove("opacity-0", "scale-110");
-			return;
-		}
-
 		if (validItems.length > 1 && siteConfig.banner.carousel?.enable) {
 			let currentIndex = 0;
 			const interval = siteConfig.banner.carousel?.interval || 6;
@@ -1241,10 +1225,16 @@ function disableAnimation() {
 			}
 
 			if (bannerEnabled && toc) {
-				if (scrollTop > bannerHeight) {
-					toc.classList.remove("toc-hide");
+				const isBannerMode = document.body.classList.contains("enable-banner");
+				if (isBannerMode) {
+					if (scrollTop > bannerHeight) {
+						toc.classList.remove("toc-hide");
+					} else {
+						toc.classList.add("toc-hide");
+					}
 				} else {
-					toc.classList.add("toc-hide");
+					// In Fullscreen or None mode, always show TOC
+					toc.classList.remove("toc-hide");
 				}
 			}
 

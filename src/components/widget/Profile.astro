@@ -4,11 +4,12 @@ import { profileConfig, umamiConfig } from "../../config";
 import { url } from "../../utils/url-utils";
 import ImageWrapper from "../misc/ImageWrapper.astro";
 import TypewriterText from "../TypewriterText.astro";
+import I18nKey from "../../i18n/i18nKey";
+import { i18n } from "../../i18n/translation";
 
 // 解析 umami
 const umamiEnabled = umamiConfig.enabled || false;
-const umamiWebsiteId =
-	umamiConfig.scripts.match(/data-website-id="([^"]+)"/)?.[1] || "";
+const umamiWebsiteId = umamiConfig.scripts.match(/data-website-id="([^"]+)"/)?.[1] || "";
 const umamiApiKey = umamiConfig.apiKey || "";
 const umamiBaseUrl = umamiConfig.baseUrl || "";
 ---
@@ -28,6 +29,7 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
     <div class="px-2">
         <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">{profileConfig.name}</div>
         <div class="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2 transition"></div>
+        
         <div class="text-center text-neutral-400 mb-2.5 transition">
             {profileConfig.typewriter?.enable ? (
                 <TypewriterText 
@@ -39,40 +41,50 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
                 profileConfig.bio
             )}
         </div>
-        <div class="flex gap-2 justify-center mb-1">
+        
+        <div class="flex flex-wrap gap-2 justify-center mb-1">
             {profileConfig.links.length > 1 && profileConfig.links.map(item =>
-                    <a rel="me" aria-label={item.name} href={item.url} target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90">
-                        <Icon name={item.icon} class="text-[1.5rem]"></Icon>
-                    </a>
+                <a rel="me" aria-label={item.name} href={item.url} target="_blank" 
+                   class="btn-regular rounded-lg h-10 w-10 active:scale-90">
+                    <Icon name={item.icon} class="text-[1.5rem]"></Icon>
+                </a>
             )}
-            {profileConfig.links.length == 1 && <a rel="me" aria-label={profileConfig.links[0].name} href={profileConfig.links[0].url} target="_blank"
-                                            class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
-                <Icon name={profileConfig.links[0].icon} class="text-[1.5rem]"></Icon>
-                {profileConfig.links[0].name}
-            </a>}
+            {profileConfig.links.length == 1 && 
+                <a rel="me" aria-label={profileConfig.links[0].name} href={profileConfig.links[0].url} target="_blank"
+                   class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
+                    <Icon name={profileConfig.links[0].icon} class="text-[1.5rem]"></Icon>
+                    {profileConfig.links[0].name}
+                </a>
+            }
         </div>
+        
         {umamiEnabled && (
             <hr class="my-2 border-t border-dashed border-gray-300 dark:border-gray-700" />
             <div class="text-sm text-gray-500 mt-2 text-center">
                 <Icon name="fa6-solid:eye" class="inline-block mr-1 text-gray-400 text-sm align-middle" />
-                <span id="site-stats-display">统计加载中...</span>
+                <span id="site-stats-display">{i18n(I18nKey.profileStatsLoading)}</span>
             </div>
         )}
     </div>
 </div>
 
 {umamiEnabled && (
-    <script is:inline define:vars={{ umamiBaseUrl, umamiApiKey, umamiWebsiteId, umamiConfig }}>
+    <script is:inline define:vars={{ 
+        umamiBaseUrl, 
+        umamiApiKey, 
+        umamiWebsiteId, 
+        umamiConfig,
+        profileStatsPageViews: i18n(I18nKey.profileStatsPageViews),
+        profileStatsVisits: i18n(I18nKey.profileStatsVisits),
+        profileStatsUnavailable: i18n(I18nKey.profileStatsUnavailable)
+    }}>
         // 客户端统计文案生成函数
         function generateStatsText(pageViews, visits) {
-            return `浏览量 ${pageViews} · 访问次数 ${visits}`;
+            return `${profileStatsPageViews} ${pageViews} · ${profileStatsVisits} ${visits}`;
         }
         
         // 获取访问量统计
-        async function fetchSiteStats(isRetry = false) {
-            if (!umamiConfig.enabled || !isRetry) {
-                // isRetry is used to avoid recursive retry loop or similar logic if implemented
-            }
+        async function fetchSiteStats() {
             if (!umamiConfig.enabled) {
                 return;
             }
@@ -93,14 +105,14 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
                 console.error('Error fetching site stats:', error);
                 const displayElement = document.getElementById('site-stats-display');
                 if (displayElement) {
-                    displayElement.textContent = '统计不可用';
+                    displayElement.textContent = profileStatsUnavailable;
                 }
             }
         }
 
-        // 页面加载完成后获取统计数据
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', fetchSiteStats);
+            // 页面加载完成后获取统计数据
+            document.addEventListener('DOMContentLoaded', () => fetchSiteStats());
         } else {
             fetchSiteStats();
         }

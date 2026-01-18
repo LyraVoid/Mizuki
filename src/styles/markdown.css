@@ -74,58 +74,6 @@
     }
   }
 
-  .copy-btn {
-    all: initial;
-    @apply opacity-0 shadow-lg shadow-black/50 absolute active:scale-90 h-8 w-8 top-3 right-3 text-sm rounded-lg transition-all ease-in-out z-20 cursor-pointer;
-    background: var(--btn-regular-bg);
-  }
-
-  .copy-btn:hover {
-    background: var(--btn-regular-bg-hover);
-  }
-
-  /* 浅色模式适配 */
-  @media (prefers-color-scheme: light) {
-    .copy-btn {
-      @apply shadow-black/20;
-    }
-  }
-
-  /* 支持 Astro 的主题切换（非 dark 类时） */
-  :root:not(.dark) .copy-btn {
-    @apply shadow-black/20;
-  }
-  .frame:hover .copy-btn {
-    opacity: 1;
-  }
-
-  .copy-btn-icon {
-    @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none;
-    fill: var(--btn-content);
-  }
-  .copy-btn .copy-icon {
-    @apply opacity-100;
-    fill: var(--btn-content);
-  }
-  .copy-btn.success .copy-icon {
-    @apply opacity-0 fill-[var(--deep-text)];
-  }
-  .copy-btn .success-icon {
-    @apply opacity-0;
-    fill: var(--btn-content);
-  }
-  .copy-btn.success .success-icon {
-    @apply opacity-100;
-  }
-
-  .expressive-code {
-    @apply my-4;
-    ::selection {
-      @apply bg-[var(--codeblock-selection)];
-      color: #ffffff;
-    }
-  }
-
   ul,
   ol {
     li::marker {
@@ -149,20 +97,12 @@
   }
 
   /* --- 表格样式 --- */
-  table {
-    display: block;
+  .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     width: 100%;
-    box-sizing: border-box;
-
-    /* 外观设置 */
-    border: 1px solid var(--line-divider);
     border-radius: var(--radius-large);
-    border-spacing: 0;
-    border-collapse: separate;
     margin: 0;
-    background-color: var(--card-bg);
 
     /* --- 滚动条样式 --- */
     &::-webkit-scrollbar {
@@ -183,11 +123,19 @@
     &::-webkit-scrollbar-thumb:active {
       background: var(--scrollbar-bg-active);
     }
+  }
 
-    /* PC端使用 display: table 以对齐外边框 */
-    @media (min-width: 768px) {
-      display: table;
-    }
+  table {
+    display: table;
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: separate;
+    margin: 0;
+    background-color: var(--card-bg);
+
+    /* 外观设置 */
+    border: 1px solid var(--line-divider);
+    border-radius: var(--radius-large);
   }
 
   th,
@@ -252,3 +200,4 @@
 :root:not(.dark) .custom-md spoiler {
   --_spoiler-mask: color-mix(in oklch, var(--primary) 55%, white 45%);
 }
+

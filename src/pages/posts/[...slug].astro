@@ -5,14 +5,12 @@ import path from "node:path";
 import Comment from "@components/comment/index.astro";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
-import PasswordProtection from "@components/PasswordProtection.astro";
 import SharePoster from "@components/misc/SharePoster.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
 import {
-	// getDir,
 	getFileDirFromPath,
 	getPostUrlBySlug,
 	removeFileExtension,
@@ -22,7 +20,6 @@ import {
 	initPostIdMap,
 } from "@utils/permalink-utils";
 import { Icon } from "astro-icon/components";
-import CryptoJS from "crypto-js";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { licenseConfig, permalinkConfig, shareConfig } from "src/config";
@@ -30,6 +27,7 @@ import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
+import Encryptor from "../../components/Encryptor.astro";
 
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
@@ -96,7 +94,6 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
-
 const { remarkPluginFrontmatter } = await render(entry);
 
 // Process cover image for SharePoster
@@ -148,20 +145,8 @@ if (profileConfig.avatar) {
 	}
 }
 
-// 处理加密逻辑
-let encryptedContent = "";
+// 判断是否为加密文章
 let isEncrypted = entry.data.encrypted && entry.data.password;
-
-if (isEncrypted) {
-    // 添加一个固定的前缀用于解密验证
-    const contentToEncrypt = "MIZUKI-VERIFY:" + entry.body;
-
-    // 直接使用 CryptoJS 默认的 AES 加密
-	encryptedContent = CryptoJS.AES.encrypt(
-        contentToEncrypt,
-        String(entry.data.password)
-    ).toString();
-}
 
 dayjs.extend(utc);
 const lastModified = dayjs(entry.data.updated || entry.data.published)
@@ -299,66 +284,68 @@ const jsonLd = {
 
             {
                 isEncrypted ? (
-                    <PasswordProtection
-                        encryptedContent={encryptedContent}
-                    />
-                ) : (
-                    <>
-                        <Markdown class="mb-6 markdown-content onload-animation">
+                    <Encryptor password={entry.data.password}>
+                         <Markdown class="mb-6 markdown-content onload-animation">
                             <Content />
                         </Markdown>
-                        
-                        {shareConfig.enable && (
-                            <div class="p-6 bg-[var(--license-block-bg)] rounded-xl mb-6 onload-animation">
-                                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                                    <div class="flex items-center gap-3 flex-1">
-                                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-[var(--enter-btn-bg)]">
-                                            <Icon
-                                                name="material-symbols:share"
-                                                class="text-3xl text-[var(--primary)]"
-                                            />
-                                        </div>
-                                        <div class="flex flex-col gap-1">
-                                            <div class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75">
-                                                {i18n(I18nKey.shareOnSocial)}
-                                            </div>
-                                            <p class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75">
-                                                {i18n(I18nKey.shareOnSocialDescription)}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-3">
-                                        <SharePoster
-                                            client:load
-                                            title={entry.data.title}
-                                            author={entry.data.author || profileConfig.name}
-                                            description={entry.data.description || ""}
-                                            pubDate={formatDateToYYYYMMDD(entry.data.published)}
-                                            coverImage={posterCoverUrl}
-                                            url={Astro.url.toString()}
-                                            siteTitle={siteConfig.title}
-                                            avatar={posterAvatarUrl}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {licenseConfig.enable && (
-                            <License
-                                title={entry.data.title}
-                                id={entry.id}
-                                pubDate={entry.data.published}
-                                author={entry.data.author}
-                                sourceLink={entry.data.sourceLink}
-                                licenseName={entry.data.licenseName}
-                                licenseUrl={entry.data.licenseUrl}
-                                class="mb-6 rounded-xl license-container onload-animation"
-                            />
-                        )}
-                    </>
+                    </Encryptor>
+                ) : (
+                    <Markdown class="mb-6 markdown-content onload-animation">
+                        <Content />
+                    </Markdown>
                 )
             }
+
+            {shareConfig.enable && (
+                <div id="share-component" class:list={["p-6 bg-[var(--license-block-bg)] rounded-xl mb-6 onload-animation", { "encrypted-hidden": isEncrypted }]}>
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3 flex-1">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-[var(--enter-btn-bg)]">
+                                <Icon
+                                    name="material-symbols:share"
+                                    class="text-3xl text-[var(--primary)]"
+                                />
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <div class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75">
+                                    {i18n(I18nKey.shareOnSocial)}
+                                </div>
+                                <p class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75">
+                                    {i18n(I18nKey.shareOnSocialDescription)}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <SharePoster
+                                client:load
+                                title={entry.data.title}
+                                author={entry.data.author || profileConfig.name}
+                                description={entry.data.description || ""}
+                                pubDate={formatDateToYYYYMMDD(entry.data.published)}
+                                coverImage={posterCoverUrl}
+                                url={Astro.url.toString()}
+                                siteTitle={siteConfig.title}
+                                avatar={posterAvatarUrl}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {licenseConfig.enable && (
+                <div id="license-component" class:list={["encrypted-hidden-wrapper", { "encrypted-hidden": isEncrypted }]}>
+                    <License
+                    title={entry.data.title}
+                    id={entry.id}
+                    pubDate={entry.data.published}
+                    author={entry.data.author}
+                    sourceLink={entry.data.sourceLink}
+                    licenseName={entry.data.licenseName}
+                    licenseUrl={entry.data.licenseUrl}
+                    class="mb-6 rounded-xl license-container onload-animation"
+                />
+                </div>
+            )}
         </div>
     </div>
 
@@ -367,8 +354,8 @@ const jsonLd = {
 
     {siteConfig.showLastModified && (
         <>
-            <div 
-                id="last-modified" 
+            <div
+                id="last-modified"
                 data-last-modified={lastModified}
                 data-prefix={i18n(I18nKey.lastModifiedPrefix)}
                 data-year={i18n(I18nKey.year)}
@@ -384,10 +371,11 @@ const jsonLd = {
                 <script is:inline>
                     function runtime() {
                         const lastModifiedElement = document.getElementById('last-modified');
+                        if (!lastModifiedElement) return;  // 如果元素不存在，直接返回
+                        
                         const startDate = new Date(lastModifiedElement.dataset.lastModified);
                         const currentDate = new Date();
                         const diff = currentDate - startDate;
-
                         const seconds = Math.floor(diff / 1000);
                         const days = Math.floor(seconds / 86400);
                         const hours = Math.floor((seconds % 86400) / 3600);
@@ -407,7 +395,6 @@ const jsonLd = {
                         const secondKey = lastModifiedElement.dataset.second;
 
                         let runtimeString = prefix + ' ';
-                        
                         if (years > 0) {
                             runtimeString += `${years} ${yearKey} `;
                         }
@@ -440,7 +427,6 @@ const jsonLd = {
                             class="text-3xl text-[var(--primary)]"
                         />
                     </div>
-                   
                     <div class="flex flex-col gap-1">
                         <div id="modifiedtime" class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75"></div>
                         <p class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75">

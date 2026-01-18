@@ -207,7 +207,8 @@ const transparentClass = shouldEnableTransparency
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
 
-<script is:inline define:vars={{navbarTransparentMode: siteConfig.banner?.navbar?.transparentMode || "semi", defaultWallpaperMode: siteConfig.wallpaperMode.defaultMode, defaultPostListLayout: siteConfig.postListLayout?.defaultMode || "list"}}>
+<script type="module" is:inline define:vars={{navbarTransparentMode: siteConfig.banner?.navbar?.transparentMode || "semi", defaultWallpaperMode: siteConfig.wallpaperMode.defaultMode, defaultPostListLayout: siteConfig.postListLayout?.defaultMode || "list", BANNER_HEIGHT: BANNER_HEIGHT}}>
+
 	// 立即执行，在页面渲染前应用壁纸模式和布局模式，避免闪烁
 	(function() {
 		const wallpaperMode = localStorage.getItem('wallpaperMode') || defaultWallpaperMode;
@@ -302,6 +303,7 @@ const transparentClass = shouldEnableTransparency
 		var navbar = document.getElementById('navbar');
 		var body = document.body;
 		var mainContent = document.querySelector('.absolute.w-full.z-30.pointer-events-none');
+		var tocWrapper = document.getElementById('toc-wrapper');
 		
 		// 强制重排以确保样式正确应用
 		var forceReflow = function() {
@@ -316,6 +318,14 @@ const transparentClass = shouldEnableTransparency
 				}
 				if (fullscreenWallpaper) {
 					fullscreenWallpaper.style.display = 'none';
+				}
+				// 恢复 TOC 在 banner 模式下的隐藏状态，让滚动逻辑接管
+				if (tocWrapper) {
+					const scrollTop = document.documentElement.scrollTop;
+					const bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100);
+					if (scrollTop <= bannerHeight) {
+						tocWrapper.classList.add('toc-hide');
+					}
 				}
 				// 先移除body类，避免CSS冲突
 				body.classList.remove('wallpaper-transparent');
@@ -350,6 +360,10 @@ const transparentClass = shouldEnableTransparency
 				if (fullscreenWallpaper) {
 					fullscreenWallpaper.style.display = 'block';
 				}
+				// 在全屏模式下始终显示 TOC
+				if (tocWrapper) {
+					tocWrapper.classList.remove('toc-hide');
+				}
 				// 先移除body类，避免CSS冲突
 				body.classList.remove('enable-banner');
 				// 强制重排
@@ -378,6 +392,10 @@ const transparentClass = shouldEnableTransparency
 				}
 				if (fullscreenWallpaper) {
 					fullscreenWallpaper.style.display = 'none';
+				}
+				// 在无壁纸模式下也始终显示 TOC
+				if (tocWrapper) {
+					tocWrapper.classList.remove('toc-hide');
 				}
 				// 先移除body类，避免CSS冲突
 				body.classList.remove('enable-banner');
@@ -544,7 +562,7 @@ const transparentClass = shouldEnableTransparency
 <!-- Banner - 始终渲染，通过 JS 控制显示隐藏 -->
 <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden ${mobileNonHomeBannerClass}`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
 
-    {(bannerImages.desktop && Array.isArray(bannerImages.desktop) && bannerImages.desktop.length > 1) || (bannerImages.mobile && Array.isArray(bannerImages.mobile) && bannerImages.mobile.length > 1) ? (
+    {siteConfig.banner.carousel?.enable && ((bannerImages.desktop && Array.isArray(bannerImages.desktop) && bannerImages.desktop.length > 1) || (bannerImages.mobile && Array.isArray(bannerImages.mobile) && bannerImages.mobile.length > 1)) ? (
         <!-- Carousel mode for multiple images -->
         <div id="banner-carousel" class="relative h-full w-full">
             <ul class="carousel-list h-full w-full">
@@ -593,25 +611,55 @@ const transparentClass = shouldEnableTransparency
         </div>
     ) : (
         <!-- Single image mode -->
-            <div class="relative h-full w-full">
-                <!-- Mobile: use mobile-specific image with same logic as desktop -->
-                <ImageWrapper 
-                    alt="Mobile banner image of the blog" 
-                    class:list={["block lg:hidden object-cover h-full w-full transition duration-700 opacity-100"]}
-                    src={(Array.isArray(bannerImages.mobile) ? bannerImages.mobile[0] : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')) || (Array.isArray(bannerImages.desktop) ? bannerImages.desktop[0] : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')) || ''} 
-                    position={siteConfig.banner.position}
-                    loading="eager"
-                />
-                <!-- Desktop: use desktop-specific image -->
-                <ImageWrapper 
-                    id="banner" 
-                    alt="Desktop banner image of the blog" 
-                    class:list={["hidden lg:block object-cover h-full transition duration-700 opacity-100"]}
-                    src={(Array.isArray(bannerImages.desktop) ? bannerImages.desktop[0] : (typeof bannerImages.desktop === 'string' ? bannerImages.desktop : '')) || (Array.isArray(bannerImages.mobile) ? bannerImages.mobile[0] : (typeof bannerImages.mobile === 'string' ? bannerImages.mobile : '')) || ''} 
-                    position={siteConfig.banner.position}
-                    loading="eager"
-                />
-            </div>
+        <div id="banner-single-container" class="relative h-full w-full">
+            <script is:inline define:vars={{ desktopImages: bannerImages.desktop, mobileImages: bannerImages.mobile, position: siteConfig.banner.position }}>
+                (function() {
+                    const getRandomImage = (images, storageKey) => {
+                        if (Array.isArray(images)) {
+                            if (images.length === 0) return null;
+                            if (images.length === 1) return images[0];
+                            
+                            const lastIndex = sessionStorage.getItem(storageKey);
+                            let newIndex;
+                            
+                            do {
+                                newIndex = Math.floor(Math.random() * images.length);
+                            } while (newIndex === parseInt(lastIndex || '-1'));
+                            
+                            sessionStorage.setItem(storageKey, newIndex.toString());
+                            return images[newIndex];
+                        }
+                        return images || null;
+                    };
+                    
+                    const desktopSrc = getRandomImage(desktopImages, 'banner_desktop_index');
+                    const mobileSrc = getRandomImage(mobileImages, 'banner_mobile_index');
+                    
+                    const container = document.getElementById('banner-single-container');
+                    
+                    if (mobileSrc) {
+                        const mobileImg = document.createElement('img');
+                        mobileImg.alt = 'Mobile banner image of the blog';
+                        mobileImg.className = 'block lg:hidden object-cover h-full w-full transition duration-700 opacity-100';
+                        mobileImg.src = mobileSrc;
+                        mobileImg.loading = 'eager';
+                        mobileImg.dataset.position = position;
+                        container.appendChild(mobileImg);
+                    }
+                    
+                    if (desktopSrc) {
+                        const desktopImg = document.createElement('img');
+                        desktopImg.id = 'banner';
+                        desktopImg.alt = 'Desktop banner image of the blog';
+                        desktopImg.className = 'hidden lg:block object-cover h-full w-full transition duration-700 opacity-100';
+                        desktopImg.src = desktopSrc;
+                        desktopImg.loading = 'eager';
+                        desktopImg.dataset.position = position;
+                        container.appendChild(desktopImg);
+                    }
+                })();
+            </script>
+        </div>
     )}
     
     <!-- Home page text overlay -->
@@ -758,8 +806,8 @@ const transparentClass = shouldEnableTransparency
                 "-right-[var(--toc-width)]",
                 {"toc-hide": siteConfig.wallpaperMode.defaultMode === "banner"}]}
             >
-                <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
-                    <div id="toc" class="w-full h-full transition-swup-fade">
+                <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] max-h-[calc(100vh_-_10rem)] overflow-hidden">
+                    <div id="toc-container" class="w-full transition-swup-fade">
                         <TOC headings={headings}></TOC>
                     </div>
                 </div>
@@ -769,7 +817,7 @@ const transparentClass = shouldEnableTransparency
 )}
 
 <!-- 保留此元素以确保Swup正常工作 -->
-{(!siteConfig.toc.enable || isFloatTOC) && <div id="toc" class="hidden"></div>}
+{(!siteConfig.toc.enable || isFloatTOC) && <div id="toc-container" class="hidden"></div>}
 </Layout>
 
 <style>
@@ -801,6 +849,22 @@ const transparentClass = shouldEnableTransparency
 /* 当没有 banner 时，主内容区域移到顶部 */
 body.no-banner-mode .absolute.w-full.z-30 {
     top: 5.5rem !important;
+}
+
+/* TOC 垂直对齐优化 */
+body.no-banner-mode #toc-inner-wrapper {
+    top: 5.5rem !important;
+    max-height: calc(100vh - 8rem) !important;
+}
+
+/* 全屏壁纸模式下的 TOC 毛玻璃背景 - 仅在 TOC 加载完成后显示 */
+body.wallpaper-transparent #toc-inner-wrapper:has(table-of-contents[data-loaded="true"]) {
+    background: var(--card-bg-transparent) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-radius: var(--radius-large);
+    padding: 0.5rem;
+    box-shadow: var(--shadow-lg);
 }
 
 /* 桌面端 banner 模式下的主内容区域位置 */

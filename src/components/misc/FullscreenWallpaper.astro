@@ -59,7 +59,7 @@ const carouselInterval = config.carousel?.interval || 5;
 const position = config.position || "center";
 const zIndex = config.zIndex || -1;
 const opacity = config.opacity || 0.8;
-const blur = config.blur || 0;
+const blurAmount = config.blur || 0;
 const positionClass = (() => {
 	switch (position) {
 		case "top": return "object-top";
@@ -102,21 +102,83 @@ const renderGroups = [
 	})();
 	</script>
 
-	{renderGroups.map(group => group.hasImages && (
-		<div class={`${group.containerClass} w-full h-full relative`} style="transform: translateZ(0);">
-			{group.images.map((src, index) => (
-				<img
-					src={src}
-					alt={`${group.key} wallpaper ${index + 1}`}
-					class={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}`}
-					data-carousel-item={isCarouselEnabled ? index : undefined}
-					style={`transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blur > 0 ? `filter: blur(${blur}px);` : ''}; opacity: ${index === 0 ? 1 : 0};`}
-					decoding="async"
-					loading={index === 0 ? "eager" : "lazy"} 
-				/>
-			))}
+	{isCarouselEnabled ? (
+		renderGroups.map(group => group.hasImages && (
+			<div class={`${group.containerClass} w-full h-full relative`} style="transform: translateZ(0);">
+				{group.images.map((src, index) => (
+					<img
+						src={src}
+						alt={`${group.key} wallpaper ${index + 1}`}
+						class={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}`}
+						data-carousel-item={index}
+						style={`transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blurAmount > 0 ? `filter: blur(${blurAmount}px);` : ''}; opacity: ${index === 0 ? 1 : 0};`}
+						decoding="async"
+						loading={index === 0 ? "eager" : "lazy"} 
+					/>
+				))}
+			</div>
+		))
+	) : (
+		<div id="wallpaper-single-container" class="w-full h-full relative">
+			<script is:inline define:vars={{ desktopImages: imageSources.desktop, mobileImages: imageSources.mobile, positionClass, blurAmount }}>
+				(function() {
+					const getRandomImage = (images, storageKey) => {
+						if (images.length === 0) return null;
+						if (images.length === 1) return images[0];
+						
+						const lastIndex = sessionStorage.getItem(storageKey);
+						let newIndex;
+						
+						do {
+							newIndex = Math.floor(Math.random() * images.length);
+						} while (newIndex === parseInt(lastIndex || '-1'));
+						
+						sessionStorage.setItem(storageKey, newIndex.toString());
+						return images[newIndex];
+					};
+					
+					const desktopSrc = getRandomImage(desktopImages, 'wallpaper_desktop_index');
+					const mobileSrc = getRandomImage(mobileImages, 'wallpaper_mobile_index');
+					
+					const container = document.getElementById('wallpaper-single-container');
+					
+					if (desktopSrc) {
+						const desktopDiv = document.createElement('div');
+						desktopDiv.className = 'hidden lg:block w-full h-full relative';
+						desktopDiv.style.transform = 'translateZ(0)';
+						desktopDiv.innerHTML = `
+							<img
+								src="${desktopSrc}"
+								alt="desktop wallpaper"
+								class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}"
+								style="transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blurAmount > 0 ? `filter: blur(${blurAmount}px);` : ''} opacity: 1;"
+								decoding="async"
+								loading="eager"
+							/>
+						`;
+						container.appendChild(desktopDiv);
+					}
+					
+					if (mobileSrc) {
+						const mobileDiv = document.createElement('div');
+						mobileDiv.className = 'block lg:hidden w-full h-full relative';
+						mobileDiv.style.transform = 'translateZ(0)';
+						mobileDiv.innerHTML = `
+							<img
+								src="${mobileSrc}"
+								alt="mobile wallpaper"
+								class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}"
+								style="transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blurAmount > 0 ? `filter: blur(${blurAmount}px);` : ''} opacity: 1;"
+								decoding="async"
+								loading="eager"
+							/>
+						`;
+						container.appendChild(mobileDiv);
+					}
+				})();
+			</script>
 		</div>
-	))}
+	)}
 </div>
 
 {isCarouselEnabled && (

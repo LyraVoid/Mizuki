@@ -5,18 +5,18 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-![Mizuki Preview](../README.webp)
+![Mizuki Preview](./README.webp)
 
 <table>
   <tr>
-    <td><img alt="" src="image/1.webp"></td>
-    <td><img alt="" src="image/2.webp"></td>
-    <td><img alt="" src="image/3.webp"></td>
+    <td><img alt="" src="docs/image/1.webp"></td>
+    <td><img alt="" src="docs/image/2.webp"></td>
+    <td><img alt="" src="docs/image/3.webp"></td>
   <tr>
   <tr>
-    <td><img alt="" src="image/4.webp"></td>
-    <td><img alt="" src="image/5.webp"></td>
-    <td><img alt="" src="image/6.webp"></td>
+    <td><img alt="" src="docs/image/4.webp"></td>
+    <td><img alt="" src="docs/image/5.webp"></td>
+    <td><img alt="" src="docs/image/6.webp"></td>
   <tr>
 </table>
 

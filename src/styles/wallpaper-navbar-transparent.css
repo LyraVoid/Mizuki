@@ -1,789 +1,146 @@
-/* 优先覆盖：壁纸为none时navbar为纯色（与PostCard一致），壁纸为fullscreen时navbar透明度与PostCard一致 */
-/* 动态透明模式支持 - 最高优先级，用于壁纸模式切换，完全忽略 config.ts 配置 */
-/* 全屏壁纸模式：使用 semi 透明效果，与PostCard保持一致 */
-#navbar[data-dynamic-transparent="semi"] > div {
-  backdrop-filter: blur(8px) !important;
-  background: var(--card-bg-transparent) !important;
-  border: none !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+/* 集中管理颜色与状态，修改一处即可全局生效 */
+:root {
+  /* --- 基础 Token --- */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --radius-std: 0.75rem;
+
+  /* --- 状态变量 (默认值) --- */
+  --nav-bg: var(--card-bg);
+  --nav-blur: none;
+  --nav-shadow: var(--shadow-sm);
+  --nav-radius: var(--radius-std);
+
+  /* --- 面板变量 (默认跟随 Navbar，特定情况分离) --- */
+  --panel-bg: var(--card-bg-transparent);
+  --panel-blur: blur(20px);
 }
 
-:root.dark #navbar[data-dynamic-transparent="semi"] > div {
-  background: var(--card-bg-transparent) !important;
-  border: none !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
+/* Dark Mode 适配 */
+:root.dark {
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.18);
 }
 
-/* 无壁纸模式：完全不透明，使用 var(--card-bg) */
-#navbar[data-dynamic-transparent="none"] > div {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-  border: none !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+/* --- 滚动透明度控制 (Dynamic Transparent) --- */
+
+/* Semi (毛玻璃) */
+#navbar[data-dynamic-transparent="semi"] {
+  --nav-bg: var(--card-bg-transparent);
+  --nav-blur: blur(8px);
+  --nav-shadow: var(--shadow-lg);
 }
 
-:root.dark #navbar[data-dynamic-transparent="none"] > div {
-  background: var(--card-bg) !important;
-  border: none !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+/* None (实心) */
+#navbar[data-dynamic-transparent="none"] {
+  --nav-bg: var(--card-bg);
+  --nav-blur: none;
+  --nav-shadow: var(--shadow-sm);
+
+  /* 联动子面板 */
+  --panel-bg: var(--card-bg);
+  --panel-blur: none;
 }
 
-/* 无壁纸模式下的子菜单和面板：完全不透明纯色 */
-/* 二级菜单不透明纯色 */
-#navbar[data-dynamic-transparent="none"] .dropdown-content {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-  border: none !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-}
+/* --- 首页 Banner 沉浸式 (Wallpaper Transparent) --- */
 
-:root.dark #navbar[data-dynamic-transparent="none"] .dropdown-content {
-  background: var(--card-bg) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-}
-
-/* 主题色设置面板不透明纯色 */
-#navbar[data-dynamic-transparent="none"] ~ * #display-setting {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-  border: none !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-}
-
-:root.dark #navbar[data-dynamic-transparent="none"] ~ * #display-setting {
-  background: var(--card-bg) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-}
-
-/* 手机端导航菜单不透明纯色 */
-#navbar[data-dynamic-transparent="none"] #nav-menu-panel {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-  border: none !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-}
-
-:root.dark #navbar[data-dynamic-transparent="none"] #nav-menu-panel {
-  background: var(--card-bg) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-}
-
-/* 手机端MD导航菜单面板不透明纯色 */
-#navbar[data-dynamic-transparent="none"] #mobile-toc-panel {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-  border: none !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-}
-
-:root.dark #navbar[data-dynamic-transparent="none"] #mobile-toc-panel {
-  background: var(--card-bg) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-}
-
-/* 搜索面板不透明纯色 */
-#navbar[data-dynamic-transparent="none"] ~ * #search-panel {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-  border: none !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-}
-
-:root.dark #navbar[data-dynamic-transparent="none"] ~ * #search-panel {
-  background: var(--card-bg) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-}
-
-/* 搜索面板内部输入框背景不透明纯色 */
-body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside {
-  background: rgba(0, 0, 0, 0.08) !important;
-}
-
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside {
-  background: rgba(255, 255, 255, 0.15) !important;
-}
-
-body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside:hover {
-  background: rgba(0, 0, 0, 0.12) !important;
-}
-
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-}
-
-body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside:focus-within {
-  background: rgba(0, 0, 0, 0.12) !important;
-}
-
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside:focus-within {
-  background: rgba(255, 255, 255, 0.2) !important;
-}
-
-/* 确保所有 float-panel 在 none 模式下都不透明 */
-body:has(#navbar[data-dynamic-transparent="none"]) .float-panel {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-}
-
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) .float-panel {
-  background: var(--card-bg) !important;
-}
-
-/* 下拉菜单内容在 none 模式下不透明 - 更高优先级 */
-body:has(#navbar[data-dynamic-transparent="none"]) .dropdown-content,
-body:has(#navbar[data-dynamic-transparent="none"]) #navbar .dropdown-content {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-  border: none !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-}
-
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) .dropdown-content,
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) #navbar .dropdown-content {
-  background: var(--card-bg) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-}
-
-/* 音乐播放器在 none 模式下不透明 */
-body:has(#navbar[data-dynamic-transparent="none"]) .music-player .mini-player,
-body:has(#navbar[data-dynamic-transparent="none"]) .music-player .expanded-player,
-body:has(#navbar[data-dynamic-transparent="none"]) .music-player .playlist-panel {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-}
-
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) .music-player .mini-player,
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) .music-player .expanded-player,
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) .music-player .playlist-panel {
-  background: var(--card-bg) !important;
-}
-
-/* 移动端目录面板额外确保不透明 */
-body:has(#navbar[data-dynamic-transparent="none"]) #mobile-toc-panel,
-#navbar[data-dynamic-transparent="none"] ~ * #mobile-toc-panel {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-}
-
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) #mobile-toc-panel,
-:root.dark #navbar[data-dynamic-transparent="none"] ~ * #mobile-toc-panel {
-  background: var(--card-bg) !important;
-}
-
-/* 导航菜单面板额外确保不透明 */
-body:has(#navbar[data-dynamic-transparent="none"]) #nav-menu-panel,
-#navbar[data-dynamic-transparent="none"] ~ * #nav-menu-panel {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-}
-
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) #nav-menu-panel,
-:root.dark #navbar[data-dynamic-transparent="none"] ~ * #nav-menu-panel {
-  background: var(--card-bg) !important;
-}
-
-/* 显示设置面板额外确保不透明 */
-body:has(#navbar[data-dynamic-transparent="none"]) #display-setting,
-#navbar[data-dynamic-transparent="none"] ~ * #display-setting {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-}
-
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) #display-setting,
-:root.dark #navbar[data-dynamic-transparent="none"] ~ * #display-setting {
-  background: var(--card-bg) !important;
-}
-
-/* 搜索面板额外确保不透明 */
-body:has(#navbar[data-dynamic-transparent="none"]) #search-panel {
-  backdrop-filter: none !important;
-  background: var(--card-bg) !important;
-}
-
-:root.dark body:has(#navbar[data-dynamic-transparent="none"]) #search-panel {
-  background: var(--card-bg) !important;
-}
-
-/* 以下规则仅在 banner 模式下生效（当 data-dynamic-transparent 不存在时，由 config.ts 控制） */
-
-/* 全屏壁纸模式下的半透明背景 - 使用CSS变量与PostCard保持一致 */
+/* 桌面端 Full 模式 */
 @media (min-width: 1280px) {
-  body.wallpaper-transparent #navbar[data-transparent-mode="semi"] > div {
-    backdrop-filter: blur(8px) !important;
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  body.wallpaper-transparent #navbar[data-transparent-mode="full"] {
+    --nav-bg: transparent;
+    --nav-blur: none;
+    --nav-shadow: none;
+    --nav-radius: 0;
   }
 }
 
-/* 移动端半透明模式 - 仅在有壁纸且为首页时启用,使用CSS变量 */
+/* 移动端 Full 模式 (仅首页) */
 @media (max-width: 1279px) {
-  body.wallpaper-transparent #navbar[data-transparent-mode="semi"][data-is-home="true"] > div {
-    backdrop-filter: blur(8px) !important;
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  body.wallpaper-transparent #navbar[data-transparent-mode="full"][data-is-home="true"] {
+    --nav-bg: transparent;
+    --nav-blur: none;
+    --nav-shadow: none;
+    --nav-radius: 0;
   }
 }
 
-/* 桌面端暗色主题下的半透明模式 - 在有壁纸时启用,使用CSS变量 */
+/* Semi-Full 混合模式 (未滚动时透明) */
+body.wallpaper-transparent #navbar[data-transparent-mode="semifull"]:not(.scrolled) {
+  --nav-bg: transparent;
+  --nav-blur: none;
+  --nav-shadow: none;
+  --nav-radius: 0;
+}
+/* 移动端首页特殊处理 */
+body.wallpaper-transparent #navbar[data-transparent-mode="semifull"][data-is-home="true"]:not(.scrolled) {
+  --nav-bg: transparent;
+  --nav-blur: none;
+  --nav-shadow: none;
+  --nav-radius: 0;
+}
+
+/* 混合模式滚动后 -> 回归毛玻璃 */
+body.wallpaper-transparent #navbar[data-transparent-mode="semifull"].scrolled {
+  --nav-bg: var(--card-bg-transparent);
+  --nav-blur: blur(8px);
+  --nav-shadow: var(--shadow-lg);
+  --nav-radius: var(--radius-std);
+}
+
+/* 导航栏样式核心 (Navbar Core) */
+#navbar > div {
+  border: none !important;
+  outline: none;
+
+  /* 核心外观由变量驱动 */
+  background: var(--nav-bg);
+  backdrop-filter: var(--nav-blur);
+  box-shadow: var(--nav-shadow);
+  border-radius: var(--nav-radius);
+
+  /* 性能优化 */
+  will-change: background, backdrop-filter, box-shadow;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 子组件样式 (Sub-Components) */
+:is(.dropdown-content, #nav-menu-panel, #mobile-toc-panel, #display-setting, #search-panel, .music-player .mini-player, .float-panel) {
+  /* 使用面板专用变量 */
+  background: var(--panel-bg);
+  backdrop-filter: var(--panel-blur);
+  box-shadow: var(--shadow-lg);
+  border: none;
+
+  /* 优化过渡 */
+  transition:
+    background 0.3s ease,
+    backdrop-filter 0.3s ease;
+}
+
+/* Banner 模式下的特殊增强 */
 @media (min-width: 1280px) {
-  :root.dark body.wallpaper-transparent #navbar[data-transparent-mode="semi"] > div {
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
+  body.wallpaper-transparent :is(.dropdown-content, #display-setting, #search-panel) {
+    background: rgba(255, 255, 255, 0.85);
+  }
+  :root.dark body.wallpaper-transparent :is(.dropdown-content, #display-setting, #search-panel) {
+    background: rgba(24, 25, 38, 0.85);
   }
 }
 
-/* 移动端暗色主题下的半透明模式 - 仅在有壁纸且为首页时启用,使用CSS变量 */
 @media (max-width: 1279px) {
-  :root.dark body.wallpaper-transparent #navbar[data-transparent-mode="semi"][data-is-home="true"] > div {
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-}
-
-/* 桌面端完全透明模式 - 在有壁纸时启用 */
-@media (min-width: 1280px) {
-  body.wallpaper-transparent #navbar[data-transparent-mode="full"] > div {
-    backdrop-filter: none !important;
-    background: transparent !important;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  }
-}
-
-/* 桌面端半完全透明模式 - 在有壁纸时启用,使用CSS变量与PostCard保持一致 */
-@media (min-width: 1280px) {
-  /* 默认状态：页面顶部时半透明圆角 */
-  body.wallpaper-transparent #navbar[data-transparent-mode="semifull"] > div {
-    backdrop-filter: blur(8px) !important;
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  }
-
-  /* 滚动状态：下滑后变为半透明圆角 */
-  body.wallpaper-transparent #navbar[data-transparent-mode="semifull"].scrolled > div {
-    backdrop-filter: blur(8px) !important;
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  }
-}
-
-/* 移动端完全透明模式 - 仅在有壁纸且为首页时启用 */
-@media (max-width: 1279px) {
-  body.wallpaper-transparent #navbar[data-transparent-mode="full"][data-is-home="true"] > div {
-    backdrop-filter: none !important;
-    background: transparent !important;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  }
-}
-
-/* 移动端半完全透明模式 - 仅在有壁纸且为首页时启用,使用CSS变量 */
-@media (max-width: 1279px) {
-  /* 默认状态：页面顶部时半透明圆角 */
-  body.wallpaper-transparent #navbar[data-transparent-mode="semifull"][data-is-home="true"] > div {
-    backdrop-filter: blur(8px) !important;
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  }
-
-  /* 滚动状态：下滑后变为半透明圆角 */
-  body.wallpaper-transparent #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled > div {
-    backdrop-filter: blur(8px) !important;
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  }
-}
-
-/* 桌面端暗色主题下的完全透明模式 - 在有壁纸时启用 */
-@media (min-width: 1280px) {
-  :root.dark body.wallpaper-transparent #navbar[data-transparent-mode="full"] > div {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-}
-
-/* 桌面端暗色主题下的半完全透明模式 - 在有壁纸时启用,使用CSS变量 */
-@media (min-width: 1280px) {
-  /* 默认状态：页面顶部时半透明圆角 */
-  :root.dark body.wallpaper-transparent #navbar[data-transparent-mode="semifull"] > div {
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 滚动状态：下滑后变为半透明圆角 */
-  :root.dark body.wallpaper-transparent #navbar[data-transparent-mode="semifull"].scrolled > div {
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-}
-
-/* 移动端暗色主题下的完全透明模式 - 仅在有壁纸且为首页时启用 */
-@media (max-width: 1279px) {
-  :root.dark body.wallpaper-transparent #navbar[data-transparent-mode="full"][data-is-home="true"] > div,
-  :root.dark body.wallpaper-transparent #navbar[data-transparent-mode="semifull"][data-is-home="true"] > div {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-}
-
-/* 移动端暗色主题下的半完全透明模式 - 仅在有壁纸且为首页时启用,使用CSS变量 */
-@media (max-width: 1279px) {
-  /* 默认状态：页面顶部时完全透明 */
-  :root.dark body.wallpaper-transparent #navbar[data-transparent-mode="semifull"][data-is-home="true"] > div {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  /* 滚动状态：下滑后变为半透明圆角 */
-  :root.dark body.wallpaper-transparent #navbar[data-transparent-mode="semifull"][data-is-home="true"].scrolled > div {
-    background: var(--card-bg-transparent) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-}
-
-/* 悬停效果已移除 - 避免颜色变化和抖动 */
-
-/* 平板设备优化 */
-@media (min-width: 768px) and (max-width: 1279px) {
+  /* 修正移动端 Navbar 布局 */
   #navbar > div {
-    border-radius: 1rem !important;
-  }
-}
-
-/* 小屏手机优化 */
-@media (max-width: 480px) {
-  #navbar > div {
-    border-radius: 0.5rem !important;
-    margin: 0 !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    max-width: none !important;
-    width: 100% !important;
-  }
-}
-
-/* 手机端导航栏全宽优化 */
-@media (max-width: 768px) {
-  #navbar > div {
-    max-width: none !important;
-    width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-}
-
-/* 二级菜单、主题色、夜间模式菜单、手机端导航的半透明效果 */
-/* 桌面端 - 在有壁纸时启用半透明效果 */
-@media (min-width: 1280px) {
-  /* 二级菜单半透明效果 */
-  body.wallpaper-transparent .dropdown-content {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+    border-radius: 0.5rem;
+    margin: 0;
+    width: 100%;
+    max-width: none;
   }
 
-  /* 主题色设置面板半透明效果 */
-  body.wallpaper-transparent #display-setting {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  /* 搜索框内部颜色处理 */
+  body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside {
+    background: rgba(0, 0, 0, 0.08);
   }
-
-  /* 手机端导航菜单半透明效果 */
-  body.wallpaper-transparent #nav-menu-panel {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  /* 手机端MD导航菜单面板半透明效果 */
-  body.wallpaper-transparent #mobile-toc-panel {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  /* 搜索面板半透明效果 */
-  body.wallpaper-transparent #search-panel {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-}
-
-/* 移动端 - 仅在有壁纸且为首页时启用半透明效果 */
-@media (max-width: 1279px) {
-  /* 二级菜单半透明效果 */
-  body.wallpaper-transparent #navbar[data-is-home="true"] .dropdown-content {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  /* 主题色设置面板半透明效果 */
-  body.wallpaper-transparent #navbar[data-is-home="true"] ~ * #display-setting {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  /* 手机端导航菜单半透明效果 */
-  body.wallpaper-transparent #navbar[data-is-home="true"] #nav-menu-panel {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  /* 手机端MD导航菜单面板半透明效果 */
-  body.wallpaper-transparent #navbar[data-is-home="true"] #mobile-toc-panel {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  /* 搜索面板半透明效果 */
-  body.wallpaper-transparent #navbar[data-is-home="true"] #search-panel {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  /* 主题色设置面板半透明效果 */
-  body.wallpaper-transparent #navbar[data-is-home="true"] #display-setting {
-    backdrop-filter: blur(20px) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-}
-
-/* 暗色主题下的半透明效果 */
-/* 桌面端暗色主题 */
-@media (min-width: 1280px) {
-  /* 二级菜单暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent .dropdown-content {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 主题色设置面板暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent #display-setting {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 手机端导航菜单暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent #nav-menu-panel {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 手机端MD导航菜单面板暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent #mobile-toc-panel {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 搜索面板暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent #search-panel {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-}
-
-/* 移动端暗色主题 - 仅在有壁纸且为首页时启用 */
-@media (max-width: 1279px) {
-  /* 二级菜单暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent #navbar[data-is-home="true"] .dropdown-content {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 主题色设置面板暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent #navbar[data-is-home="true"] ~ * #display-setting {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 手机端导航菜单暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent #navbar[data-is-home="true"] #nav-menu-panel {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 手机端MD导航菜单面板暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent #navbar[data-is-home="true"] #mobile-toc-panel {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 搜索面板暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent #navbar[data-is-home="true"] #search-panel {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 主题色设置面板暗色主题半透明效果 */
-  :root.dark body.wallpaper-transparent #navbar[data-is-home="true"] #display-setting {
-    background: rgba(24, 25, 38, 0.85) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-}
-
-/* ========================================
- * 移动端专用 none 模式不透明样式
- * 使用更高优先级的选择器确保覆盖所有其他样式
- * ======================================== */
-
-/* 移动端 none 模式：所有浮动面板完全不透明 */
-@media (max-width: 1279px) {
-  /* 所有浮动面板 - 超高优先级 */
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * .float-panel,
-  body:has(#navbar[data-dynamic-transparent="none"]) .float-panel,
-  #navbar[data-dynamic-transparent="none"] ~ * .float-panel {
-    backdrop-filter: none !important;
-    background: var(--card-bg) !important;
-    border: none !important;
-  }
-
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * .float-panel,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) .float-panel,
-  :root.dark #navbar[data-dynamic-transparent="none"] ~ * .float-panel {
-    background: var(--card-bg) !important;
-  }
-
-  /* 搜索面板 - 超高优先级覆盖 mobile-navbar.css，添加更多直接选择器 */
-  body.no-banner-mode #search-panel,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] ~ * #search-panel,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * #search-panel,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] #search-panel,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #search-panel,
-  body:has(#navbar[data-dynamic-transparent="none"]) #search-panel,
-  #navbar[data-dynamic-transparent="none"] ~ * #search-panel,
-  #navbar[data-dynamic-transparent="none"] #search-panel {
-    backdrop-filter: none !important;
-    background: var(--card-bg) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  :root.dark body.no-banner-mode #search-panel,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] ~ * #search-panel,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * #search-panel,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] #search-panel,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #search-panel,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) #search-panel,
-  :root.dark #navbar[data-dynamic-transparent="none"] ~ * #search-panel,
-  :root.dark #navbar[data-dynamic-transparent="none"] #search-panel {
-    background: var(--card-bg) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 搜索面板内部输入框 - 超高优先级，添加更多直接选择器 */
-  body.no-banner-mode #search-panel #search-bar-inside,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * #search-panel #search-bar-inside,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside,
-  body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside,
-  #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside {
-    background: rgba(0, 0, 0, 0.08) !important;
-  }
-
-  :root.dark body.no-banner-mode #search-panel #search-bar-inside,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * #search-panel #search-bar-inside,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside,
-  :root.dark #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside {
-    background: rgba(255, 255, 255, 0.15) !important;
-  }
-
-  body.no-banner-mode #search-panel #search-bar-inside:hover,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * #search-panel #search-bar-inside:hover,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside:hover,
-  body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside:hover,
-  #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside:hover {
-    background: rgba(0, 0, 0, 0.12) !important;
-  }
-
-  :root.dark body.no-banner-mode #search-panel #search-bar-inside:hover,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * #search-panel #search-bar-inside:hover,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside:hover,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside:hover,
-  :root.dark #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside:hover {
-    background: rgba(255, 255, 255, 0.2) !important;
-  }
-
-  body.no-banner-mode #search-panel #search-bar-inside:focus-within,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * #search-panel #search-bar-inside:focus-within,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside:focus-within,
-  body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside:focus-within,
-  #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside:focus-within {
-    background: rgba(0, 0, 0, 0.12) !important;
-  }
-
-  :root.dark body.no-banner-mode #search-panel #search-bar-inside:focus-within,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * #search-panel #search-bar-inside:focus-within,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside:focus-within,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside:focus-within,
-  :root.dark #navbar[data-dynamic-transparent="none"] #search-panel #search-bar-inside:focus-within {
-    background: rgba(255, 255, 255, 0.2) !important;
-  }
-
-  /* 手机端导航菜单面板 - 超高优先级覆盖 mobile-navbar.css */
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] #nav-menu-panel,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #nav-menu-panel,
-  body:has(#navbar[data-dynamic-transparent="none"]) #nav-menu-panel,
-  #navbar[data-dynamic-transparent="none"] #nav-menu-panel {
-    backdrop-filter: none !important;
-    background: var(--card-bg) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] #nav-menu-panel,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #nav-menu-panel,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) #nav-menu-panel,
-  :root.dark #navbar[data-dynamic-transparent="none"] #nav-menu-panel {
-    background: var(--card-bg) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 手机端目录面板 - 超高优先级覆盖 mobile-navbar.css */
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] #mobile-toc-panel,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #mobile-toc-panel,
-  body:has(#navbar[data-dynamic-transparent="none"]) #mobile-toc-panel,
-  #navbar[data-dynamic-transparent="none"] #mobile-toc-panel {
-    backdrop-filter: none !important;
-    background: var(--card-bg) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] #mobile-toc-panel,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #mobile-toc-panel,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) #mobile-toc-panel,
-  :root.dark #navbar[data-dynamic-transparent="none"] #mobile-toc-panel {
-    background: var(--card-bg) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 显示设置面板（调色盘） - 超高优先级覆盖 mobile-navbar.css，添加更多直接选择器 */
-  body.no-banner-mode #display-setting,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] ~ * #display-setting,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * #display-setting,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] #display-setting,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #display-setting,
-  body:has(#navbar[data-dynamic-transparent="none"]) #display-setting,
-  #navbar[data-dynamic-transparent="none"] ~ * #display-setting,
-  #navbar[data-dynamic-transparent="none"] #display-setting {
-    backdrop-filter: none !important;
-    background: var(--card-bg) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  :root.dark body.no-banner-mode #display-setting,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] ~ * #display-setting,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * #display-setting,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] #display-setting,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] #display-setting,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) #display-setting,
-  :root.dark #navbar[data-dynamic-transparent="none"] ~ * #display-setting,
-  :root.dark #navbar[data-dynamic-transparent="none"] #display-setting {
-    background: var(--card-bg) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 下拉菜单内容 - 超高优先级覆盖 mobile-navbar.css */
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] .dropdown-content,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] .dropdown-content,
-  body:has(#navbar[data-dynamic-transparent="none"]) .dropdown-content,
-  body:has(#navbar[data-dynamic-transparent="none"]) #navbar .dropdown-content {
-    backdrop-filter: none !important;
-    background: var(--card-bg) !important;
-    border: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"][data-is-home="true"] .dropdown-content,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] .dropdown-content,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) .dropdown-content,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) #navbar .dropdown-content {
-    background: var(--card-bg) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-  }
-
-  /* 音乐播放器 - 超高优先级 */
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * .music-player .mini-player,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * .music-player .expanded-player,
-  body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * .music-player .playlist-panel,
-  body:has(#navbar[data-dynamic-transparent="none"]) .music-player .mini-player,
-  body:has(#navbar[data-dynamic-transparent="none"]) .music-player .expanded-player,
-  body:has(#navbar[data-dynamic-transparent="none"]) .music-player .playlist-panel {
-    backdrop-filter: none !important;
-    background: var(--card-bg) !important;
-  }
-
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * .music-player .mini-player,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * .music-player .expanded-player,
-  :root.dark body:has(#banner-wrapper) #navbar[data-dynamic-transparent="none"] ~ * .music-player .playlist-panel,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) .music-player .mini-player,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) .music-player .expanded-player,
-  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) .music-player .playlist-panel {
-    background: var(--card-bg) !important;
+  :root.dark body:has(#navbar[data-dynamic-transparent="none"]) #search-panel #search-bar-inside {
+    background: rgba(255, 255, 255, 0.15);
   }
 }

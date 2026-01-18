@@ -50,10 +50,14 @@ export const siteConfig: SiteConfig = {
 
 	// 顶栏标题配置
 	navbarTitle: {
+		// 显示模式："text-icon" 显示图标+文本，"logo" 仅显示Logo
+		mode: "logo",
 		// 顶栏标题文本
 		text: "freebird2913",
 		// 顶栏标题图标路径，默认使用 public/assets/home/home.png
 		icon: "assets/home/home.png",
+		// 网站Logo图片路径
+		logo: "assets/home/default-logo.png",
 	},
 
 	bangumi: {
@@ -102,7 +106,6 @@ export const siteConfig: SiteConfig = {
 
 		carousel: {
 			enable: true, // 为 true 时：为多张图片启用轮播。为 false 时：从数组中随机显示一张图片
-
 			interval: 1.5, // 轮播间隔时间（秒）
 		},
 
@@ -224,6 +227,21 @@ export const navBarConfig: NavBarConfig = {
 			icon: "material-symbols:person",
 			children: [
 				{
+					name: "Anime",
+					url: "/anime/",
+					icon: "material-symbols:movie",
+				},
+				{
+					name: "Diary",
+					url: "/diary/",
+					icon: "material-symbols:book",
+				},
+				{
+					name: "Gallery",
+					url: "/albums/",
+					icon: "material-symbols:photo-library",
+				},
+				{
 					name: "Devices",
 					url: "devices/",
 					icon: "material-symbols:devices",
@@ -333,6 +351,10 @@ export const commentConfig: CommentConfig = {
 	},
 };
 
+export const shareConfig: ShareConfig = {
+	enable: true, // 启用分享功能
+};
+
 export const announcementConfig: AnnouncementConfig = {
 	title: "公告", // 公告标题
 	content: "欢迎来到我的博客！", // 公告内容
@@ -353,10 +375,6 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 	id: "14164869977", // 歌单ID
 	server: "netease", // 音乐源服务器。有的meting的api源支持更多平台,一般来说,netease=网易云音乐, tencent=QQ音乐, kugou=酷狗音乐, xiami=虾米音乐, baidu=百度音乐
 	type: "playlist", // 播单类型
-};
-
-export const shareConfig: ShareConfig = {
-	enable: true, // 启用分享功能。当设置为 false 时，分享组件将不会显示在文章区域，且不会加载分享组件使用的库
 };
 
 export const footerConfig: FooterConfig = {
@@ -591,4 +609,3 @@ export const umamiConfig = {
 <script defer src="https://views.freebird2913.tech/script.js" data-website-id="972731d0-f4b5-4e8f-b8a5-5c552326b08b"></script>
   `.trim(), // 上面填你要插入的Script,不用再去Layout中插入
 } as const;
-

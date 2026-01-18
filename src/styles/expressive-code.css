@@ -8,9 +8,55 @@
   .title {
     font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
+
+  /* 复制按钮样式 (Copy Button) */
+  .copy-btn {
+    all: initial;
+    @apply opacity-0 absolute active:scale-90 h-8 w-8 top-3 right-3 text-sm rounded-lg transition-all ease-in-out z-20 cursor-pointer;
+    background: var(--btn-regular-bg);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .copy-btn:hover {
+    background: var(--btn-regular-bg-hover);
+  }
+
+  .copy-btn-icon {
+    @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none;
+    fill: var(--btn-content);
+  }
+
+  /* 默认复制图标 */
+  .copy-btn .copy-icon {
+    @apply opacity-100;
+    fill: var(--btn-content);
+  }
+
+  /* 复制成功状态图标 */
+  .copy-btn .success-icon {
+    @apply opacity-0;
+    fill: var(--btn-content);
+  }
+
+  /* 成功状态下的切换动画 */
+  .copy-btn.success .copy-icon {
+    @apply opacity-0 fill-[var(--deep-text)];
+  }
+
+  .copy-btn.success .success-icon {
+    @apply opacity-100;
+  }
+
+  /* 悬停 frame 时显示复制按钮 */
+  .frame:hover .copy-btn {
+    opacity: 1;
+  }
 }
 
-/* 代码块折叠功能 - frame作为折叠按钮 */
+/* 代码块折叠功能 (Collapsible) */
 .expressive-code.collapsible .frame {
   transition: background-color 0.2s ease;
   position: relative;
@@ -31,37 +77,38 @@
   background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.03);
 }
 
-/* 折叠按钮 - 在右上角复制按钮旁边 */
+/* 折叠按钮 */
 .expressive-code.collapsible .collapse-toggle-btn {
   all: initial;
   opacity: 0;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
   position: absolute;
-  active: scale-90;
-  height: 2rem;
-  width: 2rem;
   top: 0.75rem;
   right: 3.5rem;
-  font-size: 0.875rem;
-  border-radius: 0.5rem;
-  transition: all 0.15s ease-in-out;
   z-index: 20;
-  cursor: pointer;
-  background: var(--btn-regular-bg);
-  color: var(--btn-content); /* 设置文字颜色，SVG 的 currentColor 会继承这个值 */
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 0.5rem;
+  background: var(--btn-regular-bg);
+  color: var(--btn-content);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
 }
 
+/* 悬停状态 */
 .expressive-code.collapsible .collapse-toggle-btn:hover {
   background: var(--btn-regular-bg-hover);
 }
 
+/* 点击/激活状态 - 缩放效果 */
 .expressive-code.collapsible .collapse-toggle-btn:active {
   transform: scale(0.9);
 }
 
+/* Frame 悬停时显示按钮 */
 .expressive-code.collapsible .frame:hover .collapse-toggle-btn {
   opacity: 1;
 }
@@ -75,11 +122,12 @@
   pointer-events: none;
 }
 
+/* 折叠状态下的图标旋转 */
 .expressive-code.collapsed .collapse-toggle-btn svg {
   transform: rotate(180deg);
 }
 
-/* 代码内容折叠状态 - 显示前3行 */
+/* 代码内容折叠状态 */
 .expressive-code.collapsed .frame pre {
   max-height: 5rem;
   overflow: hidden;
@@ -106,43 +154,63 @@
   position: relative;
 }
 
+/* 移动端适配 (Mobile) */
 @media (max-width: 768px) {
+  /* 调整复制按钮大小和位置 */
+  .expressive-code .copy-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .expressive-code .copy-btn-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  /* 调整折叠按钮大小和位置 */
   .expressive-code.collapsible .collapse-toggle-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    top: 0.5rem;
     right: 3rem;
   }
 
+  .expressive-code.collapsible .collapse-toggle-btn svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  /* 折叠高度微调 */
   .expressive-code.collapsed .frame pre {
     max-height: 4.5rem;
   }
 
+  /* 隐藏语言标签以节省空间 */
   .expressive-code [data-language]::before {
     display: none !important;
   }
 }
 
-/* 主题适配 - 确保文字可读 */
+/* 主题适配 (Theme Support) */
 @media (prefers-color-scheme: light) {
-  /* 折叠按钮适配 */
-  .expressive-code.collapsible .collapse-toggle-btn {
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-  }
-
-  /* 复制按钮适配 */
-  .custom-md .copy-btn {
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1) !important;
+  .expressive-code.collapsible .collapse-toggle-btn,
+  .expressive-code .copy-btn {
+    box-shadow:
+      0 1px 3px 0 rgba(0, 0, 0, 0.1),
+      0 1px 2px -1px rgba(0, 0, 0, 0.1);
   }
 }
 
 /* 支持 Astro 的主题切换（非 dark 类时） */
-:root:not(.dark) .expressive-code.collapsible .collapse-toggle-btn {
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+:root:not(.dark) .expressive-code.collapsible .collapse-toggle-btn,
+:root:not(.dark) .expressive-code .copy-btn {
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px -1px rgba(0, 0, 0, 0.1);
 }
 
-:root:not(.dark) .custom-md .copy-btn {
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* 打印样式 - 自动展开所有代码块 */
 @media print {
   .expressive-code.collapsed .frame pre {
     max-height: none !important;
@@ -152,7 +220,8 @@
     display: none !important;
   }
 
-  .expressive-code.collapsible .collapse-toggle-btn {
+  .expressive-code.collapsible .collapse-toggle-btn,
+  .expressive-code .copy-btn {
     display: none !important;
   }
 }

@@ -78,17 +78,23 @@ class TableOfContents extends HTMLElement {
         let i = this.active.length - 1;
         let min = this.active.length - 1, max = -1;
         while (i >= 0 && !this.active[i]) {
-            this.tocEntries[i].classList.remove(this.visibleClass);
+            if (this.tocEntries[i]) {
+                this.tocEntries[i].classList.remove(this.visibleClass);
+            }
             i--;
         }
         while (i >= 0 && this.active[i]) {
-            this.tocEntries[i].classList.add(this.visibleClass);
-            min = Math.min(min, i);
-            max = Math.max(max, i);
+            if (this.tocEntries[i]) {
+                this.tocEntries[i].classList.add(this.visibleClass);
+                min = Math.min(min, i);
+                max = Math.max(max, i);
+            }
             i--;
         }
         while (i >= 0) {
-            this.tocEntries[i].classList.remove(this.visibleClass);
+            if (this.tocEntries[i]) {
+                this.tocEntries[i].classList.remove(this.visibleClass);
+            }
             i--;
         }
         if (min > max) {
@@ -96,9 +102,13 @@ class TableOfContents extends HTMLElement {
         } else {
             let parentOffset = this.tocEl?.getBoundingClientRect().top || 0;
             let scrollOffset = this.tocEl?.scrollTop || 0;
-            let top = this.tocEntries[min].getBoundingClientRect().top - parentOffset + scrollOffset;
-            let bottom = this.tocEntries[max].getBoundingClientRect().bottom - parentOffset + scrollOffset;
-            this.activeIndicator?.setAttribute("style", `top: ${top}px; height: ${bottom - top}px`);
+            const minEntry = this.tocEntries[min];
+            const maxEntry = this.tocEntries[max];
+            if (minEntry && maxEntry) {
+                let top = minEntry.getBoundingClientRect().top - parentOffset + scrollOffset;
+                let bottom = maxEntry.getBoundingClientRect().bottom - parentOffset + scrollOffset;
+                this.activeIndicator?.setAttribute("style", `top: ${top}px; height: ${bottom - top}px`);
+            }
         }
     };
 
@@ -263,6 +273,7 @@ class TableOfContents extends HTMLElement {
         if (!isPostPage) {
             // 如果不是文章页面，隐藏TOC
             this.innerHTML = '';
+            delete this.dataset.loaded;
             return;
         }
         // 从当前页面重新获取标题
@@ -280,6 +291,7 @@ class TableOfContents extends HTMLElement {
         }
         if (headings.length === 0) {
             this.innerHTML = '';
+            delete this.dataset.loaded;
             return;
         }
         // 重新生成TOC HTML
@@ -335,6 +347,7 @@ class TableOfContents extends HTMLElement {
                 </a>`;
             }).join('');
         this.innerHTML = tocHTML + '<div id="active-indicator" style="opacity: 0" class="-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all group-hover:bg-transparent border-2 border-[var(--toc-btn-hover)] group-hover:border-[var(--toc-btn-active)] border-dashed"></div>';
+        this.dataset.loaded = "true";
     }
 
     disconnectedCallback() {
