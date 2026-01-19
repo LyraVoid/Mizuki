@@ -5,7 +5,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-![Mizuki Preview](./README.webp)
+![Mizuki Preview](docs/image/README.webp)
 
 <table>
   <tr>
@@ -25,13 +25,8 @@
 [**🖥️ 在线演示**](https://mizuki.mysqil.com/)
 [**📝 用户文档**](https://docs.mizuki.mysqil.com/)
 
-🌏 README 语言
-[**English**](./README.md) /
-[**中文**](./README.zh.md) /
-[**日本語**](./docs/README.ja.md) /
-[**中文繁体**](./docs/README.tw.md) /
 
-![Configuration](configuration.svg)
+![Configuration](docs/image/configuration.svg)
 
 ### 🔧 组件配置系统重构
 - **统一配置架构：** 全新的模块化组件配置体系，支持动态组件管理和顺序配置

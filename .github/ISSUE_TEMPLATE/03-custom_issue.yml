@@ -1,11 +1,11 @@
-name: Custom Issue
-description: Describe your issue here.
+name: 自定义问题
+description: 在此描述您的问题。
 title: "[Other]: "
 body:
   - type: textarea
     id: issue-description
     attributes:
-      label: Issue Description
-      description: Please describe your issue.
+      label: 问题描述
+      description: 请描述您的问题。
     validations:
       required: true
