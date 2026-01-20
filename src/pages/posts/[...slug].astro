@@ -259,6 +259,12 @@ const jsonLd = {
                     category={entry.data.category || undefined}
                     id={entry.id}
                 />
+                <!-- feat(文章页面): 添加文章描述显示功能 -->
+                {entry.data.description && (
+                    <div class="text-base text-black/75 dark:text-white/75 mb-5">
+                        {entry.data.description}
+                    </div>
+                )}
                 {
                     (!entry.data.image|| (entry.data.image && !siteConfig.showCoverInContent)) && (
                         <div class="mt-4 border-[var(--line-divider)] border-dashed border-b-[1px] mb-5" />
