@@ -55,7 +55,7 @@ export const siteConfig: SiteConfig = {
 		// 顶栏标题文本
 		text: "Olinl Blog",
 		// 顶栏标题图标路径，默认使用 public/assets/home/home.png
-		icon: "assets/home/home.png",
+		icon: "",
 		// 网站Logo图片路径
 		logo: "assets/home/default-logo.png",
 	},
@@ -161,7 +161,7 @@ export const siteConfig: SiteConfig = {
 		},
 
 		credit: {
-			enable: true, // 显示横幅图片来源文本
+			enable: false, // 显示横幅图片来源文本
 
 			text: "Describe", // 要显示的来源文本
 			url: "", // （可选）原始艺术品或艺术家页面的 URL 链接
@@ -343,7 +343,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "assets/images/avatar.webp", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
+	avatar: "assets/images/cat.jpg", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
 	name: "顾拾柒",
 	bio: "The world is big, you have to go and see",
 	typewriter: {
