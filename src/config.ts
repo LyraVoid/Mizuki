@@ -88,13 +88,13 @@ export const siteConfig: SiteConfig = {
 	// 壁纸模式配置
 	wallpaperMode: {
 		// 默认壁纸模式：banner=顶部横幅，fullscreen=全屏壁纸，none=无壁纸
-		defaultMode: "banner",
+		defaultMode: "fullscreen",
 		// 整体布局方案切换按钮显示设置（默认："desktop"）
 		// "off" = 不显示
 		// "mobile" = 仅在移动端显示
 		// "desktop" = 仅在桌面端显示
 		// "both" = 在所有设备上显示
-		showModeSwitchOnMobile: "desktop",
+		showModeSwitchOnMobile: "both",
 	},
 
 	banner: {
@@ -210,6 +210,7 @@ export const siteConfig: SiteConfig = {
 	},
 	showLastModified: true, // 控制“上次编辑”卡片显示的开关
 };
+//全屏壁纸配置
 export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 	src: {
 		desktop: [
@@ -231,7 +232,7 @@ export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 	}, // 使用本地横幅图片
 	position: "center", // 壁纸位置，等同于 object-position
 	carousel: {
-		enable: true, // 启用轮播
+		enable: false, // 启用轮播
 		interval: 5, // 轮播间隔时间（秒）
 	},
 	zIndex: -1, // 层级，确保壁纸在背景层
@@ -243,99 +244,101 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
+		LinkPreset.About,
+		
 		// 支持自定义导航栏链接,并且支持多级菜单,3.1版本新加
-		{
-			name: "Links",
-			url: "/links/",
-			icon: "material-symbols:link",
-			children: [
-				{
-					name: "GitHub",
-					url: "https://github.com/matsuzaka-yuki/Mizuki",
-					external: true,
-					icon: "fa6-brands:github",
-				},
-				{
-					name: "Bilibili",
-					url: "https://space.bilibili.com/701864046",
-					external: true,
-					icon: "fa6-brands:bilibili",
-				},
-				{
-					name: "Gitee",
-					url: "https://gitee.com/matsuzakayuki/Mizuki",
-					external: true,
-					icon: "mdi:git",
-				},
-			],
-		},
-		{
-			name: "My",
-			url: "/content/",
-			icon: "material-symbols:person",
-			children: [
-				{
-					name: "Anime",
-					url: "/anime/",
-					icon: "material-symbols:movie",
-				},
-				{
-					name: "Diary",
-					url: "/diary/",
-					icon: "material-symbols:book",
-				},
-				{
-					name: "Albums",
-					url: "/albums/",
-					icon: "material-symbols:photo-library",
-				},
-				{
-					name: "Devices",
-					url: "devices/",
-					icon: "material-symbols:devices",
-					external: false,
-				},
-			],
-		},
-		{
-			name: "About",
-			url: "/content/",
-			icon: "material-symbols:info",
-			children: [
-				{
-					name: "About",
-					url: "/about/",
-					icon: "material-symbols:person",
-				},
-				{
-					name: "Friends",
-					url: "/friends/",
-					icon: "material-symbols:group",
-				},
-			],
-		},
-		{
-			name: "Others",
-			url: "#",
-			icon: "material-symbols:more-horiz",
-			children: [
-				{
-					name: "Projects",
-					url: "/projects/",
-					icon: "material-symbols:work",
-				},
-				{
-					name: "Skills",
-					url: "/skills/",
-					icon: "material-symbols:psychology",
-				},
-				{
-					name: "Timeline",
-					url: "/timeline/",
-					icon: "material-symbols:timeline",
-				},
-			],
-		},
+		// {
+		// 	name: "Links",
+		// 	url: "/links/",
+		// 	icon: "material-symbols:link",
+		// 	children: [
+		// 		{
+		// 			name: "GitHub",
+		// 			url: "https://github.com/matsuzaka-yuki/Mizuki",
+		// 			external: true,
+		// 			icon: "fa6-brands:github",
+		// 		},
+		// 		{
+		// 			name: "Bilibili",
+		// 			url: "https://space.bilibili.com/701864046",
+		// 			external: true,
+		// 			icon: "fa6-brands:bilibili",
+		// 		},
+		// 		{
+		// 			name: "Gitee",
+		// 			url: "https://gitee.com/matsuzakayuki/Mizuki",
+		// 			external: true,
+		// 			icon: "mdi:git",
+		// 		},
+		// 	],
+		// },
+		// {
+		// 	name: "My",
+		// 	url: "/content/",
+		// 	icon: "material-symbols:person",
+		// 	children: [
+		// 		{
+		// 			name: "Anime",
+		// 			url: "/anime/",
+		// 			icon: "material-symbols:movie",
+		// 		},
+		// 		{
+		// 			name: "Diary",
+		// 			url: "/diary/",
+		// 			icon: "material-symbols:book",
+		// 		},
+		// 		{
+		// 			name: "Albums",
+		// 			url: "/albums/",
+		// 			icon: "material-symbols:photo-library",
+		// 		},
+		// 		{
+		// 			name: "Devices",
+		// 			url: "devices/",
+		// 			icon: "material-symbols:devices",
+		// 			external: false,
+		// 		},
+		// 	],
+		// },
+		// {
+		// 	name: "About",
+		// 	url: "/content/",
+		// 	icon: "material-symbols:info",
+		// 	children: [
+		// 		{
+		// 			name: "About",
+		// 			url: "/about/",
+		// 			icon: "material-symbols:person",
+		// 		},
+		// 		{
+		// 			name: "Friends",
+		// 			url: "/friends/",
+		// 			icon: "material-symbols:group",
+		// 		},
+		// 	],
+		// },
+		// {
+		// 	name: "Others",
+		// 	url: "#",
+		// 	icon: "material-symbols:more-horiz",
+		// 	children: [
+		// 		{
+		// 			name: "Projects",
+		// 			url: "/projects/",
+		// 			icon: "material-symbols:work",
+		// 		},
+		// 		{
+		// 			name: "Skills",
+		// 			url: "/skills/",
+		// 			icon: "material-symbols:psychology",
+		// 		},
+		// 		{
+		// 			name: "Timeline",
+		// 			url: "/timeline/",
+		// 			icon: "material-symbols:timeline",
+		// 		},
+		// 	],
+		// },
 	],
 };
 
@@ -416,10 +419,12 @@ export const commentConfig: CommentConfig = {
 	},
 };
 
+//分享
 export const shareConfig: ShareConfig = {
 	enable: true, // 启用分享功能
 };
 
+//公告栏
 export const announcementConfig: AnnouncementConfig = {
 	title: "公告", // 公告标题
 	content: "欢迎来到我的博客！", // 公告内容
@@ -432,6 +437,7 @@ export const announcementConfig: AnnouncementConfig = {
 	},
 };
 
+//音乐播放器
 export const musicPlayerConfig: MusicPlayerConfig = {
 	enable: false, // 启用音乐播放器功能
 	mode: "meting", // 音乐播放器模式，可选 "local" 或 "meting"
@@ -442,6 +448,7 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 	type: "playlist", // 播单类型
 };
 
+//页脚设置
 export const footerConfig: FooterConfig = {
 	enable: false, // 是否启用Footer HTML注入功能
 	customHtml: "", // HTML格式的自定义页脚信息，例如备案号等，默认留空
@@ -586,9 +593,9 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 移动端断点：屏幕宽度小于768px
 			mobile: 768,
 			// 平板端断点：屏幕宽度小于1280px
-			tablet: 1280,
+			tablet: 1080,
 			// 桌面端断点：屏幕宽度小于1280px
-			desktop: 1280,
+			desktop: 1080,
 		},
 		// 不同设备的布局模式
 		//hidden:不显示侧边栏(桌面端)   drawer:抽屉模式(移动端不显示)   sidebar:显示侧边栏
@@ -603,6 +610,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 	},
 };
 
+// 樱花特效配置
 export const sakuraConfig: SakuraConfig = {
 	enable: false, // 默认关闭樱花特效
 	sakuraNum: 21, // 樱花数量
@@ -666,6 +674,7 @@ export const widgetConfigs = {
 	share: shareConfig, // 添加分享配置
 } as const;
 
+// Umami 统计配置
 export const umamiConfig = {
 	enabled: true, // 是否显示Umami统计
 	apiKey:

@@ -182,16 +182,16 @@ export type Favicon = {
 };
 
 export enum LinkPreset {
-	Home = 0,
-	Archive = 1,
-	About = 2,
-	Friends = 3,
-	Anime = 4,
-	Diary = 5,
-	Albums = 6,
-	Projects = 7,
-	Skills = 8,
-	Timeline = 9,
+	Home = 0,//主页
+	Archive = 1,//归档
+	About = 2,//关于我们
+	Friends = 3,//友链
+	Anime = 4,//追番
+	Diary = 5,//日记
+	Albums = 6,//相册
+	Projects = 7,//项目展示
+	Skills = 8,//技能展示
+	Timeline = 9,//时间线
 }
 
 export type NavBarLink = {
