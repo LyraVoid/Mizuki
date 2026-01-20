@@ -5,7 +5,7 @@ description: "如何使用此博客模板。"
 image: "./cover.png"
 tags: ["Mizuki", "博客", "自定义"]
 category: 指南
-draft: false
+draft: true
 ---
 
 
