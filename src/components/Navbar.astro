@@ -46,7 +46,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
                         {siteConfig.navbarTitle?.icon ? (
                             <img src={url(siteConfig.navbarTitle.icon)} alt={siteConfig.navbarTitle?.text || siteConfig.title} class="h-[1.75rem] w-[1.75rem] mb-1 mr-2 object-contain" loading="lazy" />
                         ) : (
-                            <Icon name="material-symbols:home-pin-outline" class="text-[1.75rem] mb-1 mr-2" />
+                            <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
                         )}
                         <span class="dark:text-white text-black">{siteConfig.navbarTitle?.text || siteConfig.title}</span>
                     </>
