@@ -21,7 +21,9 @@
 		"lint": "eslint ./src --fix",
 		"preinstall": "npx only-allow pnpm",
 		"compress-fonts": "node scripts/compress-fonts.js",
-		"test-font-compression": "node scripts/test-font-compression.js"
+		"test-font-compression": "node scripts/test-font-compression.js",
+		"clean": "node scripts/clean.js",
+		"rebuild": "pnpm run clean && pnpm run build"
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.6",

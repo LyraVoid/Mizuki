@@ -1,6 +1,6 @@
 ---
 title: Mizuki 简易指南
-published: 2024-04-01
+published: 2026-01-01
 description: "如何使用此博客模板。"
 image: "./cover.png"
 tags: ["Mizuki", "博客", "自定义"]

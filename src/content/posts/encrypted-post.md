@@ -1,6 +1,6 @@
 ---
 title: 加密文章
-published: 2024-01-15
+published: 2026-01-01
 description: 这是一篇用于测试页面加密功能的文章
 encrypted: true
 pinned: true

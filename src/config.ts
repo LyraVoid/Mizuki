@@ -24,7 +24,7 @@ const SITE_TIMEZONE = 8; //设置你的网站时区 from -12 to 12 default in UT
 export const siteConfig: SiteConfig = {
 	title: "Olinl Blog",
 	subtitle: "技术分享",
-	siteURL: "https://mizuki.mysqil.com/", // 请替换为你的站点URL，以斜杠结尾
+	siteURL: "https://m.olinl.com/", // 请替换为你的站点URL，以斜杠结尾
 	siteStartDate: "2026-01-01", // 站点开始运行日期，用于站点统计组件计算运行天数
 
 	timeZone: SITE_TIMEZONE,
@@ -38,7 +38,7 @@ export const siteConfig: SiteConfig = {
 
 	// 特色页面开关配置(关闭不在使用的页面有助于提升SEO,关闭后直接在顶部导航删除对应的页面就行)
 	featurePages: {
-		anime: true, // 番剧页面开关
+		anime: false, // 番剧页面开关
 		diary: true, // 日记页面开关
 		friends: true, // 友链页面开关
 		projects: true, // 项目页面开关
@@ -60,11 +60,12 @@ export const siteConfig: SiteConfig = {
 		logo: "assets/home/default-logo.png",
 	},
 
+	//Bangumi ACG番剧
 	bangumi: {
 		userId: "your-bangumi-id", // 在此处设置你的Bangumi用户ID，可以设置为 "sai" 测试
 		fetchOnDev: false, // 是否在开发环境下获取 Bangumi 数据（默认 false），获取前先执行 pnpm build 构建 json 文件
 	},
-
+	// 番剧页面配置
 	anime: {
 		mode: "local", // 番剧页面模式："bangumi" 使用Bangumi API，"local" 使用本地配置
 	},
@@ -127,7 +128,7 @@ export const siteConfig: SiteConfig = {
 		waves: {
 			enable: true, // 是否启用水波纹效果(这个功能比较吃性能)
 			performanceMode: false, // 性能模式：减少动画复杂度(性能提升40%)
-			mobileDisable: false, // 移动端禁用
+			mobileDisable: true, // 移动端禁用
 		},
 
 		// PicFlow API支持(智能图片API)
@@ -160,7 +161,7 @@ export const siteConfig: SiteConfig = {
 		},
 
 		credit: {
-			enable: false, // 显示横幅图片来源文本
+			enable: true, // 显示横幅图片来源文本
 
 			text: "Describe", // 要显示的来源文本
 			url: "", // （可选）原始艺术品或艺术家页面的 URL 链接
@@ -177,7 +178,7 @@ export const siteConfig: SiteConfig = {
 		useJapaneseBadge: false, // 使用日语假名标记（あいうえお...）代替数字，开启后会将 1、2、3... 改为 あ、い、う...
 	},
 	showCoverInContent: true, // 在文章内容页显示文章封面
-	generateOgImages: false, // 启用生成OpenGraph图片功能,注意开启后要渲染很长时间，不建议本地调试的时候开启
+	generateOgImages: true, // 启用生成OpenGraph图片功能,注意开启后要渲染很长时间，不建议本地调试的时候开启
 	favicon: [
 		// 留空以使用默认 favicon
 		// {
@@ -362,7 +363,6 @@ export const profileConfig: ProfileConfig = {
 		// 	icon: "fa6-brands:github",
 		// 	url: "https://github.com/matsuzaka-yuki",
 		// },
-		
 	],
 };
 
@@ -398,6 +398,7 @@ export const permalinkConfig: PermalinkConfig = {
 	format: "%postname%", // 默认使用文件名
 };
 
+//代码块暗色配置
 export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	// 注意：某些样式（如背景颜色）已被覆盖，请参阅 astro.config.mjs 文件。
 	// 请选择深色主题，因为此博客主题目前仅支持深色背景
@@ -406,6 +407,7 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	hideDuringThemeTransition: true,
 };
 
+//评论
 export const commentConfig: CommentConfig = {
 	enable: false, // 启用评论功能。当设置为 false 时，评论组件将不会显示在文章区域。
 	twikoo: {
@@ -455,7 +457,7 @@ export const footerConfig: FooterConfig = {
  */
 export const sidebarLayoutConfig: SidebarLayoutConfig = {
 	// 侧边栏位置：单侧(unilateral)或双侧(both)
-	position: "both",
+	position: "unilateral",
 
 	// 侧边栏组件配置列表
 	components: [
@@ -665,10 +667,11 @@ export const widgetConfigs = {
 } as const;
 
 export const umamiConfig = {
-	enabled: false, // 是否显示Umami统计
-	apiKey: import.meta.env.UMAMI_API_KEY || "api_xxxxxxxx", // API密钥优先从环境变量读取，否则使用配置文件中的值
+	enabled: true, // 是否显示Umami统计
+	apiKey:
+		import.meta.env.UMAMI_API_KEY || "api_2DMPKpr2S4iQsRLXEDhcuQUM9pvxh1FQ", // API密钥优先从环境变量读取，否则使用配置文件中的值
 	baseUrl: "https://api.umami.is", // Umami Cloud API地址
-	scripts: `
-<script defer src="XXXX.XXX" data-website-id="ABCD1234"></script>
+	scripts:
+		`<script defer src="https://cloud.umami.is/script.js" data-website-id="913ff775-a415-4af1-8c3a-53d068fa540d"></script>
   `.trim(), // 上面填你要插入的Script,不用再去Layout中插入
 } as const;
