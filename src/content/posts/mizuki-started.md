@@ -1,7 +1,7 @@
 ---
 title: Mizuki 入门指南
 published: 2026-01-20
-pinned: true
+pinned: false
 description: 对于Mizuki的使用做一些记录，方便自己翻阅
 
 tags: [Markdown]
@@ -196,4 +196,3 @@ frontmatter支持的字段包括：
 
 - 在frontmatter下方编写文章内容，可以使用标准的Markdown语法。
 
----
