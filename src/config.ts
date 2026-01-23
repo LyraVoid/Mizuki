@@ -255,22 +255,24 @@ export const navBarConfig: NavBarConfig = {
 			icon: "material-symbols:work",
 			children: [
 				{
-					name: "GitHub",
-					url: "https://github.com/matsuzaka-yuki/Mizuki",
+					name: "捏脸网站",
+					url: "https://nacho.zako.wf",
 					external: true,
-					icon: "fa6-brands:github",
 				},
 				{
-					name: "Bilibili",
-					url: "https://space.bilibili.com/701864046",
+					name: "Mikutap",
+					url: "https://mikutap.zako.wf",
 					external: true,
-					icon: "fa6-brands:bilibili",
 				},
 				{
-					name: "Gitee",
-					url: "https://gitee.com/matsuzakayuki/Mizuki",
+					name: "哟，安杰罗",
+					url: "https://angelo.zako.wf",
 					external: true,
-					icon: "mdi:git",
+				},
+				{
+					name: "起始页",
+					url: "https://nav.zako.wf",
+					external: true,
 				},
 			],
 		},
