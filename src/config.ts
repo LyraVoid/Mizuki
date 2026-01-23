@@ -255,43 +255,91 @@ export const navBarConfig: NavBarConfig = {
 			icon: "material-symbols:link",
 			children: [
 				{
-			name: "项目",
-			url: "#",
-			icon: "material-symbols:work",
-			children: [
+					name: "GitHub",
+					url: "https://github.com/matsuzaka-yuki/Mizuki",
+					external: true,
+					icon: "fa6-brands:github",
+				},
 				{
-      name: '捏脸网站',
-      url: 'https://nacho.zako.wf',     
-      external: true,                               
-                },
+					name: "Bilibili",
+					url: "https://space.bilibili.com/701864046",
+					external: true,
+					icon: "fa6-brands:bilibili",
+				},
 				{
-      name: 'mikutap',
-      url: 'https://mikutap.zako.wf',     
-      external: true,                               
-                },
-                {
-      name: '哟，安杰罗',
-      url: 'https://angelo.zako.wf',     
-      external: true,                               
-                },
-                {
-      name: '起始页',
-      url: 'https://nav.zako.wf',     
-      external: true,                               
-                },
+					name: "Gitee",
+					url: "https://gitee.com/matsuzakayuki/Mizuki",
+					external: true,
+					icon: "mdi:git",
+				},
 			],
 		},
 		{
-			name: "更多信息",
+			name: "My",
 			url: "/content/",
-			icon: "material-symbols:info",
-			children: [LinkPreset.About, LinkPreset.Friends,LinkPreset.Gallery],
+			icon: "material-symbols:person",
+			children: [
+				{
+					name: "Anime",
+					url: "/anime/",
+					icon: "material-symbols:movie",
+				},
+				{
+					name: "Diary",
+					url: "/diary/",
+					icon: "material-symbols:book",
+				},
+				{
+					name: "Gallery",
+					url: "/albums/",
+					icon: "material-symbols:photo-library",
+				},
+				{
+					name: "Devices",
+					url: "devices/",
+					icon: "material-symbols:devices",
+					external: false,
+				},
+			],
 		},
 		{
-      name: "统计",
-      url: "https://cloud.umami.is/share/fcdazKOajfiuNUzO",
-      external: true,
-    
+			name: "About",
+			url: "/content/",
+			icon: "material-symbols:info",
+			children: [
+				{
+					name: "About",
+					url: "/about/",
+					icon: "material-symbols:person",
+				},
+				{
+					name: "Friends",
+					url: "/friends/",
+					icon: "material-symbols:group",
+				},
+			],
+		},
+		{
+			name: "Others",
+			url: "#",
+			icon: "material-symbols:more-horiz",
+			children: [
+				{
+					name: "Projects",
+					url: "/projects/",
+					icon: "material-symbols:work",
+				},
+				{
+					name: "Skills",
+					url: "/skills/",
+					icon: "material-symbols:psychology",
+				},
+				{
+					name: "Timeline",
+					url: "/timeline/",
+					icon: "material-symbols:timeline",
+				},
+			],
 		},
 	],
 };
