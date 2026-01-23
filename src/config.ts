@@ -323,16 +323,10 @@ export const navBarConfig: NavBarConfig = {
 			],
 		},
 		{
-      name: "统计",
-      url: "https://cloud.umami.is/share/fcdazKOajfiuNUzO",
-      external: true,
-    
-		},
-		{
-					name: "Bilibili",
-					url: "https://space.bilibili.com/701864046",
+					name: "统计",
+					url: "https://cloud.umami.is/share/fcdazKOajfiuNUzO",
 					external: true,
-					icon: "fa6-brands:bilibili",
+					icon: "fa6-brands:jsfiddle",
 			},
 	],
 };
