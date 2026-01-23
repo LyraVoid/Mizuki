@@ -328,6 +328,12 @@ export const navBarConfig: NavBarConfig = {
       external: true,
     
 		},
+		{
+					name: "Bilibili",
+					url: "https://space.bilibili.com/701864046",
+					external: true,
+					icon: "fa6-brands:bilibili",
+			},
 	],
 };
 
