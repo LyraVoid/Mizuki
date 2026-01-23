@@ -143,7 +143,7 @@ export const siteConfig: SiteConfig = {
 		},
 
 		waves: {
-			enable: false, // 是否启用水波纹效果（注意：此功能性能开销较大）
+			enable: true, // 是否启用水波纹效果（注意：此功能性能开销较大）
 			performanceMode: false, // 性能模式：减少动画复杂度(性能提升40%)
 			mobileDisable: false, // 移动端禁用
 		},
@@ -667,7 +667,7 @@ export const widgetConfigs = {
 } as const;
 
 export const umamiConfig = {
-	enabled: false, // 是否显示Umami统计
+	enabled: true, // 是否显示Umami统计
 	apiKey: import.meta.env.UMAMI_API_KEY || "api_65WkISplrVdCi0AzQ7sPFOyhZgVJqwq2", // API密钥优先从环境变量读取，否则使用配置文件中的值
 	baseUrl: "https://api.umami.is", // Umami Cloud API地址
 	scripts: `
