@@ -322,6 +322,13 @@ export const navBarConfig: NavBarConfig = {
 				},
 			],
 		},
+		{
+			name: "统计",
+			url: "https://cloud.umami.is/share/fcdazKOajfiuNUzO",
+			icon: "material-symbols:query_stats",
+			external: true,
+			
+		},
 	],
 };
 
