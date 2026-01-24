@@ -48,9 +48,14 @@ if (isLocal) {
 
 const imageClass = "w-full h-full object-cover";
 const imageStyle = `object-position: ${position}`;
+
+// 检查是否是 Bilibili 图片
+const isBilibiliImage = !isLocal && src.includes("hdslb.com");
+// 对于外部图片（特别是Bilibili），需要设置referrerpolicy避免403错误
+const referrerPolicy = !isLocal && isBilibiliImage ? "no-referrer" : undefined;
 ---
 <div id={id} class:list={[className, 'overflow-hidden relative']}>
     <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
     {isLocal && img && <Image src={img} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading}/>}
-    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading}/>}
+    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading} referrerpolicy={referrerPolicy} crossorigin={isBilibiliImage ? "anonymous" : undefined}/>}
 </div>

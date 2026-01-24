@@ -339,6 +339,128 @@ async function fetchMetingPlaylistText() {
 	}
 }
 
+// 获取 Bilibili 番剧数据中的文字
+async function fetchBilibiliAnimeText() {
+	try {
+		// 读取配置文件获取番剧配置
+		const configPath = path.join(__dirname, "../src/config.ts");
+		const configContent = fs.readFileSync(configPath, "utf-8");
+
+		// 检查番剧页面是否启用
+		const featurePagesMatch = configContent.match(
+			/featurePages:\s*\{([\s\S]*?)\}/,
+		);
+		if (featurePagesMatch) {
+			const featureConfig = featurePagesMatch[1];
+			const animeMatch = featureConfig.match(/anime:\s*(true|false)/);
+			if (!animeMatch || animeMatch[1] === "false") {
+				console.log(
+					"ℹ Anime page disabled, skipping Bilibili text collection",
+				);
+				return new Set();
+			}
+		}
+
+		// 提取番剧配置
+		const animeModeMatch = configContent.match(
+			/anime:\s*\{[\s\S]*?mode:\s*["']([^"']+)["']/,
+		);
+		const mode = animeModeMatch ? animeModeMatch[1] : "bangumi";
+
+		if (mode !== "bilibili") {
+			console.log(
+				`ℹ Anime mode is not "bilibili", skipping Bilibili text collection`,
+			);
+			return new Set();
+		}
+
+		// 读取 bilibili-data.json 文件
+		const dataFilePath = path.join(__dirname, "../src/data/bilibili-data.json");
+		if (!fs.existsSync(dataFilePath)) {
+			console.log(
+				"ℹ Bilibili data file not found, skipping Bilibili text collection",
+			);
+			return new Set();
+		}
+
+		console.log("ℹ Reading anime data from Bilibili data file...");
+
+		const textSet = new Set();
+		const fileContent = fs.readFileSync(dataFilePath, "utf-8");
+		const animeList = JSON.parse(fileContent);
+
+		if (!Array.isArray(animeList)) {
+			console.log("⚠ Bilibili data is not an array, skipping text collection");
+			return new Set();
+		}
+
+		let processedCount = 0;
+
+		// 处理每个动画条目
+		for (const item of animeList) {
+			// 提取标题
+			const title = item.title || "";
+			for (const char of title) {
+				textSet.add(char);
+			}
+
+			// 提取描述/评价
+			const description = item.description || item.evaluate || "";
+			for (const char of description) {
+				textSet.add(char);
+			}
+
+			// 提取工作室/地区
+			const studio = item.studio || "";
+			for (const char of studio) {
+				textSet.add(char);
+			}
+
+			// 提取年份
+			const year = item.year || "";
+			for (const char of year) {
+				textSet.add(char);
+			}
+
+			// 提取类型/标签/风格
+			if (item.genre && Array.isArray(item.genre)) {
+				item.genre.forEach((genre) => {
+					if (typeof genre === "string") {
+						for (const char of genre) {
+							textSet.add(char);
+						}
+					}
+				});
+			}
+
+			// 提取副标题（如果有）
+			const subtitle = item.subtitle || "";
+			if (subtitle) {
+				for (const char of subtitle) {
+					textSet.add(char);
+				}
+			}
+
+			processedCount++;
+		}
+
+		if (processedCount > 0) {
+			console.log(
+				`✓ Successfully processed ${processedCount} anime items from Bilibili data`,
+			);
+		} else {
+			console.log("⚠ No anime data found in Bilibili data file");
+		}
+
+		return textSet;
+	} catch (error) {
+		console.log(
+			`⚠ Error processing Bilibili data: ${error.message}, skipping Bilibili text collection`,
+		);
+		return new Set();
+	}
+}
+
 // 获取 Bangumi API 番剧数据中的文字
 async function fetchBangumiAnimeText() {
 	try {
@@ -809,7 +931,21 @@ async function collectText() {
 
 	if (bangumiTextSet.size > 0) {
 		console.log(
-			`✓ Added ${bangumiTextSet.size} unique characters from anime data`,
+			`✓ Added ${bangumiTextSet.size} unique characters from Bangumi anime data`,
+		);
+	}
+
+	// 7. 从 Bilibili 数据文件获取番剧数据中的文字
+	const bilibiliTextSet = await fetchBilibiliAnimeText();
+
+	// 将 Bilibili 数据的文字添加到主文字集合中
+	for (const char of bilibiliTextSet) {
+		textSet.add(char);
+	}
+
+	if (bilibiliTextSet.size > 0) {
+		console.log(
+			`✓ Added ${bilibiliTextSet.size} unique characters from Bilibili anime data`,
 		);
 	}
 

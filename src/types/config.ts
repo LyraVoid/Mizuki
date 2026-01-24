@@ -111,9 +111,18 @@ export type SiteConfig = {
 		fetchOnDev?: boolean;
 	};
 
+	// 添加bilibili配置
+	bilibili?: {
+		vmid?: string; // Bilibili用户ID (vmid)
+		fetchOnDev?: boolean; // 是否在开发环境下获取 Bilibili 数据
+		SESSDATA?: string; // Bilibili SESSDATA（可选，用于获取进度信息）
+		coverMirror?: string; // 封面图片镜像源（可选，默认为空字符串）
+		useWebp?: boolean; // 是否使用WebP格式（默认 true）
+	};
+
 	// 添加番剧页面配置
 	anime?: {
-		mode?: "bangumi" | "local"; // 番剧页面模式
+		mode?: "bangumi" | "local" | "bilibili"; // 番剧页面模式
 	};
 
 	// 标签样式配置
