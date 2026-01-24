@@ -1265,7 +1265,7 @@ function disableAnimation() {
 			// 这里我们使用 getBoundingClientRect + scrollTop 来获取绝对位置
 			const absoluteTop = rect.top + scrollTop;
 			// 只有当滚动超过内容区域起始位置一定距离后才显示
-			showBackToTopThreshold = absoluteTop - window.innerHeight / 2;
+			showBackToTopThreshold = absoluteTop + window.innerHeight / 4;
 		}
 
 		// 批量处理DOM操作
