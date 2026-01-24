@@ -15,7 +15,7 @@ const COLLAPSED_HEIGHT = "7.5rem";
 // 使用统一的组件管理器检查是否应该折叠
 const tagsComponent = widgetManager
 	.getConfig()
-	.components.find((c) => c.type === "tags");
+	.properties.find((p) => p.type === "tags");
 const isCollapsed = tagsComponent
 	? widgetManager.isCollapsed(tagsComponent, tags.length)
 	: false;

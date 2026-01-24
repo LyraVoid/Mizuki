@@ -1,7 +1,8 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import type { Page } from "astro";
-import { sidebarLayoutConfig, siteConfig } from "../config";
+import { siteConfig } from "../config";
+import { widgetManager } from "../utils/widget-manager";
 import PostCard from "./PostCard.astro";
 
 interface Props {
@@ -10,8 +11,10 @@ interface Props {
 
 const { page } = Astro.props;
 
-// 检查是否启用双侧边栏
-const isBothSidebars = sidebarLayoutConfig.position === "both";
+// 检查是否启用右侧边栏（通过检查右侧是否有组件）
+const hasRightSidebars =
+	widgetManager.getComponentsByPosition("top", "right", "desktop").length > 0 ||
+	widgetManager.getComponentsByPosition("sticky", "right", "desktop").length > 0;
 
 // 根据配置设置初始布局模式
 const defaultLayout = siteConfig.postListLayout.defaultMode || "list";
@@ -22,7 +25,7 @@ const initialLayoutClass = defaultLayout === "grid" ? "grid-mode" : "list-mode";
 	id="post-list-container"
 	class={`transition-all duration-500 ease-in-out rounded-[var(--radius-large)] bg-[var(--card-bg)] md:bg-transparent mb-4 ${initialLayoutClass}`}
 	data-default-layout={defaultLayout}
-	data-both-sidebars={isBothSidebars}
+	data-both-sidebars={hasRightSidebars}
 >
 	{
 		page.data.map((entry, index) => (
