@@ -1,12 +1,13 @@
 ---
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
-import { sidebarLayoutConfig, siteConfig } from "../config";
+import { siteConfig } from "../config";
 import localAnimeList from "../data/anime";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 import fs from "node:fs";
 import path from "node:path";
+import { widgetManager } from "../utils/widget-manager";
 import "../styles/anime.css";
 
 interface AnimeItem {
@@ -27,7 +28,9 @@ if (!siteConfig.featurePages.anime) {
 	return Astro.redirect("/404/");
 }
 
-const isBothSidebarMode = sidebarLayoutConfig.position === "both";
+const hasRightSidebars =
+	widgetManager.getComponentsByPosition("top", "right", "desktop").length > 0 ||
+	widgetManager.getComponentsByPosition("sticky", "right", "desktop").length > 0;
 const BANGUMI_USER_ID = siteConfig.bangumi?.userId || "your-user-id";
 const ANIME_MODE = siteConfig.anime?.mode || "bangumi";
 
@@ -510,7 +513,7 @@ const hiddenAnimeList = animeList.slice(INITIAL_DISPLAY_COUNT);
 		</div>
 	</div>
 
-	<script is:inline define:vars={{ isBothSidebarMode }}>
+	<script is:inline define:vars={{ hasRightSidebars }}>
 		(function () {
 			function initAnimeLayout() {
 				const animeListContainer = document.getElementById(

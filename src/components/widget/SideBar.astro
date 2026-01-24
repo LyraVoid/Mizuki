@@ -13,21 +13,16 @@ import TOC from "./TOC.astro";
 interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
-	isBothSidebarMode?: boolean;
 }
 
 const { class: className, headings } = Astro.props;
 
-// 获取配置的组件列表
-// 在双侧边栏模式下，只获取左侧组件
-// 否则获取所有组件
-const isBothSidebarMode = Astro.props.isBothSidebarMode ?? false;
-const topComponents = isBothSidebarMode
-	? widgetManager.getComponentsByPosition("top", "left")
-	: widgetManager.getComponentsByPosition("top");
-const stickyComponents = isBothSidebarMode
-	? widgetManager.getComponentsByPosition("sticky", "left")
-	: widgetManager.getComponentsByPosition("sticky");
+// 获取不同设备下的组件列表
+const mobileTopComponents = widgetManager.getComponentsByPosition("top", "drawer", "mobile");
+const mobileStickyComponents = widgetManager.getComponentsByPosition("sticky", "drawer", "mobile");
+
+const tabletTopComponents = widgetManager.getComponentsByPosition("top", "left", "tablet");
+const tabletStickyComponents = widgetManager.getComponentsByPosition("sticky", "left", "tablet");
 
 // 组件映射表
 const componentMap = {
@@ -62,32 +57,64 @@ function renderComponent(component: any, index: number, _components: any[]) {
 }
 ---
 
-<div id="sidebar" class:list={[className, "w-full"]}>
+<div id="sidebar" class:list={[className, "w-full sidebar-root"]}>
 	<!-- 顶部组件区域 -->
-	{topComponents.length > 0 && (
-		<div class="flex flex-col w-full gap-4 mb-4">
-			{topComponents.map((component, index) => {
-				const renderData = renderComponent(component, index, topComponents);
-				if (!renderData) return null;
-				
-				const { Component, props } = renderData;
-				return <Component {...props} />;
-			})}
-		</div>
-	)}
+	<div class="flex flex-col w-full gap-4 mb-4">
+		<!-- 手机端顶部组件 -->
+		{mobileTopComponents.length > 0 && (
+			<div class="flex flex-col w-full gap-4 md:hidden">
+				{mobileTopComponents.map((component, index) => {
+					const renderData = renderComponent(component, index, mobileTopComponents);
+					if (!renderData) return null;
+					
+					const { Component, props } = renderData;
+					return <Component {...props} />;
+				})}
+			</div>
+		)}
+
+		<!-- 平板和桌面端顶部组件 -->
+		{tabletTopComponents.length > 0 && (
+			<div class="hidden md:flex flex-col w-full gap-4">
+				{tabletTopComponents.map((component, index) => {
+					const renderData = renderComponent(component, index, tabletTopComponents);
+					if (!renderData) return null;
+					
+					const { Component, props } = renderData;
+					return <Component {...props} />;
+				})}
+			</div>
+		)}
+	</div>
 	
 	<!-- 粘性组件区域 -->
-	{stickyComponents.length > 0 && (
-		<div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 top-4 sticky top-4">
-			{stickyComponents.map((component, index) => {
-				const renderData = renderComponent(component, index, stickyComponents);
-				if (!renderData) return null;
-				
-				const { Component, props } = renderData;
-				return <Component {...props} />;
-			})}
-		</div>
-	)}
+	<div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 sticky top-4">
+		<!-- 手机端粘性组件 -->
+		{mobileStickyComponents.length > 0 && (
+			<div class="flex flex-col w-full gap-4 md:hidden">
+				{mobileStickyComponents.map((component, index) => {
+					const renderData = renderComponent(component, index, mobileStickyComponents);
+					if (!renderData) return null;
+					
+					const { Component, props } = renderData;
+					return <Component {...props} />;
+				})}
+			</div>
+		)}
+
+		<!-- 平板和桌面端粘性组件 -->
+		{tabletStickyComponents.length > 0 && (
+			<div class="hidden md:flex flex-col w-full gap-4">
+				{tabletStickyComponents.map((component, index) => {
+					const renderData = renderComponent(component, index, tabletStickyComponents);
+					if (!renderData) return null;
+					
+					const { Component, props } = renderData;
+					return <Component {...props} />;
+				})}
+			</div>
+		)}
+	</div>
 </div>
 
 <!-- 响应式样式和JavaScript -->
@@ -116,7 +143,9 @@ function renderComponent(component: any, index: number, _components: any[]) {
 	breakpoints: widgetManager.getBreakpoints(),
 	mobileShowSidebar: widgetManager.shouldShowSidebar('mobile'),
 	tabletShowSidebar: widgetManager.shouldShowSidebar('tablet'),
-	desktopShowSidebar: widgetManager.shouldShowSidebar('desktop')
+	desktopShowSidebar: widgetManager.shouldShowSidebar('desktop'),
+	hasMobileComponents: mobileTopComponents.length > 0 || mobileStickyComponents.length > 0,
+	hasTabletComponents: tabletTopComponents.length > 0 || tabletStickyComponents.length > 0
 }}>
 	// 响应式布局管理
 	class SidebarManager {
@@ -143,23 +172,26 @@ function renderComponent(component: any, index: number, _components: any[]) {
 			const width = window.innerWidth;
 			
 			let deviceType;
+			let hasComponents = false;
+			let showConfig = false;
+
 			if (width < breakpoints.mobile) {
 				deviceType = 'mobile';
+				hasComponents = hasMobileComponents;
+				showConfig = mobileShowSidebar;
 			} else if (width < breakpoints.tablet) {
 				deviceType = 'tablet';
+				hasComponents = hasTabletComponents;
+				showConfig = tabletShowSidebar;
 			} else {
 				deviceType = 'desktop';
+				hasComponents = hasTabletComponents; // 桌面端也使用 tablet 的组件列表（left）
+				showConfig = desktopShowSidebar;
 			}
 			
 			// 根据设备类型判断是否显示侧边栏
-			let shouldShow = false;
-			if (deviceType === 'mobile') {
-				shouldShow = mobileShowSidebar;
-			} else if (deviceType === 'tablet') {
-				shouldShow = tabletShowSidebar;
-			} else {
-				shouldShow = desktopShowSidebar;
-			}
+			// 只有在配置开启且该设备下有组件时才显示
+			const shouldShow = showConfig && hasComponents;
 			
 			const sidebar = document.getElementById('sidebar');
 			

@@ -344,10 +344,7 @@ export type WidgetComponentType =
 
 export type WidgetComponentConfig = {
 	type: WidgetComponentType; // 组件类型
-	enable: boolean; // 是否启用该组件
-	order: number; // 显示顺序，数字越小越靠前
 	position: "top" | "sticky"; // 组件位置：顶部固定区域或粘性区域
-	sidebar?: "left" | "right"; // 组件所在侧边栏：左侧或右侧（仅当启用双侧边栏时有效）
 	class?: string; // 自定义CSS类名
 	style?: string; // 自定义内联样式
 	animationDelay?: number; // 动画延迟时间（毫秒）
@@ -359,8 +356,12 @@ export type WidgetComponentConfig = {
 };
 
 export type SidebarLayoutConfig = {
-	position: "unilateral" | "both"; // 侧边栏位置：单侧或双侧
-	components: WidgetComponentConfig[]; // 组件配置列表
+	properties: WidgetComponentConfig[]; // 组件配置列表
+	components: {
+		left: WidgetComponentType[];
+		right: WidgetComponentType[];
+		drawer: WidgetComponentType[];
+	};
 	defaultAnimation: {
 		enable: boolean; // 是否启用默认动画
 		baseDelay: number; // 基础延迟时间（毫秒）
@@ -371,11 +372,6 @@ export type SidebarLayoutConfig = {
 			mobile: number; // 移动端断点（px）
 			tablet: number; // 平板端断点（px）
 			desktop: number; // 桌面端断点（px）
-		};
-		layout: {
-			mobile: "hidden" | "sidebar"; // 移动端布局模式
-			tablet: "hidden" | "sidebar"; // 平板端布局模式
-			desktop: "sidebar"; // 桌面端布局模式
 		};
 	};
 };
