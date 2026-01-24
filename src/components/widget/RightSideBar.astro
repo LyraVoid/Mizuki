@@ -11,7 +11,7 @@ const stickyComponents = widgetManager.getComponentsByPosition("sticky", "right"
 <div class="right-sidebar" id="right-sidebar">
   <!-- 顶部固定区域 -->
   <div class="sidebar-top">
-    {topComponents.map((component, index) => (
+    {topComponents.map((component) => (
       <div class={`sidebar-component ${component.class || ''}`} 
            style={`animation-delay: ${component.animationDelay || 0}ms; ${component.style || ''}`}>
         {component.type === "site-stats" && <SiteStats />}
@@ -22,7 +22,7 @@ const stickyComponents = widgetManager.getComponentsByPosition("sticky", "right"
   
   <!-- 粘性定位区域 -->
   <div class="sidebar-sticky">
-    {stickyComponents.map((component, index) => (
+    {stickyComponents.map((component) => (
       <div class={`sidebar-component ${component.class || ''}`} 
            style={`animation-delay: ${component.animationDelay || 0}ms; ${component.style || ''}`}>
         {component.type === "site-stats" && <SiteStats />}
