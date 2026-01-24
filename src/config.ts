@@ -571,17 +571,6 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 桌面端断点：屏幕宽度大于等于1280px
 			desktop: 1280,
 		},
-		// 不同设备的布局模式
-		// hidden: 隐藏侧边栏
-		// sidebar: 显示侧边栏
-		layout: {
-			// 移动端：显示侧边栏(抽屉模式)
-			mobile: "sidebar",
-			// 平板端：显示侧边栏(抽屉模式)
-			tablet: "sidebar",
-			// 桌面端：显示侧边栏
-			desktop: "sidebar",
-		},
 	},
 };
 

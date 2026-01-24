@@ -187,8 +187,20 @@ export class WidgetManager {
 	 * @param deviceType 设备类型
 	 */
 	shouldShowSidebar(deviceType: "mobile" | "tablet" | "desktop"): boolean {
-		const layoutMode = this.config.responsive.layout[deviceType];
-		return layoutMode === "sidebar";
+		if (deviceType === "mobile") {
+			return this.config.components.drawer.length > 0;
+		}
+		if (deviceType === "tablet") {
+			return (
+				this.config.components.left.length > 0 ||
+				this.config.components.right.length > 0
+			);
+		}
+		// desktop
+		return (
+			this.config.components.left.length > 0 ||
+			this.config.components.right.length > 0
+		);
 	}
 
 	/**

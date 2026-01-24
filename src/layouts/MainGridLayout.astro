@@ -129,12 +129,6 @@ const mainPanelTop =
 const finalMainPanelTop =
 	siteConfig.wallpaperMode.defaultMode === "banner" ? mainPanelTop : "5.5rem";
 
-// 检查侧边栏是否启用，动态调整网格布局
-// 响应式配置：不同设备上的侧边栏显示状态
-const mobileShowSidebar = widgetManager.shouldShowSidebar("mobile");
-const tabletShowSidebar = widgetManager.shouldShowSidebar("tablet");
-const desktopShowSidebar = widgetManager.shouldShowSidebar("desktop");
-
 // 检查左侧边栏是否有组件
 const hasLeftSidebarComponents =
 	widgetManager.getComponentsByPosition("top", "left", "desktop").length > 0 ||
@@ -155,12 +149,17 @@ const hasTabletLeftSidebarComponents =
 	widgetManager.getComponentsByPosition("top", "left", "tablet").length > 0 ||
 	widgetManager.getComponentsByPosition("sticky", "left", "tablet").length > 0;
 
+// 检查侧边栏是否启用，动态调整网格布局
+const mobileShowSidebar = hasMobileDrawerComponents;
+const tabletShowSidebar = hasTabletLeftSidebarComponents;
+const desktopShowSidebar = hasLeftSidebarComponents || hasRightSidebarComponents;
+
 // 桌面端侧边栏最终显示状态（考虑是否有组件）
-const desktopShowLeftSidebar = desktopShowSidebar && hasLeftSidebarComponents;
-const desktopShowRightSidebar = desktopShowSidebar && hasRightSidebarComponents;
+const desktopShowLeftSidebar = hasLeftSidebarComponents;
+const desktopShowRightSidebar = hasRightSidebarComponents;
 
 // 平板端侧边栏最终显示状态
-const tabletShowLeftSidebar = tabletShowSidebar && hasTabletLeftSidebarComponents;
+const tabletShowLeftSidebar = hasTabletLeftSidebarComponents;
 // 如果左侧有组件，则平板端不显示右侧侧栏；只有当左侧为空且右侧有组件时，才显示右侧侧栏（会被移到左侧）
 // 注意：现在 getComponentsByPosition("left", "tablet") 已经包含了这个逻辑
 const tabletShowRightSidebar = false; // 平板端不再有独立的右侧栏，如果右移左了，它就在 tabletShowLeftSidebar 中显示

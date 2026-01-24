@@ -373,11 +373,6 @@ export type SidebarLayoutConfig = {
 			tablet: number; // 平板端断点（px）
 			desktop: number; // 桌面端断点（px）
 		};
-		layout: {
-			mobile: "hidden" | "sidebar"; // 移动端布局模式
-			tablet: "hidden" | "sidebar"; // 平板端布局模式
-			desktop: "sidebar"; // 桌面端布局模式
-		};
 	};
 };
 
