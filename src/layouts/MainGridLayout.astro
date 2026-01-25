@@ -14,7 +14,6 @@ import TypewriterText from "../components/TypewriterText.astro";
 import TOC from "../components/widget/TOC.astro";
 import {
 	fullscreenWallpaperConfig,
-	sidebarLayoutConfig,
 	siteConfig,
 } from "../config";
 import {
@@ -130,37 +129,41 @@ const mainPanelTop =
 const finalMainPanelTop =
 	siteConfig.wallpaperMode.defaultMode === "banner" ? mainPanelTop : "5.5rem";
 
-// 检查侧边栏是否启用，动态调整网格布局
-// 响应式配置：不同设备上的侧边栏显示状态
-const mobileShowSidebar = widgetManager.shouldShowSidebar("mobile");
-const tabletShowSidebar = widgetManager.shouldShowSidebar("tablet");
-const desktopShowSidebar = widgetManager.shouldShowSidebar("desktop");
-
-// 检查是否为双侧边栏模式
-const isBothSidebarMode = sidebarLayoutConfig.position === "both";
-
 // 检查左侧边栏是否有组件
-const hasLeftSidebarComponents = isBothSidebarMode
-	? widgetManager.getComponentsByPosition("top", "left").length > 0 ||
-		widgetManager.getComponentsByPosition("sticky", "left").length > 0
-	: widgetManager.getComponentsByPosition("top").length > 0 ||
-		widgetManager.getComponentsByPosition("sticky").length > 0;
+const hasLeftSidebarComponents =
+	widgetManager.getComponentsByPosition("top", "left", "desktop").length > 0 ||
+	widgetManager.getComponentsByPosition("sticky", "left", "desktop").length > 0;
 
 // 检查右侧边栏是否有组件
 const hasRightSidebarComponents =
-	isBothSidebarMode &&
-	(widgetManager.getComponentsByPosition("top", "right").length > 0 ||
-		widgetManager.getComponentsByPosition("sticky", "right").length > 0);
+	widgetManager.getComponentsByPosition("top", "right", "desktop").length > 0 ||
+	widgetManager.getComponentsByPosition("sticky", "right", "desktop").length > 0;
+
+// 检查手机端 drawer 是否有组件
+const hasMobileDrawerComponents =
+	widgetManager.getComponentsByPosition("top", "drawer", "mobile").length > 0 ||
+	widgetManager.getComponentsByPosition("sticky", "drawer", "mobile").length > 0;
+
+// 平板端是否有组件（考虑自动移动逻辑）
+const hasTabletLeftSidebarComponents =
+	widgetManager.getComponentsByPosition("top", "left", "tablet").length > 0 ||
+	widgetManager.getComponentsByPosition("sticky", "left", "tablet").length > 0;
+
+// 检查侧边栏是否启用，动态调整网格布局
+const mobileShowSidebar = hasMobileDrawerComponents;
+const tabletShowSidebar = hasTabletLeftSidebarComponents;
+const desktopShowSidebar = hasLeftSidebarComponents || hasRightSidebarComponents;
 
 // 桌面端侧边栏最终显示状态（考虑是否有组件）
-const desktopShowLeftSidebar = desktopShowSidebar && hasLeftSidebarComponents;
-const desktopShowRightSidebar = desktopShowSidebar && hasRightSidebarComponents;
+const desktopShowLeftSidebar = hasLeftSidebarComponents;
+const desktopShowRightSidebar = hasRightSidebarComponents;
 
 // 平板端侧边栏最终显示状态
-const tabletShowLeftSidebar = tabletShowSidebar && hasLeftSidebarComponents;
+const tabletShowLeftSidebar = hasTabletLeftSidebarComponents;
 // 如果左侧有组件，则平板端不显示右侧侧栏；只有当左侧为空且右侧有组件时，才显示右侧侧栏（会被移到左侧）
-const tabletShowRightSidebar = tabletShowSidebar && hasRightSidebarComponents && !hasLeftSidebarComponents;
-const tabletAnySidebar = tabletShowLeftSidebar || tabletShowRightSidebar;
+// 注意：现在 getComponentsByPosition("left", "tablet") 已经包含了这个逻辑
+const tabletShowRightSidebar = false; // 平板端不再有独立的右侧栏，如果右移左了，它就在 tabletShowLeftSidebar 中显示
+const tabletAnySidebar = tabletShowLeftSidebar;
 
 // 检查默认布局模式，如果是 grid 模式，右侧边栏初始就应该隐藏
 const defaultPostListLayout = siteConfig.postListLayout?.defaultMode || "list";
@@ -187,7 +190,7 @@ const gridCols = `
 // 侧边栏容器类名 - 始终在左侧
 const sidebarClass = `
 	onload-animation
-	${mobileShowSidebar && hasLeftSidebarComponents ? "block" : "hidden"}
+	${mobileShowSidebar && hasMobileDrawerComponents ? "block" : "hidden"}
 	${tabletShowLeftSidebar ? "md:block md:mb-4 md:max-w-[17.5rem]" : "md:hidden"}
 	${desktopShowLeftSidebar ? "lg:block lg:mb-4 lg:row-start-1 lg:row-end-2 lg:max-w-[17.5rem] lg:col-start-1 lg:col-end-2" : "lg:hidden"}
 `
@@ -195,14 +198,14 @@ const sidebarClass = `
 	.replace(/\s+/g, " ");
 
 // 右侧边栏容器类名
-// 手机端：显示在左侧栏下方（row-start-3），全宽
+// 手机端：隐藏（手机端只通过 drawer 显示组件）
 // 平板端：根据简化逻辑显示（只有当左侧为空时才显示并移到左侧）
 // 桌面端：定位到网格最后一列（右侧）
 // 如果默认是 grid 模式，初始就隐藏
 const rightSidebarClass = `
 	onload-animation
-	${isBothSidebarMode && mobileShowSidebar && hasRightSidebarComponents ? "block row-start-3 row-end-4 col-span-1" : "hidden"}
-	${isBothSidebarMode && tabletShowRightSidebar ? "md:block md:mb-4 md:max-w-[17.5rem]" : "md:hidden"}
+	hidden
+	${tabletShowRightSidebar ? "md:block md:mb-4 md:max-w-[17.5rem]" : "md:hidden"}
 	${desktopShowRightSidebar ? `lg:block lg:mb-4 lg:row-start-1 lg:row-end-2 lg:max-w-[17.5rem] ${desktopShowLeftSidebar ? "lg:col-start-3 lg:col-end-4" : "lg:col-start-2 lg:col-end-3"} lg:col-span-1` : "lg:hidden"}
 	${initialRightSidebarHidden ? "hidden-in-grid-mode" : ""}
 `
@@ -790,7 +793,7 @@ const transparentClass = shouldEnableTransparency
 <div class={`absolute w-full z-30 pointer-events-none ${mobileNonHomeBannerClass ? 'mobile-main-no-banner' : ''} ${siteConfig.wallpaperMode.defaultMode === 'none' ? 'no-banner-layout' : ''} ${transparentClass}`} style={`top: ${finalMainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
-        <div id="main-grid" class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-none md:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${!mobileShowSidebar ? 'mobile-no-sidebar' : ''} ${isBothSidebarMode ? 'mobile-both-sidebar' : ''}`}
+        <div id="main-grid" class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-none md:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${!mobileShowSidebar || !hasMobileDrawerComponents ? 'mobile-no-sidebar' : ''} ${hasRightSidebarComponents ? 'mobile-both-sidebar' : ''}`}
              data-layout-mode={defaultPostListLayout}
         >
             <!-- Banner image credit -->
@@ -808,12 +811,12 @@ const transparentClass = shouldEnableTransparency
 
 
             {/* 侧边栏和主内容区域容器 */}
-            <div class="contents md:flex md:flex-col md:col-start-1 md:row-start-1 md:gap-0 lg:contents">
+            <div class="contents">
                 {(mobileShowSidebar || tabletShowSidebar || desktopShowSidebar) && (
-                    <SideBar class={`${sidebarClass} ${transparentClass}`} headings={headings} isBothSidebarMode={isBothSidebarMode}></SideBar>
+                    <SideBar class={`${sidebarClass} ${transparentClass}`} headings={headings}></SideBar>
                 )}
                 
-                {isBothSidebarMode && hasRightSidebarComponents && (
+                {hasRightSidebarComponents && (
                     <div class={`right-sidebar-container ${rightSidebarClass} ${transparentClass}`}>
                         <RightSideBar headings={headings}></RightSideBar>
                     </div>

@@ -1,32 +1,17 @@
 ---
-import { sidebarLayoutConfig } from "../../config";
+import { widgetManager } from "../../utils/widget-manager";
 import Calendar from "./Calendar.astro";
 import SiteStats from "./SiteStats.astro";
 
-// 获取右侧栏组件配置
-const rightSidebarComponents = sidebarLayoutConfig.components.filter(
-	(component) => {
-		// 只显示右侧栏且启用的组件
-		return component.enable && component.sidebar === "right";
-	},
-);
-
-// 按顺序排序组件
-rightSidebarComponents.sort((a, b) => a.order - b.order);
-
 // 分离顶部固定和粘性定位的组件
-const topComponents = rightSidebarComponents.filter(
-	(component) => component.position === "top",
-);
-const stickyComponents = rightSidebarComponents.filter(
-	(component) => component.position === "sticky",
-);
+const topComponents = widgetManager.getComponentsByPosition("top", "right");
+const stickyComponents = widgetManager.getComponentsByPosition("sticky", "right");
 ---
 
 <div class="right-sidebar" id="right-sidebar">
   <!-- 顶部固定区域 -->
   <div class="sidebar-top">
-    {topComponents.map((component, _index) => (
+    {topComponents.map((component) => (
       <div class={`sidebar-component ${component.class || ''}`} 
            style={`animation-delay: ${component.animationDelay || 0}ms; ${component.style || ''}`}>
         {component.type === "site-stats" && <SiteStats />}
@@ -37,7 +22,7 @@ const stickyComponents = rightSidebarComponents.filter(
   
   <!-- 粘性定位区域 -->
   <div class="sidebar-sticky">
-    {stickyComponents.map((component, _index) => (
+    {stickyComponents.map((component) => (
       <div class={`sidebar-component ${component.class || ''}`} 
            style={`animation-delay: ${component.animationDelay || 0}ms; ${component.style || ''}`}>
         {component.type === "site-stats" && <SiteStats />}
@@ -56,7 +41,7 @@ const stickyComponents = rightSidebarComponents.filter(
     max-width: 300px;
     height: fit-content;
     position: sticky;
-    top: 80px;
+    top: 1rem;
   }
   
   .sidebar-top {

@@ -111,9 +111,18 @@ export type SiteConfig = {
 		fetchOnDev?: boolean;
 	};
 
+	// 添加bilibili配置
+	bilibili?: {
+		vmid?: string; // Bilibili用户ID (vmid)
+		fetchOnDev?: boolean; // 是否在开发环境下获取 Bilibili 数据
+		SESSDATA?: string; // Bilibili SESSDATA（可选，用于获取进度信息）
+		coverMirror?: string; // 封面图片镜像源（可选，默认为空字符串）
+		useWebp?: boolean; // 是否使用WebP格式（默认 true）
+	};
+
 	// 添加番剧页面配置
 	anime?: {
-		mode?: "bangumi" | "local"; // 番剧页面模式
+		mode?: "bangumi" | "local" | "bilibili"; // 番剧页面模式
 	};
 
 	// 标签样式配置
@@ -344,10 +353,7 @@ export type WidgetComponentType =
 
 export type WidgetComponentConfig = {
 	type: WidgetComponentType; // 组件类型
-	enable: boolean; // 是否启用该组件
-	order: number; // 显示顺序，数字越小越靠前
 	position: "top" | "sticky"; // 组件位置：顶部固定区域或粘性区域
-	sidebar?: "left" | "right"; // 组件所在侧边栏：左侧或右侧（仅当启用双侧边栏时有效）
 	class?: string; // 自定义CSS类名
 	style?: string; // 自定义内联样式
 	animationDelay?: number; // 动画延迟时间（毫秒）
@@ -359,8 +365,12 @@ export type WidgetComponentConfig = {
 };
 
 export type SidebarLayoutConfig = {
-	position: "unilateral" | "both"; // 侧边栏位置：单侧或双侧
-	components: WidgetComponentConfig[]; // 组件配置列表
+	properties: WidgetComponentConfig[]; // 组件配置列表
+	components: {
+		left: WidgetComponentType[];
+		right: WidgetComponentType[];
+		drawer: WidgetComponentType[];
+	};
 	defaultAnimation: {
 		enable: boolean; // 是否启用默认动画
 		baseDelay: number; // 基础延迟时间（毫秒）
@@ -371,11 +381,6 @@ export type SidebarLayoutConfig = {
 			mobile: number; // 移动端断点（px）
 			tablet: number; // 平板端断点（px）
 			desktop: number; // 桌面端断点（px）
-		};
-		layout: {
-			mobile: "hidden" | "sidebar"; // 移动端布局模式
-			tablet: "hidden" | "sidebar"; // 平板端布局模式
-			desktop: "sidebar"; // 桌面端布局模式
 		};
 	};
 };
