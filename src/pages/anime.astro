@@ -1,13 +1,12 @@
 ---
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
-import { siteConfig } from "../config";
+import { sidebarLayoutConfig, siteConfig } from "../config";
 import localAnimeList from "../data/anime";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 import fs from "node:fs";
 import path from "node:path";
-import { widgetManager } from "../utils/widget-manager";
 import "../styles/anime.css";
 
 interface AnimeItem {
@@ -28,56 +27,14 @@ if (!siteConfig.featurePages.anime) {
 	return Astro.redirect("/404/");
 }
 
-const hasRightSidebars =
-	widgetManager.getComponentsByPosition("top", "right", "desktop").length > 0 ||
-	widgetManager.getComponentsByPosition("sticky", "right", "desktop").length > 0;
+const isBothSidebarMode = sidebarLayoutConfig.position === "both";
 const BANGUMI_USER_ID = siteConfig.bangumi?.userId || "your-user-id";
-const BILIBILI_VMID = siteConfig.bilibili?.vmid || "";
 const ANIME_MODE = siteConfig.anime?.mode || "bangumi";
 
 let animeList: AnimeItem[] = [];
 
 if (ANIME_MODE === "local") {
 	animeList = localAnimeList;
-} else if (ANIME_MODE === "bilibili") {
-	const isDev = import.meta.env.DEV;
-	const shouldFetchOnDev = siteConfig.bilibili?.fetchOnDev ?? false;
-	const skipLoad = isDev && !shouldFetchOnDev;
-
-	if (skipLoad) {
-		console.log("[Dev] Skipping Bilibili data load (fetchOnDev is off).");
-		animeList = [];
-	} else {
-		try {
-			const dataPath = path.join(
-				process.cwd(),
-				"src/data/bilibili-data.json",
-			);
-			if (fs.existsSync(dataPath)) {
-				const fileContent = fs.readFileSync(dataPath, "utf-8");
-				const rawData = JSON.parse(fileContent);
-				animeList = rawData.map((item: any) => ({
-					title: item.title || "Unknown",
-					cover: item.cover || "",
-					link: item.link || "",
-					status: item.status || "planned",
-					rating: Number(item.rating) || 0,
-					progress: Number(item.progress) || 0,
-					totalEpisodes: Number(item.totalEpisodes) || 12,
-					description: item.description || "",
-					year: item.year || "",
-					studio: item.studio || "",
-					genre: Array.isArray(item.genre) ? item.genre : [],
-				}));
-			} else {
-				console.warn(`Bilibili data file not found at ${dataPath}.`);
-				animeList = [];
-			}
-		} catch (error) {
-			console.error("Failed to load Bilibili anime data:", error);
-			animeList = [];
-		}
-	}
 } else {
 	const isDev = import.meta.env.DEV;
 	const shouldFetchOnDev = siteConfig.bangumi?.fetchOnDev ?? false;
@@ -204,7 +161,7 @@ const hiddenAnimeList = animeList.slice(INITIAL_DISPLAY_COUNT);
 							>{i18n(I18nKey.animeStatusCompleted)}</button
 						>
 						{
-							(ANIME_MODE === "bangumi" || ANIME_MODE === "bilibili") && (
+							ANIME_MODE === "bangumi" && (
 								<>
 									<button
 										class="anime-filter-tag"
@@ -226,22 +183,9 @@ const hiddenAnimeList = animeList.slice(INITIAL_DISPLAY_COUNT);
 			</div>
 
 			<div class="mb-8">
-					{
-						ANIME_MODE === "bilibili" &&
-						(!BILIBILI_VMID || BILIBILI_VMID === "") ? (
-							<div class="text-center py-12">
-								<div class="text-5xl mb-4">😢</div>
-								<h3 class="text-xl font-medium text-black/80 dark:text-white/80 mb-2">
-									{i18n(I18nKey.animeEmpty)}
-								</h3>
-								<p class="text-black/60 dark:text-white/60">
-									Please set your Bilibili vmid in the
-									src/config.ts file
-								</p>
-							</div>
-						) : ANIME_MODE !== "local" &&
-							ANIME_MODE !== "bilibili" &&
-							BANGUMI_USER_ID === "your-user-id" ? (
+				{
+					ANIME_MODE !== "local" &&
+					BANGUMI_USER_ID === "your-user-id" ? (
 						<div class="text-center py-12">
 							<div class="text-5xl mb-4">😢</div>
 							<h3 class="text-xl font-medium text-black/80 dark:text-white/80 mb-2">
@@ -557,9 +501,7 @@ const hiddenAnimeList = animeList.slice(INITIAL_DISPLAY_COUNT);
 							<p class="text-black/60 dark:text-white/60">
 								{ANIME_MODE === "local"
 									? i18n(I18nKey.animeEmptyLocal)
-									: ANIME_MODE === "bilibili"
-										? "Bilibili数据为空，请运行 pnpm run update-bilibili 获取数据"
-										: i18n(I18nKey.animeEmptyBangumi)}
+									: i18n(I18nKey.animeEmptyBangumi)}
 							</p>
 						</div>
 					)
@@ -568,7 +510,7 @@ const hiddenAnimeList = animeList.slice(INITIAL_DISPLAY_COUNT);
 		</div>
 	</div>
 
-	<script is:inline define:vars={{ hasRightSidebars }}>
+	<script is:inline define:vars={{ isBothSidebarMode }}>
 		(function () {
 			function initAnimeLayout() {
 				const animeListContainer = document.getElementById(
