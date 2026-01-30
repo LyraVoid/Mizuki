@@ -62,14 +62,14 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
             <hr class="my-2 border-t border-dashed border-gray-300 dark:border-gray-700" />
             <div class="text-sm text-gray-500 mt-2 text-center">
                 <Icon name="fa6-solid:eye" class="inline-block mr-1 text-gray-400 text-sm align-middle" />
-                <span id="site-stats-display">{i18n(I18nKey.profileStatsLoading)}</span>
+                <span class="site-stats-display">{i18n(I18nKey.profileStatsLoading)}</span>
             </div>
         )}
     </div>
 </div>
 
 {umamiEnabled && (
-    <script is:inline define:vars={{ 
+    <script is:inline type="module" define:vars={{ 
         umamiBaseUrl, 
         umamiApiKey, 
         umamiWebsiteId, 
@@ -97,16 +97,16 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
                 const pageViews = stats.pageviews || 0;
                 const visits = stats.visits || 0;
                 
-                const displayElement = document.getElementById('site-stats-display');
-                if (displayElement) {
-                    displayElement.textContent = generateStatsText(pageViews, visits);
-                }
+                const displayElements = document.querySelectorAll('.site-stats-display');
+                displayElements.forEach(element => {
+                    element.textContent = generateStatsText(pageViews, visits);
+                });
             } catch (error) {
                 console.error('Error fetching site stats:', error);
-                const displayElement = document.getElementById('site-stats-display');
-                if (displayElement) {
-                    displayElement.textContent = profileStatsUnavailable;
-                }
+                const displayElements = document.querySelectorAll('.site-stats-display');
+                displayElements.forEach(element => {
+                    element.textContent = profileStatsUnavailable;
+                });
             }
         }
 

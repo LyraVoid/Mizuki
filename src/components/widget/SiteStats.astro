@@ -159,11 +159,13 @@ const stats = [
 		const diffTime = Math.abs(today.getTime() - startDate.getTime());
 		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-		const runningDaysElement = document.querySelector(
+		const runningDaysElements = document.querySelectorAll(
 			'[data-stat-id="running-days"]',
 		);
-		if (runningDaysElement) {
-			runningDaysElement.textContent = diffDays.toString();
+		if (runningDaysElements.length > 0) {
+			runningDaysElements.forEach(element => {
+				element.textContent = diffDays.toString();
+			});
 		}
 
 		// 更新最后活动时间
@@ -176,11 +178,13 @@ const stats = [
 				timeSinceLastPost / (1000 * 60 * 60 * 24),
 			);
 
-			const lastUpdateElement = document.querySelector(
+			const lastUpdateElements = document.querySelectorAll(
 				'[data-stat-id="last-update"]',
 			);
-			if (lastUpdateElement) {
-				lastUpdateElement.textContent = daysSinceLastUpdate.toString();
+			if (lastUpdateElements.length > 0) {
+				lastUpdateElements.forEach(element => {
+					element.textContent = daysSinceLastUpdate.toString();
+				})
 			}
 		}
 	}

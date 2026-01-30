@@ -32,7 +32,7 @@ async function withRetry(apiCall, retries = 3) {
 		} catch (error) {
 			if (i === retries - 1) throw error;
 			await delay(1000);
-			console.warn(`请求失败，正在进行第${i + 1}次重试...`);
+			console.warn(`Request failed, retrying attempt ${i + 1}...`);
 		}
 	}
 }
@@ -47,9 +47,7 @@ async function getUserIdFromConfig() {
 		if (match && match[1]) {
 			const vmid = match[1];
 			if (!vmid || vmid.trim() === "") {
-				console.warn(
-					"Warning: vmid in src/config.ts is empty.",
-				);
+				console.warn("Warning: vmid in src/config.ts is empty.");
 				return null;
 			}
 			return vmid;
@@ -64,9 +62,7 @@ async function getUserIdFromConfig() {
 async function getSessdataFromConfig() {
 	try {
 		const configContent = await fs.readFile(CONFIG_PATH, "utf-8");
-		const match = configContent.match(
-			/SESSDATA:\s*["']([^"']*)["']/,
-		);
+		const match = configContent.match(/SESSDATA:\s*["']([^"']*)["']/);
 		return match ? match[1] : "";
 	} catch {
 		return "";
@@ -76,9 +72,7 @@ async function getSessdataFromConfig() {
 async function getCoverMirrorFromConfig() {
 	try {
 		const configContent = await fs.readFile(CONFIG_PATH, "utf-8");
-		const match = configContent.match(
-			/coverMirror:\s*["']([^"']*)["']/,
-		);
+		const match = configContent.match(/coverMirror:\s*["']([^"']*)["']/);
 		return match ? match[1] : "";
 	} catch {
 		return "";
@@ -128,7 +122,7 @@ async function getDataPage(vmid, status, typeNum = 1) {
 	}
 	return {
 		success: false,
-		data: response?.data?.message || "获取数据失败",
+		data: response?.data?.message || "Failed to fetch data",
 	};
 }
 
@@ -152,7 +146,7 @@ async function getData(
 
 	if (response?.data?.code !== 0) {
 		throw new Error(
-			`获取数据失败: ${response?.data?.message || "未知错误"}`,
+			`Failed to fetch data: ${response?.data?.message || "Unknown error"}`,
 		);
 	}
 
@@ -194,7 +188,10 @@ async function getData(
 		let progress = 0;
 		if (bangumi?.progress) {
 			// progress可能是字符串如"1/14"或数字或空字符串
-			if (typeof bangumi.progress === "string" && bangumi.progress.trim()) {
+			if (
+				typeof bangumi.progress === "string" &&
+				bangumi.progress.trim()
+			) {
 				const progressMatch = bangumi.progress.match(/(\d+)/);
 				if (progressMatch) {
 					progress = parseInt(progressMatch[1], 10) || 0;
@@ -256,7 +253,7 @@ async function getData(
 		}
 		// 如果还是没有，使用"未知"
 		if (genre.length === 0) {
-			genre.push("未知");
+			genre.push("Unknown");
 		}
 
 		// 构建链接（优先使用url字段，否则使用season_id）
@@ -306,9 +303,7 @@ async function processData(
 	const totalPages = page.data - 1;
 
 	for (let i = 1; i < page.data; i++) {
-		process.stdout.write(
-			`   Fetching page ${i}/${totalPages}...\r`,
-		);
+		process.stdout.write(`   Fetching page ${i}/${totalPages}...\r`);
 		const data = await getData(
 			vmid,
 			status,
@@ -385,10 +380,7 @@ async function main() {
 		await fs.mkdir(dir, { recursive: true });
 	}
 
-	await fs.writeFile(
-		OUTPUT_FILE,
-		JSON.stringify(finalAnimeList, null, 2),
-	);
+	await fs.writeFile(OUTPUT_FILE, JSON.stringify(finalAnimeList, null, 2));
 	console.log(`\nUpdate complete! Data saved to: ${OUTPUT_FILE}`);
 	console.log(`Total collected: ${finalAnimeList.length} anime series`);
 	console.log(`  - Planned: ${planned.length}`);
@@ -401,5 +393,3 @@ main().catch((err) => {
 	console.error(err);
 	process.exit(1);
 });
-
-

@@ -43,7 +43,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
 				{/* 使用navbarTitle配置或默认配置 */}
                 {siteConfig.navbarTitle ? (
                     siteConfig.navbarTitle.mode === "logo" ? (
-                        <img src={url(siteConfig.navbarTitle.logo || "/assets/home/default-logo.png")} alt={siteConfig.navbarTitle.text} class="h-[2.5rem] object-contain" loading="lazy" />
+                        <img src={url(siteConfig.navbarTitle.logo || "/assets/home/default-logo.png")} alt={siteConfig.navbarTitle.text} class="h-[3.5rem] max-w-full object-contain" loading="lazy" />
                     ) : (
                         <>
                             <img src={url(siteConfig.navbarTitle.icon || "/assets/home/home.png")} alt={siteConfig.navbarTitle.text} class="h-[1.75rem] w-[1.75rem] mb-1 mr-2 object-contain" loading="lazy" />
