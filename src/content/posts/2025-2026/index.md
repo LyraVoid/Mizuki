@@ -9,7 +9,7 @@ licenseName: ""
 author: XiaoXhan1234
 sourceLink: ""
 draft: false
-comment: ""
+comment: true
 image: ./cover.jpg
 ---
 
