@@ -47,7 +47,7 @@ async function loadImage(src: string): Promise<HTMLImageElement | null> {
 
 		img.onload = () => resolve(img);
 		img.onerror = () => {
-			if (src.includes("images.weserv.nl")) {
+			if (src.includes("images.weserv.nl") || src.startsWith("data:")) {
 				resolve(null);
 				return;
 			}

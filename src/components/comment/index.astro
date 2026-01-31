@@ -8,7 +8,7 @@ interface Props {
 	post: CollectionEntry<"posts">;
 }
 
-const { id, data: _data } = Astro.props.post;
+const { id, data } = Astro.props.post;
 
 const slug = removeFileExtension(id);
 const path = `/posts/${slug}`;
@@ -18,8 +18,10 @@ let commentService = "";
 if (commentConfig?.enable && commentConfig?.twikoo) {
 	commentService = "twikoo";
 }
+
+const commentEnabled = data.comment ?? true;
 ---
-{commentConfig?.enable && (
+{commentConfig?.enable && commentEnabled && (
   <div class="card-base p-6 mb-4">
     {commentService === 'twikoo' && <Twikoo path={path} />}
     {commentService === '' && null}

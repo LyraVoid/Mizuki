@@ -118,6 +118,16 @@ if (entry.data.image) {
 			const img = await file();
 			posterCoverUrl = img.src;
 		}
+	} else if (entry.data.image.startsWith("http")) {
+		try {
+			const response = await fetch(entry.data.image);
+			const arrayBuffer = await response.arrayBuffer();
+			const base64 = Buffer.from(arrayBuffer).toString("base64");
+			const contentType = response.headers.get("content-type") || "image/jpeg";
+			posterCoverUrl = `data:${contentType};base64,${base64}`;
+		} catch {
+			posterCoverUrl = entry.data.image;
+		}
 	}
 }
 
