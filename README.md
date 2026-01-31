@@ -165,6 +165,7 @@ category: Frontend
 draft: false
 pinned: false
 lang: en      # Only set when article language differs from site language in config.ts
+comment: true
 ---
 ```
 
@@ -179,6 +180,7 @@ lang: en      # Only set when article language differs from site language in con
 - **draft**: Set to `true` to hide article in production
 - **pinned**: Set to `true` to pin article to top
 - **lang**: Article language (only set when different from site default)
+- **comment**: Control the switch of the article comment area
 
 ### Pinned Articles Feature
 
