@@ -1,4 +1,5 @@
-# 🌸 Mizuki <img align='right' src='logo.png' width='200px' alt="Mizuki logo">
+# 🌸 Mizuki 
+<img align='right' src='logo.png' width='200px' alt="Mizuki logo">
 
 A modern, feature-rich static blog template built with [Astro](https://astro.build), featuring advanced functionality and beautiful design.
 
@@ -10,7 +11,7 @@ A modern, feature-rich static blog template built with [Astro](https://astro.bui
 
 [**🖥️ Live Demo**](https://mizuki.mysqil.com/) | [**📝 Documentation**](https://docs.mizuki.mysqil.com/)
 
-🌏 README Languages
+🌏 **README Languages:**
 [**English**](./README.md) / [**中文**](./README.zh.md) / [**日本語**](./README.ja.md) / [**中文繁体**](./README.tw.md) /
 
 Get started quickly with our comprehensive documentation. Whether you're customizing your theme, configuring features, or deploying to production, the documentation covers everything you need to launch your blog successfully.

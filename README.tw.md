@@ -1,4 +1,5 @@
-# 🌸 Mizuki <img align='right' src='logo.png' width='200px' alt="Mizuki logo">
+# 🌸 Mizuki
+<img align='right' src='logo.png' width='200px' alt="Mizuki logo">
 
 一個現代化、功能豐富的靜態部落格模板，基於 [Astro](https://astro.build) 構建，具有先進的功能和精美的設計。
 
@@ -10,7 +11,7 @@
 
 [**🖥️ 線上演示**](https://mizuki.mysqil.com/) | [**📝 使用者文檔**](https://docs.mizuki.mysqil.com/)
 
-🌏 README 語言
+🌏 **README 語言:**
 [**English**](./README.md) / [**中文**](./README.zh.md) / [**日本語**](./README.ja.md) / [**中文繁体**](./README.tw.md) /
 
 透過我們的綜合文檔快速開始。無論是自訂主題、配置功能，還是部署到生產環境，文檔涵蓋了您成功啟動部落格所需的所有內容。
