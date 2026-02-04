@@ -1,7 +1,7 @@
 ---
 title: 立春
 published: 2026-02-04
-pinned: false
+pinned: ture
 description: 立春天，风渐暖，伊人一去不复返
 tags: [commemorate, Blogging]
 author: 拾音

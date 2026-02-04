@@ -1,7 +1,7 @@
 ---
 title: 立冬
 published: 2025-11-06
-pinned: true
+pinned: flase
 description: 暗自悲秋
 tags: [commemorate, Blogging]
 author: 拾音
