@@ -1,9 +1,10 @@
 ---
-title:test
-published: 2099-08-01
-description:shdjjd
-tags: [test]
+title: My First Blog Post
+published: 2023-09-09
+description: This is the first post of my new Astro blog.
+image: ./cover.jpg
+tags: [Foo, Bar]
+category: Front-end
 draft: false
 ---
-
-this is a test
+111111
