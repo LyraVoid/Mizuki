@@ -134,32 +134,35 @@ const {
         
         // 获取访问量统计
         async function fetchPageViews(isRetry = false) {
-            // @ts-ignore
-            if (!umamiConfig.enabled || !umamiWebsiteId || !id) return;
-            
-            try {
-                // 构造文章页面的URL路径
-                const pageUrl = `/posts/${id}/`;
-                
-                // 调用全局工具获取特定页面的 Umami 统计数据
-                const stats = await getUmamiPageStats(umamiBaseUrl, umamiApiKey, umamiWebsiteId, pageUrl);
-                
-                // 从返回的数据中提取页面浏览量和访客数
-                const pageViews = stats.pageviews || 0;
-                const visitors = stats.visitors || 0;
-                
-                const displayElement = document.getElementById('page-views-display');
-                if (displayElement) {
-                    displayElement.textContent = generateStatsText(pageViews, visitors);
-                }
-            } catch (error) {
-                console.error('Error fetching page views:', error);
-                const displayElement = document.getElementById('page-views-display');
-                if (displayElement) {
-                    displayElement.textContent = '统计不可用';
-                }
-            }
+    // @ts-ignore
+    if (!umamiConfig.enabled || !umamiWebsiteId || !id) return;
+    
+    try {
+        const pageUrl = `/posts/${id}/`;
+        const stats = await getUmamiPageStats(umamiBaseUrl, umamiApiKey, umamiWebsiteId, pageUrl);
+        
+        const pageViews = stats.pageviews || 0;
+        const visitors = stats.visitors || 0;
+        
+        const displayElement = document.getElementById('page-views-display');
+        if (displayElement) {
+            displayElement.textContent = generateStatsText(pageViews, visitors);
         }
+    } catch (error) {
+        console.error('Error fetching page views:', error);
+        // 使用 isRetry 参数实现重试逻辑（最多重试1次）
+        if (!isRetry) {
+            console.log('Retrying fetch page views...');
+            setTimeout(() => fetchPageViews(true), 2000); // 2秒后重试
+            return;
+        }
+        // 重试失败后显示错误
+        const displayElement = document.getElementById('page-views-display');
+        if (displayElement) {
+            displayElement.textContent = '统计不可用';
+        }
+    }
+}
 
         // 页面加载完成后获取统计数据
         if (document.readyState === 'loading') {
