@@ -135,7 +135,7 @@ const {
         // 获取访问量统计
         async function fetchPageViews(isRetry = false) {
             // @ts-ignore
-            if (!umamiConfig.enabled || !umamiWebsiteId || !id || !isRetry) return;
+            if (!umamiConfig.enabled || !umamiWebsiteId || !id) return;
             
             try {
                 // 构造文章页面的URL路径
