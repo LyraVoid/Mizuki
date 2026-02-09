@@ -322,6 +322,10 @@ enum I18nKey {
 	profileStatsVisits = "profileStatsVisits",
 	profileStatsUnavailable = "profileStatsUnavailable",
 
+	// 页面访问量统计
+	pageViewsLoading = "pageViewsLoading",
+	pageViewsUnavailable = "pageViewsUnavailable",
+
 	// 布局切换按钮
 	switchToGridMode = "switchToGridMode",
 	switchToListMode = "switchToListMode",

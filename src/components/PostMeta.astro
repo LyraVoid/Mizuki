@@ -119,17 +119,17 @@ const {
             <div class="meta-icon">
                 <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
             </div>
-            <span class="text-50 text-sm font-medium" id="page-views-display">统计加载中...</span>
+            <span class="text-50 text-sm font-medium" id="page-views-display">{i18n(I18nKey.pageViewsLoading)}</span>
         </div>
     )}
 </div>
 
 <!-- 只有在非首页且启用umami且有slug时才加载脚本 -->
 {!isHome && umamiEnabled && id && (
-    <script is:inline define:vars={{ id, umamiBaseUrl, umamiApiKey, umamiWebsiteId, umamiConfig }}>
+    <script is:inline define:vars={{ id, umamiBaseUrl, umamiApiKey, umamiWebsiteId, umamiConfig, i18n, I18nKey }}>
         // 客户端统计文案生成函数
         function generateStatsText(pageViews, visitors) {
-            return `浏览量 ${pageViews} · 访客 ${visitors}`;
+            return `${i18n(I18nKey.profileStatsPageViews)} ${pageViews} · ${i18n(I18nKey.profileStatsVisits)} ${visitors}`;
         }
         
         // 获取访问量统计
@@ -159,7 +159,7 @@ const {
         // 重试失败后显示错误
         const displayElement = document.getElementById('page-views-display');
         if (displayElement) {
-            displayElement.textContent = '统计不可用';
+            displayElement.textContent = i18n(I18nKey.pageViewsUnavailable);
         }
     }
 }

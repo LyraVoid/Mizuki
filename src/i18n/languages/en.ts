@@ -345,6 +345,10 @@ export const en: Translation = {
 	[Key.profileStatsVisits]: "Visits",
 	[Key.profileStatsUnavailable]: "Stats unavailable",
 
+	// Page Views Stats
+	[Key.pageViewsLoading]: "Loading stats...",
+	[Key.pageViewsUnavailable]: "Stats unavailable",
+
 	// Layout Switch Button
 	[Key.switchToGridMode]: "Switch to Grid Mode",
 	[Key.switchToListMode]: "Switch to List Mode",

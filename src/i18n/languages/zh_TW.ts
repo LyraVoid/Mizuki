@@ -334,6 +334,10 @@ export const zh_TW: Translation = {
 	[Key.profileStatsVisits]: "造訪次數",
 	[Key.profileStatsUnavailable]: "統計不可用",
 
+	// 頁面瀏覽統計
+	[Key.pageViewsLoading]: "統計載入中...",
+	[Key.pageViewsUnavailable]: "統計不可用",
+
 	// 布局切換按鈕
 	[Key.switchToGridMode]: "切換到網格模式",
 	[Key.switchToListMode]: "切換到列表模式",
