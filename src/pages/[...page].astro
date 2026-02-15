@@ -4,11 +4,11 @@ import Pagination from "../components/control/Pagination.astro";
 import PostPage from "../components/PostPage.astro";
 import { PAGE_SIZE } from "../constants/constants";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
-import { getSortedPosts } from "../utils/content-utils";
+import { getVisiblePosts } from "../utils/content-utils"; // Use getVisiblePosts
 import { initPostIdMap } from "../utils/permalink-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
-	const allBlogPosts = await getSortedPosts();
+	const allBlogPosts = await getVisiblePosts(); // Use getVisiblePosts
 	// 初始化文章 ID 映射（用于 permalink 功能）
 	initPostIdMap(allBlogPosts);
 	return paginate(allBlogPosts, { pageSize: PAGE_SIZE });

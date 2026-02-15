@@ -9,6 +9,7 @@ const postsCollection = defineCollection({
 		published: z.date(),
 		updated: z.date().optional(),
 		draft: z.boolean().optional().default(false),
+		hidden: z.boolean().optional().default(false), // 是否在列表中隐藏
 		description: z.string().optional().default(""),
 		image: z.string().optional().default(""),
 		tags: z.array(z.string()).optional().default([]),
@@ -28,6 +29,9 @@ const postsCollection = defineCollection({
 
 		/* Posts alias */
 		alias: z.string().optional(),
+
+		series: z.string().optional().default(""),
+		seriesOrder: z.number().optional(),
 
 		/* Custom permalink - 自定义固定链接，优先级高于 alias */
 		permalink: z.string().optional(),

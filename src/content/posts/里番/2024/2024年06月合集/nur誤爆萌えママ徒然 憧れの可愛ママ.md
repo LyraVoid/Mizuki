@@ -1,0 +1,22 @@
+---
+title: "[nur]誤爆～萌えママ徒然～ ～憧れの可愛ママ～"
+published: 2024-06-28
+description: ''
+image: 'https://lh3.googleusercontent.com/d/1VrAFW_v1_4ZCwAe8K8L8ChsPEtVkEk4L'
+tags: ['2024']
+category: '里番'
+series: '誤爆'
+seriesOrder: 0
+draft: false 
+lang: ''
+---
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe 
+    src="https://drive.google.com/file/d/1W91d4YNlbBmzwj8YuPRBhvMYS2jjGzGM/preview" 
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+    allow="autoplay; fullscreen"
+    allowfullscreen
+    frameborder="0">
+  </iframe>
+</div>

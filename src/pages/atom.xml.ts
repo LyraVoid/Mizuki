@@ -5,7 +5,7 @@ import MarkdownIt from "markdown-it";
 import { parse as htmlParser } from "node-html-parser";
 import sanitizeHtml from "sanitize-html";
 import { profileConfig, siteConfig } from "@/config";
-import { getSortedPosts } from "@/utils/content-utils";
+import { getVisiblePosts } from "@/utils/content-utils";
 import { getPostUrl } from "@/utils/url-utils";
 import { initPostIdMap } from "@/utils/permalink-utils";
 
@@ -23,7 +23,7 @@ export async function GET(context: APIContext) {
 
 	// Use the same ordering as site listing (pinned first, then by published desc)
 	// 过滤掉加密文章和草稿文章
-	const posts = (await getSortedPosts()).filter(
+	const posts = (await getVisiblePosts()).filter(
 		(post) => !post.data.encrypted && post.data.draft !== true,
 	);
 

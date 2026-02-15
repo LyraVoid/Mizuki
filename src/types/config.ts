@@ -294,6 +294,7 @@ export type BlogPostData = {
 	description: string;
 	tags: string[];
 	draft?: boolean;
+	hidden?: boolean; // Add hidden field
 	image?: string;
 	category?: string;
 	pinned?: boolean;
@@ -301,6 +302,8 @@ export type BlogPostData = {
 	prevSlug?: string;
 	nextTitle?: string;
 	nextSlug?: string;
+	series?: string; // 系列名称
+	seriesOrder?: number; // 系列中的集数排序
 };
 
 export type ExpressiveCodeConfig = {

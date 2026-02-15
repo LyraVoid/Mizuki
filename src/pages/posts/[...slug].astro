@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { render } from "astro:content";
+import { render, getCollection } from "astro:content";
 import path from "node:path";
 import Comment from "@components/comment/index.astro";
 import License from "@components/misc/License.astro";
@@ -9,12 +9,14 @@ import SharePoster from "@components/misc/SharePoster.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getSortedPosts } from "@utils/content-utils";
 import {
 	getFileDirFromPath,
 	getPostUrlBySlug,
 	removeFileExtension,
 } from "@utils/url-utils";
+import {
+	getSortedPosts,
+} from "@utils/content-utils";
 import {
 	hasCustomPermalink,
 	initPostIdMap,
@@ -43,6 +45,7 @@ export async function getStaticPaths() {
 	for (const entry of blogEntries) {
 		// 将 id 转换为 slug（移除扩展名）以匹配路由参数
 		const defaultSlug = removeFileExtension(entry.id);
+
 
 		// 如果文章有自定义 permalink，不在 /posts/ 下创建路径
 		// 而是通过根目录的 [permalink].astro 处理
@@ -158,6 +161,39 @@ if (profileConfig.avatar) {
 // 判断是否为加密文章
 let isEncrypted = entry.data.encrypted && entry.data.password;
 
+// 查询同系列的所有文章
+let seriesEpisodes: { id: string; title: string; order: number; url: string; isCurrent: boolean }[] = [];
+if (entry.data.series && entry.data.series.trim() !== "") {
+	const allPosts = await getCollection("posts", ({ data }) => {
+		return data.series === entry.data.series && (!import.meta.env.PROD || data.draft !== true);
+	});
+	seriesEpisodes = allPosts
+		.map((post) => ({
+			id: post.id,
+			title: post.data.title,
+			order: post.data.seriesOrder ?? 0,
+			url: getPostUrlBySlug(post.id),
+			isCurrent: post.id === entry.id,
+		}))
+		.sort((a, b) => a.order - b.order);
+}
+
+// 判断是否为小说文章
+const isNovel = entry.data.category === '小说';
+
+// 计算小说的上一章/下一章
+let prevChapter: { title: string; url: string } | null = null;
+let nextChapter: { title: string; url: string } | null = null;
+if (isNovel && seriesEpisodes.length > 1) {
+	const currentIndex = seriesEpisodes.findIndex((ep) => ep.isCurrent);
+	if (currentIndex > 0) {
+		prevChapter = { title: seriesEpisodes[currentIndex - 1].title, url: seriesEpisodes[currentIndex - 1].url };
+	}
+	if (currentIndex < seriesEpisodes.length - 1) {
+		nextChapter = { title: seriesEpisodes[currentIndex + 1].title, url: seriesEpisodes[currentIndex + 1].url };
+	}
+}
+
 dayjs.extend(utc);
 const lastModified = dayjs(entry.data.updated || entry.data.published)
 	.utc()
@@ -203,7 +239,7 @@ const jsonLd = {
             id="post-container"
             class:list={[
                 "card-base z-10 px-6 md:px-9 pt-6 pb-4 relative w-full ",
-                {},
+                { 'novel-reading': isNovel },
             ]}
         >
             <!-- word count and reading time -->
@@ -306,6 +342,105 @@ const jsonLd = {
                 )
             }
 
+            {/* 同系列选集/章节面板 */}
+            {seriesEpisodes.length > 1 && !isNovel && (
+                <div class="mt-6 mb-6 p-5 bg-[var(--license-block-bg)] rounded-xl onload-animation">
+                    <div class="flex items-center gap-2 mb-4">
+                        <Icon name="material-symbols:video-library-rounded" class="text-2xl text-[var(--primary)]" />
+                        <span class="font-bold text-lg text-black/80 dark:text-white/80">
+                            📺 系列选集
+                        </span>
+                        <span class="text-sm text-black/50 dark:text-white/50">
+                            {entry.data.series} · 共{seriesEpisodes.length}集
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                        {seriesEpisodes.map((ep) => (
+                            <a
+                                href={ep.isCurrent ? "#" : ep.url}
+                                class:list={[
+                                    "rounded-lg px-3 py-2 text-center text-sm font-medium transition-all duration-200 truncate",
+                                    ep.isCurrent
+                                        ? "bg-[var(--primary)] text-white shadow-md cursor-default"
+                                        : "btn-card hover:shadow-sm text-black/70 dark:text-white/70 hover:text-[var(--primary)]",
+                                ]}
+                                title={ep.title}
+                            >
+                                {ep.order > 0 ? `第${ep.order}集` : ep.title.slice(0, 8)}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* 小说上一章/下一章导航 */}
+            {isNovel && seriesEpisodes.length > 1 && (
+                <div class="flex justify-between items-center gap-3 mt-6 mb-4 onload-animation">
+                    {prevChapter ? (
+                        <a href={prevChapter.url}
+                           class="flex items-center gap-2 btn-card rounded-xl px-4 py-3 text-sm font-medium text-black/70 dark:text-white/70 hover:text-[var(--primary)] transition-all max-w-[45%]">
+                            <Icon name="material-symbols:chevron-left-rounded" class="text-xl text-[var(--primary)] flex-shrink-0" />
+                            <span class="truncate">上一章</span>
+                        </a>
+                    ) : <div />}
+                    {nextChapter ? (
+                        <a href={nextChapter.url}
+                           class="flex items-center gap-2 btn-card rounded-xl px-4 py-3 text-sm font-medium text-black/70 dark:text-white/70 hover:text-[var(--primary)] transition-all max-w-[45%] ml-auto">
+                            <span class="truncate">下一章</span>
+                            <Icon name="material-symbols:chevron-right-rounded" class="text-xl text-[var(--primary)] flex-shrink-0" />
+                        </a>
+                    ) : <div />}
+                </div>
+            )}
+
+            {/* 小说章节列表（可折叠） */}
+            {isNovel && seriesEpisodes.length > 1 && (
+                <div class="mb-6 bg-[var(--license-block-bg)] rounded-xl onload-animation overflow-hidden" id="novel-chapter-panel">
+                    <button
+                        class="w-full flex items-center justify-between gap-2 p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                        id="novel-chapter-toggle"
+                        type="button"
+                    >
+                        <div class="flex items-center gap-2">
+                            <Icon name="material-symbols:menu-book-rounded" class="text-2xl text-[var(--primary)]" />
+                            <span class="font-bold text-lg text-black/80 dark:text-white/80">
+                                📖 章节目录
+                            </span>
+                            <span class="text-sm text-black/50 dark:text-white/50">
+                                {entry.data.series} · 共{seriesEpisodes.length}章
+                            </span>
+                        </div>
+                        <Icon name="material-symbols:expand-more-rounded" class="text-2xl text-black/40 dark:text-white/40 transition-transform" id="novel-chapter-arrow" />
+                    </button>
+                    <div class="max-h-0 overflow-hidden transition-all duration-300" id="novel-chapter-list">
+                        <div class="max-h-[400px] overflow-y-auto px-2 pb-3">
+                            {seriesEpisodes.map((ep, idx) => (
+                                <a
+                                    href={ep.isCurrent ? "#" : ep.url}
+                                    class:list={[
+                                        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200",
+                                        ep.isCurrent
+                                            ? "bg-[var(--primary)] text-white font-bold shadow-md"
+                                            : "hover:bg-black/5 dark:hover:bg-white/5 text-black/70 dark:text-white/70 hover:text-[var(--primary)]",
+                                    ]}
+                                    data-current={ep.isCurrent ? "true" : undefined}
+                                >
+                                    <span class:list={[
+                                        "flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center text-xs font-bold",
+                                        ep.isCurrent
+                                            ? "bg-white/20 text-white"
+                                            : "bg-black/5 dark:bg-white/10 text-black/40 dark:text-white/40",
+                                    ]}>
+                                        {idx + 1}
+                                    </span>
+                                    <span class="truncate">{ep.title}</span>
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {shareConfig.enable && (
                 <div id="share-component" class:list={["p-6 bg-[var(--license-block-bg)] rounded-xl mb-6 onload-animation", { "encrypted-hidden": isEncrypted }]}>
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -356,6 +491,8 @@ const jsonLd = {
                 />
                 </div>
             )}
+
+
         </div>
     </div>
 
@@ -499,4 +636,95 @@ const jsonLd = {
             }
         </a>
     </div>
+
+<script is:inline>
+// 小说章节目录折叠/展开
+(function() {
+    const toggle = document.getElementById('novel-chapter-toggle');
+    const list = document.getElementById('novel-chapter-list');
+    const arrow = document.getElementById('novel-chapter-arrow');
+    if (!toggle || !list) return;
+
+    let isOpen = false;
+    toggle.addEventListener('click', function() {
+        isOpen = !isOpen;
+        if (isOpen) {
+            list.style.maxHeight = list.scrollHeight + 'px';
+            if (arrow) arrow.style.transform = 'rotate(180deg)';
+            // 滚动到当前章节
+            setTimeout(function() {
+                const current = list.querySelector('[data-current="true"]');
+                if (current) {
+                    current.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }
+            }, 350);
+        } else {
+            list.style.maxHeight = '0';
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
+        }
+    });
+})();
+</script>
+
+<style>
+/* 小说阅读模式排版 */
+.novel-reading .markdown-content {
+    max-width: 800px; /* 增加阅读宽度 */
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.125rem; /* 稍微调大字体 */
+    line-height: 1.8; /* 优化行高 */
+    letter-spacing: 0.05em; /* 增加字间距 */
+    color: rgba(0, 0, 0, 0.85); /* 稍微深一点的文字颜色 */
+    text-align: justify; /* 两端对齐 */
+}
+
+/* 深色模式适配 */
+:global(.dark) .novel-reading .markdown-content {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.novel-reading .markdown-content p {
+    text-indent: 2em; /* 首行缩进 */
+    margin-bottom: 1.5em; /* 段落间距增加 */
+}
+
+/* 标题样式调整 */
+.novel-reading .markdown-content h1,
+.novel-reading .markdown-content h2,
+.novel-reading .markdown-content h3 {
+    text-indent: 0;
+    text-align: center; /* 标题居中 */
+    margin-top: 2em;
+    margin-bottom: 1em;
+    font-weight: bold;
+}
+
+/* 引用块样式 */
+.novel-reading .markdown-content blockquote {
+    border-left: 4px solid var(--primary);
+    padding-left: 1em;
+    margin-left: 1em;
+    color: rgba(0, 0, 0, 0.6);
+    font-style: italic;
+}
+:global(.dark) .novel-reading .markdown-content blockquote {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* 章节列表自定义滚动条 */
+#novel-chapter-list > div::-webkit-scrollbar {
+    width: 4px;
+}
+#novel-chapter-list > div::-webkit-scrollbar-track {
+    background: transparent;
+}
+#novel-chapter-list > div::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+}
+:global(.dark) #novel-chapter-list > div::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+}
+</style>
 </MainGridLayout>

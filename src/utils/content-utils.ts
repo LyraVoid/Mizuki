@@ -50,6 +50,15 @@ export async function getSortedPosts() {
 
 	return sorted;
 }
+
+/**
+ * 获取可见文章列表（排除 draft 和 hidden）
+ * 用于文章列表页、归档页等
+ */
+export async function getVisiblePosts() {
+	const allPosts = await getSortedPosts();
+	return allPosts.filter((post) => !post.data.hidden);
+}
 export type PostForList = {
 	id: string;
 	data: CollectionEntry<"posts">["data"];
@@ -61,12 +70,14 @@ export async function getSortedPostsList(): Promise<PostForList[]> {
 	// 初始化文章 ID 映射（用于 permalink 功能）
 	initPostIdMap(sortedFullPosts);
 
-	// delete post.body，并预计算 URL
-	const sortedPostsList = sortedFullPosts.map((post) => ({
-		id: post.id,
-		data: post.data,
-		url: getPostUrl(post),
-	}));
+	// filter out hidden posts
+	const sortedPostsList = sortedFullPosts
+		.filter((post) => !post.data.hidden)
+		.map((post) => ({
+			id: post.id,
+			data: post.data,
+			url: getPostUrl(post),
+		}));
 
 	return sortedPostsList;
 }
