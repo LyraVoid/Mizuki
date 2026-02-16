@@ -1,13 +1,9 @@
 ---
 import { Icon } from "astro-icon/components";
-import { umamiConfig } from "../config";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { formatDateToYYYYMMDD } from "../utils/date-utils";
 import { getCategoryUrl, getTagUrl } from "../utils/url-utils";
-
-// 解析 umami
-const umamiEnabled = umamiConfig.enabled || false;
 
 export interface Props {
 	published: Date;
@@ -19,10 +15,10 @@ export interface Props {
 	isHome?: boolean;
 	className?: string;
 	id?: string;
-	showOnlyBasicMeta?: boolean; // 新增属性，控制是否只显示基本元数据
-	words?: number; // 字数统计
-	minutes?: number; // 阅读时间（分钟）
-	showWordCount?: boolean; // 是否显示字数统计
+	showOnlyBasicMeta?: boolean;
+	words?: number;
+	minutes?: number;
+	showWordCount?: boolean;
 }
 
 const {
@@ -35,10 +31,9 @@ const {
 	isHome,
 	className = "",
 	id,
-	showOnlyBasicMeta = false, // 默认为false，保持原有行为
+	showOnlyBasicMeta = false,
 	words,
-	// minutes,
-	showWordCount = false, // 默认不显示字数统计
+	showWordCount = false,
 } = Astro.props;
 ---
 
@@ -87,7 +82,7 @@ const {
         </div>
     )}
 
-    <!-- tags (只有在不显示基本元数据时才显示) -->
+    <!-- tags -->
     {!showOnlyBasicMeta && (
         <div class:list={["items-center", {"flex": !hideTagsForMobile, "hidden md:flex": hideTagsForMobile}]}>
             <div class="meta-icon">
@@ -109,78 +104,59 @@ const {
         </div>
     )}
     
-    <!-- 访问量（首页不显示，且umami.enabled为true时显示） -->
-    {!isHome && umamiEnabled && id && (
-        <div class="flex items-center">
+    <!-- 访问量 -->
+    {!isHome && id && (
+        <div class="flex items-center umami-page-views hidden" data-id={id}>
             <div class="meta-icon">
                 <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
             </div>
-            <span class="text-50 text-sm font-medium" id="page-views-display">{i18n(I18nKey.pageViewsLoading)}</span>
+            <span class="text-50 text-sm font-medium page-views-display">{i18n(I18nKey.pageViewsLoading)}</span>
         </div>
     )}
 </div>
 
-<!-- 只有在非首页且启用umami且有slug时才加载脚本 -->
-{!isHome && umamiEnabled && id && (
-    <script is:inline define:vars={{
-        id,
-        pageViewsText: i18n(I18nKey.profileStatsPageViews),
-        visitsText: i18n(I18nKey.profileStatsVisits),
-        pageViewsUnavailable: i18n(I18nKey.pageViewsUnavailable)
-    }}>
-        // 客户端统计文案生成函数
-        function generateStatsText(pageViews, visitors) {
-            return `${pageViewsText} ${pageViews} · ${visitsText} ${visitors}`;
+{!isHome && id && (
+<script is:inline define:vars={{
+    pageViewsText: i18n(I18nKey.profileStatsPageViews),
+    visitsText: i18n(I18nKey.profileStatsVisits)
+}}>
+    function generateStatsText(pageViews, visits) {
+        return `${pageViewsText} ${pageViews} · ${visitsText} ${visits}`;
+    }
+
+    async function fetchPageViews() {
+        const container = document.querySelector('.umami-page-views');
+        
+        if (!window.oddmisc) {
+            container?.classList.add('hidden');
+            return;
         }
 
-        // 获取访问量统计
-        async function fetchPageViews(isRetry = false) {
-            try {
-                // 检查 oddmisc 是否已加载
-                if (!window.oddmisc) {
-                    console.warn('oddmisc not loaded yet');
-                    if (!isRetry) {
-                        setTimeout(() => fetchPageViews(true), 2000);
-                        return;
-                    }
-                    const displayElement = document.getElementById('page-views-display');
-                    if (displayElement) {
-                        displayElement.textContent = pageViewsUnavailable;
-                    }
-                    return;
-                }
+        const id = container?.dataset.id;
+        if (!id) return;
 
-                const pageUrl = `/posts/${id}/`;
-                const stats = await window.oddmisc.getStats(pageUrl);
+        try {
+            const stats = await window.oddmisc.getStats(`/posts/${id}/`);
+            const pageViews = stats.pageviews || 0;
+            const visits = stats.visits || 0;
 
-                const pageViews = stats.pageviews || 0;
-                const visitors = stats.visitors || 0;
-
-                const displayElement = document.getElementById('page-views-display');
-                if (displayElement) {
-                    displayElement.textContent = generateStatsText(pageViews, visitors);
-                }
-            } catch (error) {
-                console.error('Error fetching page views:', error);
-                // 使用 isRetry 参数实现重试逻辑（最多重试1次）
-                if (!isRetry) {
-                    console.log('Retrying fetch page views...');
-                    setTimeout(() => fetchPageViews(true), 2000); // 2秒后重试
-                    return;
-                }
-                // 重试失败后显示错误
-                const displayElement = document.getElementById('page-views-display');
-                if (displayElement) {
-                    displayElement.textContent = pageViewsUnavailable;
-                }
+            if (pageViews === 0 && visits === 0) {
+                container?.classList.add('hidden');
+                return;
             }
-        }
 
-        // 页面加载完成后获取统计数据
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', fetchPageViews);
-        } else {
-            fetchPageViews();
+            container?.classList.remove('hidden');
+            container.querySelector('.page-views-display').textContent = generateStatsText(pageViews, visits);
+        } catch (error) {
+            console.error('Error fetching page views:', error);
+            container?.classList.add('hidden');
         }
-    </script>
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', fetchPageViews);
+    } else {
+        fetchPageViews();
+    }
+</script>
 )}

@@ -102,8 +102,8 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
       oddmisc:
-        specifier: ^1.1.2
-        version: 1.1.2
+        specifier: ^1.1.4
+        version: 1.1.4
       overlayscrollbars:
         specifier: ^2.14.0
         version: 2.14.0
@@ -4080,8 +4080,8 @@ packages:
     resolution: {integrity: sha512-nK28WOo+QIjBkDduTINE4JkF/UJJKyf2EJxvJKfblDpyg0Q+pkOHNTL0Qwy6NP6FhE/EnzV73BxxqcJaXY9anw==}
     engines: {node: '>= 0.4'}
 
-  oddmisc@1.1.2:
-    resolution: {integrity: sha512-sCsq0qx5PEWkulniCaz7pwGdCpmYMkt79/FcWqQn86U2IvyNlhYL3dC7xuC3pClSAXBmXxXCIydUpZTCPZGWtw==}
+  oddmisc@1.1.4:
+    resolution: {integrity: sha512-OpgEAg86gXZj+rqnyxqjZXj7pRLYHa3HYjpoMx62ls9B3Bax7ChCpo2QpkGF8A3bqwoFX0gziS5jCCNnhJ5BBQ==}
 
   ofetch@1.5.1:
     resolution: {integrity: sha512-2W4oUZlVaqAPAil6FUg/difl6YhqhUR7x2eZY4bQCko22UXg3hptq9KLQdqFClV+Wu85UX7hNtdGTngi/1BxcA==}
@@ -10585,7 +10585,7 @@ snapshots:
       has-symbols: 1.1.0
       object-keys: 1.1.1
 
-  oddmisc@1.1.2: {}
+  oddmisc@1.1.4: {}
 
   ofetch@1.5.1:
     dependencies:

@@ -38,7 +38,7 @@ export default defineConfig({
 
 	integrations: [
 		umami({
-			shareUrl: "https://cloud.umami.is/analytics/us/share/abcd1234", // 把这一行替换成你的umami脚本
+			shareUrl: false,
 		}),
 		tailwind({
 			nesting: true,

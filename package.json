@@ -56,7 +56,7 @@
 		"markdown-it": "^14.1.0",
 		"marked": "^16.4.2",
 		"node-html-parser": "^7.0.2",
-		"oddmisc": "^1.1.2",
+		"oddmisc": "^1.1.4",
 		"overlayscrollbars": "^2.14.0",
 		"pagefind": "^1.4.0",
 		"photoswipe": "^5.4.4",
