@@ -13,6 +13,7 @@ import type {
 	ShareConfig,
 	SidebarLayoutConfig,
 	SiteConfig,
+	ExternalLinkConfirmConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
 
@@ -653,3 +654,15 @@ export const widgetConfigs = {
 export const umamiConfig = {
 	enabled: false, // 是否显示Umami统计（配置已移至 astro.config.mjs 的 oddmisc umami 集成）
 } as const;
+
+// 外部链接确认配置
+export const externalLinkConfirmConfig: ExternalLinkConfirmConfig = {
+	enable: true, // 是否启用外部链接确认功能
+	title : "离开本站",
+	description : "您即将前往外部链接：",
+	warningText : "请注意您的账号与财产安全",
+	confirmText : "继续访问",
+	cancelText : "取消",
+	background : "none",
+	iconSvg : `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>`,
+};

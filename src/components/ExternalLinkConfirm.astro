@@ -1,0 +1,382 @@
+---
+import type { ExternalLinkConfirmConfig } from "@/types/config";
+
+export type Props = ExternalLinkConfirmConfig;
+
+// 直接从 Astro.props 中解构，并使用 = 赋予默认值
+const {
+	title = "离开本站",
+	description = "您即将前往外部链接：",
+	warningText = "请注意您的账号与财产安全",
+	confirmText = "继续访问",
+	cancelText = "取消",
+	background = "none",
+	iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>`,
+} = Astro.props;
+---
+
+<dialog
+	id="external-link-dialog"
+	class="mizuki-dialog"
+	style={`--dialog-bg-img: ${background};`}
+>
+	<div class="dialog-bg-layer"></div>
+
+	<div class="dialog-inner">
+		<div class="dialog-header">
+			<div class="icon-box" set:html={iconSvg} />
+			<h3 class="dialog-title">{title}</h3>
+		</div>
+
+		<div class="dialog-body">
+			<p class="dialog-desc">{description}</p>
+
+			<div class="url-box">
+				<p id="external-link-url" class="target-url"></p>
+				<button
+					id="external-link-copy"
+					class="copy-btn"
+					title="复制链接"
+				>
+					<svg
+						class="copy-icon"
+						xmlns="http://www.w3.org/2000/svg"
+						height="20"
+						viewBox="0 -960 960 960"
+						width="20"
+						fill="currentColor"
+						><path
+							d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"
+						></path></svg
+					>
+					<svg
+						class="check-icon"
+						style="display:none;"
+						xmlns="http://www.w3.org/2000/svg"
+						height="20"
+						viewBox="0 -960 960 960"
+						width="20"
+						fill="currentColor"
+						><path
+							d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"
+						></path></svg
+					>
+				</button>
+			</div>
+
+			<p class="warning-text">
+				<svg
+					class="warning-icon"
+					xmlns="http://www.w3.org/2000/svg"
+					height="18"
+					viewBox="0 -960 960 960"
+					width="18"
+					fill="currentColor"
+					><path
+						d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+					></path></svg
+				>
+				{warningText}
+			</p>
+		</div>
+
+		<div class="dialog-actions">
+			<button
+				id="external-link-confirm"
+				class="mizuki-btn mizuki-btn-secondary">{confirmText}</button
+			>
+			<button
+				id="external-link-cancel"
+				class="mizuki-btn mizuki-btn-primary">{cancelText}</button
+			>
+		</div>
+	</div>
+</dialog>
+
+<style>
+	.mizuki-dialog {
+		margin: auto;
+		position: fixed;
+		inset: 0;
+		border: 1px solid var(--line-divider);
+		border-radius: var(--radius-large);
+		background-color: var(--float-panel-bg);
+		padding: 0;
+		max-width: 440px;
+		width: 90%;
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+		overflow: hidden;
+
+		opacity: 0;
+		transform: scale(0.95) translateY(10px);
+		transition:
+			opacity 0.25s ease,
+			transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+	}
+
+	.mizuki-dialog.dialog-show {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+
+	.mizuki-dialog::backdrop {
+		background-color: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(5px);
+		opacity: 0;
+		transition: opacity 0.25s ease;
+	}
+	.mizuki-dialog.dialog-show::backdrop {
+		opacity: 1;
+	}
+
+	.dialog-bg-layer {
+		position: absolute;
+		inset: 0;
+		background: var(--dialog-bg-img);
+		background-size: auto 100%;
+		background-position: right bottom;
+		background-repeat: no-repeat;
+		opacity: 0.18;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.dialog-inner {
+		position: relative;
+		z-index: 1;
+		padding: 32px 32px 28px;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.dialog-header {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		color: var(--primary);
+	}
+
+	.icon-box {
+		display: flex;
+	}
+
+	.dialog-title {
+		margin: 0;
+		font-size: 1.35rem;
+		font-weight: 600;
+		color: var(--btn-plain);
+	}
+
+	.dialog-body {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.dialog-desc {
+		margin: 0;
+		font-size: 0.95rem;
+		text-align: center;
+		color: var(--content-meta);
+	}
+
+	.url-box {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		background: var(--codeblock-bg);
+		border: 1px solid var(--line-color);
+		border-radius: 12px;
+		padding: 12px 16px;
+	}
+
+	.target-url {
+		color: var(--inline-code-color);
+		word-break: break-all;
+		margin: 0;
+		font-family: monospace;
+		font-size: 0.9rem;
+		line-height: 1.4;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.copy-btn {
+		flex-shrink: 0;
+		background: transparent;
+		border: none;
+		color: var(--primary);
+		cursor: pointer;
+		padding: 6px;
+		border-radius: 8px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: background-color 0.2s;
+	}
+
+	.copy-btn:hover {
+		background-color: var(--btn-plain-bg-hover);
+	}
+
+	.warning-text {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		font-size: 0.85rem;
+		color: var(--content-meta);
+		margin: 0;
+	}
+
+	.warning-icon {
+		flex-shrink: 0;
+		color: var(--primary);
+	}
+
+	.dialog-actions {
+		display: flex;
+		justify-content: center;
+		gap: 16px;
+		margin-top: 8px;
+	}
+
+	.mizuki-btn {
+		border: none;
+		border-radius: 100px;
+		padding: 10px 28px;
+		font-size: 0.95rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.mizuki-btn:active {
+		transform: scale(0.95);
+	}
+
+	.mizuki-btn-primary {
+		background-color: var(--btn-regular-bg);
+		color: var(--btn-content);
+	}
+	.mizuki-btn-primary:hover {
+		background-color: var(--btn-regular-bg-hover);
+	}
+
+	.mizuki-btn-secondary {
+		background-color: transparent;
+		border: 1.5px solid var(--primary);
+		color: var(--primary);
+	}
+	.mizuki-btn-secondary:hover {
+		background-color: var(--btn-plain-bg-hover);
+	}
+</style>
+
+<script>
+	document.addEventListener("click", (e) => {
+		const link = (e.target as HTMLElement).closest("a");
+		if (!link || !link.href) return;
+
+		try {
+			const targetUrl = new URL(link.href);
+			const currentDomain = window.location.hostname;
+
+			if (
+				targetUrl.hostname &&
+				targetUrl.hostname !== currentDomain &&
+				targetUrl.protocol.startsWith("http")
+			) {
+				e.preventDefault();
+
+				const dialog = document.getElementById(
+					"external-link-dialog",
+				) as HTMLDialogElement;
+				const urlDisplay = document.getElementById("external-link-url");
+				const btnCancel = document.getElementById(
+					"external-link-cancel",
+				);
+				const btnConfirm = document.getElementById(
+					"external-link-confirm",
+				);
+				const btnCopy = document.getElementById("external-link-copy");
+
+				if (!dialog) return;
+
+				if (urlDisplay) {
+					urlDisplay.textContent = link.href;
+					urlDisplay.title = link.href;
+				}
+
+				dialog.showModal();
+
+				requestAnimationFrame(() => {
+					dialog.classList.add("dialog-show");
+				});
+
+				const closeDialog = () => {
+					dialog.classList.remove("dialog-show");
+					setTimeout(() => dialog.close(), 250);
+				};
+
+				dialog.onclick = (event) => {
+					if (event.target === dialog) {
+						closeDialog();
+					}
+				};
+
+				if (btnCancel) btnCancel.onclick = closeDialog;
+
+				if (btnConfirm) {
+					btnConfirm.onclick = () => {
+						closeDialog();
+						setTimeout(() => {
+							if (link.target === "_blank") {
+								window.open(
+									link.href,
+									"_blank",
+									"noopener,noreferrer",
+								);
+							} else {
+								window.location.href = link.href;
+							}
+						}, 250);
+					};
+				}
+
+				if (btnCopy) {
+					btnCopy.onclick = async () => {
+						const urlToCopy = urlDisplay?.textContent || "";
+						if (!urlToCopy) return;
+
+						try {
+							await navigator.clipboard.writeText(urlToCopy);
+							const copyIcon = btnCopy.querySelector(
+								".copy-icon",
+							) as HTMLElement;
+							const checkIcon = btnCopy.querySelector(
+								".check-icon",
+							) as HTMLElement;
+
+							if (copyIcon && checkIcon) {
+								copyIcon.style.display = "none";
+								checkIcon.style.display = "block";
+								setTimeout(() => {
+									copyIcon.style.display = "block";
+									checkIcon.style.display = "none";
+								}, 1500);
+							}
+						} catch (err) {
+							console.error("复制失败", err);
+						}
+					};
+				}
+			}
+		} catch (err) {}
+	});
+</script>

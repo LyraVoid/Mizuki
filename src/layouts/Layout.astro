@@ -2,11 +2,13 @@
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import MusicPlayer from "@components/widget/MusicPlayer.svelte";
 import Pio from "@components/widget/Pio.svelte"; // 使用 Svelte 版本的 Pio 组件
+import ExternalLinkConfirm from "@components/ExternalLinkConfirm.astro";
 import {
 	musicPlayerConfig,
 	pioConfig,
 	profileConfig,
 	siteConfig,
+	externalLinkConfirmConfig,
 } from "@/config";
 
 const BANNER_HEIGHT = 35;
@@ -401,6 +403,13 @@ if (siteConfig.font) {
 
 		<!-- Pio 看板娘组件 - 仅在启用时加载 -->
 		{pioConfig.enable && <Pio client:idle />}
+
+		<!-- 外部链接确认组件 -->
+		{
+			externalLinkConfirmConfig.enable && (
+				<ExternalLinkConfirm {...externalLinkConfirmConfig} />
+			)
+		}
 
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>

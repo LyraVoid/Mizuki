@@ -461,3 +461,16 @@ export type PioConfig = {
 export type ShareConfig = {
 	enable: boolean; // 是否启用分享功能
 };
+/**
+ * 外部链接确认配置
+ */
+export type ExternalLinkConfirmConfig = {
+	enable: boolean;
+	title?: string;
+	description?: string;
+	warningText?: string;
+	confirmText?: string;
+	cancelText?: string;
+	iconSvg?: string;
+	background?: string;
+};
