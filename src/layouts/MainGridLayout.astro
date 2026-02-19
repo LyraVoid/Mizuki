@@ -281,7 +281,7 @@ const transparentClass = shouldEnableTransparency
 			if (mainContent) {
 				if (wallpaperMode === 'banner') {
 					// 让主内容区域从banner顶部开始，这样波浪线会自然覆盖内容上部
-					mainContent.style.top = `${BANNER_HEIGHT}vh`;
+					// mainContent.style.top = `${BANNER_HEIGHT}vh`;
 				} else {
 					// fullscreen 或 none 模式
 					mainContent.style.top = '5.5rem';
@@ -790,7 +790,7 @@ const transparentClass = shouldEnableTransparency
 </div>
 
 <!-- Main content -->
-<div class={`absolute w-full z-30 pointer-events-none ${mobileNonHomeBannerClass ? 'mobile-main-no-banner' : ''} ${siteConfig.wallpaperMode.defaultMode === 'none' ? 'no-banner-layout' : ''} ${transparentClass}`} style={`top: ${finalMainPanelTop}`}>
+<div class={`absolute w-full z-30 pointer-events-none ${mobileNonHomeBannerClass ? 'mobile-main-no-banner' : ''} ${siteConfig.wallpaperMode.defaultMode === 'none' ? 'no-banner-layout' : ''} ${transparentClass}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
         <div id="main-grid" class={`transition duration-700 w-full left-0 right-0 grid ${gridCols} grid-rows-none md:grid-rows-[auto] mx-auto gap-4 px-2 md:px-4 ${!mobileShowSidebar || !hasMobileDrawerComponents ? 'mobile-no-sidebar' : ''} ${hasRightSidebarComponents ? 'mobile-both-sidebar' : ''}`}
@@ -916,7 +916,7 @@ body.wallpaper-transparent #toc-inner-wrapper:has(table-of-contents[data-loaded=
 /* 桌面端 banner 模式下的主内容区域位置 */
 @media (min-width: 1280px) {
     body.enable-banner .absolute.w-full.z-30 {
-        top: 35vh !important;
+        top: 35vh;
     }
 }
 
@@ -1250,7 +1250,7 @@ body.wallpaper-transparent #toc-inner-wrapper:has(table-of-contents[data-loaded=
 
 /* 手机端非首页隐藏banner - 改进的分阶段动画 */
 @media (max-width: 1279px) {
-    #banner-wrapper {
+#banner-wrapper {
         transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out;
         transform-origin: top center;
         /* 硬件加速优化 */
