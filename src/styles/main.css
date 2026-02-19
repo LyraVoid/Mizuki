@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@custom-variant dark (&:is(.dark *));
 
 /* 导入相册样式 */
 @import "./albums.css";
@@ -31,7 +32,12 @@
 
 /* 确保平滑滚动 */
 html {
-	scroll-behavior: smooth;
+	@apply scroll-smooth;
+	@apply text-black/80;
+
+	&.dark {
+		@apply text-white/80;
+	}
 }
 
 /* 页面顶部渐变高光效果 */
@@ -351,7 +357,7 @@ html {
 	}
 
 	.btn-regular {
-		@apply transition-colors duration-150 flex items-center justify-center bg-[var(--btn-regular-bg)] hover:bg-[var(--btn-regular-bg-hover)] active:bg-[var(--btn-regular-bg-active)] text-[var(--btn-content)] dark:text-white/75;
+		@apply transition-colors duration-150 flex items-center justify-center bg-[var(--btn-regular-bg)] hover:bg-[var(--btn-regular-bg-hover)] active:bg-[var(--btn-regular-bg-active)] !text-[var(--btn-content)] dark:text-white/75;
 	}
 
 	.link-underline {
