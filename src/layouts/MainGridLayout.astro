@@ -119,15 +119,15 @@ const mobileNonHomeBannerClass = !isHomePage ? "mobile-hide-banner" : "";
 // 计算主内容区域位置，考虑手机端非首页时banner被隐藏
 // 当默认模式为 banner 时，使用banner高度；否则使用顶栏高度
 // 让主内容区域紧贴波浪线下方，波浪线高度约为10-15vh，所以主内容从banner顶部开始
-const mainPanelTop =
-	siteConfig.wallpaperMode.defaultMode === "banner"
-		? `${BANNER_HEIGHT}vh`
-		: "5.5rem";
+// const mainPanelTop =
+// 	siteConfig.wallpaperMode.defaultMode === "banner"
+// 		? `${BANNER_HEIGHT}vh`
+// 		: "5.5rem";
 // const mobileNonHomeMainTop = !isHomePage ? "5.5rem" : mainPanelTop;
 
 // 当默认模式不是 banner 时，主内容区域应该始终从顶栏下面开始
-const finalMainPanelTop =
-	siteConfig.wallpaperMode.defaultMode === "banner" ? mainPanelTop : "5.5rem";
+// const finalMainPanelTop =
+// 	siteConfig.wallpaperMode.defaultMode === "banner" ? mainPanelTop : "5.5rem";
 
 // 检查左侧边栏是否有组件
 const hasLeftSidebarComponents =
@@ -246,10 +246,12 @@ const transparentClass = shouldEnableTransparency
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug}>
 
 <script type="module" is:inline define:vars={{navbarTransparentMode: siteConfig.banner?.navbar?.transparentMode || "semi", defaultWallpaperMode: siteConfig.wallpaperMode.defaultMode, defaultPostListLayout: siteConfig.postListLayout?.defaultMode || "list", BANNER_HEIGHT: BANNER_HEIGHT, pageScaling: siteConfig.pageScaling}}>
+import { BANNER_HEIGHT } from "@constants/constants";
+
 
 	// 立即执行，在页面渲染前应用壁纸模式和布局模式，避免闪烁
 	(function() {
-		const wallpaperMode = localStorage.getItem('wallpaperMode') || defaultWallpaperMode;
+		const wallpaperMode = localStorage.getItem('wallpaperMode');
 		const body = document.body;
 		
 		// 定义 banner 高度常量（与 constants.ts 保持一致）
@@ -335,7 +337,7 @@ const transparentClass = shouldEnableTransparency
 	}
 	
 	function applyWallpaperMode() {
-		var wallpaperMode = localStorage.getItem('wallpaperMode') || defaultWallpaperMode;
+		var wallpaperMode = localStorage.getItem('wallpaperMode');
 		var bannerWrapper = document.getElementById('banner-wrapper');
 		var fullscreenWallpaper = document.querySelector('[data-fullscreen-wallpaper]');
 		var navbar = document.getElementById('navbar');
