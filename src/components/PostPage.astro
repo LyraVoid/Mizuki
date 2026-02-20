@@ -13,8 +13,10 @@ const { page } = Astro.props;
 
 // 检查是否启用右侧边栏（通过检查右侧是否有组件）
 const hasRightSidebars =
-	widgetManager.getComponentsByPosition("top", "right", "desktop").length > 0 ||
-	widgetManager.getComponentsByPosition("sticky", "right", "desktop").length > 0;
+	widgetManager.getComponentsByPosition("top", "right", "desktop").length >
+		0 ||
+	widgetManager.getComponentsByPosition("sticky", "right", "desktop").length >
+		0;
 
 // 根据配置设置初始布局模式
 const defaultLayout = siteConfig.postListLayout.defaultMode || "list";
@@ -188,6 +190,8 @@ const initialLayoutClass = defaultLayout === "grid" ? "grid-mode" : "list-mode";
 </script>
 
 <style>
+	@reference "tailwindcss";
+
 	/* 基础容器 */
 	#post-list-container {
 		min-height: 200px;
