@@ -1,92 +1,90 @@
-@reference "tailwindcss";
 /* 加密内容的代码块样式，确保与非加密文章完全一致 */
 
 /* 基础容器样式 */
 #decrypted-content {
-	/* 确保基本样式继承 */
+  /* 确保基本样式继承 */
 }
 
 /* 继承所有markdown样式 */
 #decrypted-content .custom-md {
-	/* 所有样式都从markdown.css继承 */
+  /* 所有样式都从markdown.css继承 */
 }
 
 /* expressive-code容器样式 */
 #decrypted-content .expressive-code {
-	@apply my-4;
+  @apply my-4;
 }
 
 /* frame容器样式 - 与expressive-code.css保持一致 */
 #decrypted-content .expressive-code .frame {
-	@apply !shadow-none relative rounded-lg overflow-hidden;
-	background: var(--codeblock-bg);
+  @apply !shadow-none relative rounded-lg overflow-hidden;
+  background: var(--codeblock-bg);
 }
 
 /* 允许代码文本被选择 */
 #decrypted-content .expressive-code .frame pre,
 #decrypted-content .expressive-code .frame code {
-	user-select: text;
+  user-select: text;
 }
 
 /* 代码行号不可选，但行内容可选 */
 #decrypted-content .expressive-code code span.line::before {
-	user-select: none;
+  user-select: none;
 }
 
 /* 语言标签样式 - 与expressive-code.css保持一致 */
 #decrypted-content .expressive-code .title {
-	@apply px-4 py-2 text-xs font-medium;
-	background: var(--primary);
-	color: white;
-	font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  @apply px-4 py-2 text-xs font-medium;
+  background: var(--primary);
+  color: white;
+  font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 /* pre元素样式 */
 #decrypted-content .frame pre {
-	@apply p-4 overflow-x-auto m-0;
-	font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-	font-size: 0.875rem;
-	line-height: 1.5rem;
-	background: var(--codeblock-bg);
+  @apply p-4 overflow-x-auto m-0;
+  font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  background: var(--codeblock-bg);
 }
 
 /* 深色主题代码文字颜色 */
 :global(.dark) #decrypted-content .frame pre {
-	color: #f8f8f2;
+  color: #f8f8f2;
 }
 
 /* 亮色主题代码文字颜色 */
 :root:not(.dark) #decrypted-content .frame pre {
-	color: #24292e;
+  color: #24292e;
 }
 
 #decrypted-content .astro-code {
-	background: var(--codeblock-bg) !important;
+  background: var(--codeblock-bg) !important;
 }
 
 /* 代码元素样式 */
 #decrypted-content code {
-	font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 /* 内联代码样式 - 与markdown.css保持一致 */
 #decrypted-content .custom-md code:not(.astro-code code) {
-	@apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
+  @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
 }
 
 /* 代码块内的code元素不应用内联代码样式 */
 #decrypted-content .astro-code code {
-	background: transparent !important;
-	padding: 0 !important;
-	border-radius: 0 !important;
-	counter-reset: line;
-	/* 重置行号计数器 */
-	/* 移除强制白色，让语法高亮颜色显示 */
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  counter-reset: line; /* 重置行号计数器 */
+  /* 移除强制白色，让语法高亮颜色显示 */
 }
 
 /* 代码行样式 - 与markdown.css保持一致 */
 #decrypted-content .astro-code code span.line {
-	/* 移除强制白色，让语法高亮颜色显示 */
+  /* 移除强制白色，让语法高亮颜色显示 */
 }
 
 /* ==================== 深色主题 - highlight.js 语法高亮样式 ==================== */
@@ -95,16 +93,16 @@
 /* 注释 - 灰色 */
 :global(.dark) #decrypted-content .astro-code code .hljs-comment,
 :global(.dark) #decrypted-content .astro-code code .hljs-quote {
-	color: #75715e !important;
-	font-style: italic;
+  color: #75715e !important;
+  font-style: italic;
 }
 
 /* 关键字、标签名 - 品红色 */
 :global(.dark) #decrypted-content .astro-code code .hljs-keyword,
 :global(.dark) #decrypted-content .astro-code code .hljs-selector-tag,
 :global(.dark) #decrypted-content .astro-code code .hljs-deletion {
-	color: #f92672 !important;
-	font-weight: 600;
+  color: #f92672 !important;
+  font-weight: 600;
 }
 
 /* 变量、标签、选择器 - 品红色 */
@@ -115,7 +113,7 @@
 :global(.dark) #decrypted-content .astro-code code .hljs-selector-id,
 :global(.dark) #decrypted-content .astro-code code .hljs-selector-class,
 :global(.dark) #decrypted-content .astro-code code .hljs-regexp {
-	color: #f92672 !important;
+  color: #f92672 !important;
 }
 
 /* 数字、字面量 - 紫色 */
@@ -127,12 +125,12 @@
 :global(.dark) #decrypted-content .astro-code code .hljs-params,
 :global(.dark) #decrypted-content .astro-code code .hljs-meta,
 :global(.dark) #decrypted-content .astro-code code .hljs-link {
-	color: #ae81ff !important;
+  color: #ae81ff !important;
 }
 
 /* 属性、函数名 - 绿色 */
 :global(.dark) #decrypted-content .astro-code code .hljs-attribute {
-	color: #a6e22e !important;
+  color: #a6e22e !important;
 }
 
 /* 字符串 - 黄色 */
@@ -140,41 +138,41 @@
 :global(.dark) #decrypted-content .astro-code code .hljs-symbol,
 :global(.dark) #decrypted-content .astro-code code .hljs-bullet,
 :global(.dark) #decrypted-content .astro-code code .hljs-addition {
-	color: #e6db74 !important;
+  color: #e6db74 !important;
 }
 
 /* 标题、函数 - 青色 */
 :global(.dark) #decrypted-content .astro-code code .hljs-title,
 :global(.dark) #decrypted-content .astro-code code .hljs-section {
-	color: #66d9ef !important;
-	font-weight: 600;
+  color: #66d9ef !important;
+  font-weight: 600;
 }
 
 /* 深色主题默认文本颜色 - 浅灰色确保可读性 */
 :global(.dark) #decrypted-content .astro-code code {
-	color: #f8f8f2 !important;
+  color: #f8f8f2 !important;
 }
 
 /* 深色主题 - 函数调用 - 绿色 */
 :global(.dark) #decrypted-content .astro-code code .hljs-function,
-:global(.dark) #decrypted-content .astro-code code .hljs-function>.hljs-title {
-	color: #a6e22e !important;
+:global(.dark) #decrypted-content .astro-code code .hljs-function > .hljs-title {
+  color: #a6e22e !important;
 }
 
 /* 深色主题 - 类名、构造函数 - 青色 */
 :global(.dark) #decrypted-content .astro-code code .hljs-class,
-:global(.dark) #decrypted-content .astro-code code .hljs-class>.hljs-title {
-	color: #66d9ef !important;
+:global(.dark) #decrypted-content .astro-code code .hljs-class > .hljs-title {
+  color: #66d9ef !important;
 }
 
 /* 深色主题 - 强调文本 */
 :global(.dark) #decrypted-content .astro-code code .hljs-emphasis {
-	font-style: italic;
+  font-style: italic;
 }
 
 /* 深色主题 - 粗体文本 */
 :global(.dark) #decrypted-content .astro-code code .hljs-strong {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 /* ==================== 亮色主题 - highlight.js 语法高亮样式 ==================== */
@@ -183,16 +181,16 @@
 /* 注释和引用 - 灰色 */
 :root:not(.dark) #decrypted-content .astro-code code .hljs-comment,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-quote {
-	color: #6a737d !important;
-	font-style: italic;
+  color: #6a737d !important;
+  font-style: italic;
 }
 
 /* 关键字、标签名 - 红色系 */
 :root:not(.dark) #decrypted-content .astro-code code .hljs-keyword,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-selector-tag,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-deletion {
-	color: #d73a49 !important;
-	font-weight: 600;
+  color: #d73a49 !important;
+  font-weight: 600;
 }
 
 /* 变量、标签、选择器 - 深红色 */
@@ -203,7 +201,7 @@
 :root:not(.dark) #decrypted-content .astro-code code .hljs-selector-id,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-selector-class,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-regexp {
-	color: #e36209 !important;
+  color: #e36209 !important;
 }
 
 /* 数字、字面量、内置函数 - 蓝色 */
@@ -215,15 +213,15 @@
 :root:not(.dark) #decrypted-content .astro-code code .hljs-params,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-meta,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-link {
-	color: #005cc5 !important;
+  color: #005cc5 !important;
 }
 
 /* 属性、函数名、标题 - 紫色 */
 :root:not(.dark) #decrypted-content .astro-code code .hljs-attribute,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-title,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-section {
-	color: #6f42c1 !important;
-	font-weight: 600;
+  color: #6f42c1 !important;
+  font-weight: 600;
 }
 
 /* 字符串 - 深蓝色（提高对比度） */
@@ -231,129 +229,126 @@
 :root:not(.dark) #decrypted-content .astro-code code .hljs-symbol,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-bullet,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-addition {
-	color: #032f62 !important;
+  color: #032f62 !important;
 }
 
 /* 亮色主题默认文本颜色 - 深灰色确保可读性 */
 :root:not(.dark) #decrypted-content .astro-code code {
-	color: #24292e !important;
+  color: #24292e !important;
 }
 
 /* 亮色主题 - 函数调用 - 紫色 */
 :root:not(.dark) #decrypted-content .astro-code code .hljs-function,
-:root:not(.dark) #decrypted-content .astro-code code .hljs-function>.hljs-title {
-	color: #6f42c1 !important;
+:root:not(.dark) #decrypted-content .astro-code code .hljs-function > .hljs-title {
+  color: #6f42c1 !important;
 }
 
 /* 亮色主题 - 类名、构造函数 - 深蓝色 */
 :root:not(.dark) #decrypted-content .astro-code code .hljs-class,
-:root:not(.dark) #decrypted-content .astro-code code .hljs-class>.hljs-title {
-	color: #005cc5 !important;
-	font-weight: 600;
+:root:not(.dark) #decrypted-content .astro-code code .hljs-class > .hljs-title {
+  color: #005cc5 !important;
+  font-weight: 600;
 }
 
 /* 亮色主题 - 强调文本 */
 :root:not(.dark) #decrypted-content .astro-code code .hljs-emphasis {
-	font-style: italic;
+  font-style: italic;
 }
 
 /* 亮色主题 - 粗体文本 */
 :root:not(.dark) #decrypted-content .astro-code code .hljs-strong {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 /* 亮色主题 - 实体名称 - 深紫色 */
 :root:not(.dark) #decrypted-content .astro-code code .hljs-doctag,
 :root:not(.dark) #decrypted-content .astro-code code .hljs-formula {
-	color: #6f42c1 !important;
+  color: #6f42c1 !important;
 }
 
 /* 确保语法高亮的span元素能够正确显示颜色 */
 #decrypted-content .astro-code code span[class*="hljs-"] {
-	/* 不覆盖颜色，让highlight.js的样式生效 */
+  /* 不覆盖颜色，让highlight.js的样式生效 */
 }
 
 /* 行号样式 - 与markdown.css保持一致 */
 #decrypted-content .astro-code code span.line:before {
-	@apply text-white/25 mr-4 w-4 inline-block;
-	content: counter(line);
-	counter-increment: line;
-	direction: rtl;
+  @apply text-white/25 mr-4 w-4 inline-block;
+  content: counter(line);
+  counter-increment: line;
+  direction: rtl;
 }
 
 /* 亮色主题下的行号颜色 */
 :root:not(.dark) #decrypted-content .astro-code code span.line:before {
-	@apply text-black/25;
+  @apply text-black/25;
 }
 
 /* 隐藏最后的空行 */
 #decrypted-content .astro-code code span.line:last-child:empty,
 #decrypted-content .astro-code code span.line:last-child:has(> span:empty:only-child) {
-	display: none;
+  display: none;
 }
 
 /* 修复代码块内列表项标记颜色问题 */
 #decrypted-content .custom-md .expressive-code ul li::marker,
 #decrypted-content .custom-md .expressive-code ol li::marker {
-	@apply text-inherit;
+  @apply text-inherit;
 }
 
 /* 语言标识样式 - 模拟expressive-code的language-badge插件 */
 #decrypted-content .frame.has-language-badge [data-language]::before {
-	position: absolute;
-	z-index: 2;
-	right: 0.5rem;
-	top: 0.5rem;
-	padding: 0.1rem 0.5rem;
-	content: attr(data-language);
-	font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-	font-size: 0.75rem;
-	font-weight: bold;
-	text-transform: uppercase;
-	color: oklch(0.75 0.1 var(--hue));
-	background: oklch(0.33 0.035 var(--hue));
-	border-radius: 0.5rem;
-	pointer-events: none;
-	transition: opacity 0.3s;
-	opacity: 1;
+  position: absolute;
+  z-index: 2;
+  right: 0.5rem;
+  top: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  content: attr(data-language);
+  font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: oklch(0.75 0.1 var(--hue));
+  background: oklch(0.33 0.035 var(--hue));
+  border-radius: 0.5rem;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  opacity: 1;
 }
 
 /* 在触摸设备上的行为 */
 @media (hover: none) {
-	#decrypted-content .frame.has-language-badge [data-language]::before {
-		opacity: 1;
-		margin-right: 3rem;
-	}
-
-	#decrypted-content .frame.has-language-badge [data-language]:active::before {
-		opacity: 0;
-	}
+  #decrypted-content .frame.has-language-badge [data-language]::before {
+    opacity: 1;
+    margin-right: 3rem;
+  }
+  #decrypted-content .frame.has-language-badge [data-language]:active::before {
+    opacity: 0;
+  }
 }
 
 /* 在支持悬停的设备上的行为 */
 @media (hover: hover) {
-	#decrypted-content .frame.has-language-badge [data-language]::before {
-		opacity: 1;
-	}
-
-	#decrypted-content .frame.has-language-badge:hover [data-language]::before {
-		opacity: 0;
-	}
+  #decrypted-content .frame.has-language-badge [data-language]::before {
+    opacity: 1;
+  }
+  #decrypted-content .frame.has-language-badge:hover [data-language]::before {
+    opacity: 0;
+  }
 }
 
 @media (max-width: 768px) {
-
-	/* 在移动端隐藏语言标识（与全局行为一致） */
-	#decrypted-content .frame.has-language-badge [data-language]::before {
-		display: none !important;
-	}
+  /* 在移动端隐藏语言标识（与全局行为一致） */
+  #decrypted-content .frame.has-language-badge [data-language]::before {
+    display: none !important;
+  }
 }
 
 #decrypted-content .expressive-code pre.wrap {
-	padding: 0 !important;
+  padding: 0 !important;
 }
 
 #decrypted-content .expressive-code pre code {
-	background-color: transparent !important;
-	padding: 1rem 0 1rem 0 !important;
+  background-color: transparent !important;
+  padding: 1rem 0 1rem 0 !important;
 }

@@ -1,211 +1,198 @@
-@reference "tailwindcss";
-
 .custom-md {
-	h1 {
-		@apply text-3xl;
-	}
+  h1 {
+    @apply text-3xl;
+  }
 
-	:is(h1, h2, h3, h4, h5, h6) {
-		.anchor {
-			@apply transition -m-0.5 ms-[0.2ch] p-0.5 select-none opacity-0 no-underline;
+  :is(h1, h2, h3, h4, h5, h6) {
+    .anchor {
+      @apply transition -m-0.5 ms-[0.2ch] p-0.5 select-none opacity-0 no-underline;
 
-			.anchor-icon {
-				@apply mx-[0.45ch];
-			}
-		}
+      .anchor-icon {
+        @apply mx-[0.45ch];
+      }
+    }
 
-		&:hover .anchor {
-			@apply opacity-100;
-		}
-	}
+    &:hover .anchor {
+      @apply opacity-100;
+    }
+  }
 
-	/* --- 链接 --- */
-	a:not(.no-styling) {
-		@apply relative bg-none font-medium text-[var(--primary)] underline decoration-[var(--link-underline)] decoration-1 decoration-dashed underline-offset-4;
-		box-decoration-break: clone;
-		-webkit-box-decoration-break: clone;
+  /* --- 链接 --- */
+  a:not(.no-styling) {
+    @apply relative bg-none font-medium text-[var(--primary)]
+        underline decoration-[var(--link-underline)] decoration-1 decoration-dashed underline-offset-4;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
 
-		&:hover,
-		&:active {
-			@apply decoration-transparent;
-			background: var(--btn-plain-bg-hover);
-			border-bottom: 1px dashed var(--link-hover);
-			text-decoration: none;
-		}
-	}
+    &:hover,
+    &:active {
+      @apply decoration-transparent;
+      background: var(--btn-plain-bg-hover);
+      border-bottom: 1px dashed var(--link-hover);
+      text-decoration: none;
+    }
+  }
 
-	/* --- 代码块 --- */
-	code {
-		@apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
+  /* --- 代码块 --- */
+  code {
+    @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
 
-		font-family: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-		&:before,
-		&:after {
-			content: none;
-		}
+    &:before,
+    &:after {
+      content: none;
+    }
 
-		counter-reset: line;
+    counter-reset: line;
+    span.line {
+      &:before {
+        @apply text-white/25 mr-4 w-4 inline-block select-none;
+        content: counter(line);
+        counter-increment: line;
+        direction: rtl;
+      }
+      &:last-child:empty,
+      &:last-child:has(> span:empty:only-child) {
+        display: none;
+      }
+    }
+  }
 
-		span.line {
-			&:before {
-				@apply text-white/25 mr-4 w-4 inline-block select-none;
-				content: counter(line);
-				counter-increment: line;
-				direction: rtl;
-			}
+  /* --- 列表 --- */
+  ul,
+  ol {
+    li::marker {
+      @apply text-[var(--primary)];
+    }
+  }
 
-			&:last-child:empty,
-			&:last-child:has(> span:empty:only-child) {
-				display: none;
-			}
-		}
-	}
+  /* --- 引用块 --- */
+  blockquote {
+    @apply not-italic border-transparent relative;
+    font-weight: inherit;
 
-	/* --- 列表 --- */
-	ul,
-	ol {
-		li::marker {
-			@apply text-[var(--primary)];
-		}
-	}
+    &:before {
+      @apply content-[''] absolute left-0 block transition bg-[var(--btn-regular-bg)] h-full w-1 rounded-full;
+    }
 
-	/* --- 引用块 --- */
-	blockquote {
-		@apply not-italic border-transparent relative;
-		font-weight: inherit;
+    p:before,
+    p:after {
+      @apply content-none;
+    }
+  }
 
-		&:before {
-			@apply content-[''] absolute left-0 block transition bg-[var(--btn-regular-bg)] h-full w-1 rounded-full;
-		}
+  /* --- 表格样式 --- */
+  .table-wrapper {
+    @apply w-full overflow-x-auto m-0 rounded-[var(--radius-large)];
+    -webkit-overflow-scrolling: touch;
 
-		p:before,
-		p:after {
-			@apply content-none;
-		}
-	}
+    /* --- 滚动条样式 --- */
+    &::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+      margin: 0 calc(var(--radius-large) + 2px);
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-bg);
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-bg-hover);
+    }
+    &::-webkit-scrollbar-thumb:active {
+      background: var(--scrollbar-bg-active);
+    }
+  }
 
-	/* --- 表格样式 --- */
-	.table-wrapper {
-		@apply w-full overflow-x-auto m-0 rounded-[var(--radius-large)];
-		-webkit-overflow-scrolling: touch;
+  table {
+    @apply w-full border-separate m-0 bg-[var(--card-bg)];
+    border-spacing: 0;
 
-		/* --- 滚动条样式 --- */
-		&::-webkit-scrollbar {
-			height: 6px;
-			width: 6px;
-		}
+    border: 1px solid var(--line-divider);
+    border-radius: var(--radius-large);
 
-		&::-webkit-scrollbar-track {
-			background: transparent;
-			margin: 0 calc(var(--radius-large) + 2px);
-		}
+    overflow: hidden;
+  }
 
-		&::-webkit-scrollbar-thumb {
-			background: var(--scrollbar-bg);
-			border-radius: 4px;
-		}
+  th,
+  td {
+    @apply px-4 py-3 whitespace-nowrap;
+    border-bottom: 1px solid var(--line-divider);
+    border-right: 1px solid var(--line-divider);
+    transition: none;
+  }
 
-		&::-webkit-scrollbar-thumb:hover {
-			background: var(--scrollbar-bg-hover);
-		}
+  th {
+    background-color: var(--btn-regular-bg);
+    color: var(--btn-content);
+    font-weight: 600;
+    text-align: left;
+  }
 
-		&::-webkit-scrollbar-thumb:active {
-			background: var(--scrollbar-bg-active);
-		}
-	}
+  tr:last-child td {
+    border-bottom: none;
+  }
+  th:last-child,
+  td:last-child {
+    border-right: none;
+  }
 
-	table {
-		@apply w-full border-separate m-0 bg-[var(--card-bg)];
-		border-spacing: 0;
+  tr:nth-child(even) {
+    background-color: var(--codeblock-bg);
+  }
+  tr:hover td {
+    background-color: var(--btn-plain-bg-hover);
+    transition: none;
+  }
 
-		border: 1px solid var(--line-divider);
-		border-radius: var(--radius-large);
+  /* --- 数学公式样式 --- */
+  .katex-display {
+    @apply w-full overflow-x-auto overflow-y-hidden box-border my-4;
+    padding-bottom: 6px;
+    padding-top: 0.5rem;
+    -webkit-overflow-scrolling: touch;
 
-		overflow: hidden;
-	}
+    &::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-bg);
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-bg-hover);
+    }
+    &::-webkit-scrollbar-thumb:active {
+      background: var(--scrollbar-bg-active);
+    }
+  }
 
-	th,
-	td {
-		@apply px-4 py-3 whitespace-nowrap;
-		border-bottom: 1px solid var(--line-divider);
-		border-right: 1px solid var(--line-divider);
-		transition: none;
-	}
+  .katex-display > .katex {
+    display: block;
+    width: fit-content;
+    min-width: calc(100% - 2px);
+  }
 
-	th {
-		background-color: var(--btn-regular-bg);
-		color: var(--btn-content);
-		font-weight: 600;
-		text-align: left;
-	}
-
-	tr:last-child td {
-		border-bottom: none;
-	}
-
-	th:last-child,
-	td:last-child {
-		border-right: none;
-	}
-
-	tr:nth-child(even) {
-		background-color: var(--codeblock-bg);
-	}
-
-	tr:hover td {
-		background-color: var(--btn-plain-bg-hover);
-		transition: none;
-	}
-
-	/* --- 数学公式样式 --- */
-	.katex-display {
-		@apply w-full overflow-x-auto overflow-y-hidden box-border my-4;
-		padding-bottom: 6px;
-		padding-top: 0.5rem;
-		-webkit-overflow-scrolling: touch;
-
-		&::-webkit-scrollbar {
-			height: 6px;
-			width: 6px;
-		}
-
-		&::-webkit-scrollbar-track {
-			background: transparent;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: var(--scrollbar-bg);
-			border-radius: 4px;
-		}
-
-		&::-webkit-scrollbar-thumb:hover {
-			background: var(--scrollbar-bg-hover);
-		}
-
-		&::-webkit-scrollbar-thumb:active {
-			background: var(--scrollbar-bg-active);
-		}
-	}
-
-	.katex-display>.katex {
-		display: block;
-		width: fit-content;
-		min-width: calc(100% - 2px);
-	}
-
-	.katex-display>.katex:has(.tag)>.katex-html {
-		display: block;
-		padding-right: 3rem;
-		box-sizing: border-box;
-	}
+  .katex-display > .katex:has(.tag) > .katex-html {
+    display: block;
+    padding-right: 3rem;
+    box-sizing: border-box;
+  }
 }
 
 /* 外部覆盖样式 */
 .custom-md .expressive-code :is(ul, ol) li::marker {
-	@apply text-inherit;
+  @apply text-inherit;
 }
 
 :root:not(.dark) .custom-md spoiler {
-	--_spoiler-mask: color-mix(in oklch, var(--primary) 55%, white 45%);
+  --_spoiler-mask: color-mix(in oklch, var(--primary) 55%, white 45%);
 }

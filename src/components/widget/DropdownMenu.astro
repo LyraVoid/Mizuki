@@ -51,14 +51,9 @@ const hasChildren = children.length > 0;
 					data-dropdown-trigger
 				>
 					{link.icon && (
-						<Icon
-							name={link.icon}
-							class="text-[1.1rem] lg:mr-2 flex-shrink-0"
-						/>
+						<Icon name={link.icon} class="text-[1.1rem] lg:mr-2 flex-shrink-0" />
 					)}
-					<span class="truncate hidden lg:inline">
-						{getLocalizedName(link.name)}
-					</span>
+					<span class="truncate hidden lg:inline">{getLocalizedName(link.name)}</span>
 					<Icon
 						name="material-symbols:keyboard-arrow-down-rounded"
 						class="text-[1.25rem] transition-transform duration-200 dropdown-arrow ml-1 flex-shrink-0 hidden lg:inline"
@@ -110,14 +105,9 @@ const hasChildren = children.length > 0;
 				class="btn-plain scale-animation rounded-lg h-11 font-bold w-11 lg:w-auto lg:px-5 active:scale-95 flex items-center justify-center lg:justify-start whitespace-nowrap"
 			>
 				{link.icon && (
-					<Icon
-						name={link.icon}
-						class="text-[1.1rem] lg:mr-2 flex-shrink-0"
-					/>
+					<Icon name={link.icon} class="text-[1.1rem] lg:mr-2 flex-shrink-0" />
 				)}
-				<span class="truncate hidden lg:inline">
-					{getLocalizedName(link.name)}
-				</span>
+				<span class="truncate hidden lg:inline">{getLocalizedName(link.name)}</span>
 				{link.external && (
 					<Icon
 						name="fa7-solid:arrow-up-right-from-square"
@@ -130,8 +120,6 @@ const hasChildren = children.length > 0;
 </div>
 
 <style>
-	@reference "tailwindcss";
-
 	.dropdown-container {
 		@apply relative;
 	}
