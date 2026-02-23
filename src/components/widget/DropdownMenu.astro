@@ -85,15 +85,17 @@ const hasChildren = children.length > 0;
 									{child.icon && (
 										<Icon
 											name={child.icon}
-											class="text-[1rem] mr-2"
+											class="text-[1rem] mr-2 text-black/80 dark:text-white/80"
 										/>
 									)}
-									<span>{getLocalizedName(child.name)}</span>
+									<span class="text-black/80 dark:text-white/80">
+										{getLocalizedName(child.name)}
+									</span>
 								</div>
 								{child.external && (
 									<Icon
 										name="fa7-solid:arrow-up-right-from-square"
-										class="text-[0.75rem] text-black/25 dark:text-white/25 ml-2"
+										class="text-[0.75rem] text-black/80 dark:text-white/80 ml-2"
 									/>
 								)}
 							</a>
@@ -157,7 +159,8 @@ const hasChildren = children.length > 0;
 	}
 
 	.dropdown-item {
-		@apply flex items-center justify-between px-4 py-2.5 text-black/75 dark:text-white/75 hover:text-[var(--primary)] hover:bg-[var(--btn-plain-bg-hover)] transition-colors duration-150 font-medium rounded-lg;
+		@apply flex items-center justify-between px-4 py-2.5 hover:text-[var(--primary)] hover:bg-[var(--btn-plain-bg-hover)] transition-colors duration-150 font-medium rounded-lg;
+		color: light-dark(#000, #fff) !important;
 	}
 
 	@media (max-width: 767px) {
