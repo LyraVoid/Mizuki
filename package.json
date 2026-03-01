@@ -42,7 +42,7 @@
 		"@iconify-json/material-symbols": "^1.2.53",
 		"@iconify-json/simple-icons": "^1.2.69",
 		"@iconify/svelte": "^4.2.0",
-		"@swup/astro": "^1.7.0",
+		"@swup/astro": "^1.8.0",
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.2.0",
 		"astro": "5.17.1",
