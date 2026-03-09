@@ -1,5 +1,5 @@
 ---
-title: git-rollback.md
+title: Regarding using Git to perform transaction rollback operations in different scenarios
 published: 2026-02-21
 description: ''
 image: ''

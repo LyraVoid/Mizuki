@@ -1,5 +1,5 @@
 ---
-title: Nuxt_NuxtUi.md
+title: Regarding the experience with Nuxt, NuxtUI, and SSR
 published: 2026-01-19
 description: ''
 image: ''
