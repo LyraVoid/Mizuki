@@ -160,7 +160,7 @@ history对象还有一个length属性,该属性表示历史记录中有多个条
 
 **1.  无法控制页面导航与历史记录**
 
-缺失对象: window.location, window.history
+缺失对象: *window.location, window.history*
 
 后果:
     无法跳转页面: 开发者无法通过代码让用户跳转到新 URL (location.href) 或重定向用户。
@@ -169,7 +169,7 @@ history对象还有一个length属性,该属性表示历史记录中有多个条
 
 **2.  无法执行定时任务与异步延迟**
 
-缺失对象: window.setTimeout, window.setInterval
+缺失对象: *window.setTimeout, window.setInterval*
 
 后果:
     无延迟执行: 无法实现“点击后 3 秒提示”、“轮播图自动切换”、“防抖/节流”等基础逻辑。
@@ -179,14 +179,14 @@ history对象还有一个length属性,该属性表示历史记录中有多个条
 
 **3.  无法与用户进行基础交互反馈**
 
-缺失对象: window.alert, window.confirm, window.prompt
+缺失对象: *window.alert, window.confirm, window.prompt*
 
 后果:
     虽然现代开发倾向于使用自定义模态框（基于 DOM），但在没有 BOM 的情况下，连最基础的浏览器原生警告、确认对话框都无法触发。这意味着如果 DOM 尚未加载或出错，开发者没有任何原生的手段阻断流程或通知用户。
 
 **4.  无法获取环境与屏幕信息 (响应式设计受阻)**
 
-缺失对象: window.screen, window.navigator, window.innerWidth/innerHeight
+缺失对象: *window.screen, window.navigator, window.innerWidth/innerHeight*
 
 后果:
     自适应布局困难: 无法通过 JS 获取视口大小 (innerWidth) 来动态调整布局或加载不同资源。
@@ -212,7 +212,7 @@ history对象还有一个length属性,该属性表示历史记录中有多个条
 
 **7.  全局作用域与事件根节点的缺失**
 
-核心概念: 在浏览器中，window 对象是全局对象 (Global Object)。
+核心概念: **在浏览器中，window 对象是全局对象 (Global Object)。**
 
 后果:
     变量挂载无处安放: 所有在全局 scope 声明的变量和函数实际上都是 window 的属性。没有 BOM，JS 的全局上下文将变得模糊或未定义。
