@@ -151,22 +151,15 @@ history对象还有一个length属性,该属性表示历史记录中有多个条
 # 2.  BOM有什么用?
 
  如果没有 BOM (Browser Object Model，浏览器对象模型)，JavaScript 在 Web 开发中将失去与浏览器窗口本身交互的能力。
- 
  通过 DOM (Document Object Model) 用户可以更好的操作页面内容（如修改文本、样式、结构）
  BOM 提供了操作浏览器窗口、导航历史、屏幕属性、定时器以及本地存储等核心功能。
  
-**如果没有 BOM，现代 Web 应用程序将退化为静态文档，几乎无法实现任何动态交互或复杂逻辑。就会变成纯一张白纸,而不是一个电子屏幕!!!**
-
-没了BOM, 将会导致浏览器很多很多功能的缺失
-
-如果没有 BOM (Browser Object Model，浏览器对象模型)，JavaScript 在 Web 开发中将失去与浏览器窗口本身交互的能力。
-
-虽然 DOM (Document Object Model) 允许我们操作页面内容（如修改文本、样式、结构），但 BOM 提供了操作浏览器窗口、导航历史、屏幕属性、定时器以及本地存储等核心功能。如果没有 BOM，现代 Web 应用程序将退化为静态文档，几乎无法实现任何动态交互或复杂逻辑。
+**可以这么说 ,没有 BOM,那么现代 Web 应用程序将退化为静态文档，几乎无法实现任何动态交互或复杂逻辑。就会变成纯一张白纸,而不是一个电子屏幕!!!**
 
 以下是缺乏 BOM 会给开发带来的具体困难和挑战：
 
 **1.  无法控制页面导航与历史记录**
-2. 
+
 缺失对象: window.location, window.history
 
 后果:
@@ -175,7 +168,7 @@ history对象还有一个length属性,该属性表示历史记录中有多个条
     无法控制后退/前进: 无法编程式地控制浏览器的“后退”或“前进”按钮行为。
 
 **2.  无法执行定时任务与异步延迟**
-3. 
+
 缺失对象: window.setTimeout, window.setInterval
 
 后果:
@@ -202,7 +195,7 @@ history对象还有一个length属性,该属性表示历史记录中有多个条
 
 **5.  无法进行本地数据存储**
 
-缺失对象: window.localStorage, window.sessionStorage
+缺失对象: *window.localStorage, window.sessionStorage*
 
 后果:
     状态无法持久化: 用户刷新页面后，所有临时数据（如购物车内容、表单草稿、主题设置、登录 Token）都会丢失。
@@ -211,7 +204,7 @@ history对象还有一个length属性,该属性表示历史记录中有多个条
 
 **6.  无法处理多窗口与框架通信**
 
-缺失对象: window.open, window.frames, window.postMessage
+缺失对象: *window.open, window.frames, window.postMessage*
 
 后果:
     无法打开弹窗: 无法打开新窗口或标签页进行辅助操作（如支付网关、第三方登录）。
