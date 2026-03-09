@@ -4,7 +4,7 @@ published: 2026-02-21
 description: ''
 image: ''
 tags: [git,github,rollback]
-category: 'Technology'
+category: 'Git & Github'
 draft: false 
 lang: ''
 ---
@@ -212,6 +212,3 @@ reflog记录中，“to <分支名>”（如 moving from master to dev/pilot-001
 ![Alt text](./guide/page14.webp)
 
 ##  此外，总体来讲，回滚要谨填，不要过于依赖回滚功能，避免使用"git push -f"
-
-
-

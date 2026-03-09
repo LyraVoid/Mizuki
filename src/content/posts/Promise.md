@@ -1,10 +1,10 @@
 ---
-title: Promise.md
+title: Promise,Pending,Fetch API
 published: 2026-03-05
 description: ''
 image: ''
 tags: ['JavaScript','Promise']
-category: 'Technology'
+category: 'JavaScript'
 draft: false 
 lang: ''
 ---

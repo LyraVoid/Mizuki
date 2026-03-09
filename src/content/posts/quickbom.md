@@ -1,10 +1,10 @@
 ---
-title: quickbom.md
+title: BOM
 published: 2026-03-04
 description: ''
 image: ''
 tags: []
-category: 'Technology'
+category: 'JavaScript'
 draft: false 
 lang: ''
 ---
@@ -145,4 +145,3 @@ history对象还有一个length属性,该属性表示历史记录中有多个条
 
 # 总结: BOM就像直接使用JS来操作浏览器的方方面面的一个工具, 一个接口
 # 它将浏览器的功能抽象为各个BOM对象中, 用户可以通过操纵实例化这些BOM对象对浏览器本身进行编程
-    

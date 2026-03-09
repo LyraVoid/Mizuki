@@ -4,7 +4,7 @@ published: 2026-01-19
 description: ''
 image: ''
 tags: [Nuxt,Vue,NuxtUi]
-category: ''
+category: 'Front-end engineering'
 draft: false 
 lang: ''
 ---
@@ -93,4 +93,3 @@ lang: ''
 | 不阻止 JS 执行 | `<ClientOnly>` 只包裹模板，组件的 JS 逻辑（如 `setup()`）仍会在 SSR 阶段执行（如果被 import）。*安全做法：动态导入组件* |
 | SEO 影响 | 被 `<ClientOnly>` 包裹的内容不会出现在 SSR HTML 中，搜索引擎可能无法索引 |
 | 非万能 | 对于需要 SEO 的内容（如文章正文），不要用 `<ClientOnly>` |
-

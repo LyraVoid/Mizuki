@@ -4,7 +4,7 @@ published: 2025-12-12
 description: 'A reflection on my long-term learning experience with Vue.'
 image: ''
 tags: ['vue','blog']
-category: 'Technology'
+category: 'Front-end engineering'
 draft: false 
 lang: ''
 ---

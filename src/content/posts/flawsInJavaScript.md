@@ -4,12 +4,12 @@ published: 2026-02-16
 description: 'This article discusses the fatal flaws of the JavaScript language and various related problems that urgently need to be addressed.'
 image: ''
 tags: [technology, javascript]
-category: 'Technology'
+category: 'JavaScript'
 draft: false 
 lang: 'zh'
 ---
 
-# JavaScript都有哪些缺陷? 它的缺陷反映了哪些亟待解决的问题?
+# 总结一下JavaScript都有哪些缺陷? 它的缺陷反映了哪些亟待解决的问题?
 **JavaScript（JS）作为一门动态弱类型语言，在大型工程、安全性、可维护性等方面确实存在显著缺陷**。 
 **类型系统、内存安全、并发模型、工程化能力、运行时行为、生态工具链** 等多个维度，结合 **TypeScript（TS）、Java、Rust** 进行对比，系统性地揭示 JS 的核心缺陷。
 
