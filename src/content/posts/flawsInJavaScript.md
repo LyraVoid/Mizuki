@@ -1,5 +1,5 @@
 ---
-title: flawsInJavaScript.md
+title: Some flaws in JavaScript
 published: 2026-02-16
 description: 'This article discusses the fatal flaws of the JavaScript language and various related problems that urgently need to be addressed.'
 image: ''
