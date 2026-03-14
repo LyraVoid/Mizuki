@@ -36,6 +36,7 @@ let duration = 0;
 
 // localStorage 存储音量
 const STORAGE_KEY_VOLUME = 'music-player-volume';
+const STORAGE_KEY_STATE = "music-player-state-v1";
 
 // 音量，默认为 0.7
 let volume = 0.7;
@@ -70,11 +71,35 @@ type Song = {
 	duration: number;
 };
 
+type PlayerPersistedState = {
+	mode: "meting" | "local";
+	meting_api: string;
+	meting_id: string;
+	meting_server: string;
+	meting_type: string;
+	playlist: Song[];
+	currentIndex: number;
+	currentTime: number;
+	duration: number;
+	volume: number;
+	isMuted: boolean;
+	isPlaying: boolean;
+	isExpanded: boolean;
+	isHidden: boolean;
+	showPlaylist: boolean;
+	isShuffled: boolean;
+	isRepeating: number;
+};
+
 let playlist: Song[] = [];
 let currentIndex = 0;
 let audio: HTMLAudioElement;
 let progressBar: HTMLElement;
 let volumeBar: HTMLElement;
+let pendingRestoreTime: number | null = null;
+let stateInitialized = false;
+let persistTimeout: ReturnType<typeof setTimeout> | null = null;
+let lastProgressPersistSecond = -1;
 
 const localPlaylist = [
 	{
@@ -125,6 +150,140 @@ function saveVolumeSettings() {
 	} catch (e) {
 		console.warn('Failed to save volume settings to localStorage:', e);
 	}
+}
+
+function canRestoreForCurrentSource(state: PlayerPersistedState): boolean {
+	if (state.mode !== mode) return false;
+	if (mode !== "meting") return true;
+	return (
+		state.meting_api === meting_api &&
+		state.meting_id === meting_id &&
+		state.meting_server === meting_server &&
+		state.meting_type === meting_type
+	);
+}
+
+function sanitizePlaylist(list: unknown): Song[] {
+	if (!Array.isArray(list)) return [];
+	return list
+		.filter((song) => song && typeof song === "object")
+		.map((song: any) => ({
+			id: Number(song.id) || 0,
+			title: String(song.title ?? ""),
+			artist: String(song.artist ?? ""),
+			cover: String(song.cover ?? ""),
+			url: String(song.url ?? ""),
+			duration: Number(song.duration) || 0,
+		}))
+		.filter((song) => song.url);
+}
+
+function loadPersistedState(): PlayerPersistedState | null {
+	try {
+		if (typeof localStorage === "undefined") return null;
+		const raw = localStorage.getItem(STORAGE_KEY_STATE);
+		if (!raw) return null;
+		const parsed = JSON.parse(raw) as PlayerPersistedState;
+		const sanitizedPlaylist = sanitizePlaylist(parsed.playlist);
+		if (!sanitizedPlaylist.length) return null;
+		const index = Math.max(
+			0,
+			Math.min(Number(parsed.currentIndex) || 0, sanitizedPlaylist.length - 1),
+		);
+		return {
+			mode: parsed.mode === "local" ? "local" : "meting",
+			meting_api: String(parsed.meting_api ?? ""),
+			meting_id: String(parsed.meting_id ?? ""),
+			meting_server: String(parsed.meting_server ?? ""),
+			meting_type: String(parsed.meting_type ?? ""),
+			playlist: sanitizedPlaylist,
+			currentIndex: index,
+			currentTime: Math.max(0, Number(parsed.currentTime) || 0),
+			duration: Math.max(0, Number(parsed.duration) || 0),
+			volume: Math.max(0, Math.min(1, Number(parsed.volume) || 0.7)),
+			isMuted: !!parsed.isMuted,
+			isPlaying: !!parsed.isPlaying,
+			isExpanded: !!parsed.isExpanded,
+			isHidden: !!parsed.isHidden,
+			showPlaylist: !!parsed.showPlaylist,
+			isShuffled: !!parsed.isShuffled,
+			isRepeating: [0, 1, 2].includes(Number(parsed.isRepeating))
+				? Number(parsed.isRepeating)
+				: 0,
+		};
+	} catch (_error) {
+		return null;
+	}
+}
+
+function persistPlayerState(immediate = false) {
+	if (!stateInitialized) return;
+	const save = () => {
+		try {
+			if (typeof localStorage === "undefined") return;
+			const payload: PlayerPersistedState = {
+				mode: mode === "local" ? "local" : "meting",
+				meting_api,
+				meting_id,
+				meting_server,
+				meting_type,
+				playlist,
+				currentIndex,
+				currentTime: audio ? audio.currentTime : currentTime,
+				duration: audio?.duration && Number.isFinite(audio.duration) ? audio.duration : duration,
+				volume,
+				isMuted,
+				isPlaying,
+				isExpanded,
+				isHidden,
+				showPlaylist,
+				isShuffled,
+				isRepeating,
+			};
+			localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(payload));
+			localStorage.setItem(STORAGE_KEY_VOLUME, volume.toString());
+		} catch (_error) {
+			return;
+		}
+	};
+
+	if (persistTimeout) {
+		clearTimeout(persistTimeout);
+		persistTimeout = null;
+	}
+
+	if (immediate) {
+		save();
+		return;
+	}
+
+	persistTimeout = setTimeout(() => {
+		save();
+		persistTimeout = null;
+	}, 200);
+}
+
+function applyPersistedState(state: PlayerPersistedState): boolean {
+	if (!canRestoreForCurrentSource(state)) return false;
+	if (!state.playlist.length) return false;
+
+	playlist = [...state.playlist];
+	currentIndex = Math.max(0, Math.min(state.currentIndex, playlist.length - 1));
+	currentSong = { ...playlist[currentIndex] };
+	isExpanded = state.isExpanded;
+	isHidden = state.isHidden;
+	showPlaylist = state.showPlaylist;
+	isShuffled = state.isShuffled;
+	isRepeating = state.isRepeating;
+	isMuted = state.isMuted;
+	volume = state.volume;
+	currentTime = state.currentTime;
+	duration = state.duration;
+	isPlaying = state.isPlaying;
+	willAutoPlay = state.isPlaying;
+	pendingRestoreTime = state.currentTime;
+	loadSong(currentSong);
+	return true;
 }
 
 async function fetchMetingPlaylist() {
@@ -180,6 +339,7 @@ function toggleExpanded() {
 		showPlaylist = false;
 		isHidden = false;
 	}
+	persistPlayerState();
 }
 
 function toggleHidden() {
@@ -188,10 +348,12 @@ function toggleHidden() {
 		isExpanded = false;
 		showPlaylist = false;
 	}
+	persistPlayerState();
 }
 
 function togglePlaylist() {
 	showPlaylist = !showPlaylist;
+	persistPlayerState();
 }
 
 function toggleShuffle() {
@@ -199,6 +361,7 @@ function toggleShuffle() {
 	if (isShuffled) {
         isRepeating = 0;
 	}
+	persistPlayerState();
 }
 
 function toggleRepeat() {
@@ -206,6 +369,7 @@ function toggleRepeat() {
 	if (isRepeating !== 0) {
         isShuffled = false;
 	}
+	persistPlayerState();
 }
 
 function previousSong() {
@@ -236,7 +400,10 @@ function playSong(index: number, autoPlay = true) {
 	
     willAutoPlay = autoPlay;
 	currentIndex = index;
+	currentTime = 0;
+	pendingRestoreTime = 0;
 	loadSong(playlist[currentIndex]);
+	persistPlayerState();
 }
 
 function getAssetPath(path: string): string {
@@ -268,6 +435,18 @@ function handleLoadSuccess() {
 		currentSong.duration = duration;
 	}
 
+	if (pendingRestoreTime !== null && Number.isFinite(pendingRestoreTime)) {
+		const seekTarget = Math.min(
+			Math.max(0, pendingRestoreTime),
+			audio.duration && Number.isFinite(audio.duration)
+				? Math.max(0, audio.duration - 0.25)
+				: pendingRestoreTime,
+		);
+		audio.currentTime = seekTarget;
+		currentTime = seekTarget;
+		pendingRestoreTime = null;
+	}
+
 	if (willAutoPlay || isPlaying) {
         const playPromise = audio.play();
 		if (playPromise !== undefined) {
@@ -278,6 +457,7 @@ function handleLoadSuccess() {
             });
 		}
     }
+	persistPlayerState();
 }
 
 function handleUserInteraction() {
@@ -318,6 +498,7 @@ function handleAudioEnded() {
 	} else {
 		isPlaying = false;
 	}
+	persistPlayerState();
 }
 
 function showErrorMessage(message: string) {
@@ -338,6 +519,7 @@ function setProgress(event: MouseEvent) {
 	const newTime = percent * duration;
 	audio.currentTime = newTime;
 	currentTime = newTime;
+	persistPlayerState();
 }
 
 let isVolumeDragging = false;
@@ -383,6 +565,7 @@ function stopVolumeDrag(event: PointerEvent) {
         rafId = null;
 	}
     saveVolumeSettings();
+	persistPlayerState();
 }
 
 function updateVolumeLogic(clientX: number) {
@@ -398,6 +581,7 @@ function updateVolumeLogic(clientX: number) {
 
 function toggleMute() {
 	isMuted = !isMuted;
+	persistPlayerState();
 }
 
 function formatTime(seconds: number): string {
@@ -408,13 +592,26 @@ function formatTime(seconds: number): string {
 }
 
 const interactionEvents = ['click', 'keydown', 'touchstart'];
+const persistStateImmediately = () => persistPlayerState(true);
 onMount(() => {
     loadVolumeSettings(); 
+	const restored = loadPersistedState();
+	let restoredFromCache = false;
+	if (restored) {
+		restoredFromCache = applyPersistedState(restored);
+	}
+	if (!musicPlayerConfig.enable) {
+		return;
+	}
     interactionEvents.forEach(event => {
         document.addEventListener(event, handleUserInteraction, { capture: true });
     });
-
-	if (!musicPlayerConfig.enable) {
+	window.addEventListener("pagehide", persistStateImmediately, { capture: true });
+	window.addEventListener("beforeunload", persistStateImmediately, { capture: true });
+	document.addEventListener("swup:transitionStart", persistStateImmediately, true);
+	if (restoredFromCache) {
+		stateInitialized = true;
+		persistPlayerState(true);
 		return;
 	}
 	if (mode === "meting") {
@@ -428,13 +625,23 @@ onMount(() => {
 			showErrorMessage("本地播放列表为空");
 		}
 	}
+	stateInitialized = true;
+	persistPlayerState(true);
 });
 
 onDestroy(() => {
+    persistPlayerState(true);
     if (typeof document !== 'undefined') {
         interactionEvents.forEach(event => {
             document.removeEventListener(event, handleUserInteraction, { capture: true });
         });
+    }
+	window.removeEventListener("pagehide", persistStateImmediately, { capture: true });
+	window.removeEventListener("beforeunload", persistStateImmediately, { capture: true });
+	document.removeEventListener("swup:transitionStart", persistStateImmediately, true);
+	if (persistTimeout) {
+		clearTimeout(persistTimeout);
+		persistTimeout = null;
     }
 });
 </script>
@@ -444,9 +651,23 @@ onDestroy(() => {
 	src={getAssetPath(currentSong.url)}
 	bind:volume
 	bind:muted={isMuted}
-	on:play={() => isPlaying = true}
-	on:pause={() => isPlaying = false}
-	on:timeupdate={() => currentTime = audio.currentTime}
+	on:play={() => {
+		isPlaying = true;
+		persistPlayerState();
+	}}
+	on:pause={() => {
+		isPlaying = false;
+		persistPlayerState();
+	}}
+	on:timeupdate={() => {
+		currentTime = audio.currentTime;
+		const currentSecond = Math.floor(currentTime);
+		if (currentSecond !== lastProgressPersistSecond) {
+			lastProgressPersistSecond = currentSecond;
+			persistPlayerState();
+		}
+	}}
+	on:volumechange={() => persistPlayerState()}
 	on:ended={handleAudioEnded}
 	on:error={handleLoadError}
 	on:loadeddata={handleLoadSuccess}
