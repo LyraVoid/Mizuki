@@ -9,16 +9,16 @@ import type {
  * 组件映射表 - 将组件类型映射到实际的组件路径
  */
 export const WIDGET_COMPONENT_MAP = {
-	profile: "../components/widget/Profile.astro",
-	announcement: "../components/widget/Announcement.astro",
-	categories: "../components/widget/Categories.astro",
-	tags: "../components/widget/Tags.astro",
-	toc: "../components/widget/TOC.astro",
+	profile: "../components/widgets/profile/Profile.astro",
+	announcement: "../components/widgets/announcement/Announcement.astro",
+	categories: "../components/widgets/categories/Categories.astro",
+	tags: "../components/widgets/tags/Tags.astro",
+	toc: "../components/widgets/toc/TOC.astro",
 	"music-player": "../components/widget/MusicPlayer.svelte",
-	pio: "../components/widget/Pio.astro", // 添加 Pio 组件映射
-	"site-stats": "../components/widget/SiteStats.astro", // 站点统计组件
-	calendar: "../components/widget/Calendar.astro", // 日历组件
-	custom: null, // 自定义组件需要在配置中指定路径
+	pio: "../components/widget/Pio.astro",
+	"site-stats": "../components/widgets/site-stats/SiteStats.astro",
+	calendar: "../components/widgets/calendar/Calendar.astro",
+	custom: null,
 } as const;
 
 /**
@@ -71,7 +71,9 @@ export class WidgetManager {
 
 		return componentTypes
 			.map((type) => {
-				const prop = this.config.properties.find((p) => p.type === type);
+				const prop = this.config.properties.find(
+					(p) => p.type === type,
+				);
 				if (prop && prop.position === position) {
 					return prop;
 				}

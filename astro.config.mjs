@@ -139,7 +139,6 @@ export default defineConfig({
 			rehypeSlug,
 			rehypeWrapTable,
 			rehypeMermaid,
-			rehypeImageWidth,
 			[
 				rehypeComponents,
 				{
@@ -172,6 +171,7 @@ export default defineConfig({
 					},
 				},
 			],
+			rehypeImageWidth,
 		],
 	},
 	vite: {

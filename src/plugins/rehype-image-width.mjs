@@ -16,8 +16,10 @@ export function rehypeImageWidth() {
 				if (match) {
 					const width = match[1];
 					node.properties.alt = alt.replace(regex, "").trim();
-					node.properties.width = `${width}%`;
-					node.properties.style = "display: block; margin: 0 auto;";
+					node.properties.style = `width: ${width}%; display: block; margin: 0 auto;`;
+					// Remove width and height attributes if they were set by Astro optimization
+					delete node.properties.width;
+					delete node.properties.height;
 
 					const figureChildren = [node];
 

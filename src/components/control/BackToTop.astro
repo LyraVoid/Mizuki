@@ -48,6 +48,10 @@ import { Icon } from "astro-icon/components";
     &:active
       transform: translateX(5rem) scale(0.9)
 
+  @media (max-width: 1920px)
+    .back-to-top-btn
+      box-shadow: none
+
   // 手机端隐藏返回顶部按钮
   @media (max-width: 768px)
     .back-to-top-wrapper
