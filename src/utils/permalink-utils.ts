@@ -81,6 +81,16 @@ export function generatePermalinkSlug(post: CollectionEntry<"posts">): string {
 
 	const published = post.data.published;
 	const postname = removeFileExtension(post.id);
+
+	let rawPostname = postname;
+	// Use original file name preserving case from filePath if available
+	if (post.filePath) {
+		const parts = post.filePath.split("/");
+		const filename = parts[parts.length - 1];
+		if (filename) {
+			rawPostname = removeFileExtension(filename);
+		}
+	}
 	const category = post.data.category || "uncategorized";
 
 	// 替换占位符
@@ -102,6 +112,7 @@ export function generatePermalinkSlug(post: CollectionEntry<"posts">): string {
 		)
 		.replace(/%post_id%/g, getPostNumericId(post.id).toString())
 		.replace(/%postname%/g, postname)
+		.replace(/%raw_postname%/g, rawPostname)
 		.replace(/%category%/g, category);
 
 	return slug;
