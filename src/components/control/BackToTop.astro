@@ -30,7 +30,8 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 			setupScrollListener() {
 				const updateVisibility = () => {
 					const scrollTop =
-						window.pageYOffset || document.documentElement.scrollTop;
+						window.pageYOffset ||
+						document.documentElement.scrollTop;
 
 					if (scrollTop > 200) {
 						this.button.classList.remove("hide");
@@ -39,7 +40,9 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 					}
 				};
 
-				window.addEventListener("scroll", updateVisibility, { passive: true });
+				window.addEventListener("scroll", updateVisibility, {
+					passive: true,
+				});
 			}
 		};
 	}

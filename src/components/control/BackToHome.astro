@@ -14,7 +14,7 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 />
 
 <script is:raw is:inline define:vars={{ homeUrl: "/" }}>
-	window.backToHome = function() {
+	window.backToHome = function () {
 		if (window.swup) {
 			window.swup.navigate(homeUrl);
 		} else {
@@ -40,5 +40,8 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 	updateBackToHomeVisibility();
 
 	document.addEventListener("astro:page-load", updateBackToHomeVisibility);
-	document.addEventListener("swup:contentReplaced", updateBackToHomeVisibility);
+	document.addEventListener(
+		"swup:contentReplaced",
+		updateBackToHomeVisibility,
+	);
 </script>

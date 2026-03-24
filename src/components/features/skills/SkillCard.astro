@@ -1,65 +1,67 @@
 ---
-import I18nKey from "../../../i18n/i18nKey"
-import { i18n } from "../../../i18n/translation"
-import Icon from "../../misc/Icon.astro"
-import type { SkillCardProps } from "./types"
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import Icon from "../../misc/Icon.astro";
+import type { SkillCardProps } from "./types";
 
 const {
 	skill,
 	size = "medium",
 	showProgress = true,
 	showIcon = true,
-} = Astro.props as SkillCardProps
+} = Astro.props as SkillCardProps;
 
 const getLevelColor = (level: string) => {
 	switch (level) {
 		case "expert":
-			return "bg-red-600/20 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+			return "bg-red-600/20 text-red-700 dark:bg-red-900/30 dark:text-red-400";
 		case "advanced":
-			return "bg-orange-600/20 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+			return "bg-orange-600/20 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
 		case "intermediate":
-			return "bg-yellow-600/20 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+			return "bg-yellow-600/20 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
 		case "beginner":
-			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400";
 		default:
-			return "btn-regular"
+			return "btn-regular";
 	}
-}
+};
 
 const getLevelText = (level: string) => {
 	switch (level) {
 		case "expert":
-			return i18n(I18nKey.skillsExpert)
+			return i18n(I18nKey.skillsExpert);
 		case "advanced":
-			return i18n(I18nKey.skillsAdvanced)
+			return i18n(I18nKey.skillsAdvanced);
 		case "intermediate":
-			return i18n(I18nKey.skillsIntermediate)
+			return i18n(I18nKey.skillsIntermediate);
 		case "beginner":
-			return i18n(I18nKey.skillsBeginner)
+			return i18n(I18nKey.skillsBeginner);
 		default:
-			return level
+			return level;
 	}
-}
+};
 
 const getLevelWidth = (level: string) => {
 	switch (level) {
 		case "expert":
-			return "100%"
+			return "100%";
 		case "advanced":
-			return "80%"
+			return "80%";
 		case "intermediate":
-			return "60%"
+			return "60%";
 		case "beginner":
-			return "40%"
+			return "40%";
 		default:
-			return "20%"
+			return "20%";
 	}
-}
+};
 
 const formatExperience = (exp: { years: number; months: number } | string) => {
-	if (typeof exp === "string") {return exp}
-	return `${exp.years} ${i18n(I18nKey.skillYears)}${exp.months > 0 ? ` ${exp.months} ${i18n(I18nKey.skillMonths)}` : ''}`
-}
+	if (typeof exp === "string") {
+		return exp;
+	}
+	return `${exp.years} ${i18n(I18nKey.skillYears)}${exp.months > 0 ? ` ${exp.months} ${i18n(I18nKey.skillMonths)}` : ""}`;
+};
 
 const getSizeClasses = (size: string) => {
 	switch (size) {
@@ -72,7 +74,7 @@ const getSizeClasses = (size: string) => {
 				description: "text-xs line-clamp-2",
 				badge: "text-xs",
 				progress: "h-1.5",
-			}
+			};
 		case "large":
 			return {
 				container: "p-6",
@@ -82,7 +84,7 @@ const getSizeClasses = (size: string) => {
 				description: "text-sm line-clamp-3",
 				badge: "text-sm",
 				progress: "h-3",
-			}
+			};
 		default:
 			return {
 				container: "p-5",
@@ -92,107 +94,138 @@ const getSizeClasses = (size: string) => {
 				description: "text-sm line-clamp-2",
 				badge: "text-xs",
 				progress: "h-2",
-			}
+			};
 	}
-}
+};
 
-const sizeClasses = getSizeClasses(size)
-const skillColor = skill.color || "#3B82F6"
+const sizeClasses = getSizeClasses(size);
+const skillColor = skill.color || "#3B82F6";
 ---
 
-<div class="bg-transparent rounded-lg border border-[var(--line-divider)] overflow-hidden hover:shadow-lg transition-all duration-300 group">
-  <div class={sizeClasses.container}>
-    <div class="flex items-start gap-4">
-      {showIcon && skill.icon && (
-        <div class={`rounded-lg flex items-center justify-center shrink-0 ${sizeClasses.icon}`} style={`background-color: ${skillColor}20`}>
-          <Icon 
-            icon={skill.icon} 
-            class={sizeClasses.iconText} 
-            color={skillColor}
-            fallback={skill.name.charAt(0)}
-            loading="eager"
-          />
-        </div>
-      )}
-      
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class={`font-semibold text-black/90 dark:text-white/90 ${sizeClasses.title} ${size === 'small' ? 'truncate' : ''}`}>
-            {skill.name}
-          </h3>
-          <span class={`px-2 py-1 rounded-full shrink-0 ml-2 ${sizeClasses.badge} ${getLevelColor(skill.level)}`}>
-            {getLevelText(skill.level)}
-          </span>
-        </div>
-        
-        {/* 分类在外层已经通过 SectionTitle 展示，这里不再重复显示蓝色标签 */}
-        
-        <p class={`text-black/60 dark:text-white/60 mb-3 ${sizeClasses.description}`}>
-          {skill.description}
-        </p>
-        
-        {showProgress && (
-          <div class="mb-3">
-            <div class="flex justify-between text-sm mb-1">
-              <span class="text-black/60 dark:text-white/60">{i18n(I18nKey.skillExperience)}</span>
-              <span class="text-black/80 dark:text-white/80">{formatExperience(skill.experience)}</span>
-            </div>
-            <div class={`w-full bg-[var(--btn-regular-bg)] rounded-full ${sizeClasses.progress}`}>
-              <div 
-                class={`rounded-full transition-all duration-500 ${sizeClasses.progress}`}
-                style={`width: ${getLevelWidth(skill.level)}; background-color: ${skillColor}`}
-              ></div>
-            </div>
-          </div>
-        )}
-        
-        {skill.certifications && skill.certifications.length > 0 && (
-          <div class="mb-3">
-            <div class="flex flex-wrap gap-1">
-              {skill.certifications.map((cert) => (
-                <span class={`px-2 py-1 bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded ${sizeClasses.badge}`}>
-                  🏆 {cert}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {skill.relatedProjects && skill.relatedProjects.length > 0 && (
-          <div class="text-sm text-black/60 dark:text-white/60">
-            {i18n(I18nKey.skillsProjects)}: {skill.relatedProjects.length}
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
+<div
+	class="bg-transparent rounded-lg border border-[var(--line-divider)] overflow-hidden hover:shadow-lg transition-all duration-300 group"
+>
+	<div class={sizeClasses.container}>
+		<div class="flex items-start gap-4">
+			{
+				showIcon && skill.icon && (
+					<div
+						class={`rounded-lg flex items-center justify-center shrink-0 ${sizeClasses.icon}`}
+						style={`background-color: ${skillColor}20`}
+					>
+						<Icon
+							icon={skill.icon}
+							class={sizeClasses.iconText}
+							color={skillColor}
+							fallback={skill.name.charAt(0)}
+							loading="eager"
+						/>
+					</div>
+				)
+			}
+
+			<div class="flex-1 min-w-0">
+				<div class="flex items-center justify-between mb-2">
+					<h3
+						class={`font-semibold text-black/90 dark:text-white/90 ${sizeClasses.title} ${size === "small" ? "truncate" : ""}`}
+					>
+						{skill.name}
+					</h3>
+					<span
+						class={`px-2 py-1 rounded-full shrink-0 ml-2 ${sizeClasses.badge} ${getLevelColor(skill.level)}`}
+					>
+						{getLevelText(skill.level)}
+					</span>
+				</div>
+
+				{
+					/* 分类在外层已经通过 SectionTitle 展示，这里不再重复显示蓝色标签 */
+				}
+
+				<p
+					class={`text-black/60 dark:text-white/60 mb-3 ${sizeClasses.description}`}
+				>
+					{skill.description}
+				</p>
+
+				{
+					showProgress && (
+						<div class="mb-3">
+							<div class="flex justify-between text-sm mb-1">
+								<span class="text-black/60 dark:text-white/60">
+									{i18n(I18nKey.skillExperience)}
+								</span>
+								<span class="text-black/80 dark:text-white/80">
+									{formatExperience(skill.experience)}
+								</span>
+							</div>
+							<div
+								class={`w-full bg-[var(--btn-regular-bg)] rounded-full ${sizeClasses.progress}`}
+							>
+								<div
+									class={`rounded-full transition-all duration-500 ${sizeClasses.progress}`}
+									style={`width: ${getLevelWidth(skill.level)}; background-color: ${skillColor}`}
+								/>
+							</div>
+						</div>
+					)
+				}
+
+				{
+					skill.certifications && skill.certifications.length > 0 && (
+						<div class="mb-3">
+							<div class="flex flex-wrap gap-1">
+								{skill.certifications.map((cert) => (
+									<span
+										class={`px-2 py-1 bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded ${sizeClasses.badge}`}
+									>
+										🏆 {cert}
+									</span>
+								))}
+							</div>
+						</div>
+					)
+				}
+
+				{
+					skill.relatedProjects &&
+						skill.relatedProjects.length > 0 && (
+							<div class="text-sm text-black/60 dark:text-white/60">
+								{i18n(I18nKey.skillsProjects)}:{" "}
+								{skill.relatedProjects.length}
+							</div>
+						)
+				}
+			</div>
+		</div>
+	</div>
 </div>
 
 <style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.line-clamp-3 {
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const skillCard = document.currentScript?.parentElement
-    if (skillCard) {
-      skillCard.classList.add('skill-card')
-      
-      skillCard.addEventListener('iconify-ready', () => {
-        skillCard.classList.add('icons-loaded')
-      })
-    }
-  })
+	document.addEventListener("DOMContentLoaded", () => {
+		const skillCard = document.currentScript?.parentElement;
+		if (skillCard) {
+			skillCard.classList.add("skill-card");
+
+			skillCard.addEventListener("iconify-ready", () => {
+				skillCard.classList.add("icons-loaded");
+			});
+		}
+	});
 </script>

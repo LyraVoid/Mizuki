@@ -2,7 +2,7 @@
 import { render } from "astro:content";
 import { Icon } from "astro-icon/components";
 
-import { getFileDirFromPath, getPostUrl,getTagUrl } from "@/utils/url-utils";
+import { getFileDirFromPath, getPostUrl, getTagUrl } from "@/utils/url-utils";
 
 import { siteConfig } from "../../../config";
 import I18nKey from "../../../i18n/i18nKey";
@@ -46,7 +46,8 @@ const { remarkPluginFrontmatter } = await render(entry);
 			"pl-6 md:pl-9 pr-6 md:pr-2 pt-6 md:pt-7 pb-6 relative",
 			{
 				"w-full md:w-[calc(100%_-_3.25rem_-_0.75rem)]": !hasCover,
-				"w-full md:w-[calc(100%_-_var(--coverWidth)_-_0.75rem)]": hasCover,
+				"w-full md:w-[calc(100%_-_var(--coverWidth)_-_0.75rem)]":
+					hasCover,
 			},
 		]}
 	>

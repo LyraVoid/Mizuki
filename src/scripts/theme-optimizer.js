@@ -308,7 +308,9 @@ class ThemeOptimizer {
 
 		const visibleBlocksArray = Array.from(this.visibleBlocks);
 
-		if (visibleBlocksArray.length === 0) {return;}
+		if (visibleBlocksArray.length === 0) {
+			return;
+		}
 
 		// 分批更新可见代码块
 		this.batchUpdateBlocks(visibleBlocksArray, newTheme);

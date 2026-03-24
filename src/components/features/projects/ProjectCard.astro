@@ -1,40 +1,40 @@
 ---
-import I18nKey from "../../../i18n/i18nKey"
-import { i18n } from "../../../i18n/translation"
-import type { ProjectCardProps } from "./types"
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import type { ProjectCardProps } from "./types";
 
 const {
 	project,
 	size = "medium",
 	showImage = true,
 	maxTechStack = 4,
-} = Astro.props as ProjectCardProps
+} = Astro.props as ProjectCardProps;
 
 const getStatusStyle = (status: string) => {
 	switch (status) {
 		case "completed":
-			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400";
 		case "in-progress":
-			return "bg-yellow-600/20 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+			return "bg-yellow-600/20 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
 		case "planned":
-			return "bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+			return "bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
 		default:
-			return "bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+			return "bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
 	}
-}
+};
 
 const getStatusText = (status: string) => {
 	switch (status) {
 		case "completed":
-			return i18n(I18nKey.projectsCompleted)
+			return i18n(I18nKey.projectsCompleted);
 		case "in-progress":
-			return i18n(I18nKey.projectsInProgress)
+			return i18n(I18nKey.projectsInProgress);
 		case "planned":
-			return i18n(I18nKey.projectsPlanned)
+			return i18n(I18nKey.projectsPlanned);
 		default:
-			return status
+			return status;
 	}
-}
+};
 
 const getSizeClasses = (size: string) => {
 	switch (size) {
@@ -45,7 +45,7 @@ const getSizeClasses = (size: string) => {
 				description: "text-sm line-clamp-2",
 				tech: "text-xs",
 				links: "text-sm",
-			}
+			};
 		case "large":
 			return {
 				container: "p-6",
@@ -53,7 +53,7 @@ const getSizeClasses = (size: string) => {
 				description: "text-base line-clamp-3",
 				tech: "text-sm",
 				links: "text-base",
-			}
+			};
 		default:
 			return {
 				container: "p-5",
@@ -61,110 +61,142 @@ const getSizeClasses = (size: string) => {
 				description: "text-sm line-clamp-2",
 				tech: "text-xs",
 				links: "text-sm",
-			}
+			};
 	}
-}
+};
 
-const sizeClasses = getSizeClasses(size)
+const sizeClasses = getSizeClasses(size);
 ---
 
-<div class="bg-transparent rounded-lg border border-[var(--line-divider)] overflow-hidden hover:shadow-lg transition-all duration-300 group">
-  {showImage && project.image && (
-    <div class="aspect-video overflow-hidden">
-      <img 
-        src={project.image} 
-        alt={project.title}
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        loading="lazy"
-      />
-    </div>
-  )}
-  
-  <div class={sizeClasses.container}>
-    <div class="flex items-start justify-between mb-3">
-      <h3 class={`font-semibold text-black/90 dark:text-white/90 ${sizeClasses.title}`}>
-        {project.title}
-      </h3>
-      <span class={`px-2 py-1 text-xs rounded-full shrink-0 ml-2 ${getStatusStyle(project.status)}`}>
-        {getStatusText(project.status)}
-      </span>
-    </div>
-    
-    <p class={`text-black/60 dark:text-white/60 mb-4 ${sizeClasses.description}`}>
-      {project.description}
-    </p>
-    
-    {project.techStack && project.techStack.length > 0 && (
-      <div class="flex flex-wrap gap-2 mb-4">
-        {project.techStack.slice(0, maxTechStack).map((tech) => (
-          <span class={`px-2 py-1 text-xs bg-blue-600/20 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded ${sizeClasses.tech}`}>
-            {tech}
-          </span>
-        ))}
-        {project.techStack.length > maxTechStack && (
-          <span class={`btn-regular px-2 py-1 text-xs rounded ${sizeClasses.tech}`}>
-            +{project.techStack.length - maxTechStack}
-          </span>
-        )}
-      </div>
-    )}
-    
-    {project.tags && project.tags.length > 0 && (
-      <div class="flex flex-wrap gap-1 mb-4">
-        {project.tags.map((tag) => (
-          <span class={`px-2 py-1 bg-purple-600/20 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 rounded ${sizeClasses.tech}`}>
-            #{tag}
-          </span>
-        ))}
-      </div>
-    )}
-    
-    <div class="flex flex-wrap gap-2">
-      {project.visitUrl && (
-        <a 
-          href={project.visitUrl} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          class="btn-gradient btn-gradient-primary btn-gradient-md"
-        >
-          <iconify-icon icon="material-symbols:open-in-new" width="18" height="18"></iconify-icon>
-          {i18n(I18nKey.projectsVisit)}
-        </a>
-      )}
-      {project.sourceCode && (
-        <a 
-          href={project.sourceCode} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          class="btn-gradient btn-github btn-gradient-md"
-        >
-          <iconify-icon icon="mdi:github" width="18" height="18"></iconify-icon>
-          {i18n(I18nKey.projectsGitHub)}
-        </a>
-      )}
-    </div>
-  </div>
+<div
+	class="bg-transparent rounded-lg border border-[var(--line-divider)] overflow-hidden hover:shadow-lg transition-all duration-300 group"
+>
+	{
+		showImage && project.image && (
+			<div class="aspect-video overflow-hidden">
+				<img
+					src={project.image}
+					alt={project.title}
+					class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+					loading="lazy"
+				/>
+			</div>
+		)
+	}
+
+	<div class={sizeClasses.container}>
+		<div class="flex items-start justify-between mb-3">
+			<h3
+				class={`font-semibold text-black/90 dark:text-white/90 ${sizeClasses.title}`}
+			>
+				{project.title}
+			</h3>
+			<span
+				class={`px-2 py-1 text-xs rounded-full shrink-0 ml-2 ${getStatusStyle(project.status)}`}
+			>
+				{getStatusText(project.status)}
+			</span>
+		</div>
+
+		<p
+			class={`text-black/60 dark:text-white/60 mb-4 ${sizeClasses.description}`}
+		>
+			{project.description}
+		</p>
+
+		{
+			project.techStack && project.techStack.length > 0 && (
+				<div class="flex flex-wrap gap-2 mb-4">
+					{project.techStack.slice(0, maxTechStack).map((tech) => (
+						<span
+							class={`px-2 py-1 text-xs bg-blue-600/20 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded ${sizeClasses.tech}`}
+						>
+							{tech}
+						</span>
+					))}
+					{project.techStack.length > maxTechStack && (
+						<span
+							class={`btn-regular px-2 py-1 text-xs rounded ${sizeClasses.tech}`}
+						>
+							+{project.techStack.length - maxTechStack}
+						</span>
+					)}
+				</div>
+			)
+		}
+
+		{
+			project.tags && project.tags.length > 0 && (
+				<div class="flex flex-wrap gap-1 mb-4">
+					{project.tags.map((tag) => (
+						<span
+							class={`px-2 py-1 bg-purple-600/20 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 rounded ${sizeClasses.tech}`}
+						>
+							#{tag}
+						</span>
+					))}
+				</div>
+			)
+		}
+
+		<div class="flex flex-wrap gap-2">
+			{
+				project.visitUrl && (
+					<a
+						href={project.visitUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="btn-gradient btn-gradient-primary btn-gradient-md"
+					>
+						<iconify-icon
+							icon="material-symbols:open-in-new"
+							width="18"
+							height="18"
+						/>
+						{i18n(I18nKey.projectsVisit)}
+					</a>
+				)
+			}
+			{
+				project.sourceCode && (
+					<a
+						href={project.sourceCode}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="btn-gradient btn-github btn-gradient-md"
+					>
+						<iconify-icon
+							icon="mdi:github"
+							width="18"
+							height="18"
+						/>
+						{i18n(I18nKey.projectsGitHub)}
+					</a>
+				)
+			}
+		</div>
+	</div>
 </div>
 
 <style>
-  .line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+	.line-clamp-1 {
+		display: -webkit-box;
+		-webkit-line-clamp: 1;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.line-clamp-3 {
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
 </style>

@@ -7,7 +7,7 @@ import { formatDateToYYYYMMDD } from "@utils/date-utils";
 import { Icon } from "astro-icon/components";
 
 interface Props {
-    type: "rss" | "atom";
+	type: "rss" | "atom";
 }
 
 const { type } = Astro.props;
@@ -21,128 +21,177 @@ const t = (key: string) => i18n(key as I18nKey);
 ---
 
 <MainGridLayout title={t(`${prefix}`)}>
-    <script>
-        import('../../../scripts/right-sidebar-layout.js');
-    </script>
-    <div class="onload-animation">
-        <div class="card-base rounded-[var(--radius-large)] p-8 mb-6">
-            <div class="text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-[var(--primary)] rounded-2xl mb-4">
-                    <Icon name="material-symbols:rss-feed" class="text-white text-3xl" />
-                </div>
-                <h1 class="text-3xl font-bold text-[var(--primary)] mb-3">{t(`${prefix}`)}</h1>
-                <p class="text-75 max-w-2xl mx-auto">
-                    {t(`${prefix}Subtitle`)}
-                </p>
-            </div>
-        </div>
+	<script>
+		import("../../../scripts/right-sidebar-layout.js");
+	</script>
+	<div class="onload-animation">
+		<div class="card-base rounded-[var(--radius-large)] p-8 mb-6">
+			<div class="text-center">
+				<div
+					class="inline-flex items-center justify-center w-16 h-16 bg-[var(--primary)] rounded-2xl mb-4"
+				>
+					<Icon
+						name="material-symbols:rss-feed"
+						class="text-white text-3xl"
+					/>
+				</div>
+				<h1 class="text-3xl font-bold text-[var(--primary)] mb-3">
+					{t(`${prefix}`)}
+				</h1>
+				<p class="text-75 max-w-2xl mx-auto">
+					{t(`${prefix}Subtitle`)}
+				</p>
+			</div>
+		</div>
 
-        <div class="card-base rounded-[var(--radius-large)] p-6 mb-6">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-[var(--primary)] rounded-xl flex items-center justify-center mr-4">
-                        <Icon name="material-symbols:link" class="text-white text-xl" />
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-90 mb-1">{t(`${prefix}Link`)}</h3>
-                        <p class="text-sm text-75">{t(`${prefix}CopyToReader`)}</p>
-                    </div>
-                </div>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <code class="bg-[var(--card-bg)] px-3 py-2 rounded-lg text-sm font-mono text-75 border border-[var(--line-divider)] break-all">
-                        {Astro.site}{feedUrl}
-                    </code>
-                    <button 
-                        id={`copy-${prefix}-btn`}
-                        class="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:opacity-80 transition-all duration-200 font-medium text-sm whitespace-nowrap"
-                        data-url={`${Astro.site}${feedUrl}`}
-                    >
-                        {t(`${prefix}CopyLink`)}
-                    </button>
-                </div>
-            </div>
-        </div>
+		<div class="card-base rounded-[var(--radius-large)] p-6 mb-6">
+			<div
+				class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
+			>
+				<div class="flex items-center">
+					<div
+						class="w-12 h-12 bg-[var(--primary)] rounded-xl flex items-center justify-center mr-4"
+					>
+						<Icon
+							name="material-symbols:link"
+							class="text-white text-xl"
+						/>
+					</div>
+					<div>
+						<h3 class="font-semibold text-90 mb-1">
+							{t(`${prefix}Link`)}
+						</h3>
+						<p class="text-sm text-75">
+							{t(`${prefix}CopyToReader`)}
+						</p>
+					</div>
+				</div>
+				<div class="flex flex-col sm:flex-row gap-3">
+					<code
+						class="bg-[var(--card-bg)] px-3 py-2 rounded-lg text-sm font-mono text-75 border border-[var(--line-divider)] break-all"
+					>
+						{Astro.site}{feedUrl}
+					</code>
+					<button
+						id={`copy-${prefix}-btn`}
+						class="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:opacity-80 transition-all duration-200 font-medium text-sm whitespace-nowrap"
+						data-url={`${Astro.site}${feedUrl}`}
+					>
+						{t(`${prefix}CopyLink`)}
+					</button>
+				</div>
+			</div>
+		</div>
 
-        <div class="card-base rounded-[var(--radius-large)] p-6 mb-6">
-            <h2 class="text-xl font-bold text-90 mb-4 flex items-center">
-                <Icon name="material-symbols:article" class="mr-2 text-[var(--primary)]" />
-                {t(`${prefix}LatestPosts`)}
-            </h2>
-            <div class="space-y-4">
-                {recentPosts.map((post) => (
-                    <article class="bg-[var(--card-bg)] rounded-xl p-4 border border-[var(--line-divider)] hover:border-[var(--primary)] transition-all duration-300">
-                        <h3 class="text-lg font-semibold text-90 mb-2 hover:text-[var(--primary)] transition-colors">
-                            <a href={`/posts/${post.id}/`} class="hover:underline">
-                                {post.data.title}
-                            </a>
-                        </h3>
-                        {post.data.description && (
-                            <p class="text-75 mb-3 line-clamp-2">
-                                {post.data.description}
-                            </p>
-                        )}
-                        <div class="flex items-center gap-4 text-sm text-60">
-                            <time datetime={post.data.published.toISOString()} class="text-75">
-                                {formatDateToYYYYMMDD(post.data.published)}
-                            </time>
-                        </div>
-                    </article>
-                ))}
-            </div>
-        </div>
+		<div class="card-base rounded-[var(--radius-large)] p-6 mb-6">
+			<h2 class="text-xl font-bold text-90 mb-4 flex items-center">
+				<Icon
+					name="material-symbols:article"
+					class="mr-2 text-[var(--primary)]"
+				/>
+				{t(`${prefix}LatestPosts`)}
+			</h2>
+			<div class="space-y-4">
+				{
+					recentPosts.map((post) => (
+						<article class="bg-[var(--card-bg)] rounded-xl p-4 border border-[var(--line-divider)] hover:border-[var(--primary)] transition-all duration-300">
+							<h3 class="text-lg font-semibold text-90 mb-2 hover:text-[var(--primary)] transition-colors">
+								<a
+									href={`/posts/${post.id}/`}
+									class="hover:underline"
+								>
+									{post.data.title}
+								</a>
+							</h3>
+							{post.data.description && (
+								<p class="text-75 mb-3 line-clamp-2">
+									{post.data.description}
+								</p>
+							)}
+							<div class="flex items-center gap-4 text-sm text-60">
+								<time
+									datetime={post.data.published.toISOString()}
+									class="text-75"
+								>
+									{formatDateToYYYYMMDD(post.data.published)}
+								</time>
+							</div>
+						</article>
+					))
+				}
+			</div>
+		</div>
 
-        <div class="card-base rounded-[var(--radius-large)] p-6">
-            <h2 class="text-xl font-bold text-90 mb-4 flex items-center">
-                <Icon name="material-symbols:help-outline" class="mr-2 text-[var(--primary)]" />
-                {t(`${prefix}WhatIs${prefix.charAt(0).toUpperCase() + prefix.slice(1)}`)}
-            </h2>
-            <div class="text-75 space-y-3">
-                <p>
-                    {t(`${prefix}WhatIs${prefix.charAt(0).toUpperCase() + prefix.slice(1)}Description`)}
-                </p>
-                <ul class="list-disc list-inside space-y-1 ml-4">
-                    <li>{t(`${prefix}Benefit1`)}</li>
-                    <li>{t(`${prefix}Benefit2`)}</li>
-                    <li>{t(`${prefix}Benefit3`)}</li>
-                    <li>{t(`${prefix}Benefit4`)}</li>
-                </ul>
-                <p class="text-sm">
-                    {t(`${prefix}HowToUse`)}
-                </p>
-            </div>
-        </div>
-    </div>
+		<div class="card-base rounded-[var(--radius-large)] p-6">
+			<h2 class="text-xl font-bold text-90 mb-4 flex items-center">
+				<Icon
+					name="material-symbols:help-outline"
+					class="mr-2 text-[var(--primary)]"
+				/>
+				{
+					t(
+						`${prefix}WhatIs${prefix.charAt(0).toUpperCase() + prefix.slice(1)}`,
+					)
+				}
+			</h2>
+			<div class="text-75 space-y-3">
+				<p>
+					{
+						t(
+							`${prefix}WhatIs${prefix.charAt(0).toUpperCase() + prefix.slice(1)}Description`,
+						)
+					}
+				</p>
+				<ul class="list-disc list-inside space-y-1 ml-4">
+					<li>{t(`${prefix}Benefit1`)}</li>
+					<li>{t(`${prefix}Benefit2`)}</li>
+					<li>{t(`${prefix}Benefit3`)}</li>
+					<li>{t(`${prefix}Benefit4`)}</li>
+				</ul>
+				<p class="text-sm">
+					{t(`${prefix}HowToUse`)}
+				</p>
+			</div>
+		</div>
+	</div>
 
-    <script>
-        const init = () => {
-            const btn = document.getElementById('copy-rss-btn') || document.getElementById('copy-atom-btn');
-            if (btn) {
-                btn.addEventListener('click', async function() {
-                    const url = this.getAttribute('data-url');
-                    if (!url) {return;}
-                    try {
-                        await navigator.clipboard.writeText(url);
-                        const originalText = this.textContent || "Copy Link";
-                        this.textContent = url.includes('rss') ? "RSS link copied to clipboard!" : "Atom link copied to clipboard!";
-                        this.style.backgroundColor = 'var(--success-color, #10b981)';
-                        
-                        setTimeout(() => {
-                            this.textContent = originalText;
-                            this.style.backgroundColor = '';
-                        }, 2000);
-                    } catch (err) {
-                        console.error('复制失败:', err);
-                        const originalText = this.textContent || "Copy Link";
-                        this.textContent = "Copy failed, please copy the link manually";
-                        setTimeout(() => {
-                            this.textContent = originalText;
-                        }, 2000);
-                    }
-                });
-            }
-        }
-        init();
-        document.addEventListener("astro:after-swap", init);
-    </script>
+	<script>
+		const init = () => {
+			const btn =
+				document.getElementById("copy-rss-btn") ||
+				document.getElementById("copy-atom-btn");
+			if (btn) {
+				btn.addEventListener("click", async function () {
+					const url = this.getAttribute("data-url");
+					if (!url) {
+						return;
+					}
+					try {
+						await navigator.clipboard.writeText(url);
+						const originalText = this.textContent || "Copy Link";
+						this.textContent = url.includes("rss")
+							? "RSS link copied to clipboard!"
+							: "Atom link copied to clipboard!";
+						this.style.backgroundColor =
+							"var(--success-color, #10b981)";
 
+						setTimeout(() => {
+							this.textContent = originalText;
+							this.style.backgroundColor = "";
+						}, 2000);
+					} catch (err) {
+						console.error("复制失败:", err);
+						const originalText = this.textContent || "Copy Link";
+						this.textContent =
+							"Copy failed, please copy the link manually";
+						setTimeout(() => {
+							this.textContent = originalText;
+						}, 2000);
+					}
+				});
+			}
+		};
+		init();
+		document.addEventListener("astro:after-swap", init);
+	</script>
 </MainGridLayout>

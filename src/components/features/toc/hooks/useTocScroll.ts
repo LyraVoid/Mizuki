@@ -59,7 +59,9 @@ export function scrollActiveIntoView(
 	activeElements: HTMLElement[],
 	tocHeight: number,
 ): void {
-	if (activeElements.length === 0 || !container) {return;}
+	if (activeElements.length === 0 || !container) {
+		return;
+	}
 
 	const topmost = activeElements[0];
 	const bottommost = activeElements[activeElements.length - 1];

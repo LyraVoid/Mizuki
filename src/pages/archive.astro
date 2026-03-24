@@ -13,32 +13,38 @@ const showCategoryBar = siteConfig.postListLayout.categoryBar?.enable ?? false;
 
 // 1. 修复类型兼容性：将 category 的 null 转换为 undefined
 const posts = sortedPostsList.map((post) => ({
-    ...post,
-    data: {
-        ...post.data,
-        category: post.data.category === null ? undefined : post.data.category,
-    },
+	...post,
+	data: {
+		...post.data,
+		category: post.data.category === null ? undefined : post.data.category,
+	},
 }));
 
 // 2. 提取所有标签 (去重)
-const tags = [...new Set(posts.flatMap(post => post.data.tags))];
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
 
 // 3. 提取所有分类 (去重且过滤掉 undefined)
-const categories = [...new Set(posts.map(post => post.data.category).filter((c): c is string => typeof c === "string"))];
+const categories = [
+	...new Set(
+		posts
+			.map((post) => post.data.category)
+			.filter((c): c is string => typeof c === "string"),
+	),
+];
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)}>
 	{showCategoryBar && <CategoryBar />}
-    <!-- 引入右侧边栏布局管理器 -->
-    <script>
-        import('../scripts/right-sidebar-layout.js');
-    </script>
+	<!-- 引入右侧边栏布局管理器 -->
+	<script>
+		import("../scripts/right-sidebar-layout.js");
+	</script>
 
-    <!-- 修复：补全缺失的 tags 和 categories 属性 -->
-    <ArchivePanel
-            sortedPosts={posts}
-            tags={tags}
-            categories={categories}
-            client:only="svelte"
-    ></ArchivePanel>
+	<!-- 修复：补全缺失的 tags 和 categories 属性 -->
+	<ArchivePanel
+		sortedPosts={posts}
+		tags={tags}
+		categories={categories}
+		client:only="svelte"
+	/>
 </MainGridLayout>

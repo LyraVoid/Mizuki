@@ -23,9 +23,12 @@
 	}: Props = $props();
 
 	function getAssetPath(path: string): string {
-		if (path.startsWith("http://") || path.startsWith("https://"))
-			{return path;}
-		if (path.startsWith("/")) {return path;}
+		if (path.startsWith("http://") || path.startsWith("https://")) {
+			return path;
+		}
+		if (path.startsWith("/")) {
+			return path;
+		}
 		return `/${path}`;
 	}
 

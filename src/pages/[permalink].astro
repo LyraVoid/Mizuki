@@ -9,14 +9,22 @@
 import Image from "@components/atoms/Image/Image.astro";
 import Comment from "@components/comment/index.astro";
 import PasswordProtection from "@components/features/auth/PasswordProtection.astro";
-import { LastModified, PostMeta, PostNavigation } from "@components/features/posts";
+import {
+	LastModified,
+	PostMeta,
+	PostNavigation,
+} from "@components/features/posts";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
-import { generatePermalinkSlug,hasCustomPermalink, initPostIdMap } from "@utils/permalink-utils";
+import {
+	generatePermalinkSlug,
+	hasCustomPermalink,
+	initPostIdMap,
+} from "@utils/permalink-utils";
 import { getFileDirFromPath } from "@utils/url-utils";
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
@@ -45,8 +53,8 @@ export async function getStaticPaths() {
 
 		// 优先使用自定义 permalink
 		if (hasCustomPermalink(entry)) {
-			permalink = entry.data.permalink!
-				.replace(/^\/+/, "")
+			permalink = entry.data
+				.permalink!.replace(/^\/+/, "")
 				.replace(/\/+$/, "");
 		}
 		// 其次使用全局 permalink（如果启用）
@@ -76,11 +84,11 @@ let encryptedContent = "";
 const isEncrypted = entry.data.encrypted && entry.data.password;
 
 if (isEncrypted) {
-    const contentToEncrypt = "MIZUKI-VERIFY:" + entry.body;
-    encryptedContent = CryptoJS.AES.encrypt(
-        contentToEncrypt,
-        String(entry.data.password)
-    ).toString();
+	const contentToEncrypt = "MIZUKI-VERIFY:" + entry.body;
+	encryptedContent = CryptoJS.AES.encrypt(
+		contentToEncrypt,
+		String(entry.data.password),
+	).toString();
 }
 
 const jsonLd = {
@@ -102,152 +110,163 @@ const jsonLd = {
 ---
 
 <MainGridLayout
-    banner={entry.data.image}
-    title={entry.data.title}
-    description={entry.data.description}
-    lang={entry.data.lang}
-    setOGTypeArticle={true}
-    postSlug={entry.id}
-    headings={headings}
+	banner={entry.data.image}
+	title={entry.data.title}
+	description={entry.data.description}
+	lang={entry.data.lang}
+	setOGTypeArticle={true}
+	postSlug={entry.id}
+	headings={headings}
 >
-    <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    <script>
-    import('../scripts/right-sidebar-layout.js');
-    </script>
-    <div
-        class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"
-    >
-        <div
-            id="post-container"
-            class:list={[
-                "card-base z-10 px-6 md:px-9 pt-6 pb-4 relative w-full ",
-                {},
-            ]}
-        >
-            <!-- word count and reading time -->
-            <div
-                class="flex flex-row text-black/30 dark:text-white/30 gap-5 mb-3 transition onload-animation"
-            >
-                <div class="flex flex-row items-center">
-                    <div
-                        class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
-                    >
-                        <Icon name="material-symbols:notes-rounded" />
-                    </div>
-                    <div class="text-sm">
-                        {remarkPluginFrontmatter.words}
-                        {" " + i18n(I18nKey.wordsCount)}
-                    </div>
-                </div>
-                <div class="flex flex-row items-center">
-                    <div
-                        class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
-                    >
-                        <Icon
-                            name="material-symbols:schedule-outline-rounded"
-                        />
-                    </div>
-                    <div class="text-sm">
-                        {remarkPluginFrontmatter.minutes}
-                        {
-                            " " +
-                                i18n(
-                                    remarkPluginFrontmatter.minutes === 1
-                                        ? I18nKey.minuteCount
-                                        : I18nKey.minutesCount,
-                                )
-                        }
-                    </div>
-                </div>
-            </div>
+	<script
+		is:inline
+		slot="head"
+		type="application/ld+json"
+		set:html={JSON.stringify(jsonLd)}
+	/>
+	<script>
+		import("../scripts/right-sidebar-layout.js");
+	</script>
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"
+	>
+		<div
+			id="post-container"
+			class:list={[
+				"card-base z-10 px-6 md:px-9 pt-6 pb-4 relative w-full ",
+				{},
+			]}
+		>
+			<!-- word count and reading time -->
+			<div
+				class="flex flex-row text-black/30 dark:text-white/30 gap-5 mb-3 transition onload-animation"
+			>
+				<div class="flex flex-row items-center">
+					<div
+						class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
+					>
+						<Icon name="material-symbols:notes-rounded" />
+					</div>
+					<div class="text-sm">
+						{remarkPluginFrontmatter.words}
+						{" " + i18n(I18nKey.wordsCount)}
+					</div>
+				</div>
+				<div class="flex flex-row items-center">
+					<div
+						class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2"
+					>
+						<Icon
+							name="material-symbols:schedule-outline-rounded"
+						/>
+					</div>
+					<div class="text-sm">
+						{remarkPluginFrontmatter.minutes}
+						{
+							" " +
+								i18n(
+									remarkPluginFrontmatter.minutes === 1
+										? I18nKey.minuteCount
+										: I18nKey.minutesCount,
+								)
+						}
+					</div>
+				</div>
+			</div>
 
-            <!-- title -->
-            <div class="relative onload-animation">
-                <div
-                    data-pagefind-body
-                    data-pagefind-weight="10"
-                    data-pagefind-meta="title"
-                    class="transition w-full block font-bold mb-3
+			<!-- title -->
+			<div class="relative onload-animation">
+				<div
+					data-pagefind-body
+					data-pagefind-weight="10"
+					data-pagefind-meta="title"
+					class="transition w-full block font-bold mb-3
                     text-3xl md:text-[2.25rem]/[2.75rem]
                     text-black/90 dark:text-white/90
                     md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
                     before:absolute before:top-[0.75rem] before:left-[-1.125rem]"
-                >
-                    {entry.data.title}
-                </div>
-            </div>
+				>
+					{entry.data.title}
+				</div>
+			</div>
 
-            <!-- metadata -->
-            <div class="onload-animation">
-                <PostMeta
-                    className="mb-5"
-                    published={entry.data.published}
-                    updated={entry.data.updated}
-                    tags={entry.data.tags}
-                    category={entry.data.category || undefined}
-                    id={entry.id}
-                />
-                {
-                    (!entry.data.image || (entry.data.image && !siteConfig.showCoverInContent)) && (
-                        <div class="mt-4 border-[var(--line-divider)] border-dashed border-b-[1px] mb-5" />
-                    )
-                }
-            </div>
+			<!-- metadata -->
+			<div class="onload-animation">
+				<PostMeta
+					className="mb-5"
+					published={entry.data.published}
+					updated={entry.data.updated}
+					tags={entry.data.tags}
+					category={entry.data.category || undefined}
+					id={entry.id}
+				/>
+				{
+					(!entry.data.image ||
+						(entry.data.image &&
+							!siteConfig.showCoverInContent)) && (
+						<div class="mt-4 border-[var(--line-divider)] border-dashed border-b-[1px] mb-5" />
+					)
+				}
+			</div>
 
-            {
-                entry.data.image && siteConfig.showCoverInContent && (
-                    <>
-                        <div class="mt-4" />
-                        <Image
-                            id="post-cover"
-                            src={entry.data.image}
-                            basePath={getFileDirFromPath(entry.filePath || '')}
-                            class="mb-8 rounded-xl banner-container onload-animation"
-                        />
-                    </>
-                )
-            }
+			{
+				entry.data.image && siteConfig.showCoverInContent && (
+					<>
+						<div class="mt-4" />
+						<Image
+							id="post-cover"
+							src={entry.data.image}
+							basePath={getFileDirFromPath(entry.filePath || "")}
+							class="mb-8 rounded-xl banner-container onload-animation"
+						/>
+					</>
+				)
+			}
 
-            {
-                isEncrypted ? (
-                    <PasswordProtection
-                        encryptedContent={encryptedContent}
-                        hint={entry.data.passwordHint}
-                    />
-                ) : (
-                    <>
-                        <Markdown class="mb-6 markdown-content onload-animation">
-                            <Content />
-                        </Markdown>
-                        {licenseConfig.enable && (
-                            <License
-                                title={entry.data.title}
-                                id={entry.id}
-                                pubDate={entry.data.published}
-                                author={entry.data.author}
-                                sourceLink={entry.data.sourceLink}
-                                licenseName={entry.data.licenseName}
-                                licenseUrl={entry.data.licenseUrl}
-                                class="mb-6 rounded-xl license-container onload-animation"
-                            />
-                        )}
-                    </>
-                )
-            }
-        </div>
-    </div>
+			{
+				isEncrypted ? (
+					<PasswordProtection
+						encryptedContent={encryptedContent}
+						hint={entry.data.passwordHint}
+					/>
+				) : (
+					<>
+						<Markdown class="mb-6 markdown-content onload-animation">
+							<Content />
+						</Markdown>
+						{licenseConfig.enable && (
+							<License
+								title={entry.data.title}
+								id={entry.id}
+								pubDate={entry.data.published}
+								author={entry.data.author}
+								sourceLink={entry.data.sourceLink}
+								licenseName={entry.data.licenseName}
+								licenseUrl={entry.data.licenseUrl}
+								class="mb-6 rounded-xl license-container onload-animation"
+							/>
+						)}
+					</>
+				)
+			}
+		</div>
+	</div>
 
-    <!-- 评论 -->
-    <Comment post={entry} />
+	<!-- 评论 -->
+	<Comment post={entry} />
 
-    {siteConfig.showLastModified && (
-        <LastModified updatedDate={entry.data.updated || entry.data.published} />
-    )}
+	{
+		siteConfig.showLastModified && (
+			<LastModified
+				updatedDate={entry.data.updated || entry.data.published}
+			/>
+		)
+	}
 
-    <PostNavigation
-        prevSlug={entry.data.nextSlug}
-        prevTitle={entry.data.nextTitle}
-        nextSlug={entry.data.prevSlug}
-        nextTitle={entry.data.prevTitle}
-    />
+	<PostNavigation
+		prevSlug={entry.data.nextSlug}
+		prevTitle={entry.data.nextTitle}
+		nextSlug={entry.data.prevSlug}
+		nextTitle={entry.data.prevTitle}
+	/>
 </MainGridLayout>

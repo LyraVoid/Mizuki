@@ -13,15 +13,23 @@ import type { IconProps } from "../atoms/Icon/types";
 
 export interface Props extends IconProps {}
 
-const { icon, class: className = "", style = "", size = "md", color, fallback = "●", loading = "lazy" } = Astro.props;
+const {
+	icon,
+	class: className = "",
+	style = "",
+	size = "md",
+	color,
+	fallback = "●",
+	loading = "lazy",
+} = Astro.props;
 ---
 
 <BaseIcon
-  icon={icon}
-  class={className}
-  style={style}
-  size={size}
-  color={color}
-  fallback={fallback}
-  loading={loading}
+	icon={icon}
+	class={className}
+	style={style}
+	size={size}
+	color={color}
+	fallback={fallback}
+	loading={loading}
 />

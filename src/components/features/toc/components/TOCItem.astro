@@ -8,66 +8,75 @@ import type { TOCItem as TOCItemType } from "../types/toc";
 import TOCBadge, { type BadgeVariant } from "./TOCBadge.astro";
 
 export interface Props {
-  /** TOC 条目数据 */
-  item: TOCItemType;
-  /** 是否激活状态 */
-  active?: boolean;
-  /** 自定义类名 */
-  class?: string;
+	/** TOC 条目数据 */
+	item: TOCItemType;
+	/** 是否激活状态 */
+	active?: boolean;
+	/** 自定义类名 */
+	class?: string;
 }
 
 const { item, active = false, class: className = "" } = Astro.props;
 
 // 根据深度计算缩进
-const indentClass =
-  item.depth === 0 ? "" : item.depth === 1 ? "pl-6" : "pl-8";
+const indentClass = item.depth === 0 ? "" : item.depth === 1 ? "pl-6" : "pl-8";
 
 // 根据深度确定徽章变体
 const badgeVariant: BadgeVariant =
-  item.depth === 0 ? "number" : item.depth === 1 ? "dot" : "dot-small";
+	item.depth === 0 ? "number" : item.depth === 1 ? "dot" : "dot-small";
 
 // 文本颜色类
 const textClass =
-  item.depth <= 1 ? "text-[var(--text-secondary)]" : "text-[var(--text-tertiary)]";
+	item.depth <= 1
+		? "text-[var(--text-secondary)]"
+		: "text-[var(--text-tertiary)]";
 ---
 
 <a
-  href={`#${item.id}`}
-  class:list={[
-    "toc-item",
-    "flex items-center gap-2 px-2 py-2 rounded-lg transition-all w-full",
-    "hover:bg-[var(--toc-btn-hover)]",
-    active && "active bg-[var(--toc-btn-active)] font-medium",
-    indentClass,
-    textClass,
-    className,
-  ]}
-  data-toc-id={item.id}
-  data-depth={item.depth}
+	href={`#${item.id}`}
+	class:list={[
+		"toc-item",
+		"flex items-center gap-2 px-2 py-2 rounded-lg transition-all w-full",
+		"hover:bg-[var(--toc-btn-hover)]",
+		active && "active bg-[var(--toc-btn-active)] font-medium",
+		indentClass,
+		textClass,
+		className,
+	]}
+	data-toc-id={item.id}
+	data-depth={item.depth}
 >
-  {item.badge && (
-    <TOCBadge text={item.badge} variant={badgeVariant} active={active} />
-  )}
-  {!item.badge && item.depth > 0 && (
-    <TOCBadge variant={badgeVariant} active={active} />
-  )}
-  <span class="toc-text flex-1 truncate text-sm">
-    {item.text}
-  </span>
+	{
+		item.badge && (
+			<TOCBadge
+				text={item.badge}
+				variant={badgeVariant}
+				active={active}
+			/>
+		)
+	}
+	{
+		!item.badge && item.depth > 0 && (
+			<TOCBadge variant={badgeVariant} active={active} />
+		)
+	}
+	<span class="toc-text flex-1 truncate text-sm">
+		{item.text}
+	</span>
 </a>
 
 <style>
-  .toc-item {
-    text-decoration: none;
-    color: inherit;
-    min-height: 2.25rem;
-  }
+	.toc-item {
+		text-decoration: none;
+		color: inherit;
+		min-height: 2.25rem;
+	}
 
-  .toc-item.active {
-    color: var(--primary);
-  }
+	.toc-item.active {
+		color: var(--primary);
+	}
 
-  .toc-text {
-    line-height: 1.4;
-  }
+	.toc-text {
+		line-height: 1.4;
+	}
 </style>

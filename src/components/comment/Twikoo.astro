@@ -61,7 +61,10 @@ const config = {
 		}
 
 		async function loadTwikooScript() {
-			if (twikooLoaded || document.getElementById("twikoo-script-loaded")) {
+			if (
+				twikooLoaded ||
+				document.getElementById("twikoo-script-loaded")
+			) {
 				return;
 			}
 			await loadScrollProtection();
@@ -80,7 +83,9 @@ const config = {
 
 		async function initTwikoo() {
 			const commentEl = document.getElementById("tcomment");
-			if (!commentEl) {return;}
+			if (!commentEl) {
+				return;
+			}
 
 			try {
 				await loadTwikooScript();
@@ -110,7 +115,9 @@ const config = {
 
 		function setupLazyLoad() {
 			const container = document.getElementById(TWIKOO_CONTAINER_ID);
-			if (!container) {return;}
+			if (!container) {
+				return;
+			}
 
 			observer = new IntersectionObserver(
 				(entries) => {

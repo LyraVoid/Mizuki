@@ -146,7 +146,9 @@ export class AnimationManager {
 	 * 设置滚动动画
 	 */
 	private setupScrollAnimations(): void {
-		if (typeof window === "undefined") {return;}
+		if (typeof window === "undefined") {
+			return;
+		}
 
 		const observerOptions = {
 			root: null,

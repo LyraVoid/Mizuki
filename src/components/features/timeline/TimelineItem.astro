@@ -1,8 +1,8 @@
 ---
-import I18nKey from "../../../i18n/i18nKey"
-import { i18n } from "../../../i18n/translation"
-import Icon from "../../misc/Icon.astro"
-import type { TimelineItemProps } from "./types"
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import Icon from "../../misc/Icon.astro";
+import type { TimelineItemProps } from "./types";
 
 const {
 	item,
@@ -10,87 +10,87 @@ const {
 	size = "medium",
 	layout = "timeline",
 	isCurrent = false,
-} = Astro.props as TimelineItemProps
+} = Astro.props as TimelineItemProps;
 
 const getTypeIcon = (type: string) => {
 	switch (type) {
 		case "education":
-			return "material-symbols:school"
+			return "material-symbols:school";
 		case "work":
-			return "material-symbols:work"
+			return "material-symbols:work";
 		case "project":
-			return "material-symbols:code"
+			return "material-symbols:code";
 		case "achievement":
-			return "material-symbols:emoji-events"
+			return "material-symbols:emoji-events";
 		default:
-			return "material-symbols:event"
+			return "material-symbols:event";
 	}
-}
+};
 
 const getTypeColor = (type: string) => {
 	switch (type) {
 		case "education":
-			return "bg-blue-600/20 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+			return "bg-blue-600/20 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
 		case "work":
-			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400";
 		case "project":
-			return "bg-purple-600/20 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+			return "bg-purple-600/20 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
 		case "achievement":
-			return "bg-orange-600/20 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+			return "bg-orange-600/20 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
 		default:
-			return "btn-regular"
+			return "btn-regular";
 	}
-}
+};
 
 const getTypeText = (type: string) => {
 	switch (type) {
 		case "education":
-			return i18n(I18nKey.timelineEducation)
+			return i18n(I18nKey.timelineEducation);
 		case "work":
-			return i18n(I18nKey.timelineWork)
+			return i18n(I18nKey.timelineWork);
 		case "project":
-			return i18n(I18nKey.timelineProject)
+			return i18n(I18nKey.timelineProject);
 		case "achievement":
-			return i18n(I18nKey.timelineAchievement)
+			return i18n(I18nKey.timelineAchievement);
 		default:
-			return type
+			return type;
 	}
-}
+};
 
 const getLinkIcon = (type: string) => {
 	switch (type) {
 		case "certificate":
-			return "🏆"
+			return "🏆";
 		case "project":
-			return "🔗"
+			return "🔗";
 		case "website":
-			return "🌐"
+			return "🌐";
 		default:
-			return "📄"
+			return "📄";
 	}
-}
+};
 
 const formatDate = (dateString: string) => {
-	const date = new Date(dateString)
-	return date.toLocaleDateString("zh-CN", { year: "numeric", month: "long" })
-}
+	const date = new Date(dateString);
+	return date.toLocaleDateString("zh-CN", { year: "numeric", month: "long" });
+};
 
 const getDuration = (startDate: string, endDate?: string) => {
-	const start = new Date(startDate)
-	const end = endDate ? new Date(endDate) : new Date()
-	const diffTime = Math.abs(end.getTime() - start.getTime())
-	const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30))
+	const start = new Date(startDate);
+	const end = endDate ? new Date(endDate) : new Date();
+	const diffTime = Math.abs(end.getTime() - start.getTime());
+	const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
 
 	if (diffMonths < 12) {
-		return `${diffMonths} ${i18n(I18nKey.timelineMonths)}`
+		return `${diffMonths} ${i18n(I18nKey.timelineMonths)}`;
 	}
-	const years = Math.floor(diffMonths / 12)
-	const months = diffMonths % 12
+	const years = Math.floor(diffMonths / 12);
+	const months = diffMonths % 12;
 	if (months === 0) {
-		return `${years} ${i18n(I18nKey.timelineYears)}`
+		return `${years} ${i18n(I18nKey.timelineYears)}`;
 	}
-	return `${years} ${i18n(I18nKey.timelineYears)} ${months} ${i18n(I18nKey.timelineMonths)}`
-}
+	return `${years} ${i18n(I18nKey.timelineYears)} ${months} ${i18n(I18nKey.timelineMonths)}`;
+};
 
 const getSizeClasses = (size: string) => {
 	switch (size) {
@@ -103,7 +103,7 @@ const getSizeClasses = (size: string) => {
 				meta: "text-xs",
 				description: "text-sm",
 				badge: "text-xs",
-			}
+			};
 		case "large":
 			return {
 				container: "p-8",
@@ -113,7 +113,7 @@ const getSizeClasses = (size: string) => {
 				meta: "text-base",
 				description: "text-base",
 				badge: "text-sm",
-			}
+			};
 		default:
 			return {
 				container: "p-6",
@@ -123,228 +123,299 @@ const getSizeClasses = (size: string) => {
 				meta: "text-sm",
 				description: "text-sm",
 				badge: "text-xs",
-			}
+			};
 	}
-}
+};
 
-const sizeClasses = getSizeClasses(size)
-const itemColor = item.color || "#3B82F6"
+const sizeClasses = getSizeClasses(size);
+const itemColor = item.color || "#3B82F6";
 ---
 
-{layout === 'timeline' ? (
-  <div class="relative flex items-start gap-6">
-    {showTimeline && (
-      <div class={`relative z-10 rounded-full flex items-center justify-center shrink-0 ${sizeClasses.node}`} style={`background-color: ${itemColor}`}>
-        <Icon 
-          icon={item.icon || getTypeIcon(item.type)} 
-          class={`text-white ${sizeClasses.nodeIcon}`}
-          color="white"
-          fallback={item.title.charAt(0)}
-          loading="eager"
-        />
-      </div>
-    )}
-    
-    <div class="flex-1 bg-transparent rounded-lg border border-[var(--line-divider)] hover:shadow-lg transition-shadow duration-300">
-      <div class={sizeClasses.container}>
-        <div class="flex items-start justify-between mb-3">
-          <div>
-            <h3 class={`font-semibold text-black/90 dark:text-white/90 mb-1 ${sizeClasses.title}`}>
-              {item.title}
-              {item.featured && (
-                <span class="ml-2 text-yellow-500">⭐</span>
-              )}
-            </h3>
-            {item.organization && (
-              <div class={`text-black/70 dark:text-white/70 ${sizeClasses.meta}`}>
-                {item.organization} {item.position && `• ${item.position}`}
-              </div>
-            )}
-          </div>
-          <div class="flex items-center gap-2 shrink-0 ml-4">
-            {isCurrent && (
-              <span class={`px-3 py-1.5 bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full ${sizeClasses.badge}`}>
-                {i18n(I18nKey.timelineCurrent)}
-              </span>
-            )}
-            <span class={`px-2 py-1 rounded-full ${sizeClasses.badge} ${getTypeColor(item.type)}`}>
-              {getTypeText(item.type)}
-            </span>
-          </div>
-        </div>
-        
-        <div class={`flex items-center gap-4 mb-3 text-black/60 dark:text-white/60 ${sizeClasses.meta}`}>
-          <div>
-            {formatDate(item.startDate)} - {item.endDate ? formatDate(item.endDate) : i18n(I18nKey.timelinePresent)}
-          </div>
-          <div>•</div>
-          <div>{getDuration(item.startDate, item.endDate)}</div>
-          {item.location && (
-            <>
-              <div>•</div>
-              <div>📍 {item.location}</div>
-            </>
-          )}
-        </div>
-        
-        <p class={`text-black/70 dark:text-white/70 mb-4 ${sizeClasses.description}`}>
-          {item.description}
-        </p>
-        
-        {item.achievements && item.achievements.length > 0 && (
-          <div class="mb-4">
-            <h4 class={`font-semibold text-black/80 dark:text-white/80 mb-2 ${sizeClasses.meta}`}>
-              {i18n(I18nKey.timelineAchievements)}
-            </h4>
-            <ul class="space-y-1">
-              {item.achievements.map((achievement) => (
-                <li class={`text-black/70 dark:text-white/70 flex items-start gap-2 ${sizeClasses.description}`}>
-                  <span class="text-green-500 mt-1">•</span>
-                  <span>{achievement}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        
-        {item.skills && item.skills.length > 0 && (
-          <div class="mb-4">
-            <div class="flex flex-wrap gap-1">
-              {item.skills.map((skill) => (
-                <span class={`btn-regular px-2 py-1 rounded ${sizeClasses.badge}`}>
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {item.links && item.links.length > 0 && (
-          <div class="flex gap-4">
-            {item.links.map((link) => (
-              <a 
-                href={link.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class={`text-blue-600 dark:text-blue-400 hover:underline font-medium flex items-center gap-1 transition-colors ${sizeClasses.meta}`}
-              >
-                {getLinkIcon(link.type)}
-                {link.name}
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-) : (
-  <div class="bg-transparent rounded-lg border border-[var(--line-divider)] hover:shadow-lg transition-shadow duration-300">
-    <div class={sizeClasses.container}>
-      <div class="flex items-start gap-4 mb-3">
-        <div class={`rounded-lg flex items-center justify-center shrink-0 ${sizeClasses.node}`} style={`background-color: ${itemColor}20`}>
-          <iconify-icon icon={item.icon || getTypeIcon(item.type)} class={sizeClasses.nodeIcon} style={`color: ${itemColor}`}></iconify-icon>
-        </div>
-        <div class="flex-1">
-          <div class="flex items-start justify-between mb-2">
-            <h3 class={`font-semibold text-black/90 dark:text-white/90 ${sizeClasses.title}`}>
-              {item.title}
-              {item.featured && (
-                <span class="ml-2 text-yellow-500">⭐</span>
-              )}
-            </h3>
-            <div class="flex items-center gap-2 shrink-0 ml-2">
-              {isCurrent && (
-                <span class={`px-3 py-1.5 bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full ${sizeClasses.badge}`}>
-                  {i18n(I18nKey.timelineCurrent)}
-                </span>
-              )}
-              <span class={`px-2 py-1 rounded-full ${sizeClasses.badge} ${getTypeColor(item.type)}`}>
-                {getTypeText(item.type)}
-              </span>
-            </div>
-          </div>
-          {item.organization && (
-            <div class={`text-black/70 dark:text-white/70 mb-1 ${sizeClasses.meta}`}>
-              {item.organization} {item.position && `• ${item.position}`}
-            </div>
-          )}
-          {item.location && (
-            <div class={`text-black/60 dark:text-white/60 mb-2 ${sizeClasses.meta}`}>
-              📍 {item.location}
-            </div>
-          )}
-        </div>
-      </div>
-      
-      <div class={`text-black/70 dark:text-white/70 mb-3 ${sizeClasses.meta}`}>
-        {formatDate(item.startDate)} - {item.endDate ? formatDate(item.endDate) : i18n(I18nKey.timelinePresent)} ({getDuration(item.startDate, item.endDate)})
-      </div>
-      
-      <p class={`text-black/60 dark:text-white/60 mb-4 ${sizeClasses.description}`}>
-        {item.description}
-      </p>
-      
-      {item.achievements && item.achievements.length > 0 && (
-        <div class="mb-4">
-          <h4 class={`font-semibold text-black/80 dark:text-white/80 mb-2 ${sizeClasses.meta}`}>
-            {i18n(I18nKey.timelineAchievements)}
-          </h4>
-          <ul class="space-y-1">
-            {item.achievements.slice(0, 3).map((achievement) => (
-              <li class={`text-black/70 dark:text-white/70 flex items-start gap-2 ${sizeClasses.description}`}>
-                <span class="text-green-500 mt-1">•</span>
-                <span>{achievement}</span>
-              </li>
-            ))}
-            {item.achievements.length > 3 && (
-              <li class={`text-black/60 dark:text-white/60 ${sizeClasses.description}`}>
-                ... 还有 {item.achievements.length - 3} 项成就
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
-      
-      <div class="flex items-center justify-between">
-        {item.skills && item.skills.length > 0 && (
-          <div class="flex flex-wrap gap-1">
-            {item.skills.slice(0, 3).map((skill) => (
-              <span class={`btn-regular px-2 py-1 rounded ${sizeClasses.badge}`}>
-                {skill}
-              </span>
-            ))}
-            {item.skills.length > 3 && (
-              <span class={`btn-regular px-2 py-1 rounded ${sizeClasses.badge}`}>
-                +{item.skills.length - 3}
-              </span>
-            )}
-          </div>
-        )}
-        
-        {item.links && item.links.length > 0 && (
-          <div class="flex gap-3">
-            {item.links.slice(0, 2).map((link) => (
-              <a 
-                href={link.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class={`text-blue-600 dark:text-blue-400 hover:underline font-medium transition-colors ${sizeClasses.meta}`}
-              >
-                {getLinkIcon(link.type)} {link.name}
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-)}
+{
+	layout === "timeline" ? (
+		<div class="relative flex items-start gap-6">
+			{showTimeline && (
+				<div
+					class={`relative z-10 rounded-full flex items-center justify-center shrink-0 ${sizeClasses.node}`}
+					style={`background-color: ${itemColor}`}
+				>
+					<Icon
+						icon={item.icon || getTypeIcon(item.type)}
+						class={`text-white ${sizeClasses.nodeIcon}`}
+						color="white"
+						fallback={item.title.charAt(0)}
+						loading="eager"
+					/>
+				</div>
+			)}
+
+			<div class="flex-1 bg-transparent rounded-lg border border-[var(--line-divider)] hover:shadow-lg transition-shadow duration-300">
+				<div class={sizeClasses.container}>
+					<div class="flex items-start justify-between mb-3">
+						<div>
+							<h3
+								class={`font-semibold text-black/90 dark:text-white/90 mb-1 ${sizeClasses.title}`}
+							>
+								{item.title}
+								{item.featured && (
+									<span class="ml-2 text-yellow-500">⭐</span>
+								)}
+							</h3>
+							{item.organization && (
+								<div
+									class={`text-black/70 dark:text-white/70 ${sizeClasses.meta}`}
+								>
+									{item.organization}{" "}
+									{item.position && `• ${item.position}`}
+								</div>
+							)}
+						</div>
+						<div class="flex items-center gap-2 shrink-0 ml-4">
+							{isCurrent && (
+								<span
+									class={`px-3 py-1.5 bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full ${sizeClasses.badge}`}
+								>
+									{i18n(I18nKey.timelineCurrent)}
+								</span>
+							)}
+							<span
+								class={`px-2 py-1 rounded-full ${sizeClasses.badge} ${getTypeColor(item.type)}`}
+							>
+								{getTypeText(item.type)}
+							</span>
+						</div>
+					</div>
+
+					<div
+						class={`flex items-center gap-4 mb-3 text-black/60 dark:text-white/60 ${sizeClasses.meta}`}
+					>
+						<div>
+							{formatDate(item.startDate)} -{" "}
+							{item.endDate
+								? formatDate(item.endDate)
+								: i18n(I18nKey.timelinePresent)}
+						</div>
+						<div>•</div>
+						<div>{getDuration(item.startDate, item.endDate)}</div>
+						{item.location && (
+							<>
+								<div>•</div>
+								<div>📍 {item.location}</div>
+							</>
+						)}
+					</div>
+
+					<p
+						class={`text-black/70 dark:text-white/70 mb-4 ${sizeClasses.description}`}
+					>
+						{item.description}
+					</p>
+
+					{item.achievements && item.achievements.length > 0 && (
+						<div class="mb-4">
+							<h4
+								class={`font-semibold text-black/80 dark:text-white/80 mb-2 ${sizeClasses.meta}`}
+							>
+								{i18n(I18nKey.timelineAchievements)}
+							</h4>
+							<ul class="space-y-1">
+								{item.achievements.map((achievement) => (
+									<li
+										class={`text-black/70 dark:text-white/70 flex items-start gap-2 ${sizeClasses.description}`}
+									>
+										<span class="text-green-500 mt-1">
+											•
+										</span>
+										<span>{achievement}</span>
+									</li>
+								))}
+							</ul>
+						</div>
+					)}
+
+					{item.skills && item.skills.length > 0 && (
+						<div class="mb-4">
+							<div class="flex flex-wrap gap-1">
+								{item.skills.map((skill) => (
+									<span
+										class={`btn-regular px-2 py-1 rounded ${sizeClasses.badge}`}
+									>
+										{skill}
+									</span>
+								))}
+							</div>
+						</div>
+					)}
+
+					{item.links && item.links.length > 0 && (
+						<div class="flex gap-4">
+							{item.links.map((link) => (
+								<a
+									href={link.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									class={`text-blue-600 dark:text-blue-400 hover:underline font-medium flex items-center gap-1 transition-colors ${sizeClasses.meta}`}
+								>
+									{getLinkIcon(link.type)}
+									{link.name}
+								</a>
+							))}
+						</div>
+					)}
+				</div>
+			</div>
+		</div>
+	) : (
+		<div class="bg-transparent rounded-lg border border-[var(--line-divider)] hover:shadow-lg transition-shadow duration-300">
+			<div class={sizeClasses.container}>
+				<div class="flex items-start gap-4 mb-3">
+					<div
+						class={`rounded-lg flex items-center justify-center shrink-0 ${sizeClasses.node}`}
+						style={`background-color: ${itemColor}20`}
+					>
+						<iconify-icon
+							icon={item.icon || getTypeIcon(item.type)}
+							class={sizeClasses.nodeIcon}
+							style={`color: ${itemColor}`}
+						/>
+					</div>
+					<div class="flex-1">
+						<div class="flex items-start justify-between mb-2">
+							<h3
+								class={`font-semibold text-black/90 dark:text-white/90 ${sizeClasses.title}`}
+							>
+								{item.title}
+								{item.featured && (
+									<span class="ml-2 text-yellow-500">⭐</span>
+								)}
+							</h3>
+							<div class="flex items-center gap-2 shrink-0 ml-2">
+								{isCurrent && (
+									<span
+										class={`px-3 py-1.5 bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full ${sizeClasses.badge}`}
+									>
+										{i18n(I18nKey.timelineCurrent)}
+									</span>
+								)}
+								<span
+									class={`px-2 py-1 rounded-full ${sizeClasses.badge} ${getTypeColor(item.type)}`}
+								>
+									{getTypeText(item.type)}
+								</span>
+							</div>
+						</div>
+						{item.organization && (
+							<div
+								class={`text-black/70 dark:text-white/70 mb-1 ${sizeClasses.meta}`}
+							>
+								{item.organization}{" "}
+								{item.position && `• ${item.position}`}
+							</div>
+						)}
+						{item.location && (
+							<div
+								class={`text-black/60 dark:text-white/60 mb-2 ${sizeClasses.meta}`}
+							>
+								📍 {item.location}
+							</div>
+						)}
+					</div>
+				</div>
+
+				<div
+					class={`text-black/70 dark:text-white/70 mb-3 ${sizeClasses.meta}`}
+				>
+					{formatDate(item.startDate)} -{" "}
+					{item.endDate
+						? formatDate(item.endDate)
+						: i18n(I18nKey.timelinePresent)}{" "}
+					({getDuration(item.startDate, item.endDate)})
+				</div>
+
+				<p
+					class={`text-black/60 dark:text-white/60 mb-4 ${sizeClasses.description}`}
+				>
+					{item.description}
+				</p>
+
+				{item.achievements && item.achievements.length > 0 && (
+					<div class="mb-4">
+						<h4
+							class={`font-semibold text-black/80 dark:text-white/80 mb-2 ${sizeClasses.meta}`}
+						>
+							{i18n(I18nKey.timelineAchievements)}
+						</h4>
+						<ul class="space-y-1">
+							{item.achievements
+								.slice(0, 3)
+								.map((achievement) => (
+									<li
+										class={`text-black/70 dark:text-white/70 flex items-start gap-2 ${sizeClasses.description}`}
+									>
+										<span class="text-green-500 mt-1">
+											•
+										</span>
+										<span>{achievement}</span>
+									</li>
+								))}
+							{item.achievements.length > 3 && (
+								<li
+									class={`text-black/60 dark:text-white/60 ${sizeClasses.description}`}
+								>
+									... 还有 {item.achievements.length - 3}{" "}
+									项成就
+								</li>
+							)}
+						</ul>
+					</div>
+				)}
+
+				<div class="flex items-center justify-between">
+					{item.skills && item.skills.length > 0 && (
+						<div class="flex flex-wrap gap-1">
+							{item.skills.slice(0, 3).map((skill) => (
+								<span
+									class={`btn-regular px-2 py-1 rounded ${sizeClasses.badge}`}
+								>
+									{skill}
+								</span>
+							))}
+							{item.skills.length > 3 && (
+								<span
+									class={`btn-regular px-2 py-1 rounded ${sizeClasses.badge}`}
+								>
+									+{item.skills.length - 3}
+								</span>
+							)}
+						</div>
+					)}
+
+					{item.links && item.links.length > 0 && (
+						<div class="flex gap-3">
+							{item.links.slice(0, 2).map((link) => (
+								<a
+									href={link.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									class={`text-blue-600 dark:text-blue-400 hover:underline font-medium transition-colors ${sizeClasses.meta}`}
+								>
+									{getLinkIcon(link.type)} {link.name}
+								</a>
+							))}
+						</div>
+					)}
+				</div>
+			</div>
+		</div>
+	)
+}
 
 <script>
-  if (typeof window !== 'undefined' && !(window as any).iconifyLoaded) {
-    const script = document.createElement('script')
-    script.src = 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js'
-    document.head.appendChild(script)
-    ;(window as any).iconifyLoaded = true
-  }
+	if (typeof window !== "undefined" && !(window as any).iconifyLoaded) {
+		const script = document.createElement("script");
+		script.src =
+			"https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js";
+		document.head.appendChild(script);
+		(window as any).iconifyLoaded = true;
+	}
 </script>

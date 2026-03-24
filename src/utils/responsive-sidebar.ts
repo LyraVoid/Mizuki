@@ -73,7 +73,9 @@ export function initSidebarManager(config: SidebarDisplayConfig): void {
 	 */
 	function updateDisplay(): void {
 		const sidebar = document.getElementById(config.elementId);
-		if (!sidebar) {return;}
+		if (!sidebar) {
+			return;
+		}
 
 		const displayProps = getSidebarDisplayProperty(config);
 		for (const [property, value] of Object.entries(displayProps)) {

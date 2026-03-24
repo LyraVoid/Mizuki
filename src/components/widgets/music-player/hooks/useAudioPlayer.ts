@@ -31,7 +31,9 @@ export function togglePlay(
 	state: AudioPlayerState,
 	audio: HTMLAudioElement | undefined,
 ) {
-	if (!audio || !state.currentSong.url) {return;}
+	if (!audio || !state.currentSong.url) {
+		return;
+	}
 	if (state.isPlaying) {
 		audio.pause();
 	} else {
@@ -68,13 +70,17 @@ export function handleLoadSuccess(
 export function handleLoadError(state: AudioPlayerState): {
 	shouldContinue: boolean;
 } {
-	if (!state.currentSong.url) {return { shouldContinue: false };}
+	if (!state.currentSong.url) {
+		return { shouldContinue: false };
+	}
 	state.isLoading = false;
 	return { shouldContinue: state.isPlaying || state.willAutoPlay };
 }
 
 export function loadSong(state: AudioPlayerState, song: Song, autoPlay = true) {
-	if (!song) {return;}
+	if (!song) {
+		return;
+	}
 	if (song.url !== state.currentSong.url) {
 		state.currentSong = { ...song };
 		if (song.url) {

@@ -8,62 +8,62 @@
  * 按五十音图顺序排列
  */
 export const JAPANESE_KATAKANA = [
-  // あ行
-  "ア",
-  "イ",
-  "ウ",
-  "エ",
-  "オ",
-  // か行
-  "カ",
-  "キ",
-  "ク",
-  "ケ",
-  "コ",
-  // さ行
-  "サ",
-  "シ",
-  "ス",
-  "セ",
-  "ソ",
-  // た行
-  "タ",
-  "チ",
-  "ツ",
-  "テ",
-  "ト",
-  // な行
-  "ナ",
-  "ニ",
-  "ヌ",
-  "ネ",
-  "ノ",
-  // は行
-  "ハ",
-  "ヒ",
-  "フ",
-  "ヘ",
-  "ホ",
-  // ま行
-  "マ",
-  "ミ",
-  "ム",
-  "メ",
-  "モ",
-  // や行
-  "ヤ",
-  "ユ",
-  "ヨ",
-  // ら行
-  "ラ",
-  "リ",
-  "ル",
-  "レ",
-  "ロ",
-  // わ行
-  "ワ",
-  "ヲ",
-  "ン",
+	// あ行
+	"ア",
+	"イ",
+	"ウ",
+	"エ",
+	"オ",
+	// か行
+	"カ",
+	"キ",
+	"ク",
+	"ケ",
+	"コ",
+	// さ行
+	"サ",
+	"シ",
+	"ス",
+	"セ",
+	"ソ",
+	// た行
+	"タ",
+	"チ",
+	"ツ",
+	"テ",
+	"ト",
+	// な行
+	"ナ",
+	"ニ",
+	"ヌ",
+	"ネ",
+	"ノ",
+	// は行
+	"ハ",
+	"ヒ",
+	"フ",
+	"ヘ",
+	"ホ",
+	// ま行
+	"マ",
+	"ミ",
+	"ム",
+	"メ",
+	"モ",
+	// や行
+	"ヤ",
+	"ユ",
+	"ヨ",
+	// ら行
+	"ラ",
+	"リ",
+	"ル",
+	"レ",
+	"ロ",
+	// わ行
+	"ワ",
+	"ヲ",
+	"ン",
 ] as const;
 
 export type JapaneseKatakanaChar = (typeof JAPANESE_KATAKANA)[number];
@@ -75,10 +75,10 @@ export type JapaneseKatakanaChar = (typeof JAPANESE_KATAKANA)[number];
  * @returns 徽章文本
  */
 export function getKatakanaBadge(index: number, useJapanese: boolean): string {
-  if (useJapanese && index < JAPANESE_KATAKANA.length) {
-    return JAPANESE_KATAKANA[index];
-  }
-  return (index + 1).toString();
+	if (useJapanese && index < JAPANESE_KATAKANA.length) {
+		return JAPANESE_KATAKANA[index];
+	}
+	return (index + 1).toString();
 }
 
 /**

@@ -14,23 +14,25 @@ interface Props {
 const { relatedPosts } = Astro.props;
 ---
 
-{relatedPosts.length > 0 && (
-	<ListContainer
-		title={i18n(I18nKey.relatedPosts)}
-		badge={i18n(I18nKey.smartRecommend)}
-		icon="material-symbols:signpost"
-	>
-		<div class="flex flex-col -mx-1">
-			{relatedPosts.map((post, idx) => (
-				<>
-					<PostListItem
-						post={post}
-						index={idx}
-						dateFormat="description"
-					/>
-					{idx < relatedPosts.length - 1 && <ListDivider />}
-				</>
-			))}
-		</div>
-	</ListContainer>
-)}
+{
+	relatedPosts.length > 0 && (
+		<ListContainer
+			title={i18n(I18nKey.relatedPosts)}
+			badge={i18n(I18nKey.smartRecommend)}
+			icon="material-symbols:signpost"
+		>
+			<div class="flex flex-col -mx-1">
+				{relatedPosts.map((post, idx) => (
+					<>
+						<PostListItem
+							post={post}
+							index={idx}
+							dateFormat="description"
+						/>
+						{idx < relatedPosts.length - 1 && <ListDivider />}
+					</>
+				))}
+			</div>
+		</ListContainer>
+	)
+}

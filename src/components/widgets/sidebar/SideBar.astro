@@ -87,8 +87,8 @@ const tabletStickyComponents = widgetManager.getComponentsByPosition(
 		init() {
 			this.updateResponsiveDisplay();
 			if (!window.__mizukiSidebarResizeHandler) {
-				window.__mizukiSidebarResizeHandler =
-					() => this.updateResponsiveDisplay();
+				window.__mizukiSidebarResizeHandler = () =>
+					this.updateResponsiveDisplay();
 				window.addEventListener(
 					"resize",
 					window.__mizukiSidebarResizeHandler,

@@ -1,13 +1,13 @@
 ---
-import { Icon } from "astro-icon/components"
+import { Icon } from "astro-icon/components";
 
-import { LinkPresets } from "../../../constants/link-presets"
-import I18nKey from "../../../i18n/i18nKey"
-import { i18n } from "../../../i18n/translation"
-import { url } from "../../../utils/url-utils"
-import type { DropdownMenuProps } from "./types"
+import { LinkPresets } from "../../../constants/link-presets";
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import { url } from "../../../utils/url-utils";
+import type { DropdownMenuProps } from "./types";
 
-const { link, class: className } = Astro.props as DropdownMenuProps
+const { link, class: className } = Astro.props as DropdownMenuProps;
 
 const navTitleMap: Record<string, I18nKey> = {
 	Links: I18nKey.navLinks,
@@ -22,18 +22,18 @@ const navTitleMap: Record<string, I18nKey> = {
 	Skills: I18nKey.skills,
 	Timeline: I18nKey.timeline,
 	Friends: I18nKey.friends,
-}
+};
 
 const getLocalizedName = (name: string): string => {
-	return name in navTitleMap ? i18n(navTitleMap[name]) : name
-}
+	return name in navTitleMap ? i18n(navTitleMap[name]) : name;
+};
 
 const children =
 	link.children?.map((child) =>
 		typeof child === "number" ? LinkPresets[child] : child,
-	) ?? []
+	) ?? [];
 
-const hasChildren = children.length > 0
+const hasChildren = children.length > 0;
 ---
 
 <div class:list={["dropdown-container group", className]} data-dropdown>
@@ -47,9 +47,14 @@ const hasChildren = children.length > 0
 					data-dropdown-trigger
 				>
 					{link.icon && (
-						<Icon name={link.icon} class="text-[1.1rem] lg:mr-2 flex-shrink-0" />
+						<Icon
+							name={link.icon}
+							class="text-[1.1rem] lg:mr-2 flex-shrink-0"
+						/>
 					)}
-					<span class="truncate hidden lg:inline">{getLocalizedName(link.name)}</span>
+					<span class="truncate hidden lg:inline">
+						{getLocalizedName(link.name)}
+					</span>
 					<Icon
 						name="material-symbols:keyboard-arrow-down-rounded"
 						class="text-[1.25rem] transition-transform duration-200 dropdown-arrow ml-1 flex-shrink-0 hidden lg:inline"
@@ -101,9 +106,14 @@ const hasChildren = children.length > 0
 				class="btn-plain scale-animation rounded-lg h-11 font-bold w-11 lg:w-auto lg:px-5 active:scale-95 flex items-center justify-center lg:justify-start whitespace-nowrap"
 			>
 				{link.icon && (
-					<Icon name={link.icon} class="text-[1.1rem] lg:mr-2 flex-shrink-0" />
+					<Icon
+						name={link.icon}
+						class="text-[1.1rem] lg:mr-2 flex-shrink-0"
+					/>
 				)}
-				<span class="truncate hidden lg:inline">{getLocalizedName(link.name)}</span>
+				<span class="truncate hidden lg:inline">
+					{getLocalizedName(link.name)}
+				</span>
 				{link.external && (
 					<Icon
 						name="fa7-solid:arrow-up-right-from-square"
@@ -156,67 +166,71 @@ const hasChildren = children.length > 0
 
 <script>
 	document.addEventListener("DOMContentLoaded", () => {
-		const dropdowns = document.querySelectorAll("[data-dropdown]")
+		const dropdowns = document.querySelectorAll("[data-dropdown]");
 
 		dropdowns.forEach((dropdown) => {
 			const trigger = dropdown.querySelector(
 				"[data-dropdown-trigger]",
-			) as HTMLElement
+			) as HTMLElement;
 			const menu = dropdown.querySelector(
 				"[data-dropdown-menu]",
-			) as HTMLElement
+			) as HTMLElement;
 			const items = dropdown.querySelectorAll(
 				".dropdown-item",
-			) as NodeListOf<HTMLElement>
+			) as NodeListOf<HTMLElement>;
 
-			if (!trigger || !menu) {return}
+			if (!trigger || !menu) {
+				return;
+			}
 
 			const closeMenu = () => {
-				trigger.setAttribute("aria-expanded", "false")
-			}
+				trigger.setAttribute("aria-expanded", "false");
+			};
 
 			const toggleMenu = () => {
 				const isExpanded =
-					trigger.getAttribute("aria-expanded") === "true"
-				trigger.setAttribute("aria-expanded", String(!isExpanded))
-			}
+					trigger.getAttribute("aria-expanded") === "true";
+				trigger.setAttribute("aria-expanded", String(!isExpanded));
+			};
 
 			trigger.addEventListener("keydown", (e) => {
 				if (e.key === "Enter" || e.key === " ") {
-					e.preventDefault()
-					toggleMenu()
+					e.preventDefault();
+					toggleMenu();
 				} else if (e.key === "ArrowDown") {
-					e.preventDefault()
-					trigger.setAttribute("aria-expanded", "true")
-					if (items.length > 0) {items[0].focus()}
+					e.preventDefault();
+					trigger.setAttribute("aria-expanded", "true");
+					if (items.length > 0) {
+						items[0].focus();
+					}
 				} else if (e.key === "Escape") {
-					closeMenu()
+					closeMenu();
 				}
-			})
+			});
 
 			items.forEach((item, index) => {
 				item.addEventListener("keydown", (e) => {
 					if (e.key === "ArrowDown") {
-						e.preventDefault()
-						items[(index + 1) % items.length].focus()
+						e.preventDefault();
+						items[(index + 1) % items.length].focus();
 					} else if (e.key === "ArrowUp") {
-						e.preventDefault()
+						e.preventDefault();
 						items[
 							(index - 1 + items.length) % items.length
-						].focus()
+						].focus();
 					} else if (e.key === "Escape") {
-						e.preventDefault()
-						closeMenu()
-						trigger.focus()
+						e.preventDefault();
+						closeMenu();
+						trigger.focus();
 					}
-				})
-			})
+				});
+			});
 
 			document.addEventListener("click", (e) => {
 				if (!dropdown.contains(e.target as Node)) {
-					closeMenu()
+					closeMenu();
 				}
-			})
-		})
-	})
+			});
+		});
+	});
 </script>

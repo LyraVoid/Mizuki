@@ -54,12 +54,16 @@ export function generateTOCItems(config: TOCConfig): TOCItem[] {
 	let h1Count = 0;
 
 	headings.forEach((heading) => {
-		if (!heading.id) {return;}
+		if (!heading.id) {
+			return;
+		}
 
 		const level = parseInt(heading.tagName.charAt(1), 10);
 
 		// 根据 depth 配置过滤标题
-		if (level > config.depth) {return;}
+		if (level > config.depth) {
+			return;
+		}
 
 		const text = (heading.textContent || "").replace(/#+\s*$/, "");
 		let badge = "";

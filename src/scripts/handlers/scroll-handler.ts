@@ -3,7 +3,6 @@
  * 管理页面滚动相关的功能，包括自定义滚动条和滚动监听
  */
 
-
 /**
  * 滚动处理器类
  * 负责自定义滚动条初始化和滚动事件管理
@@ -21,7 +20,9 @@ export class ScrollHandler {
 		) as NodeListOf<HTMLElement>;
 
 		katexElements.forEach((element) => {
-			if (!element.parentNode) {return;}
+			if (!element.parentNode) {
+				return;
+			}
 
 			const container = document.createElement("div");
 			container.className = "katex-display-container";
@@ -46,7 +47,9 @@ export class ScrollHandler {
 	 * 添加 KaTeX 滚动条样式（只添加一次）
 	 */
 	private addKatexScrollbarStyle(): void {
-		if (this.katexScrollbarStyleAdded) {return;}
+		if (this.katexScrollbarStyleAdded) {
+			return;
+		}
 
 		const style = document.createElement("style");
 		style.textContent = `

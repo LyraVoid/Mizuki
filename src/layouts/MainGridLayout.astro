@@ -130,7 +130,8 @@ const defaultPostListLayout = siteConfig.postListLayout?.defaultMode || "list";
 	<Banner
 		bannerImages={bannerImages}
 		mobileNonHomeBannerClass={mobileNonHomeBannerClass}
-		showTextOverlay={isHomePage && (siteConfig.banner.homeText?.enable ?? false)}
+		showTextOverlay={isHomePage &&
+			(siteConfig.banner.homeText?.enable ?? false)}
 	/>
 
 	<!-- Main content -->

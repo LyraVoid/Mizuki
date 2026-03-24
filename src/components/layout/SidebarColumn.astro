@@ -54,7 +54,9 @@ const componentMap: Record<string, unknown> = {
 	calendar: Calendar,
 };
 
-type WidgetComponentConfig = ReturnType<typeof widgetManager.getComponentsByPosition>[number];
+type WidgetComponentConfig = ReturnType<
+	typeof widgetManager.getComponentsByPosition
+>[number];
 
 const mobileTopComponents = showMobile
 	? widgetManager.getComponentsByPosition("top", side, "mobile")
@@ -93,41 +95,47 @@ function renderComponent(
 
 <div id={containerId} class:list={[rootClass, "sidebar-column-root"]}>
 	<div class:list={["flex flex-col w-full gap-4 mb-4", topClass]}>
-		{showMobile && mobileTopComponents.length > 0 && (
-			<div class="flex flex-col w-full gap-4 md:hidden">
-				{mobileTopComponents.map((component, index) => {
-					const renderData = renderComponent(component, index);
-					if (!renderData) return null;
+		{
+			showMobile && mobileTopComponents.length > 0 && (
+				<div class="flex flex-col w-full gap-4 md:hidden">
+					{mobileTopComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) return null;
 
-					const { Component, props } = renderData;
-					return <Component {...props} />;
-				})}
-			</div>
-		)}
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
 
-		{showTablet && tabletTopComponents.length > 0 && (
-			<div class="sidebar-content hidden md:flex lg:hidden flex-col w-full gap-4">
-				{tabletTopComponents.map((component, index) => {
-					const renderData = renderComponent(component, index);
-					if (!renderData) return null;
+		{
+			showTablet && tabletTopComponents.length > 0 && (
+				<div class="sidebar-content hidden md:flex lg:hidden flex-col w-full gap-4">
+					{tabletTopComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) return null;
 
-					const { Component, props } = renderData;
-					return <Component {...props} />;
-				})}
-			</div>
-		)}
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
 
-		{showDesktop && desktopTopComponents.length > 0 && (
-			<div class="sidebar-content hidden lg:flex flex-col w-full gap-4">
-				{desktopTopComponents.map((component, index) => {
-					const renderData = renderComponent(component, index);
-					if (!renderData) return null;
+		{
+			showDesktop && desktopTopComponents.length > 0 && (
+				<div class="sidebar-content hidden lg:flex flex-col w-full gap-4">
+					{desktopTopComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) return null;
 
-					const { Component, props } = renderData;
-					return <Component {...props} />;
-				})}
-			</div>
-		)}
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
 	</div>
 
 	<div
@@ -137,40 +145,46 @@ function renderComponent(
 			stickyClass,
 		]}
 	>
-		{showMobile && mobileStickyComponents.length > 0 && (
-			<div class="flex flex-col w-full gap-4 md:hidden">
-				{mobileStickyComponents.map((component, index) => {
-					const renderData = renderComponent(component, index);
-					if (!renderData) return null;
+		{
+			showMobile && mobileStickyComponents.length > 0 && (
+				<div class="flex flex-col w-full gap-4 md:hidden">
+					{mobileStickyComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) return null;
 
-					const { Component, props } = renderData;
-					return <Component {...props} />;
-				})}
-			</div>
-		)}
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
 
-		{showTablet && tabletStickyComponents.length > 0 && (
-			<div class="sidebar-content hidden md:flex lg:hidden flex-col w-full gap-4">
-				{tabletStickyComponents.map((component, index) => {
-					const renderData = renderComponent(component, index);
-					if (!renderData) return null;
+		{
+			showTablet && tabletStickyComponents.length > 0 && (
+				<div class="sidebar-content hidden md:flex lg:hidden flex-col w-full gap-4">
+					{tabletStickyComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) return null;
 
-					const { Component, props } = renderData;
-					return <Component {...props} />;
-				})}
-			</div>
-		)}
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
 
-		{showDesktop && desktopStickyComponents.length > 0 && (
-			<div class="sidebar-content hidden lg:flex flex-col w-full gap-4">
-				{desktopStickyComponents.map((component, index) => {
-					const renderData = renderComponent(component, index);
-					if (!renderData) return null;
+		{
+			showDesktop && desktopStickyComponents.length > 0 && (
+				<div class="sidebar-content hidden lg:flex flex-col w-full gap-4">
+					{desktopStickyComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) return null;
 
-					const { Component, props } = renderData;
-					return <Component {...props} />;
-				})}
-			</div>
-		)}
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
 	</div>
 </div>

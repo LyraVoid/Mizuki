@@ -39,50 +39,52 @@ const hasHiddenItems = hiddenAnimeList.length > 0;
 	id="anime-list-container"
 	class="anime-grid-container grid gap-4 md:gap-6 opacity-0 transition-opacity duration-300"
 >
-	{visibleAnimeList.map((anime) => {
-		const statusInfo =
-			statusMap[anime.status] || {
+	{
+		visibleAnimeList.map((anime) => {
+			const statusInfo = statusMap[anime.status] || {
 				text: anime.status,
 				class: "btn-regular",
 				icon: "?",
 			};
-		return (
-			<AnimeCard
-				anime={anime}
-				statusInfo={statusInfo}
-				yearLabel={yearLabel}
-				studioLabel={studioLabel}
-			/>
-		);
-	})}
+			return (
+				<AnimeCard
+					anime={anime}
+					statusInfo={statusInfo}
+					yearLabel={yearLabel}
+					studioLabel={studioLabel}
+				/>
+			);
+		})
+	}
 </div>
 
 <template id="anime-lazy-store">
-	{hiddenAnimeList.map((anime) => {
-		const statusInfo =
-			statusMap[anime.status] || {
+	{
+		hiddenAnimeList.map((anime) => {
+			const statusInfo = statusMap[anime.status] || {
 				text: anime.status,
 				class: "btn-regular",
 				icon: "?",
 			};
-		return (
-			<AnimeCard
-				anime={anime}
-				statusInfo={statusInfo}
-				yearLabel={yearLabel}
-				studioLabel={studioLabel}
-			/>
-		);
-	})}
+			return (
+				<AnimeCard
+					anime={anime}
+					statusInfo={statusInfo}
+					yearLabel={yearLabel}
+					studioLabel={studioLabel}
+				/>
+			);
+		})
+	}
 </template>
 
-{hasHiddenItems && (
-	<div
-		id="infinite-scroll-sentinel"
-		class="w-full h-20 flex items-center justify-center mt-8"
-	>
+{
+	hasHiddenItems && (
 		<div
-			class="anime-loading-spinner w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin"
-		/>
-	</div>
-)}
+			id="infinite-scroll-sentinel"
+			class="w-full h-20 flex items-center justify-center mt-8"
+		>
+			<div class="anime-loading-spinner w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+		</div>
+	)
+}
