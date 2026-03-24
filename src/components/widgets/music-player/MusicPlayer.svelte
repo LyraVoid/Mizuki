@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from "@iconify/svelte";
-	import { cubicOut } from "svelte/easing";
 	import { onDestroy, onMount } from "svelte";
+	import { cubicOut } from "svelte/easing";
 	import { fly } from "svelte/transition";
 
 	import { musicPlayerConfig } from "@/config";
@@ -9,10 +9,10 @@
 	import { musicPlayerStore } from "@/stores/musicPlayerStore";
 
 	import CoverImage from "./atoms/CoverImage.svelte";
+	import FabMusicPanel from "./FabMusicPanel.svelte";
 	import MiniPlayer from "./organisms/MiniPlayer.svelte";
 	import PlayerBar from "./organisms/PlayerBar.svelte";
 	import Playlist from "./organisms/Playlist.svelte";
-	import FabMusicPanel from "./FabMusicPanel.svelte";
 	import type { RepeatMode, Song } from "./types";
 
 	let state: MusicPlayerState = musicPlayerStore.getState();

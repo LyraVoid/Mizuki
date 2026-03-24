@@ -23,7 +23,9 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 			}
 
 			init() {
-				if (!this.button) return;
+				if (!this.button) {
+					return;
+				}
 				this.setupScrollListener();
 			}
 

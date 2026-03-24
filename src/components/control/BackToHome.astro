@@ -1,8 +1,7 @@
 ---
+import FloatingButton from "@components/common/FloatingButton.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-
-import FloatingButton from "@components/common/FloatingButton.astro";
 ---
 
 <FloatingButton
@@ -26,7 +25,9 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 <script is:inline define:vars={{ homeUrl: "/" }}>
 	function updateBackToHomeVisibility() {
 		const btn = document.getElementById("back-to-home-btn");
-		if (!btn) return;
+		if (!btn) {
+			return;
+		}
 
 		const path = window.location.pathname.replace(/\/$/, "") || "/";
 		const homePath = homeUrl.replace(/\/$/, "") || "/";

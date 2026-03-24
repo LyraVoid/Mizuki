@@ -4,8 +4,8 @@ import type { CollectionEntry } from "astro:content";
 import { commentConfig } from "@/config";
 import { removeFileExtension } from "@/utils/url-utils";
 
-import Twikoo from "./Twikoo.astro";
 import Giscus from "./Giscus.astro";
+import Twikoo from "./Twikoo.astro";
 
 interface Props {
 	post: CollectionEntry<"posts">;

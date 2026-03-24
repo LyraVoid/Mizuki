@@ -4,6 +4,7 @@
  */
 
 import { siteConfig, widgetConfigs } from "../config";
+import { initLinkPreloading } from "../utils/navigation-utils";
 import { SWUP_SELECTORS } from "./core/swup-config";
 import { SwupHooksManager } from "./core/swup-hooks";
 import { setupSakuraOnDOMReady } from "./effects/sakura-effect";
@@ -25,7 +26,6 @@ import {
 import type { PanelHandler } from "./handlers/panel-handler";
 import { getPanelHandler, initPanelHandler } from "./handlers/panel-handler";
 import { checkKatex, initCustomScrollbar } from "./handlers/scroll-handler";
-import { initLinkPreloading } from "../utils/navigation-utils";
 
 /**
  * Swup 管理器类
