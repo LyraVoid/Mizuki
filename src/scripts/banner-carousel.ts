@@ -35,7 +35,9 @@ export class BannerCarouselManager {
 		const carousel = document.getElementById(
 			SWUP_SELECTORS.bannerCarousel.slice(1),
 		);
-		if (!carousel) {return;}
+		if (!carousel) {
+			return;
+		}
 
 		// 获取所有轮播项
 		const carouselItems = document.querySelectorAll(".carousel-item");
@@ -149,7 +151,9 @@ export class BannerCarouselManager {
 		carousel.addEventListener(
 			"touchmove",
 			(e: TouchEvent) => {
-				if (!this.startX || !this.startY) {return;}
+				if (!this.startX || !this.startY) {
+					return;
+				}
 
 				const diffX = Math.abs(e.touches[0].clientX - this.startX);
 				const diffY = Math.abs(e.touches[0].clientY - this.startY);

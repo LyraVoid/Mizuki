@@ -50,7 +50,9 @@ async function fetchNotoSansSCFonts() {
 		const cssResp = await fetch(
 			"https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap",
 		);
-		if (!cssResp.ok) {throw new Error("Failed to fetch Google Fonts CSS");}
+		if (!cssResp.ok) {
+			throw new Error("Failed to fetch Google Fonts CSS");
+		}
 		const cssText = await cssResp.text();
 
 		const getUrlForWeight = (weight: number) => {
@@ -59,7 +61,9 @@ async function fetchNotoSansSCFonts() {
 				"g",
 			);
 			const match = cssText.match(blockRe);
-			if (!match || match.length === 0) {return null;}
+			if (!match || match.length === 0) {
+				return null;
+			}
 			const urlMatch = match[0].match(/url\((https:[^)]+)\)/);
 			return urlMatch ? urlMatch[1] : null;
 		};

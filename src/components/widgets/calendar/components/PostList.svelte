@@ -15,7 +15,8 @@
 	}
 
 	function getContainerClass(isCurrentPost: boolean): string {
-		const baseClass = "flex items-center justify-between text-sm transition-colors px-2 py-2 rounded-lg group border border-transparent";
+		const baseClass =
+			"flex items-center justify-between text-sm transition-colors px-2 py-2 rounded-lg group border border-transparent";
 
 		if (isCurrentPost) {
 			return `${baseClass} bg-[var(--primary)]/10 text-[var(--primary)] border-[var(--primary)]/10`;
@@ -39,14 +40,26 @@
 </script>
 
 <div class="mt-4">
-	<div class="h-[1px] w-full bg-neutral-200 dark:bg-neutral-700 mb-2" class:hidden={isEmpty}></div>
-	<div class="flex flex-col gap-1 max-h-[9.375rem] overflow-y-auto custom-scrollbar">
+	<div
+		class="h-[1px] w-full bg-neutral-200 dark:bg-neutral-700 mb-2"
+		class:hidden={isEmpty}
+	></div>
+	<div
+		class="flex flex-col gap-1 max-h-[9.375rem] overflow-y-auto custom-scrollbar"
+	>
 		{#if !isEmpty}
 			{#each posts as post (post.id)}
 				{@const isCurrentPost = post.id === currentPostId}
-				<a href="/posts/{post.id}/" class={getContainerClass(isCurrentPost)}>
-					<span class={getTitleClass(isCurrentPost)}>{post.title}</span>
-					<span class={getDateClass(isCurrentPost)}>{formatDate(post.date)}</span>
+				<a
+					href="/posts/{post.id}/"
+					class={getContainerClass(isCurrentPost)}
+				>
+					<span class={getTitleClass(isCurrentPost)}
+						>{post.title}</span
+					>
+					<span class={getDateClass(isCurrentPost)}
+						>{formatDate(post.date)}</span
+					>
 				</a>
 			{/each}
 		{/if}

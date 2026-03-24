@@ -179,7 +179,9 @@ function handleHashNavigation(): void {
 
 function triggerImageLoadEvents(): void {
 	const contentDiv = document.getElementById("decrypted-content");
-	if (!contentDiv) {return;}
+	if (!contentDiv) {
+		return;
+	}
 
 	const images = contentDiv.querySelectorAll("img");
 	images.forEach((img) => {

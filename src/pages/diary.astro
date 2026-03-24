@@ -23,29 +23,39 @@ const daysAgo = i18n(I18nKey.diaryDaysAgo);
 
 <MainGridLayout title={i18n(I18nKey.diary)} description="即刻短文">
 	<script>
-		import('../scripts/right-sidebar-layout.js');
+		import("../scripts/right-sidebar-layout.js");
 	</script>
 
-	<div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
 		<div class="card-base z-10 px-4 py-4 md:px-6 md:py-5 relative w-full">
 			<div class="relative max-w-4xl w-full px-2 md:px-0">
 				<!-- 页面头部 -->
 				<div class="moments-header mb-6">
 					<div class="header-content">
 						<div class="header-info">
-							<h1 class="moments-title text-xl md:text-2xl lg:text-3xl font-bold text-90 mb-1">
+							<h1
+								class="moments-title text-xl md:text-2xl lg:text-3xl font-bold text-90 mb-1"
+							>
 								{i18n(I18nKey.diary)}
 							</h1>
-							<p class="moments-subtitle text-sm md:text-base lg:text-lg text-75">
+							<p
+								class="moments-subtitle text-sm md:text-base lg:text-lg text-75"
+							>
 								{i18n(I18nKey.diarySubtitle)}
 							</p>
 						</div>
 						<div class="header-stats">
 							<div class="stat-item text-center">
-								<span class="stat-number text-lg md:text-xl lg:text-2xl font-bold text-[var(--primary)]">
+								<span
+									class="stat-number text-lg md:text-xl lg:text-2xl font-bold text-[var(--primary)]"
+								>
 									{diaryStats.total}
 								</span>
-								<span class="stat-label text-xs md:text-sm lg:text-base text-75">
+								<span
+									class="stat-label text-xs md:text-sm lg:text-base text-75"
+								>
 									{i18n(I18nKey.diaryCount)}
 								</span>
 							</div>
@@ -56,20 +66,24 @@ const daysAgo = i18n(I18nKey.diaryDaysAgo);
 				<!-- 短文列表 -->
 				<div class="moments-timeline">
 					<div class="timeline-list space-y-4">
-						{moments.map((moment, index) => (
-							<MomentCard
-								moment={moment}
-								index={index}
-								minutesAgo={minutesAgo}
-								hoursAgo={hoursAgo}
-								daysAgo={daysAgo}
-							/>
-						))}
+						{
+							moments.map((moment, index) => (
+								<MomentCard
+									moment={moment}
+									index={index}
+									minutesAgo={minutesAgo}
+									hoursAgo={hoursAgo}
+									daysAgo={daysAgo}
+								/>
+							))
+						}
 					</div>
 				</div>
 
 				<!-- 底部提示 -->
-				<div class="moments-tips text-center mt-6 md:mt-8 lg:mt-10 text-75 text-xs md:text-sm lg:text-base italic">
+				<div
+					class="moments-tips text-center mt-6 md:mt-8 lg:mt-10 text-75 text-xs md:text-sm lg:text-base italic"
+				>
 					{i18n(I18nKey.diaryTips)}
 				</div>
 			</div>
@@ -81,7 +95,11 @@ const daysAgo = i18n(I18nKey.diaryDaysAgo);
 	.moments-header {
 		padding: 1rem;
 		border-radius: 8px;
-		background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark, var(--primary)) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--primary) 0%,
+			var(--primary-dark, var(--primary)) 100%
+		);
 		color: white;
 		position: relative;
 		overflow: hidden;

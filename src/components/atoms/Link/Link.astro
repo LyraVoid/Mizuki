@@ -27,9 +27,11 @@ const variantClasses = {
 
 const underlineClass = underline ? "underline hover:no-underline" : "";
 
-const combinedClass = `${baseClasses} ${variantClasses[variant]} ${underlineClass} ${className}`.trim();
+const combinedClass =
+	`${baseClasses} ${variantClasses[variant]} ${underlineClass} ${className}`.trim();
 
-const relValue = target === "_blank" ? `noopener noreferrer${rel ? ` ${rel}` : ""}` : rel;
+const relValue =
+	target === "_blank" ? `noopener noreferrer${rel ? ` ${rel}` : ""}` : rel;
 ---
 
 <a href={href} target={target} rel={relValue} class={combinedClass}>

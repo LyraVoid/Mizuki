@@ -76,7 +76,9 @@ export function getHeadings(
 
 	allHeadings.forEach((h) => {
 		const level = parseInt(h.tagName[1]);
-		if (level < minLevel) {minLevel = level;}
+		if (level < minLevel) {
+			minLevel = level;
+		}
 	});
 
 	allHeadings.forEach((heading) => {

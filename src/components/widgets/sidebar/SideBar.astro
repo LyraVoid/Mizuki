@@ -87,8 +87,8 @@ const tabletStickyComponents = widgetManager.getComponentsByPosition(
 		init() {
 			this.updateResponsiveDisplay();
 			if (!window.__mizukiSidebarResizeHandler) {
-				window.__mizukiSidebarResizeHandler =
-					() => this.updateResponsiveDisplay();
+				window.__mizukiSidebarResizeHandler = () =>
+					this.updateResponsiveDisplay();
 				window.addEventListener(
 					"resize",
 					window.__mizukiSidebarResizeHandler,
@@ -104,7 +104,9 @@ const tabletStickyComponents = widgetManager.getComponentsByPosition(
 				window.swup.hooks.on("content:replace", () => {
 					setTimeout(() => {
 						const sidebar = document.getElementById("sidebar");
-						if (!sidebar) return;
+						if (!sidebar) {
+							return;
+						}
 
 						const width = window.innerWidth;
 						let deviceType;

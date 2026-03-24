@@ -1,21 +1,33 @@
 ---
-
 import { expressiveCodeConfig, siteConfig } from "@/config";
 ---
 
 <!-- 全局配置载体 -->
-<div id="config-carrier" data-hue={siteConfig.themeColor.hue} data-hide-code-blocks-during-transition={expressiveCodeConfig.hideDuringThemeTransition ? "true" : "false"}>
+<div
+	id="config-carrier"
+	data-hue={siteConfig.themeColor.hue}
+	data-hide-code-blocks-during-transition={expressiveCodeConfig.hideDuringThemeTransition
+		? "true"
+		: "false"}
+>
 </div>
 
-<script is:inline define:vars={{ tocEnable: siteConfig.toc.enable, tocDepth: siteConfig.toc.depth, tocUseJapaneseBadge: siteConfig.toc.useJapaneseBadge }}>
-  // 将 TOC 配置传递到前端
-  window.siteConfig = window.siteConfig || {};
-  window.siteConfig.toc = {
-    enable: tocEnable,
-    depth: tocDepth,
-    useJapaneseBadge: tocUseJapaneseBadge
-  };
+<script
+	is:inline
+	define:vars={{
+		tocEnable: siteConfig.toc.enable,
+		tocDepth: siteConfig.toc.depth,
+		tocUseJapaneseBadge: siteConfig.toc.useJapaneseBadge,
+	}}
+>
+	// 将 TOC 配置传递到前端
+	window.siteConfig = window.siteConfig || {};
+	window.siteConfig.toc = {
+		enable: tocEnable,
+		depth: tocDepth,
+		useJapaneseBadge: tocUseJapaneseBadge,
+	};
 
-  // 添加调试信息
-  console.log('TOC Config:', window.siteConfig.toc);
+	// 添加调试信息
+	console.log("TOC Config:", window.siteConfig.toc);
 </script>

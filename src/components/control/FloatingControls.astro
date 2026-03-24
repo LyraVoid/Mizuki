@@ -1,12 +1,11 @@
 ---
 import type { MarkdownHeading } from "astro";
 
+import { musicPlayerConfig, siteConfig } from "../../config";
+import FloatingTOC from "../features/toc/FloatingTOC.astro";
 import BackToHome from "./BackToHome.astro";
 import BackToTop from "./BackToTop.astro";
 import MusicFabButton from "./MusicFabButton.svelte";
-import FloatingTOC from "../features/toc/FloatingTOC.astro";
-
-import { musicPlayerConfig, siteConfig } from "../../config";
 
 interface Props {
 	headings?: MarkdownHeading[];
@@ -273,7 +272,9 @@ const { headings = [] } = Astro.props;
 
 	function observeFloatingControlButton(id) {
 		const target = document.getElementById(id);
-		if (!target) return;
+		if (!target) {
+			return;
+		}
 
 		const existing = window.__floatingControlObservers.get(id);
 		if (existing) {
@@ -316,7 +317,9 @@ const { headings = [] } = Astro.props;
 							? "back-to-top-btn"
 							: null;
 
-			if (!id) continue;
+			if (!id) {
+				continue;
+			}
 
 			const button = document.getElementById(id);
 			const isVisible = Boolean(
@@ -327,7 +330,9 @@ const { headings = [] } = Astro.props;
 
 		for (const id of controlButtonIds) {
 			const button = document.getElementById(id);
-			if (!button) continue;
+			if (!button) {
+				continue;
+			}
 
 			const isVisible = !button.classList.contains("hide");
 			button.classList.toggle("fab-lock-visible", isVisible);
@@ -391,7 +396,9 @@ const { headings = [] } = Astro.props;
 	initFloatingControlVisibility();
 
 	function scheduleVisibilityUpdate() {
-		if (visibilityUpdateScheduled || mermaidRendering) return;
+		if (visibilityUpdateScheduled || mermaidRendering) {
+			return;
+		}
 		visibilityUpdateScheduled = true;
 		requestAnimationFrame(() => {
 			visibilityUpdateScheduled = false;

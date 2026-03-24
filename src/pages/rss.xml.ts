@@ -44,7 +44,9 @@ export async function GET(context: APIContext) {
 
 		for (const img of images) {
 			const src = img.getAttribute("src");
-			if (!src) {continue;}
+			if (!src) {
+				continue;
+			}
 
 			// Handle content-relative images and convert them to built _astro paths
 			if (

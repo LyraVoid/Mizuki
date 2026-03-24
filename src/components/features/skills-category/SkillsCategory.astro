@@ -1,24 +1,31 @@
 ---
-import { SectionTitle } from "../section-title"
-import { SkillCard } from "../skills"
-import type { SkillsCategoryProps } from "./types"
+import { SectionTitle } from "../section-title";
+import { SkillCard } from "../skills";
+import type { SkillsCategoryProps } from "./types";
 
 const {
 	skills,
 	categoryText,
 	class: className = "",
-} = Astro.props as SkillsCategoryProps
-
+} = Astro.props as SkillsCategoryProps;
 ---
 
-
-
-<div class={`skills-category ${className}`.trim()} style="container-type: inline-size;">
+<div
+	class={`skills-category ${className}`.trim()}
+	style="container-type: inline-size;"
+>
 	<SectionTitle title={categoryText} count={skills.length} />
 	<div class="skills-grid grid gap-4">
-		{skills.map((skill) => (
-			<SkillCard skill={skill} size="small" showProgress={true} showIcon={true} />
-		))}
+		{
+			skills.map((skill) => (
+				<SkillCard
+					skill={skill}
+					size="small"
+					showProgress={true}
+					showIcon={true}
+				/>
+			))
+		}
 	</div>
 </div>
 

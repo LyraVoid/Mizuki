@@ -23,10 +23,12 @@
 
 	function getYearClass(year: number): string {
 		const isCurrent = year === currentYear;
-		let baseClass = "cursor-pointer rounded-lg flex flex-col items-center justify-center py-3 transition-all hover:bg-[var(--btn-plain-bg-hover)] relative border border-transparent";
+		let baseClass =
+			"cursor-pointer rounded-lg flex flex-col items-center justify-center py-3 transition-all hover:bg-[var(--btn-plain-bg-hover)] relative border border-transparent";
 
 		if (isCurrent) {
-			baseClass += " border-[var(--primary)] text-[var(--primary)] bg-[var(--primary)]/5";
+			baseClass +=
+				" border-[var(--primary)] text-[var(--primary)] bg-[var(--primary)]/5";
 		} else {
 			baseClass += " text-neutral-700 dark:text-neutral-300";
 		}
@@ -36,7 +38,9 @@
 
 	function scrollToCurrentYear() {
 		setTimeout(() => {
-			const el = containerEl?.querySelector(`[data-year="${currentYear}"]`);
+			const el = containerEl?.querySelector(
+				`[data-year="${currentYear}"]`,
+			);
 			if (el) {
 				el.scrollIntoView({ block: "center", behavior: "smooth" });
 			}
@@ -62,7 +66,8 @@
 		>
 			<span class="text-sm font-bold">{year}</span>
 			{#if hasPost}
-				<span class="w-1.5 h-1.5 rounded-full bg-[var(--primary)] mt-1"></span>
+				<span class="w-1.5 h-1.5 rounded-full bg-[var(--primary)] mt-1"
+				></span>
 			{:else}
 				<span class="w-1.5 h-1.5 mt-1"></span>
 			{/if}

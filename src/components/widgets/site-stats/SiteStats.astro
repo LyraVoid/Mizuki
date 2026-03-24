@@ -63,7 +63,9 @@ function formatNumber(num: number): string {
 
 // 获取最新文章日期（忽略置顶状态，只按发布日期排序）
 const latestPost = posts.reduce((latest, post) => {
-	if (!latest) {return post;}
+	if (!latest) {
+		return post;
+	}
 	return post.data.published > latest.data.published ? post : latest;
 }, posts[0]);
 
@@ -164,7 +166,7 @@ const stats = [
 			'[data-stat-id="running-days"]',
 		);
 		if (runningDaysElements.length > 0) {
-			runningDaysElements.forEach(element => {
+			runningDaysElements.forEach((element) => {
 				element.textContent = diffDays.toString();
 			});
 		}
@@ -183,9 +185,9 @@ const stats = [
 				'[data-stat-id="last-update"]',
 			);
 			if (lastUpdateElements.length > 0) {
-				lastUpdateElements.forEach(element => {
+				lastUpdateElements.forEach((element) => {
 					element.textContent = daysSinceLastUpdate.toString();
-				})
+				});
 			}
 		}
 	}

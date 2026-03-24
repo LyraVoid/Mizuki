@@ -197,8 +197,8 @@ function applyI18n() {
   // Text content
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (el.tagName === 'TITLE') document.title = t(key);
-    else el.textContent = t(key);
+    if (el.tagName === 'TITLE') {document.title = t(key);}
+    else {el.textContent = t(key);}
   });
   // Titles (tooltips)
   document.querySelectorAll('[data-i18n-title]').forEach(el => {
@@ -358,9 +358,9 @@ const CODE_TRANSLATIONS = {
 };
 
 function localizeCode(code) {
-  if (currentLang === 'zh-CN') return code;
+  if (currentLang === 'zh-CN') {return code;}
   const map = CODE_TRANSLATIONS[currentLang];
-  if (!map) return code;
+  if (!map) {return code;}
   // Sort keys by length descending so longer phrases are replaced first
   const keys = Object.keys(map).sort((a, b) => b.length - a.length);
   let result = code;
@@ -463,9 +463,9 @@ else { setHue(60); }
 // Close picker on outside click
 document.addEventListener('click', e => {
   if (!e.target.closest('.theme-picker-btn') && !e.target.closest('.theme-picker-panel'))
-    $('#themePickerPanel').classList.add('hidden');
+    {$('#themePickerPanel').classList.add('hidden');}
   if (!e.target.closest('#btnLang') && !e.target.closest('.lang-dropdown'))
-    $('#langDropdown').classList.add('hidden');
+    {$('#langDropdown').classList.add('hidden');}
 });
 
 // ========== Theme Switching ==========
@@ -535,7 +535,7 @@ function renderModules(filter = '') {
       const itemName = t(i.nameKey);
       return !f || itemName.toLowerCase().includes(f) || catName.toLowerCase().includes(f);
     });
-    if (!items.length) return;
+    if (!items.length) {return;}
     const catEl = document.createElement('div');
     catEl.className = 'module-category';
     catEl.innerHTML = `<div class="module-cat-header"><span class="arrow">▼</span>${cat.icon} ${catName}</div><div class="module-cat-items"></div>`;
@@ -587,7 +587,7 @@ $$('[data-cmd]').forEach(btn => {
       table: '| 列1 | 列2 |\n|------|------|\n| 内容 | 内容 |\n',
       hr: '\n---\n'
     };
-    if (map[cmd]) insertAtCursor(map[cmd]);
+    if (map[cmd]) {insertAtCursor(map[cmd]);}
   };
 });
 
@@ -604,22 +604,22 @@ editor.addEventListener('dragover', e => e.preventDefault());
 editor.addEventListener('drop', e => {
   e.preventDefault();
   const text = e.dataTransfer.getData('text/plain');
-  if (text) insertAtCursor(text);
+  if (text) {insertAtCursor(text);}
 });
 
 // ========== Preview ==========
 function updatePreview() {
-  if (previewSection.classList.contains('hidden')) return;
+  if (previewSection.classList.contains('hidden')) {return;}
   let content = editor.value;
   if (content.startsWith('---')) {
     const end = content.indexOf('---', 3);
-    if (end !== -1) content = content.substring(end + 3).trim();
+    if (end !== -1) {content = content.substring(end + 3).trim();}
   }
   try {
     preview.innerHTML = marked.parse(content, {
       gfm: true, breaks: true,
       highlight: (code, lang) => {
-        if (lang && hljs.getLanguage(lang)) return hljs.highlight(code, { language: lang }).value;
+        if (lang && hljs.getLanguage(lang)) {return hljs.highlight(code, { language: lang }).value;}
         return hljs.highlightAuto(code).value;
       }
     });
@@ -664,8 +664,8 @@ $$('.view-btn').forEach(btn => {
 // ========== Front Matter Modal ==========
 function toggleModal(id, show) {
   const m = document.getElementById(id);
-  if (show) m.classList.remove('hidden');
-  else m.classList.add('hidden');
+  if (show) {m.classList.remove('hidden');}
+  else {m.classList.add('hidden');}
 }
 window.toggleModal = toggleModal;
 
@@ -680,61 +680,61 @@ $('#fm-encrypted').onchange = function() {
 
 function parseFMFromEditor() {
   const val = editor.value;
-  if (!val.startsWith('---')) return;
+  if (!val.startsWith('---')) {return;}
   const end = val.indexOf('---', 3);
-  if (end === -1) return;
+  if (end === -1) {return;}
   const yaml = val.substring(3, end).trim();
   const lines = yaml.split('\n');
   lines.forEach(line => {
     const m = line.match(/^(\w+):\s*(.+)$/);
-    if (!m) return;
+    if (!m) {return;}
     const [, key, value] = m;
     const v = value.replace(/^["']|["']$/g, '').trim();
     const el = document.getElementById('fm-' + key);
     if (el) {
-      if (el.type === 'checkbox') el.checked = v === 'true';
-      else el.value = v;
+      if (el.type === 'checkbox') {el.checked = v === 'true';}
+      else {el.value = v;}
     }
     if (key === 'tags') {
       $('#fm-tags').value = v.replace(/[\[\]]/g, '');
     }
   });
-  if ($('#fm-encrypted').checked) $('#fm-password-row').classList.remove('hidden');
+  if ($('#fm-encrypted').checked) {$('#fm-password-row').classList.remove('hidden');}
 }
 
 $('#fmApply').onclick = () => {
   let fm = '---\n';
-  const add = (k, v) => { if (v) fm += `${k}: ${v}\n`; };
-  const addQ = (k, v) => { if (v) fm += `${k}: "${v}"\n`; };
+  const add = (k, v) => { if (v) {fm += `${k}: ${v}\n`;} };
+  const addQ = (k, v) => { if (v) {fm += `${k}: "${v}"\n`;} };
   addQ('title', $('#fm-title').value);
   add('published', $('#fm-published').value);
-  if ($('#fm-updated').value) add('updated', $('#fm-updated').value);
+  if ($('#fm-updated').value) {add('updated', $('#fm-updated').value);}
   addQ('description', $('#fm-description').value);
-  if ($('#fm-image').value) add('image', $('#fm-image').value);
+  if ($('#fm-image').value) {add('image', $('#fm-image').value);}
   if ($('#fm-tags').value) {
     const tags = $('#fm-tags').value.split(',').map(t => t.trim()).filter(Boolean);
     fm += `tags: [${tags.join(', ')}]\n`;
   }
-  if ($('#fm-category').value) add('category', $('#fm-category').value);
+  if ($('#fm-category').value) {add('category', $('#fm-category').value);}
   fm += `draft: ${$('#fm-draft').checked}\n`;
   fm += `pinned: ${$('#fm-pinned').checked}\n`;
-  if ($('#fm-pinned').checked && $('#fm-priority').value) add('priority', $('#fm-priority').value);
+  if ($('#fm-pinned').checked && $('#fm-priority').value) {add('priority', $('#fm-priority').value);}
   fm += `comment: ${$('#fm-comment').checked}\n`;
   if ($('#fm-encrypted').checked) {
     fm += 'encrypted: true\n';
     addQ('password', $('#fm-password').value);
   }
-  if ($('#fm-alias').value) addQ('alias', $('#fm-alias').value);
-  if ($('#fm-lang').value) add('lang', $('#fm-lang').value);
-  if ($('#fm-license').value) addQ('licenseName', $('#fm-license').value);
-  if ($('#fm-author').value) addQ('author', $('#fm-author').value);
-  if ($('#fm-source').value) addQ('sourceLink', $('#fm-source').value);
+  if ($('#fm-alias').value) {addQ('alias', $('#fm-alias').value);}
+  if ($('#fm-lang').value) {add('lang', $('#fm-lang').value);}
+  if ($('#fm-license').value) {addQ('licenseName', $('#fm-license').value);}
+  if ($('#fm-author').value) {addQ('author', $('#fm-author').value);}
+  if ($('#fm-source').value) {addQ('sourceLink', $('#fm-source').value);}
   fm += '---\n\n';
 
   let content = editor.value;
   if (content.startsWith('---')) {
     const end = content.indexOf('---', 3);
-    if (end !== -1) content = content.substring(end + 3).trimStart();
+    if (end !== -1) {content = content.substring(end + 3).trimStart();}
   }
   editor.value = fm + content;
   toggleModal('fmModal', false);
@@ -745,7 +745,7 @@ $('#fmApply').onclick = () => {
 $('#btnImport').onclick = () => $('#fileInput').click();
 $('#fileInput').onchange = e => {
   const file = e.target.files[0];
-  if (file) readFile(file);
+  if (file) {readFile(file);}
   e.target.value = '';
 };
 
@@ -768,17 +768,17 @@ function readFile(file) {
 document.addEventListener('dragover', e => {
   e.preventDefault();
   if (e.dataTransfer.types.includes('Files'))
-    $('#dropOverlay').classList.remove('hidden');
+    {$('#dropOverlay').classList.remove('hidden');}
 });
 $('#dropOverlay').addEventListener('dragleave', e => {
   if (e.target === $('#dropOverlay') || e.target.closest('.drop-message'))
-    $('#dropOverlay').classList.add('hidden');
+    {$('#dropOverlay').classList.add('hidden');}
 });
 $('#dropOverlay').addEventListener('drop', e => {
   e.preventDefault();
   $('#dropOverlay').classList.add('hidden');
   const file = e.dataTransfer.files[0];
-  if (file) readFile(file);
+  if (file) {readFile(file);}
 });
 
 // ========== Export ==========
@@ -796,7 +796,7 @@ $$('.export-btn').forEach(btn => {
       let body = raw;
       if (body.startsWith('---')) {
         const end = body.indexOf('---', 3);
-        if (end !== -1) body = body.substring(end + 3).trim();
+        if (end !== -1) {body = body.substring(end + 3).trim();}
       }
       const html = marked.parse(body);
       content = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Article</title><style>body{font-family:system-ui;max-width:800px;margin:2em auto;padding:0 1em;line-height:1.7;color:#222}code{background:#f4f4f4;padding:2px 6px;border-radius:4px}pre{background:#f4f4f4;padding:1em;border-radius:8px;overflow-x:auto}blockquote{border-left:3px solid #ddd;padding:.5em 1em;color:#666;margin:1em 0}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px 12px}th{background:#f0f0f0}</style></head><body>${html}</body></html>`;
@@ -805,7 +805,7 @@ $$('.export-btn').forEach(btn => {
       let txt = raw;
       if (txt.startsWith('---')) {
         const end = txt.indexOf('---', 3);
-        if (end !== -1) txt = txt.substring(end + 3).trim();
+        if (end !== -1) {txt = txt.substring(end + 3).trim();}
       }
       content = txt.replace(/[#*`~>[\]()_|\\-]/g, '').replace(/\n{3,}/g, '\n\n');
       filename = 'article.txt'; mime = 'text/plain';

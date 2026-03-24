@@ -1,154 +1,183 @@
 ---
-import I18nKey from "../../../i18n/i18nKey"
-import { i18n } from "../../../i18n/translation"
-import Icon from "../../misc/Icon.astro"
-import type { TimelineItem } from "../timeline/types"
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import Icon from "../../misc/Icon.astro";
+import type { TimelineItem } from "../timeline/types";
 
 export interface TimelineHistoryProps {
-	items: TimelineItem[]
-	title?: string
-	class?: string
+	items: TimelineItem[];
+	title?: string;
+	class?: string;
 }
 
 const {
 	items,
 	title,
 	class: className = "",
-} = Astro.props as TimelineHistoryProps
+} = Astro.props as TimelineHistoryProps;
 
-const sectionTitle = title || i18n(I18nKey.timelineHistory)
+const sectionTitle = title || i18n(I18nKey.timelineHistory);
 
 const getTypeIcon = (type: string) => {
 	switch (type) {
 		case "education":
-			return "material-symbols:school"
+			return "material-symbols:school";
 		case "work":
-			return "material-symbols:work"
+			return "material-symbols:work";
 		case "project":
-			return "material-symbols:code"
+			return "material-symbols:code";
 		case "achievement":
-			return "material-symbols:emoji-events"
+			return "material-symbols:emoji-events";
 		default:
-			return "material-symbols:event"
+			return "material-symbols:event";
 	}
-}
+};
 
 const formatDate = (dateString: string) => {
-	const date = new Date(dateString)
-	return date.toLocaleDateString("zh-CN", { year: "numeric", month: "long" })
-}
+	const date = new Date(dateString);
+	return date.toLocaleDateString("zh-CN", { year: "numeric", month: "long" });
+};
 
 const getDuration = (startDate: string, endDate?: string) => {
-	const start = new Date(startDate)
-	const end = endDate ? new Date(endDate) : new Date()
-	const diffTime = Math.abs(end.getTime() - start.getTime())
-	const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30))
+	const start = new Date(startDate);
+	const end = endDate ? new Date(endDate) : new Date();
+	const diffTime = Math.abs(end.getTime() - start.getTime());
+	const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
 
 	if (diffMonths < 12) {
-		return `${diffMonths} ${i18n(I18nKey.timelineMonths)}`
+		return `${diffMonths} ${i18n(I18nKey.timelineMonths)}`;
 	}
 
-	const years = Math.floor(diffMonths / 12)
-	const months = diffMonths % 12
+	const years = Math.floor(diffMonths / 12);
+	const months = diffMonths % 12;
 
 	if (months === 0) {
-		return `${years} ${i18n(I18nKey.timelineYears)}`
+		return `${years} ${i18n(I18nKey.timelineYears)}`;
 	}
 
-	return `${years} ${i18n(I18nKey.timelineYears)} ${months} ${i18n(I18nKey.timelineMonths)}`
-}
+	return `${years} ${i18n(I18nKey.timelineYears)} ${months} ${i18n(I18nKey.timelineMonths)}`;
+};
 
 const getTypeBadgeClass = (type: TimelineItem["type"]) => {
 	switch (type) {
 		case "education":
-			return "bg-blue-600/20 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+			return "bg-blue-600/20 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
 		case "work":
-			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+			return "bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400";
 		case "project":
-			return "bg-purple-600/20 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+			return "bg-purple-600/20 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
 		default:
-			return "bg-orange-600/20 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+			return "bg-orange-600/20 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400";
 	}
-}
+};
 
 const getTypeText = (type: TimelineItem["type"]) => {
 	switch (type) {
 		case "education":
-			return i18n(I18nKey.timelineEducation)
+			return i18n(I18nKey.timelineEducation);
 		case "work":
-			return i18n(I18nKey.timelineWork)
+			return i18n(I18nKey.timelineWork);
 		case "project":
-			return i18n(I18nKey.timelineProject)
+			return i18n(I18nKey.timelineProject);
 		default:
-			return i18n(I18nKey.timelineAchievement)
+			return i18n(I18nKey.timelineAchievement);
 	}
-}
+};
 ---
 
 <div class={`mb-8 ${className}`}>
-	<h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-4 flex items-center">
+	<h2
+		class="text-2xl font-bold text-black/90 dark:text-white/90 mb-4 flex items-center"
+	>
 		<span class="w-3 h-3 rounded-full bg-indigo-500 mr-3"></span>
 		{sectionTitle}
 	</h2>
 
-	<div class="relative overflow-hidden rounded-xl bg-transparent border border-black/10 dark:border-white/10 p-6">
-		<div class="flex overflow-x-auto pb-6 -mx-2 px-2 timeline-horizontal-scroll" id="timeline-scrollbar">
+	<div
+		class="relative overflow-hidden rounded-xl bg-transparent border border-black/10 dark:border-white/10 p-6"
+	>
+		<div
+			class="flex overflow-x-auto pb-6 -mx-2 px-2 timeline-horizontal-scroll"
+			id="timeline-scrollbar"
+		>
 			<div class="flex space-x-8 min-w-max">
-				{items.map((item, index) => (
-					<div class="flex flex-col items-center flex-shrink-0 w-72" data-key={index}>
-						<div class="relative z-10 w-16 h-16 rounded-xl flex items-center justify-center mb-6 timeline-node" style={`background-color: ${item.color || "rgb(99 102 241)"}`}>
-							<Icon
-								icon={item.icon || getTypeIcon(item.type)}
-								class="text-2xl text-white"
-								color="white"
-								fallback={item.title.charAt(0)}
-								loading="eager"
-							/>
-							<div class="absolute inset-0 rounded-xl border-2 border-white/30"></div>
-						</div>
+				{
+					items.map((item, index) => (
+						<div
+							class="flex flex-col items-center flex-shrink-0 w-72"
+							data-key={index}
+						>
+							<div
+								class="relative z-10 w-16 h-16 rounded-xl flex items-center justify-center mb-6 timeline-node"
+								style={`background-color: ${item.color || "rgb(99 102 241)"}`}
+							>
+								<Icon
+									icon={item.icon || getTypeIcon(item.type)}
+									class="text-2xl text-white"
+									color="white"
+									fallback={item.title.charAt(0)}
+									loading="eager"
+								/>
+								<div class="absolute inset-0 rounded-xl border-2 border-white/30" />
+							</div>
 
-						<div class="text-xs text-black/50 dark:text-white/50 mb-2">
-							{formatDate(item.startDate)}
-						</div>
+							<div class="text-xs text-black/50 dark:text-white/50 mb-2">
+								{formatDate(item.startDate)}
+							</div>
 
-						<div class="flex-1 bg-transparent rounded-xl border border-black/10 dark:border-white/10 p-5 w-full">
-							<div class="flex flex-col gap-3">
-								<div>
-									<h3 class="text-lg font-semibold text-black/90 dark:text-white/90 line-clamp-2">
-										{item.title}
-									</h3>
-									{item.organization && (
-										<div class="text-xs text-black/70 dark:text-white/70 mt-1">
-											{item.organization} {item.position && `• ${item.position}`}
+							<div class="flex-1 bg-transparent rounded-xl border border-black/10 dark:border-white/10 p-5 w-full">
+								<div class="flex flex-col gap-3">
+									<div>
+										<h3 class="text-lg font-semibold text-black/90 dark:text-white/90 line-clamp-2">
+											{item.title}
+										</h3>
+										{item.organization && (
+											<div class="text-xs text-black/70 dark:text-white/70 mt-1">
+												{item.organization}{" "}
+												{item.position &&
+													`• ${item.position}`}
+											</div>
+										)}
+									</div>
+
+									<span
+										class={`px-2 py-1 text-xs rounded-full self-start ${getTypeBadgeClass(item.type)}`}
+									>
+										{getTypeText(item.type)}
+									</span>
+
+									<p class="text-sm text-black/70 dark:text-white/70 line-clamp-3">
+										{item.description}
+									</p>
+
+									<div class="flex items-center justify-between text-xs text-black/60 dark:text-white/60 mt-2">
+										<div>
+											{getDuration(
+												item.startDate,
+												item.endDate,
+											)}
 										</div>
-									)}
-								</div>
-
-								<span class={`px-2 py-1 text-xs rounded-full self-start ${getTypeBadgeClass(item.type)}`}>
-									{getTypeText(item.type)}
-								</span>
-
-								<p class="text-sm text-black/70 dark:text-white/70 line-clamp-3">
-									{item.description}
-								</p>
-
-								<div class="flex items-center justify-between text-xs text-black/60 dark:text-white/60 mt-2">
-									<div>{getDuration(item.startDate, item.endDate)}</div>
-									{item.location && (
-										<div class="flex items-center">
-											<span class="mr-1">📍</span>
-											<span class="truncate max-w-[80px]">{item.location}</span>
-										</div>
-									)}
+										{item.location && (
+											<div class="flex items-center">
+												<span class="mr-1">📍</span>
+												<span class="truncate max-w-[80px]">
+													{item.location}
+												</span>
+											</div>
+										)}
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				))}
+					))
+				}
 			</div>
 		</div>
 
-		<div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-transparent to-transparent pointer-events-none hidden md:block"></div>
+		<div
+			class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-transparent to-transparent pointer-events-none hidden md:block"
+		>
+		</div>
 	</div>
 </div>
 

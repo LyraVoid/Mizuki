@@ -12,20 +12,30 @@ function parseGithubAlertDeclaration(text) {
 export function remarkFixGithubAdmonitions() {
 	return (tree) => {
 		visit(tree, "blockquote", (node, index, parent) => {
-			if (!parent || index === undefined) {return;}
+			if (!parent || index === undefined) {
+				return;
+			}
 
 			const firstChild = node.children[0];
-			if (firstChild?.type !== "paragraph") {return;}
+			if (firstChild?.type !== "paragraph") {
+				return;
+			}
 
 			const firstParagraphChild = firstChild.children[0];
-			if (firstParagraphChild?.type !== "text") {return;}
+			if (firstParagraphChild?.type !== "text") {
+				return;
+			}
 
 			const possibleTypeDeclaration =
 				firstParagraphChild.value.split("\n")[0];
-			if (!possibleTypeDeclaration) {return;}
+			if (!possibleTypeDeclaration) {
+				return;
+			}
 
 			const type = parseGithubAlertDeclaration(possibleTypeDeclaration);
-			if (!type) {return;}
+			if (!type) {
+				return;
+			}
 
 			const typeToDirectiveName = {
 				NOTE: "note",
@@ -36,7 +46,9 @@ export function remarkFixGithubAdmonitions() {
 			};
 
 			const directiveName = typeToDirectiveName[type];
-			if (!directiveName) {return;}
+			if (!directiveName) {
+				return;
+			}
 
 			const textNodeChildren =
 				firstParagraphChild.value.split("\n").length > 1

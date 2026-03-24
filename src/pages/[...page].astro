@@ -1,6 +1,6 @@
 ---
-import CategoryBar from "@components/features/posts/CategoryBar.astro";
 import Pagination from "@components/control/Pagination.astro";
+import CategoryBar from "@components/features/posts/CategoryBar.astro";
 import PostPage from "@components/features/posts/PostPage.astro";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import type { GetStaticPaths } from "astro";
@@ -26,7 +26,11 @@ const len = page.data.length;
 ---
 
 <MainGridLayout>
-    {showCategoryBar && <CategoryBar />}
-    <PostPage page={page}></PostPage>
-    <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`}></Pagination>
+	{showCategoryBar && <CategoryBar />}
+	<PostPage page={page} />
+	<Pagination
+		class="mx-auto onload-animation"
+		page={page}
+		style={`animation-delay: calc(var(--content-delay) + ${len * 50}ms)`}
+	/>
 </MainGridLayout>

@@ -27,9 +27,7 @@ interface Props {
 const { anime, statusInfo, yearLabel, studioLabel } = Astro.props;
 
 const progressPercent =
-	anime.totalEpisodes > 0
-		? (anime.progress / anime.totalEpisodes) * 100
-		: 0;
+	anime.totalEpisodes > 0 ? (anime.progress / anime.totalEpisodes) * 100 : 0;
 ---
 
 <div
@@ -60,7 +58,7 @@ const progressPercent =
 							fill="currentColor"
 							viewBox="0 0 24 24"
 						>
-							<path d="M8 5v14l11-7z" />
+							<path d="M8 5v14l11-7z"></path>
 						</svg>
 					</div>
 				</div>
@@ -89,19 +87,22 @@ const progressPercent =
 			<span>{anime.rating}</span>
 		</div>
 
-		{anime.status === "watching" && (
-			<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-				<div class="w-full bg-white/20 rounded-full h-1.5 mb-1">
-					<div
-						class="bg-gradient-to-r from-emerald-400 to-teal-400 h-1.5 rounded-full transition-all duration-300"
-						style={`width: ${progressPercent}%`}
-					/>
+		{
+			anime.status === "watching" && (
+				<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+					<div class="w-full bg-white/20 rounded-full h-1.5 mb-1">
+						<div
+							class="bg-gradient-to-r from-emerald-400 to-teal-400 h-1.5 rounded-full transition-all duration-300"
+							style={`width: ${progressPercent}%`}
+						/>
+					</div>
+					<div class="text-white text-xs font-medium">
+						{anime.progress}/{anime.totalEpisodes} (
+						{Math.round(progressPercent)}%)
+					</div>
 				</div>
-				<div class="text-white text-xs font-medium">
-					{anime.progress}/{anime.totalEpisodes} ({Math.round(progressPercent)}%)
-				</div>
-			</div>
-		)}
+			)
+		}
 	</div>
 
 	<div class="p-3">
@@ -140,13 +141,13 @@ const progressPercent =
 				</span>
 			</div>
 			<div class="flex flex-wrap gap-1 mt-2">
-				{anime.genre.map((g) => (
-					<span
-						class="px-1.5 py-0.5 bg-[var(--btn-regular-bg)] text-black/70 dark:text-white/70 rounded text-xs"
-					>
-						{g}
-					</span>
-				))}
+				{
+					anime.genre.map((g) => (
+						<span class="px-1.5 py-0.5 bg-[var(--btn-regular-bg)] text-black/70 dark:text-white/70 rounded text-xs">
+							{g}
+						</span>
+					))
+				}
 			</div>
 		</div>
 	</div>

@@ -43,12 +43,16 @@ const displayDate =
 		>
 			{post.data.title}
 		</div>
-		<div class="flex items-center gap-1.5 text-xs text-black/30 dark:text-white/30 transition mt-1">
-			{showCategory && post.data.category && (
-				<span class="shrink-0 self-end px-1.5 py-0.5 rounded bg-[var(--btn-regular-bg)] text-[var(--btn-content)]">
-					{post.data.category}
-				</span>
-			)}
+		<div
+			class="flex items-center gap-1.5 text-xs text-black/30 dark:text-white/30 transition mt-1"
+		>
+			{
+				showCategory && post.data.category && (
+					<span class="shrink-0 self-end px-1.5 py-0.5 rounded bg-[var(--btn-regular-bg)] text-[var(--btn-content)]">
+						{post.data.category}
+					</span>
+				)
+			}
 			{showDate && <span class="truncate">{displayDate}</span>}
 		</div>
 	</div>

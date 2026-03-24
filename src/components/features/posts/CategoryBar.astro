@@ -2,6 +2,7 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { Icon } from "astro-icon/components";
+
 import { getCategoryList, getSortedPostsList } from "@/utils/content-utils";
 import { getCategoryUrl, url } from "@/utils/url-utils";
 
@@ -49,7 +50,9 @@ const archiveUrl = url("/archive/");
 							data-category-name={cat.name}
 						>
 							{cat.name}
-							<span class="text-xs opacity-60 ml-1">{cat.count}</span>
+							<span class="text-xs opacity-60 ml-1">
+								{cat.count}
+							</span>
 						</a>
 					))
 				}
@@ -133,13 +136,26 @@ const archiveUrl = url("/archive/");
 		if (!bar) return;
 
 		const pathname = window.location.pathname.replace(/\/$/, "");
-		const homePath = (bar.getAttribute("data-home-path") || "/").replace(/\/$/, "");
+		const homePath = (bar.getAttribute("data-home-path") || "/").replace(
+			/\/$/,
+			"",
+		);
 		// 归档页路径也需要标准化，避免 /archive 与 /archive/ 不一致导致无法匹配
-		const archivePath = (bar.getAttribute("data-archive-path") || "/archive").replace(/\/$/, "");
-		const isHome = pathname === homePath || pathname === "" || pathname === "/";
+		const archivePath = (
+			bar.getAttribute("data-archive-path") || "/archive"
+		).replace(/\/$/, "");
+		const isHome =
+			pathname === homePath || pathname === "" || pathname === "/";
 		const isArchive = pathname === archivePath;
 		// 分页页面（如 /2/, /3/）也属于首页的延续
-		const isHomePagination = /^\/\d+$/.test(pathname) || (homePath !== "" && new RegExp("^" + homePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "\\/\\d+$").test(pathname));
+		const isHomePagination =
+			/^\/\d+$/.test(pathname) ||
+			(homePath !== "" &&
+				new RegExp(
+					"^" +
+						homePath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+						"\\/\\d+$",
+				).test(pathname));
 
 		// 在首页、首页分页和归档页显示
 		if (!isHome && !isHomePagination && !isArchive) {
@@ -158,30 +174,44 @@ const archiveUrl = url("/archive/");
 		pills.forEach((pill) => pill.removeAttribute("data-active"));
 
 		if (isHome || isHomePagination) {
-			bar.querySelector<HTMLAnchorElement>('.category-pill[data-category-name=""]')
-				?.setAttribute("data-active", "");
+			bar.querySelector<HTMLAnchorElement>(
+				'.category-pill[data-category-name=""]',
+			)?.setAttribute("data-active", "");
 		} else if (activeCategory) {
 			pills.forEach((pill) => {
-				if (pill.getAttribute("data-category-name") === activeCategory) {
+				if (
+					pill.getAttribute("data-category-name") === activeCategory
+				) {
 					pill.setAttribute("data-active", "");
 				}
 			});
 		} else if (isArchive && !hasTag && !hasUncategorized) {
-			bar.querySelector<HTMLAnchorElement>('.category-pill[data-category-name="__archive__"]')
-				?.setAttribute("data-active", "");
+			bar.querySelector<HTMLAnchorElement>(
+				'.category-pill[data-category-name="__archive__"]',
+			)?.setAttribute("data-active", "");
 		}
 
 		// 自动滚动到当前高亮的分类
-		const activePill = bar.querySelector<HTMLAnchorElement>('.category-pill[data-active]');
+		const activePill = bar.querySelector<HTMLAnchorElement>(
+			".category-pill[data-active]",
+		);
 		const scroll = bar.querySelector<HTMLElement>(".category-scroll");
 		if (activePill && scroll) {
-			const scrollLeft = activePill.offsetLeft - scroll.offsetLeft - (scroll.clientWidth - activePill.offsetWidth) / 2;
-			scroll.scrollTo({ left: Math.max(0, scrollLeft), behavior: "smooth" });
+			const scrollLeft =
+				activePill.offsetLeft -
+				scroll.offsetLeft -
+				(scroll.clientWidth - activePill.offsetWidth) / 2;
+			scroll.scrollTo({
+				left: Math.max(0, scrollLeft),
+				behavior: "smooth",
+			});
 		}
 
 		// 更新横幅标题：归档页有分类筛选时显示分类名
 		if (isArchive && activeCategory) {
-			const bannerTitle = document.querySelector(".banner-page-title-text");
+			const bannerTitle = document.querySelector(
+				".banner-page-title-text",
+			);
 			if (bannerTitle) {
 				bannerTitle.textContent = decodeURIComponent(activeCategory);
 			}
@@ -196,11 +226,15 @@ const archiveUrl = url("/archive/");
 		if (!scroll) return;
 
 		// 鼠标滚轮横向滚动
-		scroll.addEventListener("wheel", (e) => {
-			if (scroll.scrollWidth <= scroll.clientWidth) return;
-			e.preventDefault();
-			scroll.scrollLeft += e.deltaY;
-		}, { passive: false });
+		scroll.addEventListener(
+			"wheel",
+			(e) => {
+				if (scroll.scrollWidth <= scroll.clientWidth) return;
+				e.preventDefault();
+				scroll.scrollLeft += e.deltaY;
+			},
+			{ passive: false },
+		);
 
 		// 监听滚动更新提示图标
 		scroll.addEventListener("scroll", updateScrollHint);
@@ -218,7 +252,8 @@ const archiveUrl = url("/archive/");
 
 		const hasOverflow = scroll.scrollWidth > scroll.clientWidth + 1;
 		const atStart = scroll.scrollLeft <= 1;
-		const atEnd = scroll.scrollLeft + scroll.clientWidth >= scroll.scrollWidth - 1;
+		const atEnd =
+			scroll.scrollLeft + scroll.clientWidth >= scroll.scrollWidth - 1;
 
 		if (hasOverflow && !atStart) {
 			fadeLeft.setAttribute("data-visible", "");

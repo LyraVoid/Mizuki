@@ -86,7 +86,9 @@
 
 	async function generatePoster() {
 		showModal = true;
-		if (posterImage) {return;}
+		if (posterImage) {
+			return;
+		}
 
 		generating = true;
 		const colors = getPosterColors();
@@ -107,7 +109,9 @@
 
 			const canvas = document.createElement("canvas");
 			const ctx = canvas.getContext("2d");
-			if (!ctx) {throw new Error("Canvas context not available");}
+			if (!ctx) {
+				throw new Error("Canvas context not available");
+			}
 
 			const config: SizeConfig = {
 				scale: SCALE,
@@ -441,8 +445,12 @@
 				<button
 					class="py-3 rounded-xl font-medium active:scale-[0.98] transition-all flex items-center justify-center gap-2"
 					style="background-color: var(--btn-card-bg-hover); color: var(--btn-content);"
-					on:mouseenter={(e) => e.currentTarget.style.backgroundColor = 'var(--btn-card-bg-active)'}
-					on:mouseleave={(e) => e.currentTarget.style.backgroundColor = 'var(--btn-card-bg-hover)'}
+					on:mouseenter={(e) =>
+						(e.currentTarget.style.backgroundColor =
+							"var(--btn-card-bg-active)")}
+					on:mouseleave={(e) =>
+						(e.currentTarget.style.backgroundColor =
+							"var(--btn-card-bg-hover)")}
 					on:click={copyLink}
 				>
 					{#if copied}

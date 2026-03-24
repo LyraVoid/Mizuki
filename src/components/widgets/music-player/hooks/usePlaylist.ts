@@ -1,7 +1,7 @@
 import Key from "../../../../i18n/i18nKey";
 import { i18n } from "../../../../i18n/translation";
 import { LOCAL_PLAYLIST } from "../constants";
-import type { RepeatMode,Song } from "../types";
+import type { RepeatMode, Song } from "../types";
 
 /**
  * Meting API song response structure
@@ -28,8 +28,12 @@ function convertMetingSong(song: MetingSong): Song {
 	if (typeof dur === "string") {
 		dur = parseInt(dur, 10);
 	}
-	if (dur > 10000) {dur = Math.floor(dur / 1000);}
-	if (!Number.isFinite(dur) || dur <= 0) {dur = 0;}
+	if (dur > 10000) {
+		dur = Math.floor(dur / 1000);
+	}
+	if (!Number.isFinite(dur) || dur <= 0) {
+		dur = 0;
+	}
 
 	return {
 		id:
@@ -75,17 +79,18 @@ export function toggleRepeat(state: PlaylistState) {
 }
 
 export function previousSong(state: PlaylistState): number {
-	if (state.playlist.length <= 1) {return state.currentIndex;}
+	if (state.playlist.length <= 1) {
+		return state.currentIndex;
+	}
 	return state.currentIndex > 0
 		? state.currentIndex - 1
 		: state.playlist.length - 1;
 }
 
-export function nextSong(
-	state: PlaylistState,
-	_autoPlay = true,
-): number {
-	if (state.playlist.length <= 1) {return state.currentIndex;}
+export function nextSong(state: PlaylistState, _autoPlay = true): number {
+	if (state.playlist.length <= 1) {
+		return state.currentIndex;
+	}
 
 	let newIndex: number;
 	if (state.isShuffled) {
@@ -102,7 +107,9 @@ export function nextSong(
 }
 
 export function playSong(state: PlaylistState, index: number): boolean {
-	if (index < 0 || index >= state.playlist.length) {return false;}
+	if (index < 0 || index >= state.playlist.length) {
+		return false;
+	}
 	state.currentIndex = index;
 	return true;
 }
@@ -117,7 +124,9 @@ export async function fetchMetingPlaylist(
 	onLoadEnd: () => void,
 	showError: (message: string) => void,
 ): Promise<void> {
-	if (!meting_api || !meting_id) {return;}
+	if (!meting_api || !meting_id) {
+		return;
+	}
 
 	onLoadStart();
 	const apiUrl = meting_api
@@ -129,7 +138,9 @@ export async function fetchMetingPlaylist(
 
 	try {
 		const res = await fetch(apiUrl);
-		if (!res.ok) {throw new Error("meting api error");}
+		if (!res.ok) {
+			throw new Error("meting api error");
+		}
 		const list: MetingSong[] = await res.json();
 		state.playlist = list.map(convertMetingSong);
 		onLoadEnd();

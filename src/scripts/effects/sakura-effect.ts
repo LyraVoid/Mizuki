@@ -3,8 +3,8 @@
  * 管理樱花飘落特效的初始化
  */
 
-import type { SakuraConfig } from '../../types/config';
-import { initSakura } from '../../utils/sakura-manager';
+import type { SakuraConfig } from "../../types/config";
+import { initSakura } from "../../utils/sakura-manager";
 
 /**
  * Sakura 特效处理器类
@@ -19,10 +19,14 @@ export class SakuraEffectHandler {
 	 */
 	init(widgetConfigs: any): void {
 		const sakuraConfig = widgetConfigs?.sakura;
-		if (!sakuraConfig || !sakuraConfig.enable) {return;}
+		if (!sakuraConfig || !sakuraConfig.enable) {
+			return;
+		}
 
 		// 避免重复初始化
-		if ((window as any).sakuraInitialized) {return;}
+		if ((window as any).sakuraInitialized) {
+			return;
+		}
 
 		this.config = sakuraConfig;
 		initSakura(sakuraConfig);
@@ -76,8 +80,8 @@ export function setupSakuraOnDOMReady(widgetConfigs: any): void {
 		handler.init(widgetConfigs);
 	};
 
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', init);
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", init);
 	} else {
 		init();
 	}

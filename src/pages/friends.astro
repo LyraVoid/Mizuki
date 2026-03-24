@@ -27,17 +27,25 @@ const friendsList = getShuffledFriendsList();
 const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 ---
 
-<MainGridLayout title={i18n(I18nKey.friends)} description={i18n(I18nKey.friends)}>
+<MainGridLayout
+	title={i18n(I18nKey.friends)}
+	description={i18n(I18nKey.friends)}
+>
 	<script is:inline>
 		window.isFriendsPage = true;
 	</script>
 	<script>
-		import('../scripts/right-sidebar-layout.js');
+		import("../scripts/right-sidebar-layout.js");
 	</script>
 
-	<div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
 		<div class="card-base z-10 px-9 py-6 relative w-full">
-			<PageHeader title={i18n(I18nKey.friends)} subtitle={i18n(I18nKey.friendsSubtitle)} />
+			<PageHeader
+				title={i18n(I18nKey.friends)}
+				subtitle={i18n(I18nKey.friendsSubtitle)}
+			/>
 
 			<!-- 搜索和筛选栏 -->
 			<div class="mb-6 space-y-3">
@@ -54,47 +62,63 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 									focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50
 									transition-all duration-200"
 						/>
-						<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-white/40"
-							 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+						<svg
+							class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-white/40"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+							></path>
 						</svg>
 					</div>
 				</div>
 
 				<!-- 标签筛选 -->
 				<div class="filter-container flex flex-wrap gap-2">
-					<button
-						class="filter-tag active"
-						data-tag="all"
-					>
+					<button class="filter-tag active" data-tag="all">
 						{i18n(I18nKey.friendsFilterAll)}
 					</button>
-					{allTags.map(tag => (
-						<button
-							class="filter-tag"
-							data-tag={tag}
-						>
-							{tag}
-						</button>
-					))}
+					{
+						allTags.map((tag) => (
+							<button class="filter-tag" data-tag={tag}>
+								{tag}
+							</button>
+						))
+					}
 				</div>
 			</div>
 
 			<!-- 友链卡片网格 -->
-			<div id="friends-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
-				{friendsList.map((item) => (
-					<FriendCard friend={item} />
-				))}
+			<div
+				id="friends-grid"
+				class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-6"
+			>
+				{friendsList.map((item) => <FriendCard friend={item} />)}
 			</div>
 
 			<!-- 无结果提示 -->
 			<div id="no-results" class="hidden text-center py-12">
-				<svg class="w-16 h-16 mx-auto mb-4 text-black/20 dark:text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-						d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+				<svg
+					class="w-16 h-16 mx-auto mb-4 text-black/20 dark:text-white/20"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+					></path>
 				</svg>
-				<p class="text-black/50 dark:text-white/50 text-lg">{i18n(I18nKey.friendsNoResults)}</p>
+				<p class="text-black/50 dark:text-white/50 text-lg">
+					{i18n(I18nKey.friendsNoResults)}
+				</p>
 			</div>
 
 			<!-- 说明文档 -->
@@ -103,7 +127,9 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 			</Markdown>
 
 			<!-- 隐藏元素用于传递 i18n 文本到全局脚本 -->
-			<div id="friends-copy-success-text" style="display: none;">{i18n(I18nKey.friendsCopySuccess)}</div>
+			<div id="friends-copy-success-text" style="display: none;">
+				{i18n(I18nKey.friendsCopySuccess)}
+			</div>
 		</div>
 	</div>
 

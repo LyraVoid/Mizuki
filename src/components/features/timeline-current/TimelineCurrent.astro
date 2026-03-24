@@ -1,34 +1,36 @@
 ---
-import I18nKey from "../../../i18n/i18nKey"
-import { i18n } from "../../../i18n/translation"
-import { TimelineItem } from "../timeline"
-import type { TimelineCurrentProps } from "./types"
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import { TimelineItem } from "../timeline";
+import type { TimelineCurrentProps } from "./types";
 
 const {
 	items,
 	title,
 	class: className = "",
-} = Astro.props as TimelineCurrentProps
+} = Astro.props as TimelineCurrentProps;
 
-const sectionTitle = title || i18n(I18nKey.timelineCurrent)
+const sectionTitle = title || i18n(I18nKey.timelineCurrent);
 ---
 
-{items.length > 0 && (
-	<div class={`mb-8 ${className}`}>
-		<h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-4 flex items-center">
-			<span class="w-3 h-3 rounded-full bg-green-500 mr-3"></span>
-			{sectionTitle}
-		</h2>
-		<div class="grid grid-cols-1 gap-6">
-			{items.map((item) => (
-				<TimelineItem
-					item={item}
-					size="large"
-					layout="timeline"
-					showTimeline={false}
-					isCurrent={true}
-				/>
-			))}
+{
+	items.length > 0 && (
+		<div class={`mb-8 ${className}`}>
+			<h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-4 flex items-center">
+				<span class="w-3 h-3 rounded-full bg-green-500 mr-3" />
+				{sectionTitle}
+			</h2>
+			<div class="grid grid-cols-1 gap-6">
+				{items.map((item) => (
+					<TimelineItem
+						item={item}
+						size="large"
+						layout="timeline"
+						showTimeline={false}
+						isCurrent={true}
+					/>
+				))}
+			</div>
 		</div>
-	</div>
-)}
+	)
+}

@@ -40,8 +40,7 @@ export class PanelHandler {
 	];
 
 	private panelManager: any = null;
-	private boundClickHandlers =
-		new Map<string, (event: MouseEvent) => void>();
+	private boundClickHandlers = new Map<string, (event: MouseEvent) => void>();
 
 	/**
 	 * 初始化面板处理器
@@ -71,7 +70,9 @@ export class PanelHandler {
 	private setupClickOutsideToClose(panel: PanelConfig): void {
 		const clickHandler = async (event: MouseEvent) => {
 			const target = event.target;
-			if (!(target instanceof Node)) {return;}
+			if (!(target instanceof Node)) {
+				return;
+			}
 
 			// 检查是否点击了忽略的元素
 			for (const ignoreId of panel.ignoreElements) {

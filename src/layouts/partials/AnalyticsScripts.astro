@@ -15,10 +15,7 @@ interface Props {
 	clarityId?: string;
 }
 
-const {
-	gtmId = "GTM-KRX3XGVH",
-	clarityId = "tjr3vkhj8i",
-} = Astro.props;
+const { gtmId = "GTM-KRX3XGVH", clarityId = "tjr3vkhj8i" } = Astro.props;
 ---
 
 <!-- 第三方分析脚本 - 延迟加载优化 -->
@@ -28,7 +25,9 @@ const {
 	window.analyticsLoaded = window.analyticsLoaded || false;
 
 	function loadAnalytics() {
-		if (window.analyticsLoaded) {return;}
+		if (window.analyticsLoaded) {
+			return;
+		}
 		window.analyticsLoaded = true;
 
 		// Google Tag Manager
@@ -39,11 +38,10 @@ const {
 				event: "gtm.js",
 			});
 			const f = d.getElementsByTagName(s)[0],
-			j = d.createElement(s),
-			dl = l != "dataLayer" ? "&l=" + l : "";
+				j = d.createElement(s),
+				dl = l != "dataLayer" ? "&l=" + l : "";
 			j.async = true;
-			j.src =
-				"https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+			j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
 			f.parentNode.insertBefore(j, f);
 		})(window, document, "script", "dataLayer", gtmId);
 

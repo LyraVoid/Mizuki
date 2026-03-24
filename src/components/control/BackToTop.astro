@@ -23,14 +23,17 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 			}
 
 			init() {
-				if (!this.button) return;
+				if (!this.button) {
+					return;
+				}
 				this.setupScrollListener();
 			}
 
 			setupScrollListener() {
 				const updateVisibility = () => {
 					const scrollTop =
-						window.pageYOffset || document.documentElement.scrollTop;
+						window.pageYOffset ||
+						document.documentElement.scrollTop;
 
 					if (scrollTop > 200) {
 						this.button.classList.remove("hide");
@@ -39,7 +42,9 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 					}
 				};
 
-				window.addEventListener("scroll", updateVisibility, { passive: true });
+				window.addEventListener("scroll", updateVisibility, {
+					passive: true,
+				});
 			}
 		};
 	}

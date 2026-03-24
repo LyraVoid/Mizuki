@@ -16,7 +16,15 @@ import { Image as AstroImage } from "astro:assets";
 
 import { url } from "../../../utils/url-utils";
 
-const { id, src, alt, position = "center", basePath = "/", loading = "lazy", fetchpriority } = Astro.props;
+const {
+	id,
+	src,
+	alt,
+	position = "center",
+	basePath = "/",
+	loading = "lazy",
+	fetchpriority,
+} = Astro.props;
 const className = Astro.props.class;
 
 const isLocal = !(
@@ -56,8 +64,36 @@ const isBilibiliImage = !isLocal && src.includes("hdslb.com");
 // 对于外部图片（特别是 Bilibili），需要设置 referrerpolicy 避免 403 错误
 const referrerPolicy = !isLocal && isBilibiliImage ? "no-referrer" : undefined;
 ---
-<div id={id} class:list={[className, 'overflow-hidden relative']}>
-    <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
-    {isLocal && img && <AstroImage src={img} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading} fetchpriority={fetchpriority}/>}
-    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading} referrerpolicy={referrerPolicy} crossorigin={isBilibiliImage ? "anonymous" : undefined} fetchpriority={fetchpriority}/>}
+
+<div id={id} class:list={[className, "overflow-hidden relative"]}>
+	<div
+		class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"
+	>
+	</div>
+	{
+		isLocal && img && (
+			<AstroImage
+				src={img}
+				alt={alt || ""}
+				class={imageClass}
+				style={imageStyle}
+				loading={loading}
+				fetchpriority={fetchpriority}
+			/>
+		)
+	}
+	{
+		!isLocal && (
+			<img
+				src={isPublic ? url(src) : src}
+				alt={alt || ""}
+				class={imageClass}
+				style={imageStyle}
+				loading={loading}
+				referrerpolicy={referrerPolicy}
+				crossorigin={isBilibiliImage ? "anonymous" : undefined}
+				fetchpriority={fetchpriority}
+			/>
+		)
+	}
 </div>

@@ -1,4 +1,4 @@
-import { siteConfig } from '../config';
+import { siteConfig } from "../config";
 
 /**
  * Format relative time for diary moments
@@ -21,7 +21,8 @@ export function formatRelativeTime(
 	const now = new Date();
 	const date = new Date(dateString);
 	const diffInMinutes = Math.floor(
-		(now.getTime() + timeGap * 60 * 60 * 1000 - date.getTime()) / (1000 * 60),
+		(now.getTime() + timeGap * 60 * 60 * 1000 - date.getTime()) /
+			(1000 * 60),
 	);
 
 	if (diffInMinutes < 60) {

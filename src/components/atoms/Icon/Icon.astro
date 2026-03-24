@@ -28,126 +28,131 @@ const combinedClass = `${sizeClass} ${className}`.trim();
 const iconId = `icon-${Math.random().toString(36).substring(2, 9)}`;
 ---
 
-<span 
-  class={`inline-flex items-center justify-center ${combinedClass}`}
-  style={combinedStyle}
-  data-icon-container={iconId}
+<span
+	class={`inline-flex items-center justify-center ${combinedClass}`}
+	style={combinedStyle}
+	data-icon-container={iconId}
 >
-  <span 
-    class="icon-loading animate-pulse opacity-50"
-    data-loading-indicator
-  >
-    {fallback}
-  </span>
-  
-  <iconify-icon 
-    icon={icon}
-    class="icon-content opacity-0 transition-opacity duration-200"
-    data-icon-element
-    loading={loading}
-  ></iconify-icon>
+	<span class="icon-loading animate-pulse opacity-50" data-loading-indicator>
+		{fallback}
+	</span>
+
+	<iconify-icon
+		icon={icon}
+		class="icon-content opacity-0 transition-opacity duration-200"
+		data-icon-element
+		loading={loading}></iconify-icon>
 </span>
 
 <script is:inline define:vars={{ iconId, icon }}>
-  (function() {
-    const container = document.querySelector(`[data-icon-container="${iconId}"]`);
-    if (!container) {return;}
-    
-    const loadingIndicator = container.querySelector('[data-loading-indicator]');
-    const iconElement = container.querySelector('[data-icon-element]');
-    
-    if (!loadingIndicator || !iconElement) {return;}
+	(function () {
+		const container = document.querySelector(
+			`[data-icon-container="${iconId}"]`,
+		);
+		if (!container) {
+			return;
+		}
 
-    function checkIconLoaded() {
-      const hasContent = iconElement.shadowRoot && 
-                        iconElement.shadowRoot.children.length > 0;
-      
-      if (hasContent) {
-        showIcon();
-        return true;
-      }
-      return false;
-    }
+		const loadingIndicator = container.querySelector(
+			"[data-loading-indicator]",
+		);
+		const iconElement = container.querySelector("[data-icon-element]");
 
-    function showIcon() {
-      loadingIndicator.style.display = 'none';
-      iconElement.classList.remove('opacity-0');
-      iconElement.classList.add('opacity-100');
-    }
+		if (!loadingIndicator || !iconElement) {
+			return;
+		}
 
-    function showLoading() {
-      loadingIndicator.style.display = 'inline-flex';
-      iconElement.classList.remove('opacity-100');
-      iconElement.classList.add('opacity-0');
-    }
+		function checkIconLoaded() {
+			const hasContent =
+				iconElement.shadowRoot &&
+				iconElement.shadowRoot.children.length > 0;
 
-    showLoading();
+			if (hasContent) {
+				showIcon();
+				return true;
+			}
+			return false;
+		}
 
-    iconElement.addEventListener('load', () => {
-      showIcon();
-    });
+		function showIcon() {
+			loadingIndicator.style.display = "none";
+			iconElement.classList.remove("opacity-0");
+			iconElement.classList.add("opacity-100");
+		}
 
-    iconElement.addEventListener('error', () => {
-      console.warn(`Failed to load icon: ${icon}`);
-    });
+		function showLoading() {
+			loadingIndicator.style.display = "inline-flex";
+			iconElement.classList.remove("opacity-100");
+			iconElement.classList.add("opacity-0");
+		}
 
-    if (window.MutationObserver) {
-      const observer = new MutationObserver(() => {
-        if (checkIconLoaded()) {
-          observer.disconnect();
-        }
-      });
+		showLoading();
 
-      observer.observe(iconElement, {
-        childList: true,
-        subtree: true,
-        attributes: true
-      });
+		iconElement.addEventListener("load", () => {
+			showIcon();
+		});
 
-      setTimeout(() => {
-        observer.disconnect();
-        if (!checkIconLoaded()) {
-          console.warn(`Icon load timeout: ${icon}`);
-        }
-      }, 5000);
-    }
+		iconElement.addEventListener("error", () => {
+			console.warn(`Failed to load icon: ${icon}`);
+		});
 
-    setTimeout(() => {
-      checkIconLoaded();
-    }, 100);
-  })();
+		if (window.MutationObserver) {
+			const observer = new MutationObserver(() => {
+				if (checkIconLoaded()) {
+					observer.disconnect();
+				}
+			});
+
+			observer.observe(iconElement, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+			});
+
+			setTimeout(() => {
+				observer.disconnect();
+				if (!checkIconLoaded()) {
+					console.warn(`Icon load timeout: ${icon}`);
+				}
+			}, 5000);
+		}
+
+		setTimeout(() => {
+			checkIconLoaded();
+		}, 100);
+	})();
 </script>
 
 <style>
-  .icon-loading {
-    min-width: 1em;
-    min-height: 1em;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .icon-content {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  [data-icon-container] {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1em;
-    min-height: 1em;
-  }
-  
-  [data-icon-container] .icon-loading,
-  [data-icon-container] .icon-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
+	.icon-loading {
+		min-width: 1em;
+		min-height: 1em;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.icon-content {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	[data-icon-container] {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 1em;
+		min-height: 1em;
+	}
+
+	[data-icon-container] .icon-loading,
+	[data-icon-container] .icon-content {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
 </style>

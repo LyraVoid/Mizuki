@@ -46,10 +46,7 @@ const favicons: Favicon[] =
 	siteConfig.favicon.length > 0 ? siteConfig.favicon : defaultFavicons;
 
 // CDN 预连接域名（用于 Mermaid 等第三方资源）
-const cdnDomains = [
-	"https://cdn.jsdelivr.net",
-	"https://unpkg.com",
-];
+const cdnDomains = ["https://cdn.jsdelivr.net", "https://unpkg.com"];
 ---
 
 <!-- SEO Meta Tags -->
@@ -58,10 +55,7 @@ const cdnDomains = [
 <meta name="description" content={description || title} />
 {
 	keywords && keywords.length > 0 && (
-		<meta
-			name="keywords"
-			content={keywords.join(", ")}
-		/>
+		<meta name="keywords" content={keywords.join(", ")} />
 	)
 }
 <meta name="author" content={profileConfig.name} />
@@ -95,16 +89,9 @@ const cdnDomains = [
 	favicons.map((favicon) => (
 		<link
 			rel="icon"
-			href={
-				favicon.src.startsWith("/")
-					? url(favicon.src)
-					: favicon.src
-			}
+			href={favicon.src.startsWith("/") ? url(favicon.src) : favicon.src}
 			sizes={favicon.sizes}
-			media={
-				favicon.theme &&
-				`(prefers-color-scheme: ${favicon.theme})`
-			}
+			media={favicon.theme && `(prefers-color-scheme: ${favicon.theme})`}
 		/>
 	))
 }
@@ -160,14 +147,10 @@ const cdnDomains = [
 
 	// Set the theme for Expressive Code based on current mode
 	const expressiveTheme = isDark ? "github-dark" : "github-light";
-	const currentTheme =
-		document.documentElement.getAttribute("data-theme");
+	const currentTheme = document.documentElement.getAttribute("data-theme");
 	// 只在主题不同时才更新，避免触发不必要的重绘
 	if (currentTheme !== expressiveTheme) {
-		document.documentElement.setAttribute(
-			"data-theme",
-			expressiveTheme,
-		);
+		document.documentElement.setAttribute("data-theme", expressiveTheme);
 	}
 
 	// Load the hue from local storage
@@ -175,9 +158,7 @@ const cdnDomains = [
 	document.documentElement.style.setProperty("--hue", hue);
 
 	// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
-	let offset = Math.floor(
-		window.innerHeight * (BANNER_HEIGHT_EXTEND / 100),
-	);
+	let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
 	offset = offset - (offset % 4);
 	document.documentElement.style.setProperty(
 		"--banner-height-extend",
@@ -185,14 +166,14 @@ const cdnDomains = [
 	);
 
 	// 自动缩放逻辑 (Moved from MainGridLayout to here for earlier execution)
-	(function() {
+	(function () {
 		if (pageScaling && pageScaling.enable) {
 			function adjustPageScale() {
 				const isTouch =
 					(window.matchMedia &&
 						(window.matchMedia("(pointer:coarse)").matches ||
 							window.matchMedia("(hover: none)").matches)) ||
-					("ontouchstart" in window);
+					"ontouchstart" in window;
 				const isPortrait =
 					window.matchMedia &&
 					window.matchMedia("(orientation: portrait)").matches;
@@ -204,8 +185,12 @@ const cdnDomains = [
 				const targetWidth = pageScaling.targetWidth || 2000;
 				const currentWidth = document.documentElement.clientWidth;
 				let scale = currentWidth / targetWidth;
-				if (scale > 1) {scale = 1;}
-				if (scale < 0.85) {scale = 0.85;}
+				if (scale > 1) {
+					scale = 1;
+				}
+				if (scale < 0.85) {
+					scale = 0.85;
+				}
 				document.documentElement.style.fontSize = `${scale * 100}%`;
 			}
 
@@ -213,11 +198,11 @@ const cdnDomains = [
 			adjustPageScale();
 
 			// 监听窗口大小变化
-			window.addEventListener('resize', adjustPageScale);
+			window.addEventListener("resize", adjustPageScale);
 
 			// Swup 页面切换后也需要检查
-			document.addEventListener('swup:page:view', adjustPageScale);
-			window.addEventListener('orientationchange', adjustPageScale);
+			document.addEventListener("swup:page:view", adjustPageScale);
+			window.addEventListener("orientationchange", adjustPageScale);
 		}
 	})();
 </script>

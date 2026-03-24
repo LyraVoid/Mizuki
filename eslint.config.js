@@ -1,11 +1,11 @@
 import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
-import simpleImportSort from "eslint-plugin-simple-import-sort";
-import svelteParser from "svelte-eslint-parser";
-import sveltePlugin from "eslint-plugin-svelte";
 import astroParser from "astro-eslint-parser";
 import astroPlugin from "eslint-plugin-astro";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import sveltePlugin from "eslint-plugin-svelte";
 import globals from "globals";
+import svelteParser from "svelte-eslint-parser";
+import tseslint from "typescript-eslint";
 
 const browserGlobals = {
 	...globals.browser,
@@ -62,6 +62,8 @@ export default tseslint.config(
 			"src/components/widgets/announcement/Announcement.astro",
 			"src/components/widgets/common/WidgetLayout.astro",
 			"src/components/widgets/profile/Profile.astro",
+			"src/components/features/posts/CategoryBar.astro",
+			"src/components/widgets/card-toc/CardTOC.astro",
 			"src/layouts/Layout.astro",
 			"src/pages/timeline.astro",
 		],

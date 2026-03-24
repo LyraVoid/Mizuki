@@ -27,7 +27,9 @@
 		onTitleClick,
 	}: Props = $props();
 
-	const title = $derived(`${currentYear}${yearSuffix} ${monthNames[currentMonth]}`);
+	const title = $derived(
+		`${currentYear}${yearSuffix} ${monthNames[currentMonth]}`,
+	);
 </script>
 
 <div class="flex justify-between items-center mb-2 mt-2">
@@ -42,7 +44,9 @@
 			onclick={onTitleClick}
 			aria-label="Select month or year"
 		>
-			<span class="text-lg font-bold text-neutral-900 dark:text-neutral-100 select-none">
+			<span
+				class="text-lg font-bold text-neutral-900 dark:text-neutral-100 select-none"
+			>
 				{title}
 			</span>
 		</button>

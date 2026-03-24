@@ -153,7 +153,9 @@ function isSameOrigin(url: string): boolean {
  */
 function isSlowConnection(): boolean {
 	const conn = (navigator as any).connection;
-	if (!conn) return false;
+	if (!conn) {
+		return false;
+	}
 	return conn.effectiveType === "2g" || conn.effectiveType === "slow-2g";
 }
 

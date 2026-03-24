@@ -6,7 +6,7 @@
 import {
 	FANCYBOX_SELECTORS,
 	getDefaultFancyboxConfig,
-} from '../core/swup-config';
+} from "../core/swup-config";
 
 // Fancybox 模块类型
 type FancyboxType = any;
@@ -60,16 +60,18 @@ export class FancyboxHandler {
 	 * 加载 Fancybox 模块和样式
 	 */
 	private async loadFancybox(): Promise<void> {
-		const mod = await import('@fancyapps/ui');
+		const mod = await import("@fancyapps/ui");
 		this.Fancybox = mod.Fancybox;
-		await import('@fancyapps/ui/dist/fancybox/fancybox.css');
+		await import("@fancyapps/ui/dist/fancybox/fancybox.css");
 	}
 
 	/**
 	 * 绑定图片选择器
 	 */
 	private bindImageSelectors(): void {
-		if (!this.Fancybox) {return;}
+		if (!this.Fancybox) {
+			return;
+		}
 
 		const commonConfig = getDefaultFancyboxConfig();
 
@@ -78,7 +80,7 @@ export class FancyboxHandler {
 			...commonConfig,
 			groupAll: true,
 			Carousel: {
-				transition: 'slide',
+				transition: "slide",
 				preload: 2,
 			},
 		});
@@ -88,7 +90,7 @@ export class FancyboxHandler {
 		this.Fancybox.bind(FANCYBOX_SELECTORS.albumLinks, {
 			...commonConfig,
 			source: (el: any) => {
-				return el.getAttribute('data-src') || el.getAttribute('href');
+				return el.getAttribute("data-src") || el.getAttribute("href");
 			},
 		});
 		this.boundSelectors.push(FANCYBOX_SELECTORS.albumLinks);
@@ -103,7 +105,9 @@ export class FancyboxHandler {
 	 * 在页面切换前调用
 	 */
 	cleanup(): void {
-		if (!this.Fancybox) {return;}
+		if (!this.Fancybox) {
+			return;
+		}
 
 		this.boundSelectors.forEach((selector) => {
 			this.Fancybox.unbind(selector);

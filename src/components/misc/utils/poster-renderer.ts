@@ -67,7 +67,9 @@ export function getLines(
 		}
 	}
 
-	if (currentLine) {lines.push(currentLine);}
+	if (currentLine) {
+		lines.push(currentLine);
+	}
 	return lines;
 }
 
@@ -103,7 +105,9 @@ export function parseDate(
 ): { day: string; month: string; year: string } | null {
 	try {
 		const d = new Date(dateStr);
-		if (Number.isNaN(d.getTime())) {return null;}
+		if (Number.isNaN(d.getTime())) {
+			return null;
+		}
 
 		return {
 			day: d.getDate().toString().padStart(2, "0"),
@@ -204,9 +208,13 @@ export function drawDateBadge(
 	const dateBoxX = padding;
 	const dateBoxY = coverHeight - dateBoxH;
 
-	const bgColor = isDarkMode ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.3)";
+	const bgColor = isDarkMode
+		? "rgba(255, 255, 255, 0.15)"
+		: "rgba(0, 0, 0, 0.3)";
 	const textColor = isDarkMode ? "#e5e5e5" : "#ffffff";
-	const separatorColor = isDarkMode ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0.6)";
+	const separatorColor = isDarkMode
+		? "rgba(255, 255, 255, 0.4)"
+		: "rgba(255, 255, 255, 0.6)";
 
 	// Background
 	ctx.fillStyle = bgColor;

@@ -50,10 +50,6 @@
 			{onMonthSelect}
 		/>
 	{:else if currentView === "year"}
-		<YearPicker
-			{currentYear}
-			{stats}
-			{onYearSelect}
-		/>
+		<YearPicker {currentYear} {stats} {onYearSelect} />
 	{/if}
 </div>

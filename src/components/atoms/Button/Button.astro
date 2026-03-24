@@ -9,13 +9,17 @@ const {
 	class: className = "",
 }: ButtonProps = Astro.props;
 
-const baseClasses = "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+const baseClasses =
+	"inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
 const variantClasses = {
-	primary: "bg-[var(--primary)] text-white hover:opacity-90 active:opacity-80",
-	secondary: "bg-[var(--btn-plain-bg-hover)] text-[var(--btn-content)] hover:bg-[var(--btn-plain-bg-active)]",
+	primary:
+		"bg-[var(--primary)] text-white hover:opacity-90 active:opacity-80",
+	secondary:
+		"bg-[var(--btn-plain-bg-hover)] text-[var(--btn-content)] hover:bg-[var(--btn-plain-bg-active)]",
 	ghost: "bg-transparent hover:bg-[var(--btn-plain-bg-hover)] text-[var(--btn-content)]",
-	outline: "border border-[var(--line-divider)] bg-transparent hover:bg-[var(--btn-plain-bg-hover)] text-[var(--btn-content)]",
+	outline:
+		"border border-[var(--line-divider)] bg-transparent hover:bg-[var(--btn-plain-bg-hover)] text-[var(--btn-content)]",
 };
 
 const sizeClasses = {
@@ -24,7 +28,8 @@ const sizeClasses = {
 	lg: "h-12 px-6 text-lg",
 };
 
-const combinedClass = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`.trim();
+const combinedClass =
+	`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`.trim();
 ---
 
 <button type={type} class={combinedClass} disabled={disabled}>

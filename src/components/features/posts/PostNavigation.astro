@@ -3,58 +3,66 @@ import { getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
 
 interface Props {
-    prevSlug?: string;
-    prevTitle?: string;
-    nextSlug?: string;
-    nextTitle?: string;
-    class?: string;
+	prevSlug?: string;
+	prevTitle?: string;
+	nextSlug?: string;
+	nextTitle?: string;
+	class?: string;
 }
 
 const {
-    prevSlug,
-    prevTitle,
-    nextSlug,
-    nextTitle,
-    class: className,
+	prevSlug,
+	prevTitle,
+	nextSlug,
+	nextTitle,
+	class: className,
 } = Astro.props;
 
 const onlyOneButton = (prevSlug && !nextSlug) || (!prevSlug && nextSlug);
 ---
 
 <div
-    class:list={["flex flex-col mb-4 gap-4 overflow-hidden w-full", className, !onlyOneButton && "md:flex-row md:justify-between"]}
+	class:list={[
+		"flex flex-col mb-4 gap-4 overflow-hidden w-full",
+		className,
+		!onlyOneButton && "md:flex-row md:justify-between",
+	]}
 >
-    {prevSlug && (
-        <a
-            href={getPostUrlBySlug(prevSlug)}
-            class="w-full font-bold overflow-hidden active:scale-95"
-        >
-            <div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-start gap-4">
-                <Icon
-                    name="material-symbols:chevron-left-rounded"
-                    class="text-[2rem] text-[var(--primary)]"
-                />
-                <div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75">
-                    {prevTitle}
-                </div>
-            </div>
-        </a>
-    )}
+	{
+		prevSlug && (
+			<a
+				href={getPostUrlBySlug(prevSlug)}
+				class="w-full font-bold overflow-hidden active:scale-95"
+			>
+				<div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-start gap-4">
+					<Icon
+						name="material-symbols:chevron-left-rounded"
+						class="text-[2rem] text-[var(--primary)]"
+					/>
+					<div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75">
+						{prevTitle}
+					</div>
+				</div>
+			</a>
+		)
+	}
 
-    {nextSlug && (
-        <a
-            href={getPostUrlBySlug(nextSlug)}
-            class="w-full font-bold overflow-hidden active:scale-95"
-        >
-            <div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-end gap-4">
-                <div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75">
-                    {nextTitle}
-                </div>
-                <Icon
-                    name="material-symbols:chevron-right-rounded"
-                    class="text-[2rem] text-[var(--primary)]"
-                />
-            </div>
-        </a>
-    )}
+	{
+		nextSlug && (
+			<a
+				href={getPostUrlBySlug(nextSlug)}
+				class="w-full font-bold overflow-hidden active:scale-95"
+			>
+				<div class="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-end gap-4">
+					<div class="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75">
+						{nextTitle}
+					</div>
+					<Icon
+						name="material-symbols:chevron-right-rounded"
+						class="text-[2rem] text-[var(--primary)]"
+					/>
+				</div>
+			</a>
+		)
+	}
 </div>

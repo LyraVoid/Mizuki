@@ -49,14 +49,19 @@ const config = {
 
 		async function initGiscus() {
 			const container = document.getElementById(GISCUS_CONTAINER_ID);
-			if (!container) return;
+			if (!container) {
+				return;
+			}
 
 			await loadScrollProtection();
-			
+
 			let theme = config.theme;
 			if (theme === "preferred_color_scheme") {
-				const isDark = document.documentElement.classList.contains("dark") || 
-					document.documentElement.getAttribute("data-theme")?.includes("dark");
+				const isDark =
+					document.documentElement.classList.contains("dark") ||
+					document.documentElement
+						.getAttribute("data-theme")
+						?.includes("dark");
 				theme = isDark ? "dark" : "light";
 			}
 
@@ -71,11 +76,17 @@ const config = {
 			script.setAttribute("data-mapping", config.mapping);
 			script.setAttribute("data-term", getCurrentPath());
 			script.setAttribute("data-strict", config.strict);
-			script.setAttribute("data-reactions-enabled", config.reactionsEnabled);
+			script.setAttribute(
+				"data-reactions-enabled",
+				config.reactionsEnabled,
+			);
 			script.setAttribute("data-emit-metadata", config.emitMetadata);
 			script.setAttribute("data-input-position", config.inputPosition);
 			script.setAttribute("data-theme", theme);
-			script.setAttribute("data-lang", config.lang ? config.lang.replace('_', '-') : 'en');
+			script.setAttribute(
+				"data-lang",
+				config.lang ? config.lang.replace("_", "-") : "en",
+			);
 			script.setAttribute("data-loading", config.loading);
 			script.crossOrigin = "anonymous";
 			script.async = true;
@@ -95,7 +106,9 @@ const config = {
 
 		function setupLazyLoad() {
 			const container = document.getElementById(GISCUS_CONTAINER_ID);
-			if (!container) return;
+			if (!container) {
+				return;
+			}
 
 			observer = new IntersectionObserver(
 				(entries) => {
@@ -149,22 +162,30 @@ const config = {
 
 		const observer_theme = new MutationObserver((mutations) => {
 			mutations.forEach((mutation) => {
-				if (mutation.attributeName === 'class' || mutation.attributeName === 'data-theme') {
-					const isDark = document.documentElement.classList.contains("dark") || 
-						document.documentElement.getAttribute("data-theme")?.includes("dark");
+				if (
+					mutation.attributeName === "class" ||
+					mutation.attributeName === "data-theme"
+				) {
+					const isDark =
+						document.documentElement.classList.contains("dark") ||
+						document.documentElement
+							.getAttribute("data-theme")
+							?.includes("dark");
 					const theme = isDark ? "dark" : "light";
-					
-					const iframe = document.querySelector('iframe.giscus-frame');
+
+					const iframe = document.querySelector(
+						"iframe.giscus-frame",
+					);
 					if (iframe) {
 						iframe.contentWindow?.postMessage(
 							{ giscus: { setConfig: { theme } } },
-							'https://giscus.app'
+							"https://giscus.app",
 						);
 					}
 				}
 			});
 		});
-		
+
 		observer_theme.observe(document.documentElement, { attributes: true });
 	})();
 </script>

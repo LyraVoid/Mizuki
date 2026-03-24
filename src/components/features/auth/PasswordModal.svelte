@@ -3,7 +3,7 @@
 	import { i18n } from "@i18n/translation";
 	import { onMount } from "svelte";
 
-	let { hint = "" } = $props();
+	const { hint = "" } = $props();
 
 	let errorMessage = $state("");
 	let isLoading = $state(false);

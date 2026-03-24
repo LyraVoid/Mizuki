@@ -1,5 +1,5 @@
 ---
-import { formatRelativeTime } from '../../../utils/timeFormat';
+import { formatRelativeTime } from "../../../utils/timeFormat";
 
 interface Props {
 	moment: {
@@ -14,35 +14,58 @@ interface Props {
 }
 
 const { moment, index, minutesAgo, hoursAgo, daysAgo } = Astro.props;
-const relativeTime = formatRelativeTime(moment.date, minutesAgo, hoursAgo, daysAgo);
+const relativeTime = formatRelativeTime(
+	moment.date,
+	minutesAgo,
+	hoursAgo,
+	daysAgo,
+);
 ---
 
-<div class="moment-item card-base-daily p-4 md:p-6 lg:p-8 hover:shadow-lg transition-all" data-index={index}>
+<div
+	class="moment-item card-base-daily p-4 md:p-6 lg:p-8 hover:shadow-lg transition-all"
+	data-index={index}
+>
 	<div class="moment-content">
-		<p class="moment-text text-sm md:text-base lg:text-lg text-90 leading-relaxed mb-3 md:mb-4">{moment.content}</p>
+		<p
+			class="moment-text text-sm md:text-base lg:text-lg text-90 leading-relaxed mb-3 md:mb-4"
+		>
+			{moment.content}
+		</p>
 
-		{moment.images && moment.images.length > 0 && (
-			<div class="diary-images grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4 mb-3 md:mb-4">
-				{moment.images.map((image, imgIndex) => (
-					<div class="image-item relative rounded-md overflow-hidden aspect-square cursor-pointer hover:scale-105 transition-transform">
-						<a href="javascript:void(0)" data-src={image} data-fancybox={`gallery-${index}-${imgIndex}`} class="block w-full h-full">
-							<img
-								src={image}
-								alt="diary moment image"
-								class="w-full h-full object-cover"
-								loading="lazy"
-							/>
-						</a>
-					</div>
-				))}
-			</div>
-		)}
+		{
+			moment.images && moment.images.length > 0 && (
+				<div class="diary-images grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4 mb-3 md:mb-4">
+					{moment.images.map((image, imgIndex) => (
+						<div class="image-item relative rounded-md overflow-hidden aspect-square cursor-pointer hover:scale-105 transition-transform">
+							<a
+								href="javascript:void(0)"
+								data-src={image}
+								data-fancybox={`gallery-${index}-${imgIndex}`}
+								class="block w-full h-full"
+							>
+								<img
+									src={image}
+									alt="diary moment image"
+									class="w-full h-full object-cover"
+									loading="lazy"
+								/>
+							</a>
+						</div>
+					))}
+				</div>
+			)
+		}
 	</div>
 
-	<hr class="moment-divider border-t border-[var(--line-divider)] my-3 md:my-4" />
+	<hr
+		class="moment-divider border-t border-[var(--line-divider)] my-3 md:my-4"
+	/>
 
 	<div class="moment-footer flex justify-between items-center">
-		<div class="moment-time flex items-center gap-1.5 text-75 text-xs md:text-sm lg:text-base">
+		<div
+			class="moment-time flex items-center gap-1.5 text-75 text-xs md:text-sm lg:text-base"
+		>
 			<i class="time-icon text-xs md:text-sm">🕐</i>
 			<time datetime={moment.date}>{relativeTime}</time>
 		</div>

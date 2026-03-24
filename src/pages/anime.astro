@@ -1,7 +1,7 @@
 ---
 import "../styles/anime.css";
 
-import { AnimeFilters,AnimeGrid } from "@components/features/anime";
+import { AnimeFilters, AnimeGrid } from "@components/features/anime";
 import { PageHeader } from "@components/features/page-header";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 
@@ -32,10 +32,16 @@ const { animeList, currentConfig } = getAnimeList(ANIME_MODE, sourceConfigs);
 let emptyDescription = "";
 let showEmptyState = false;
 
-if (ANIME_MODE === "bilibili" && (!siteConfig.bilibili?.vmid || siteConfig.bilibili.vmid === "")) {
+if (
+	ANIME_MODE === "bilibili" &&
+	(!siteConfig.bilibili?.vmid || siteConfig.bilibili.vmid === "")
+) {
 	showEmptyState = true;
 	emptyDescription = i18n(I18nKey.animeConfigBilibili);
-} else if (ANIME_MODE === "bangumi" && siteConfig.bangumi?.userId === "your-user-id") {
+} else if (
+	ANIME_MODE === "bangumi" &&
+	siteConfig.bangumi?.userId === "your-user-id"
+) {
 	showEmptyState = true;
 	emptyDescription = i18n(I18nKey.animeConfigBangumi);
 } else if (animeList.length === 0) {
@@ -71,14 +77,19 @@ const emptyMessage = i18n(I18nKey.animeEmpty);
 	>
 		<div class="card-base anime-card-base z-10 px-9 py-6 relative w-full">
 			<div class="relative w-full mb-8">
-				<PageHeader title={i18n(I18nKey.animeTitle)} subtitle={i18n(I18nKey.animeSubtitle)} />
+				<PageHeader
+					title={i18n(I18nKey.animeTitle)}
+					subtitle={i18n(I18nKey.animeSubtitle)}
+				/>
 
 				<div class="mb-6">
 					<AnimeFilters
 						filterAllLabel={i18n(I18nKey.animeFilterAll)}
 						statusWatchingLabel={i18n(I18nKey.animeStatusWatching)}
 						statusPlannedLabel={i18n(I18nKey.animeStatusPlanned)}
-						statusCompletedLabel={i18n(I18nKey.animeStatusCompleted)}
+						statusCompletedLabel={i18n(
+							I18nKey.animeStatusCompleted,
+						)}
 						statusOnHoldLabel={i18n(I18nKey.animeStatusOnHold)}
 						statusDroppedLabel={i18n(I18nKey.animeStatusDropped)}
 						showExtendedFilters={showExtendedFilters}
@@ -182,7 +193,9 @@ const emptyMessage = i18n(I18nKey.animeEmpty);
 						);
 						if (rightSidebar) {
 							rightSidebar.style.display = "";
-							rightSidebar.classList.remove("hidden-in-grid-mode");
+							rightSidebar.classList.remove(
+								"hidden-in-grid-mode",
+							);
 						}
 					}
 					const mainGrid = document.getElementById("main-grid");
@@ -252,9 +265,7 @@ const emptyMessage = i18n(I18nKey.animeEmpty);
 			}
 
 			function initAnimeLayout() {
-				const animeListContainer = document.getElementById(
-					containerId,
-				);
+				const animeListContainer = document.getElementById(containerId);
 				if (!animeListContainer) {
 					return false;
 				}
@@ -283,9 +294,8 @@ const emptyMessage = i18n(I18nKey.animeEmpty);
 					setTimeout(tryInit, delay);
 				} else {
 					setTimeout(() => {
-						const animeListContainer = document.getElementById(
-							containerId,
-						);
+						const animeListContainer =
+							document.getElementById(containerId);
 						if (animeListContainer) {
 							const currentLayout =
 								localStorage.getItem("postListLayout") ||
@@ -330,7 +340,9 @@ const emptyMessage = i18n(I18nKey.animeEmpty);
 			window.animeFilterEventListeners = [];
 			filterTags.forEach((tag) => {
 				const clickHandler = function () {
-					if (this.classList.contains("anime-active")) {return;}
+					if (this.classList.contains("anime-active")) {
+						return;
+					}
 
 					filterTags.forEach((t) =>
 						t.classList.remove("anime-active"),
@@ -350,7 +362,9 @@ const emptyMessage = i18n(I18nKey.animeEmpty);
 						listContainer.appendChild(fragment);
 					}
 
-					if (sentinel) {sentinel.style.display = "none";}
+					if (sentinel) {
+						sentinel.style.display = "none";
+					}
 					const initialHidden =
 						listContainer.querySelectorAll(".initial-hidden");
 					initialHidden.forEach((el) => {
@@ -377,7 +391,9 @@ const emptyMessage = i18n(I18nKey.animeEmpty);
 								? itemsToKeep.push(item)
 								: itemsToShow.push(item);
 						} else {
-							if (isCurrentlyVisible) {itemsToHide.push(item);}
+							if (isCurrentlyVisible) {
+								itemsToHide.push(item);
+							}
 						}
 					});
 					const firstPositions = new Map();
@@ -400,7 +416,9 @@ const emptyMessage = i18n(I18nKey.animeEmpty);
 						});
 						itemsToKeep.forEach((item) => {
 							const first = firstPositions.get(item);
-							if (!first) {return;}
+							if (!first) {
+								return;
+							}
 
 							const rect = item.getBoundingClientRect();
 							const deltaX = Math.round(first.left - rect.left);

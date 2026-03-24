@@ -3,100 +3,106 @@
 ---
 
 <div class="animation-test-container">
-  <div class="test-content transition-slide-in" id="test-content">
-    <h3>动画测试区域</h3>
-    <p>这个区域展示了参考yukina主题实现的滑入滑出动画效果</p>
-    <div class="test-buttons">
-      <button class="test-btn" onclick="testSlideIn()">滑入动画</button>
-      <button class="test-btn" onclick="testSlideOut()">滑出动画</button>
-      <button class="test-btn" onclick="resetAnimation()">重置</button>
-    </div>
-  </div>
+	<div class="test-content transition-slide-in" id="test-content">
+		<h3>动画测试区域</h3>
+		<p>这个区域展示了参考yukina主题实现的滑入滑出动画效果</p>
+		<div class="test-buttons">
+			<button class="test-btn" onclick="testSlideIn()">滑入动画</button>
+			<button class="test-btn" onclick="testSlideOut()">滑出动画</button>
+			<button class="test-btn" onclick="resetAnimation()">重置</button>
+		</div>
+	</div>
 </div>
 
 <style>
-  .animation-test-container {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: var(--color-bg-secondary, #f8f9fa);
-    border-radius: 8px;
-    border: 1px solid var(--color-border, #e9ecef);
-  }
+	.animation-test-container {
+		margin: 2rem 0;
+		padding: 1.5rem;
+		background: var(--color-bg-secondary, #f8f9fa);
+		border-radius: 8px;
+		border: 1px solid var(--color-border, #e9ecef);
+	}
 
-  .test-content {
-    padding: 1rem;
-    background: white;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
+	.test-content {
+		padding: 1rem;
+		background: white;
+		border-radius: 6px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
 
-  .test-buttons {
-    margin-top: 1rem;
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
+	.test-buttons {
+		margin-top: 1rem;
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
 
-  .test-btn {
-    padding: 0.5rem 1rem;
-    background: var(--color-primary, #667eea);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
-  }
+	.test-btn {
+		padding: 0.5rem 1rem;
+		background: var(--color-primary, #667eea);
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 0.875rem;
+		transition: all 0.2s ease;
+	}
 
-  .test-btn:hover {
-    background: var(--color-primary-hover, #5a6fd8);
-    transform: translateY(-1px);
-  }
+	.test-btn:hover {
+		background: var(--color-primary-hover, #5a6fd8);
+		transform: translateY(-1px);
+	}
 
-  .test-btn:active {
-    transform: translateY(0);
-  }
+	.test-btn:active {
+		transform: translateY(0);
+	}
 </style>
 
 <script is:inline>
-  // 动画测试函数
-  function testSlideIn() {
-    const content = document.getElementById('test-content');
-    if (!content) {return;}
-    
-    content.className = 'test-content transition-slide-in';
-    content.offsetHeight; // 强制重排
-    
-    setTimeout(() => {
-      content.classList.add('is-active');
-    }, 50);
-  }
+	// 动画测试函数
+	function testSlideIn() {
+		const content = document.getElementById("test-content");
+		if (!content) {
+			return;
+		}
 
-  function testSlideOut() {
-    const content = document.getElementById('test-content');
-    if (!content) {return;}
-    
-    content.className = 'test-content transition-slide-out is-active';
-    
-    setTimeout(() => {
-      content.classList.add('is-leaving');
-    }, 50);
-  }
+		content.className = "test-content transition-slide-in";
+		content.offsetHeight; // 强制重排
 
-  function resetAnimation() {
-    const content = document.getElementById('test-content');
-    if (!content) {return;}
-    
-    content.className = 'test-content transition-slide-in is-active';
-  }
-  
-  // 暴露函数给全局作用域以便HTML中的onclick可以调用
-  window.testSlideIn = testSlideIn;
-  window.testSlideOut = testSlideOut;
-  window.resetAnimation = resetAnimation;
+		setTimeout(() => {
+			content.classList.add("is-active");
+		}, 50);
+	}
 
-  // 页面加载时自动触发滑入动画
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(testSlideIn, 300);
-  });
+	function testSlideOut() {
+		const content = document.getElementById("test-content");
+		if (!content) {
+			return;
+		}
+
+		content.className = "test-content transition-slide-out is-active";
+
+		setTimeout(() => {
+			content.classList.add("is-leaving");
+		}, 50);
+	}
+
+	function resetAnimation() {
+		const content = document.getElementById("test-content");
+		if (!content) {
+			return;
+		}
+
+		content.className = "test-content transition-slide-in is-active";
+	}
+
+	// 暴露函数给全局作用域以便HTML中的onclick可以调用
+	window.testSlideIn = testSlideIn;
+	window.testSlideOut = testSlideOut;
+	window.resetAnimation = resetAnimation;
+
+	// 页面加载时自动触发滑入动画
+	document.addEventListener("DOMContentLoaded", () => {
+		setTimeout(testSlideIn, 300);
+	});
 </script>
