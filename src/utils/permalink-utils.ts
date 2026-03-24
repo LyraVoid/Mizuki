@@ -79,14 +79,6 @@ export function generatePermalinkSlug(post: CollectionEntry<"posts">): string {
 	// 使用全局 permalink 格式模板
 	let format = permalinkConfig.format;
 
-	// 验证格式不包含斜杠
-	if (format.includes("/")) {
-		console.warn(
-			"Permalink format contains '/' which is not supported. Removing slashes.",
-		);
-		format = format.replace(/\//g, "-");
-	}
-
 	const published = post.data.published;
 	const postname = removeFileExtension(post.id);
 	const category = post.data.category || "uncategorized";
