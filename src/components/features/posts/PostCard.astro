@@ -37,7 +37,7 @@ const { remarkPluginFrontmatter } = await render(entry);
 
 <div
 	class:list={[
-		"card-base flex w-full rounded-[var(--radius-large)] overflow-hidden relative",
+		"card-base flex w-full rounded-[var(--radius-large)] overflow-hidden relative break-inside-avoid",
 		{
 			"flex-col-reverse md:flex-col": coverPosition === "right",
 			"flex-col-reverse": coverPosition === "top",

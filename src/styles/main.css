@@ -567,9 +567,10 @@ html {
 /* 浅色模式：使用更浅的主题色且完全不透明 */
 
 /* 文章列表布局切换样式 */
+/* 文章列表布局切换样式 - 使用瀑布流 (Masonry) */
 .post-list-container.grid-mode {
-  display: grid !important;
-  grid-template-columns: repeat(1, 1fr);
+  display: block;
+  columns: 1;
   gap: 1rem;
 }
 
@@ -581,42 +582,11 @@ html {
 
 @media (min-width: 768px) {
   .post-list-container.grid-mode {
-    grid-template-columns: repeat(2, 1fr);
+    columns: 2;
   }
 }
 
-/* 网格模式下的文章卡片样式调整 */
-.post-list-container.grid-mode .post-card-item {
-  width: 100%;
-  margin-bottom: 0;
-}
-
-.post-list-container.grid-mode .post-card-item a[href] {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.post-list-container.grid-mode .post-card-item .description {
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  line-height: 1.25rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.post-list-container.grid-mode .post-card-item .stats {
-  font-size: 0.75rem;
-}
-
-.post-list-container.grid-mode .post-card-item .post-meta {
-  margin-bottom: 0.5rem;
-}
+/* 网格模式下的文章卡片样式已优化 */
 
 /* CSS-only移动端优化 - 避免JavaScript闪烁 */
 @media (max-width: 768px) {
@@ -652,12 +622,7 @@ html {
     gap: 0.75rem;
   }
 
-  /* 网格模式下的样式 */
-  .post-list-container.grid-mode {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
+  /* 网格模式下的样式 - 已迁移至瀑布流 */
 }
 
 /* 确保过渡动画平滑 */
@@ -665,51 +630,9 @@ html {
   transition: all 0.3s ease-in-out;
 }
 
-/* 文章列表布局切换样式 */
-.post-list-container.grid-mode {
-  display: grid !important;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 1.5rem;
-}
+/* 已移除冗余的 grid-mode 定义 */
 
-@media (min-width: 768px) {
-  .post-list-container.grid-mode {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* 网格模式下的文章卡片样式调整 */
-.post-list-container.grid-mode .post-card-item {
-  width: 100%;
-  margin-bottom: 0;
-}
-
-.post-list-container.grid-mode .post-card-item a[href] {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.post-list-container.grid-mode .post-card-item .description {
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  line-height: 1.25rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.post-list-container.grid-mode .post-card-item .stats {
-  font-size: 0.75rem;
-}
-
-.post-list-container.grid-mode .post-card-item .post-meta {
-  margin-bottom: 0.5rem;
-}
+/* 已移除冗余的网格模式定义 */
 
 /* 列表模式下的样式 */
 .post-list-container.list-mode {
