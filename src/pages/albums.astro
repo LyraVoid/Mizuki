@@ -14,136 +14,177 @@ if (!siteConfig.featurePages.albums) {
 const albumsData = await scanAlbums();
 ---
 
-<MainGridLayout title={i18n(I18nKey.albums)} description={i18n(I18nKey.albumsSubtitle)}>
-    <!-- 引入右侧边栏布局管理器 -->
-  <script>
-    import('../scripts/right-sidebar-layout.js');
-  </script>
-  <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-    <div class="card-base z-10 px-9 py-6 relative w-full">
-      
-      <!-- 页面标题 -->
-      <header class="mb-8">
-        <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-3 relative
+<MainGridLayout
+	title={i18n(I18nKey.albums)}
+	description={i18n(I18nKey.albumsSubtitle)}
+>
+	<!-- 引入右侧边栏布局管理器 -->
+	<script>
+		import("../scripts/right-sidebar-layout.js");
+	</script>
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
+		<div class="card-base z-10 px-9 py-6 relative w-full">
+			<!-- 页面标题 -->
+			<header class="mb-8">
+				<h1
+					class="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-3 relative
                   before:w-1 before:h-8 before:rounded-md before:bg-[var(--primary)]
-                  before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4">
-          {i18n(I18nKey.albums)}
-        </h1>
-        <p class="text-neutral-600 dark:text-neutral-400">
-          {i18n(I18nKey.albumsSubtitle)}
-        </p>
-      </header>
+                  before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4"
+				>
+					{i18n(I18nKey.albums)}
+				</h1>
+				<p class="text-neutral-600 dark:text-neutral-400">
+					{i18n(I18nKey.albumsSubtitle)}
+				</p>
+			</header>
 
-      <!-- 相册网格 -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {albumsData.map(album => (
-          <article 
-            class="album-card group bg-[var(--card-bg)] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-[var(--line-divider)]"
-          >
-            <a href={`/albums/${album.id}/`} class="block">
-              <!-- 封面图片 -->
-              <div class="aspect-[4/3] overflow-hidden bg-[var(--btn-regular-bg)]">
-                <img 
-                  src={album.cover} 
-                  alt={album.title}
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
-              </div>
-              
-              <!-- 相册信息 -->
-              <div class="p-4">
-                <h3 class="font-bold text-lg text-neutral-900 dark:text-neutral-100 mb-2 group-hover:text-[var(--primary)] transition-colors">
-                  {album.title}
-                </h3>
-                
-                {album.description && (
-                  <p class="text-neutral-600 dark:text-neutral-400 text-sm mb-3 line-clamp-2">
-                    {album.description}
-                  </p>
-                )}
-                
-                <!-- 元数据 -->
-                <div class="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-500">
-                  <div class="flex items-center gap-4">
-                    <span>{album.photos.length} {album.photos.length > 1 ? i18n(I18nKey.albumsPhotosCount) : i18n(I18nKey.albumsPhotoCount)}</span>
-                    {album.location && (
-                      <span class="flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
-                        </svg>
-                        {album.location}
-                      </span>
-                    )}
-                  </div>
-                  <time>{new Date(album.date).toLocaleDateString('zh-CN')}</time>
-                </div>
-                
-                <!-- 标签 -->
-                {album.tags && album.tags.length > 0 && (
-                  <div class="flex flex-wrap gap-1 mt-3">
-                    {album.tags.slice(0, 3).map(tag => (
-                      <span class="btn-regular h-6 text-xs px-2 rounded-lg">
-                        {tag}
-                      </span>
-                    ))}
-                    {album.tags.length > 3 && (
-                      <span class="btn-regular h-6 text-xs px-2 rounded-lg">
-                        +{album.tags.length - 3}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            </a>
-          </article>
-        ))}
-      </div>
-      
-      <!-- 空状态 -->
-      {albumsData.length === 0 && (
-        <div class="text-center py-12">
-          <div class="text-neutral-400 dark:text-neutral-600 mb-4">
-            <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-          </div>
-          <h3 class="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
-            {i18n(I18nKey.albumsEmpty)}
-          </h3>
-          <p class="text-neutral-600 dark:text-neutral-400">
-            {i18n(I18nKey.albumsEmptyDesc)}
-          </p>
-        </div>
-      )}
-    </div>
-  </div>
+			<!-- 相册网格 -->
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				{
+					albumsData.map((album) => (
+						<article class="album-card group bg-[var(--card-bg)] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-[var(--line-divider)]">
+							<a href={`/albums/${album.id}/`} class="block">
+								{/* 封面图片 */}
+								<div class="aspect-[4/3] overflow-hidden bg-[var(--btn-regular-bg)]">
+									<img
+										src={album.cover}
+										alt={album.title}
+										class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+										loading="lazy"
+									/>
+								</div>
+
+								{/* 相册信息 */}
+								<div class="p-4">
+									<h3 class="font-bold text-lg text-neutral-900 dark:text-neutral-100 mb-2 group-hover:text-[var(--primary)] transition-colors">
+										{album.title}
+									</h3>
+
+									{album.description && (
+										<p class="text-neutral-600 dark:text-neutral-400 text-sm mb-3 line-clamp-2">
+											{album.description}
+										</p>
+									)}
+
+									{/* 元数据 */}
+									<div class="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-500">
+										<div class="flex items-center gap-4">
+											<span>
+												{album.photos.length}{" "}
+												{album.photos.length > 1
+													? i18n(
+															I18nKey.albumsPhotosCount,
+														)
+													: i18n(
+															I18nKey.albumsPhotoCount,
+														)}
+											</span>
+											{album.location && (
+												<span class="flex items-center gap-1">
+													<svg
+														class="w-3 h-3"
+														fill="currentColor"
+														viewBox="0 0 20 20"
+													>
+														<path
+															fill-rule="evenodd"
+															d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+															clip-rule="evenodd"
+														/>
+													</svg>
+													{album.location}
+												</span>
+											)}
+										</div>
+										<time>
+											{new Date(
+												album.date,
+											).toLocaleDateString("zh-CN")}
+										</time>
+									</div>
+
+									{/* 标签 */}
+									{album.tags && album.tags.length > 0 && (
+										<div class="flex flex-wrap gap-1 mt-3">
+											{album.tags
+												.slice(0, 3)
+												.map((tag) => (
+													<span class="btn-regular h-6 text-xs px-2 rounded-lg">
+														{tag}
+													</span>
+												))}
+											{album.tags.length > 3 && (
+												<span class="btn-regular h-6 text-xs px-2 rounded-lg">
+													+{album.tags.length - 3}
+												</span>
+											)}
+										</div>
+									)}
+								</div>
+							</a>
+						</article>
+					))
+				}
+			</div>
+
+			<!-- 空状态 -->
+			{
+				albumsData.length === 0 && (
+					<div class="text-center py-12">
+						<div class="text-neutral-400 dark:text-neutral-600 mb-4">
+							<svg
+								class="w-16 h-16 mx-auto"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="1"
+									d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+								/>
+							</svg>
+						</div>
+						<h3 class="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
+							{i18n(I18nKey.albumsEmpty)}
+						</h3>
+						<p class="text-neutral-600 dark:text-neutral-400">
+							{i18n(I18nKey.albumsEmptyDesc)}
+						</p>
+					</div>
+				)
+			}
+		</div>
+	</div>
 </MainGridLayout>
 
 <style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .album-card:hover {
-    transform: translateY(-2px);
-  }
-  
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .album-card {
-    animation: fadeInUp 0.3s ease-out;
-  }
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.album-card:hover {
+		transform: translateY(-2px);
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.album-card {
+		animation: fadeInUp 0.3s ease-out;
+	}
 </style>

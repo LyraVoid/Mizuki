@@ -55,7 +55,7 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 	style={`top: -${BANNER_HEIGHT_EXTEND}vh`}
 >
 	{isCarouselEnabled ? (
-		<!-- 轮播图模式 -->
+		/* 轮播图模式 */
 		<div id="banner-carousel" class="relative h-full w-full">
 			<ul class="carousel-list h-full w-full">
 				{Math.max(
@@ -81,7 +81,7 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 							<li
 								class={`carousel-item absolute inset-0 transition-all duration-500 ${index === 0 ? "opacity-100 scale-100" : "opacity-0 scale-110"}`}
 							>
-								<!-- 移动端：使用移动端专用图片 -->
+								{/* 移动端：使用移动端专用图片 */}
 								{hasMobileImage && (
 									<Image
 										alt={`Mobile banner image ${index + 1}`}
@@ -102,7 +102,7 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 										sizes="100vw"
 									/>
 								)}
-								<!-- 桌面端/平板端：使用桌面端专用图片 -->
+								{/* 桌面端/平板端：使用桌面端专用图片 */}
 								{hasDesktopImage && (
 									<Image
 										alt={`Desktop banner image ${index + 1}`}
@@ -129,7 +129,7 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 			</ul>
 		</div>
 	) : (
-		<!-- 单图模式 -->
+		/* 单图模式 */
 		<div id="banner-single-container" class="relative h-full w-full">
 			<script
 				is:inline

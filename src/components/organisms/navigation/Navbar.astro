@@ -37,10 +37,10 @@ const links: NavBarLink[] = navBarConfig.links.map(
 );
 
 const rawLogo = siteConfig.navbarTitle?.logo;
-const logoSrc = rawLogo?.match(/^(http|https|\/\/)/) ? rawLogo : url(rawLogo);
+const logoSrc = rawLogo?.match(/^(http|https|\/\/)/) ? rawLogo : rawLogo ? url(rawLogo) : "";
 
 const rawIcon = siteConfig.navbarTitle?.icon;
-const iconSrc = rawIcon?.match(/^(http|https|\/\/)/) ? rawIcon : url(rawIcon);
+const iconSrc = rawIcon?.match(/^(http|https|\/\/)/) ? rawIcon : rawIcon ? url(rawIcon) : "";
 
 const isLogoExternal = rawLogo?.match(/^(http|https|\/\/)/);
 const isIconExternal = rawIcon?.match(/^(http|https|\/\/)/);

@@ -49,10 +49,26 @@ const title = i18n(I18nKey.timeline);
 const subtitle = i18n(I18nKey.timelineSubtitle);
 
 const statItems = [
-	{ title: i18n(I18nKey.timelineTotal), value: stats.total.toString(), color: "#3B82F6" },
-	{ title: i18n(I18nKey.timelineWork), value: stats.byType.work.toString(), color: "#22C55E" },
-	{ title: i18n(I18nKey.timelineProjects), value: stats.byType.project.toString(), color: "#A855F7" },
-	{ title: i18n(I18nKey.timelineExperience), value: `${workExperience.years}+`, color: "#F97316" },
+	{
+		title: i18n(I18nKey.timelineTotal),
+		value: stats.total.toString(),
+		color: "#3B82F6",
+	},
+	{
+		title: i18n(I18nKey.timelineWork),
+		value: stats.byType.work.toString(),
+		color: "#22C55E",
+	},
+	{
+		title: i18n(I18nKey.timelineProjects),
+		value: stats.byType.project.toString(),
+		color: "#A855F7",
+	},
+	{
+		title: i18n(I18nKey.timelineExperience),
+		value: `${workExperience.years}+`,
+		color: "#F97316",
+	},
 ];
 ---
 
@@ -61,7 +77,9 @@ const statItems = [
 		import("../scripts/right-sidebar-layout.js");
 	</script>
 	<IconifyLoader preloadIcons={allIcons} />
-	<div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
 		<div class="card-base z-10 px-9 py-6 relative w-full">
 			<PageHeader title={title} subtitle={subtitle} />
 
@@ -76,9 +94,18 @@ const statItems = [
 
 <style>
 	@keyframes pulse {
-		0% { transform: scale(1); opacity: 1; }
-		50% { transform: scale(1.05); opacity: 0.8; }
-		100% { transform: scale(1); opacity: 1; }
+		0% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		50% {
+			transform: scale(1.05);
+			opacity: 0.8;
+		}
+		100% {
+			transform: scale(1);
+			opacity: 1;
+		}
 	}
 
 	.timeline-node {
@@ -108,23 +135,23 @@ const statItems = [
 <script>
 	function initTimelinePage() {
 		if (window.__iconifyLoader) {
-			window.__iconifyLoader.load().catch(function(error) {
+			window.__iconifyLoader.load().catch(function (error) {
 				console.error("Failed to load icons on timeline page:", error);
 			});
 		}
 
 		const timelineNodes = document.querySelectorAll(".timeline-node");
-		timelineNodes.forEach(function(node, index) {
+		timelineNodes.forEach(function (node, index) {
 			(node as HTMLElement).style.animationDelay = index * 0.2 + "s";
 		});
 	}
 
-	document.addEventListener("DOMContentLoaded", function() {
+	document.addEventListener("DOMContentLoaded", function () {
 		initTimelinePage();
 	});
 
 	if (typeof window !== "undefined") {
-		document.addEventListener("astro:page-load", function() {
+		document.addEventListener("astro:page-load", function () {
 			setTimeout(initTimelinePage, 100);
 		});
 	}

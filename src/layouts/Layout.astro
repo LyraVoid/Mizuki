@@ -163,7 +163,9 @@ if (siteConfig.font) {
 		<meta charset="UTF-8" />
 
 		<!-- 第三方分析脚本 -->
-		<AnalyticsScripts thirdPartyAnalytics={siteConfig.thirdPartyAnalytics} />
+		<AnalyticsScripts
+			thirdPartyAnalytics={siteConfig.thirdPartyAnalytics}
+		/>
 
 		<!-- SEO Meta Tags, Open Graph, Twitter Card, Favicons, Theme Init -->
 		<HeadTags
@@ -188,7 +190,9 @@ if (siteConfig.font) {
 		<!-- Pio 看板娘样式 - 非渲染阻塞加载 -->
 		{
 			pioConfig.enable && (
-				<link rel="stylesheet" href="/pio/static/pio.css" media="print" onload="this.media='all'" />
+				<Fragment
+					set:html={`<link rel="stylesheet" href="/pio/static/pio.css" media="print" onload="this.media='all'" />`}
+				/>
 			)
 		}
 

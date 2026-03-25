@@ -195,12 +195,6 @@ const useJapaneseBadge = siteConfig.toc.useJapaneseBadge;
 		scrollToHeading,
 	} from "./utils/toc-utils";
 
-	declare global {
-		interface Window {
-			toggleFloatingTOC: () => void;
-		}
-	}
-
 	interface FloatingTOCState {
 		btn: HTMLElement | null;
 		panel: HTMLElement | null;

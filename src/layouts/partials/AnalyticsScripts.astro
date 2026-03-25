@@ -23,13 +23,18 @@ const {
 	thirdPartyAnalytics = { enable: false, clarityId: "" },
 } = Astro.props;
 
-const clarityEnable = thirdPartyAnalytics.enable && thirdPartyAnalytics.clarityId;
+const clarityEnable =
+	thirdPartyAnalytics.enable && thirdPartyAnalytics.clarityId;
 ---
 
 <!-- 第三方分析脚本 - 延迟加载优化 -->
 <script
 	is:inline
-	define:vars={{ gtmId, clarityEnable, clarityId: thirdPartyAnalytics.clarityId || "" }}
+	define:vars={{
+		gtmId,
+		clarityEnable,
+		clarityId: thirdPartyAnalytics.clarityId || "",
+	}}
 >
 	// 使用 requestIdleCallback 延迟加载第三方脚本
 	// 标记脚本是否已加载，防止 swup 导航时重复加载

@@ -26,3 +26,10 @@ Thumbs.db
 
 # Docs
 **/*.md
+
+# Astro files with is:inline scripts inside JSX conditionals (Prettier Astro plugin limitation)
+src/components/control/PageProgressBar/PageProgressBar.astro
+src/components/features/posts/PostMeta.astro
+src/components/layout/Banner.astro
+src/components/misc/FullscreenWallpaper.astro
+src/components/organisms/navigation/Navbar.astro
