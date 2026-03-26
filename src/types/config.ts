@@ -73,7 +73,7 @@ export interface SiteConfig {
 	postListLayout: {
 		defaultMode: "list" | "grid"; // 默认布局模式：list=列表模式，grid=网格模式
 		allowSwitch: boolean; // 是否允许用户切换布局
-		coverPosition?: "right" | "top"; // 封面图片位置：right=右侧，top=上方显示为长条图
+		useTopCoverInList?: boolean; // 在列表模式下是否使用顶置大封面（Banner 样式）
 		categoryBar?: {
 			enable: boolean; // 是否在文章列表页显示分类导航条
 		};

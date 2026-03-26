@@ -200,11 +200,7 @@ const initialLayoutClass = defaultLayout === "grid" ? "grid-mode" : "list-mode";
 	}
 
 	#post-list-container.grid-mode {
-		@apply block md:columns-2 gap-6;
-	}
-
-	#post-list-container.grid-mode > :global(*) {
-		@apply mb-6;
+		@apply grid grid-cols-1 md:grid-cols-2 gap-6;
 	}
 
 	#post-list-container > :global(*) {

@@ -30,17 +30,16 @@ const {
 const url = getPostUrl(entry);
 const hasCover = image !== undefined && image !== null && image !== "";
 const coverWidth = "28%";
-const coverPosition = siteConfig.postListLayout?.coverPosition || "right";
+const useTopCoverInList = siteConfig.postListLayout?.useTopCoverInList || false;
 
 const { remarkPluginFrontmatter } = await render(entry);
 ---
 
 <div
 	class:list={[
-		"card-base flex w-full rounded-[var(--radius-large)] overflow-hidden relative break-inside-avoid",
+		"card-base flex w-full rounded-[var(--radius-large)] overflow-hidden relative",
 		{
-			"flex-col-reverse md:flex-col": coverPosition === "right",
-			"flex-col-reverse": coverPosition === "top",
+			"flex-col-reverse md:flex-col": true,
 		},
 		className,
 	]}
@@ -50,11 +49,11 @@ const { remarkPluginFrontmatter } = await render(entry);
 		class:list={[
 			"pl-6 md:pl-9 pr-6 pt-6 md:pt-7 pb-6 relative",
 			{
-				"md:pr-2": coverPosition === "right",
-				"md:pr-9": coverPosition === "top",
+				"md:pr-2": hasCover,
+				"md:pr-9": !hasCover,
+				"content-full-width": useTopCoverInList,
 				"w-full md:w-[calc(100%_-_3.25rem_-_0.75rem)]": !hasCover,
-				"w-full md:w-[calc(100%_-_var(--coverWidth)_-_0.75rem)]": hasCover && coverPosition === "right",
-				"w-full": hasCover && coverPosition === "top",
+				"w-full md:w-[calc(100%_-_var(--coverWidth)_-_0.75rem)]": hasCover,
 			},
 		]}
 	>
@@ -149,8 +148,8 @@ const { remarkPluginFrontmatter } = await render(entry);
 				class:list={[
 					"group",
 					{
-						"max-h-[20vh] md:max-h-none mx-4 mt-4 -mb-2 md:mb-0 md:mx-0 md:mt-0 md:w-[var(--coverWidth)] relative md:absolute md:top-3 md:bottom-3 md:right-3 rounded-xl overflow-hidden active:scale-95": coverPosition === "right",
-						"max-h-[20vh] md:max-h-[28vh] mx-4 mt-4 -mb-2 relative rounded-xl overflow-hidden active:scale-95": coverPosition === "top",
+						"max-h-[20vh] md:max-h-none mx-4 mt-4 -mb-2 md:mb-0 md:mx-0 md:mt-0 md:w-[var(--coverWidth)] relative md:absolute md:top-3 md:bottom-3 md:right-3 rounded-xl overflow-hidden active:scale-95": true,
+						"top-banner-image": useTopCoverInList,
 					}
 				]}
 			>
@@ -194,4 +193,18 @@ const { remarkPluginFrontmatter } = await render(entry);
 >
 </div>
 
-<style define:vars={{ coverWidth }}></style>
+<style define:vars={{ coverWidth }}>
+	@reference "tailwindcss";
+
+	/* 控制顶置封面在大列表模式下的特殊样式 */
+	:global(.list-mode) .top-banner-image {
+		@apply md:relative md:top-0 md:right-0 md:bottom-0 md:w-auto md:max-h-[28vh] md:mx-4 md:mt-4 md:-mb-2;
+	}
+	:global(.list-mode) .card-base:has(.top-banner-image) {
+		@apply md:flex-col-reverse;
+	}
+	/* 调整顶置封面模式下的内容宽度 */
+	:global(.list-mode) .content-full-width {
+		@apply md:w-full md:pr-9;
+	}
+</style>

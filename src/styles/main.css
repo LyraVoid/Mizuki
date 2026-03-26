@@ -567,10 +567,9 @@ html {
 /* 浅色模式：使用更浅的主题色且完全不透明 */
 
 /* 文章列表布局切换样式 */
-/* 文章列表布局切换样式 - 使用瀑布流 (Masonry) */
 .post-list-container.grid-mode {
-  display: block;
-  columns: 1;
+  display: grid !important;
+  grid-template-columns: repeat(1, 1fr);
   gap: 1rem;
 }
 
@@ -582,7 +581,7 @@ html {
 
 @media (min-width: 768px) {
   .post-list-container.grid-mode {
-    columns: 2;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -622,7 +621,12 @@ html {
     gap: 0.75rem;
   }
 
-  /* 网格模式下的样式 - 已迁移至瀑布流 */
+  /* 网格模式下的样式 */
+  .post-list-container.grid-mode {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
 }
 
 /* 确保过渡动画平滑 */
