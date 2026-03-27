@@ -30,14 +30,16 @@ const {
 const url = getPostUrl(entry);
 const hasCover = image !== undefined && image !== null && image !== "";
 const coverWidth = "28%";
-const useTopCoverInList = siteConfig.postListLayout?.useTopCoverInList || false;
+const coverPosition = siteConfig.postListLayout?.coverPosition || "right";
 
 const { remarkPluginFrontmatter } = await render(entry);
 ---
 
 <div
 	class:list={[
-		"card-base flex w-full rounded-[var(--radius-large)] overflow-hidden relative",
+		"post-card-wrapper card-base flex w-full rounded-[var(--radius-large)] overflow-hidden relative",
+		hasCover ? "has-cover" : "no-cover",
+		coverPosition === "top" ? "cover-top" : "cover-right",
 		{
 			"flex-col-reverse md:flex-col": true,
 		},
@@ -47,19 +49,20 @@ const { remarkPluginFrontmatter } = await render(entry);
 >
 	<div
 		class:list={[
-			"pl-6 md:pl-9 pr-6 pt-6 md:pt-7 pb-6 relative",
+			"post-card-content pl-6 md:pl-9 pr-6 pt-6 md:pt-7 pb-6 relative",
 			{
-				"md:pr-2": hasCover,
-				"md:pr-9": !hasCover,
-				"content-full-width": useTopCoverInList,
+				"md:pr-2": hasCover && coverPosition === "right",
+				"md:pr-9": !hasCover || coverPosition === "top",
 				"w-full md:w-[calc(100%_-_3.25rem_-_0.75rem)]": !hasCover,
-				"w-full md:w-[calc(100%_-_var(--coverWidth)_-_0.75rem)]": hasCover,
+				"w-full md:w-[calc(100%_-_var(--coverWidth)_-_0.75rem)]":
+					hasCover && coverPosition === "right",
+				"w-full": hasCover && coverPosition === "top",
 			},
 		]}
 	>
 		<a
 			href={url}
-			class="transition group w-full block font-bold mb-3 text-3xl text-90
+			class="post-card-title-link transition group w-full block font-bold mb-3 text-3xl text-90
         hover:text-[var(--primary)] dark:hover:text-[var(--primary)]
         active:text-[var(--title-active)] dark:active:text-[var(--title-active)]
         before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
@@ -100,7 +103,7 @@ const { remarkPluginFrontmatter } = await render(entry);
 			category={category || ""}
 			hideTagsForMobile={true}
 			hideUpdateDate={true}
-			className="mb-4"
+			className="post-card-meta mb-4"
 			showOnlyBasicMeta={true}
 			words={remarkPluginFrontmatter.words}
 			showWordCount={true}
@@ -108,14 +111,14 @@ const { remarkPluginFrontmatter } = await render(entry);
 
 		<div
 			class:list={[
-				"transition text-75 mb-3.5 pr-4",
+				"post-card-description transition text-75 mb-3.5 pr-4",
 				{ "line-clamp-2 md:line-clamp-1": !description },
 			]}
 		>
 			{description || remarkPluginFrontmatter.excerpt}
 		</div>
 
-		<div class="flex flex-wrap gap-2 mt-2">
+		<div class="post-card-tags flex flex-wrap gap-2 mt-2">
 			{
 				tags && tags.length > 0 ? (
 					tags.map((tag) => (
@@ -146,11 +149,11 @@ const { remarkPluginFrontmatter } = await render(entry);
 				href={url}
 				aria-label={title}
 				class:list={[
-					"group",
+					"post-card-image group relative rounded-xl overflow-hidden active:scale-95 max-h-[20vh] mx-4 mt-4 -mb-2",
 					{
-						"max-h-[20vh] md:max-h-none mx-4 mt-4 -mb-2 md:mb-0 md:mx-0 md:mt-0 md:w-[var(--coverWidth)] relative md:absolute md:top-3 md:bottom-3 md:right-3 rounded-xl overflow-hidden active:scale-95": true,
-						"top-banner-image": useTopCoverInList,
-					}
+						"md:max-h-none md:mb-0 md:mx-0 md:mt-0 md:w-[var(--coverWidth)] md:absolute md:top-3 md:bottom-3 md:right-3":
+							coverPosition === "right",
+					},
 				]}
 			>
 				<div class="absolute pointer-events-none z-10 w-full h-full group-hover:bg-black/30 group-active:bg-black/50 transition" />
@@ -175,7 +178,7 @@ const { remarkPluginFrontmatter } = await render(entry);
 			<a
 				href={url}
 				aria-label={title}
-				class="!hidden md:!flex btn-regular w-[3.25rem]
+				class="post-card-enter-btn !hidden md:!flex btn-regular w-[3.25rem]
          absolute right-3 top-3 bottom-3 rounded-xl bg-[var(--enter-btn-bg)]
          hover:bg-[var(--enter-btn-bg-hover)] active:bg-[var(--enter-btn-bg-active)] active:scale-95
         "
@@ -196,15 +199,63 @@ const { remarkPluginFrontmatter } = await render(entry);
 <style define:vars={{ coverWidth }}>
 	@reference "tailwindcss";
 
-	/* 控制顶置封面在大列表模式下的特殊样式 */
-	:global(.list-mode) .top-banner-image {
-		@apply md:relative md:top-0 md:right-0 md:bottom-0 md:w-auto md:max-h-[28vh] md:mx-4 md:mt-4 md:-mb-2;
-	}
-	:global(.list-mode) .card-base:has(.top-banner-image) {
+	:global(.list-mode) .cover-top.has-cover,
+	:global(.grid-mode) .cover-top.has-cover {
 		@apply md:flex-col-reverse;
 	}
-	/* 调整顶置封面模式下的内容宽度 */
-	:global(.list-mode) .content-full-width {
+
+	:global(.list-mode) .cover-top.has-cover .post-card-content,
+	:global(.grid-mode) .cover-top.has-cover .post-card-content {
 		@apply md:w-full md:pr-9;
+	}
+
+	@media (min-width: 768px) {
+		/* 顶置封面在列表模式下采用浅横幅，保持内容阅读节奏 */
+		:global(.list-mode) .cover-top.has-cover .post-card-image {
+			@apply mx-4 mt-4 -mb-2;
+			max-height: 12rem;
+			aspect-ratio: 3 / 1;
+		}
+
+		/* Grid 顶图模式参考 Firefly 的卡片比例，但保持现有容器逻辑 */
+		:global(.grid-mode) .cover-top.has-cover {
+			@apply h-full;
+		}
+
+		:global(.grid-mode) .cover-top.has-cover .post-card-image {
+			@apply w-full max-h-none mx-0 mt-0 mb-0;
+			border-radius: var(--radius-large) var(--radius-large) 0 0;
+			aspect-ratio: 2 / 1;
+		}
+
+		:global(.grid-mode) .cover-top.has-cover .post-card-content {
+			@apply px-5 pt-4 pb-5;
+		}
+
+		:global(.grid-mode) .cover-top.has-cover .post-card-title-link {
+			@apply text-2xl mb-2 before:hidden;
+			line-height: 1.75rem;
+		}
+
+		:global(.grid-mode) .cover-top.has-cover .post-card-meta {
+			@apply mb-3;
+		}
+
+		:global(.grid-mode) .cover-top.has-cover .post-card-description {
+			@apply mb-3 pr-0;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+			-webkit-line-clamp: 2;
+			line-clamp: 2;
+		}
+
+		:global(.grid-mode) .cover-top.has-cover .post-card-tags {
+			@apply gap-1.5 mt-1;
+		}
+
+		:global(.grid-mode) .cover-top.has-cover .post-card-tags a {
+			@apply text-[0.7rem] px-1.5 py-0.5;
+		}
 	}
 </style>

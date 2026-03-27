@@ -97,8 +97,8 @@ export const siteConfig: SiteConfig = {
 		defaultMode: "list",
 		// 是否允许用户切换布局
 		allowSwitch: true,
-		// 文章列表模式下是否使用顶置大封面（仅在 list 模式生效）
-		useTopCoverInList: false,
+		// 封面图片位置："right" 保持当前右侧封面布局，"top" 为置顶封面布局
+		coverPosition: "right",
 		// 文章列表页分类导航条配置
 		categoryBar: {
 			enable: true, // 是否在文章列表页显示分类导航条
