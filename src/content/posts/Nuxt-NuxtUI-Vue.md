@@ -3,8 +3,8 @@ title: Regarding the experience with Nuxt, NuxtUI, and SSR
 published: 2026-01-19
 description: ''
 image: ''
-tags: [Nuxt,Vue,NuxtUi]
-category: 'Front-end engineering'
+tags: [Nuxt4,Vue,NuxtUi]
+category: 'Nuxt4'
 draft: false 
 lang: ''
 ---

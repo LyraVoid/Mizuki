@@ -1,10 +1,10 @@
 ---
-title: Nuxt-Handbook.md
+title: Nuxt4基本使用手册
 published: 2026-03-18
 description: ''
 image: ''
 tags: []
-category: ''
+category: 'Nuxt4'
 draft: false 
 lang: ''
 ---
