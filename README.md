@@ -20,7 +20,6 @@ Get started quickly with our comprehensive documentation. Whether you're customi
 
 ![Mizuki Preview](./README.webp)
 
-
 <table>
   <tr>
     <td><img alt="" src="docs/image/1.webp"></td>
