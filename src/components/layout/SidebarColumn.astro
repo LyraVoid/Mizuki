@@ -5,12 +5,13 @@ import type { MarkdownHeading } from "astro";
 import { widgetManager } from "@/utils/widget-manager";
 import { buildComponentProps } from "@/utils/widget-renderer";
 
+// 导入所有可能的组件
 import Announcement from "../widgets/announcement/Announcement.astro";
 import Calendar from "../widgets/calendar/Calendar.astro";
-import { CardTOC } from "../widgets/card-toc";
+import CardTOC from "../widgets/card-toc/CardTOC.astro";
 import Categories from "../widgets/categories/Categories.astro";
 import MusicPlayer from "../widgets/music-player/MusicPlayer.svelte";
-import { MusicSidebarWidget } from "../widgets/music-sidebar";
+import MusicSidebarWidget from "../widgets/music-sidebar/MusicSidebarWidget.astro";
 import Profile from "../widgets/profile/Profile.astro";
 import SiteStats from "../widgets/site-stats/SiteStats.astro";
 import Tags from "../widgets/tags/Tags.astro";
@@ -41,23 +42,7 @@ const {
 	showDesktop = true,
 } = Astro.props;
 
-const componentMap: Record<string, unknown> = {
-	profile: Profile,
-	announcement: Announcement,
-	categories: Categories,
-	tags: Tags,
-	toc: SidebarTOC,
-	"card-toc": CardTOC,
-	"music-player": MusicPlayer,
-	"music-sidebar": MusicSidebarWidget,
-	"site-stats": SiteStats,
-	calendar: Calendar,
-};
-
-type WidgetComponentConfig = ReturnType<
-	typeof widgetManager.getComponentsByPosition
->[number];
-
+// 获取各设备类型的组件配置
 const mobileTopComponents = showMobile
 	? widgetManager.getComponentsByPosition("top", side, "mobile")
 	: [];
@@ -79,67 +64,109 @@ const desktopStickyComponents = showDesktop
 	? widgetManager.getComponentsByPosition("sticky", side, "desktop")
 	: [];
 
-function renderComponent(
-	component: WidgetComponentConfig,
-	index: number,
-): { Component: any; props: Record<string, unknown> } | null {
-	const ComponentToRender = componentMap[component.type] as any;
-	if (!ComponentToRender) {
-		return null;
-	}
+// 辅助函数：根据组件类型渲染对应组件
+type ComponentType = 
+	| "profile" 
+	| "announcement" 
+	| "categories" 
+	| "tags" 
+	| "toc" 
+	| "card-toc" 
+	| "music-player" 
+	| "music-sidebar" 
+	| "site-stats" 
+	| "calendar";
 
-	return {
-		Component: ComponentToRender,
-		props: buildComponentProps(component, index, headings),
-	};
+function getComponentType(type: string): ComponentType | null {
+	const validTypes: ComponentType[] = [
+		"profile", "announcement", "categories", "tags", "toc", 
+		"card-toc", "music-player", "music-sidebar", "site-stats", "calendar"
+	];
+	return validTypes.includes(type as ComponentType) ? (type as ComponentType) : null;
 }
 ---
 
 <div id={containerId} class:list={[rootClass, "sidebar-column-root"]}>
 	<div class:list={["flex flex-col w-full gap-4 mb-4", topClass]}>
+		<!-- Mobile Top Components -->
 		{
 			showMobile && mobileTopComponents.length > 0 && (
 				<div class="flex flex-col w-full gap-4 md:hidden">
 					{mobileTopComponents.map((component, index) => {
-						const renderData = renderComponent(component, index);
-						if (!renderData) {
-							return null;
-						}
-
-						const { Component, props } = renderData;
-						return <Component {...props} />;
+						const props = buildComponentProps(component, index, headings);
+						const type = getComponentType(component.type);
+						if (!type) return null;
+						
+						return (
+							<>
+								{type === "profile" && <Profile {...props} />}
+								{type === "announcement" && <Announcement {...props} />}
+								{type === "categories" && <Categories {...props} />}
+								{type === "tags" && <Tags {...props} />}
+								{type === "toc" && <SidebarTOC {...props} />}
+								{type === "card-toc" && <CardTOC {...props} />}
+								{type === "music-player" && <MusicPlayer {...props} />}
+								{type === "music-sidebar" && <MusicSidebarWidget {...props} />}
+								{type === "site-stats" && <SiteStats {...props} />}
+								{type === "calendar" && <Calendar {...props} />}
+							</>
+						);
 					})}
 				</div>
 			)
 		}
 
+		<!-- Tablet Top Components -->
 		{
 			showTablet && tabletTopComponents.length > 0 && (
 				<div class="sidebar-content hidden md:flex lg:hidden flex-col w-full gap-4">
 					{tabletTopComponents.map((component, index) => {
-						const renderData = renderComponent(component, index);
-						if (!renderData) {
-							return null;
-						}
-
-						const { Component, props } = renderData;
-						return <Component {...props} />;
+						const props = buildComponentProps(component, index, headings);
+						const type = getComponentType(component.type);
+						if (!type) return null;
+						
+						return (
+							<>
+								{type === "profile" && <Profile {...props} />}
+								{type === "announcement" && <Announcement {...props} />}
+								{type === "categories" && <Categories {...props} />}
+								{type === "tags" && <Tags {...props} />}
+								{type === "toc" && <SidebarTOC {...props} />}
+								{type === "card-toc" && <CardTOC {...props} />}
+								{type === "music-player" && <MusicPlayer {...props} />}
+								{type === "music-sidebar" && <MusicSidebarWidget {...props} />}
+								{type === "site-stats" && <SiteStats {...props} />}
+								{type === "calendar" && <Calendar {...props} />}
+							</>
+						);
 					})}
 				</div>
 			)
 		}
 
+		<!-- Desktop Top Components -->
 		{
 			showDesktop && desktopTopComponents.length > 0 && (
 				<div class="sidebar-content hidden lg:flex flex-col w-full gap-4">
 					{desktopTopComponents.map((component, index) => {
-						const renderData = renderComponent(component, index);
-						if (!renderData) {
-							return null;
-						}
-
-						const { Component, props } = renderData;
-						return <Component {...props} />;
+						const props = buildComponentProps(component, index, headings);
+						const type = getComponentType(component.type);
+						if (!type) return null;
+						
+						return (
+							<>
+								{type === "profile" && <Profile {...props} />}
+								{type === "announcement" && <Announcement {...props} />}
+								{type === "categories" && <Categories {...props} />}
+								{type === "tags" && <Tags {...props} />}
+								{type === "toc" && <SidebarTOC {...props} />}
+								{type === "card-toc" && <CardTOC {...props} />}
+								{type === "music-player" && <MusicPlayer {...props} />}
+								{type === "music-sidebar" && <MusicSidebarWidget {...props} />}
+								{type === "site-stats" && <SiteStats {...props} />}
+								{type === "calendar" && <Calendar {...props} />}
+							</>
+						);
 					})}
 				</div>
 			)
@@ -153,49 +180,85 @@ function renderComponent(
 			stickyClass,
 		]}
 	>
+		<!-- Mobile Sticky Components -->
 		{
 			showMobile && mobileStickyComponents.length > 0 && (
 				<div class="flex flex-col w-full gap-4 md:hidden">
 					{mobileStickyComponents.map((component, index) => {
-						const renderData = renderComponent(component, index);
-						if (!renderData) {
-							return null;
-						}
-
-						const { Component, props } = renderData;
-						return <Component {...props} />;
+						const props = buildComponentProps(component, index, headings);
+						const type = getComponentType(component.type);
+						if (!type) return null;
+						
+						return (
+							<>
+								{type === "profile" && <Profile {...props} />}
+								{type === "announcement" && <Announcement {...props} />}
+								{type === "categories" && <Categories {...props} />}
+								{type === "tags" && <Tags {...props} />}
+								{type === "toc" && <SidebarTOC {...props} />}
+								{type === "card-toc" && <CardTOC {...props} />}
+								{type === "music-player" && <MusicPlayer {...props} />}
+								{type === "music-sidebar" && <MusicSidebarWidget {...props} />}
+								{type === "site-stats" && <SiteStats {...props} />}
+								{type === "calendar" && <Calendar {...props} />}
+							</>
+						);
 					})}
 				</div>
 			)
 		}
 
+		<!-- Tablet Sticky Components -->
 		{
 			showTablet && tabletStickyComponents.length > 0 && (
 				<div class="sidebar-content hidden md:flex lg:hidden flex-col w-full gap-4">
 					{tabletStickyComponents.map((component, index) => {
-						const renderData = renderComponent(component, index);
-						if (!renderData) {
-							return null;
-						}
-
-						const { Component, props } = renderData;
-						return <Component {...props} />;
+						const props = buildComponentProps(component, index, headings);
+						const type = getComponentType(component.type);
+						if (!type) return null;
+						
+						return (
+							<>
+								{type === "profile" && <Profile {...props} />}
+								{type === "announcement" && <Announcement {...props} />}
+								{type === "categories" && <Categories {...props} />}
+								{type === "tags" && <Tags {...props} />}
+								{type === "toc" && <SidebarTOC {...props} />}
+								{type === "card-toc" && <CardTOC {...props} />}
+								{type === "music-player" && <MusicPlayer {...props} />}
+								{type === "music-sidebar" && <MusicSidebarWidget {...props} />}
+								{type === "site-stats" && <SiteStats {...props} />}
+								{type === "calendar" && <Calendar {...props} />}
+							</>
+						);
 					})}
 				</div>
 			)
 		}
 
+		<!-- Desktop Sticky Components -->
 		{
 			showDesktop && desktopStickyComponents.length > 0 && (
 				<div class="sidebar-content hidden lg:flex flex-col w-full gap-4">
 					{desktopStickyComponents.map((component, index) => {
-						const renderData = renderComponent(component, index);
-						if (!renderData) {
-							return null;
-						}
-
-						const { Component, props } = renderData;
-						return <Component {...props} />;
+						const props = buildComponentProps(component, index, headings);
+						const type = getComponentType(component.type);
+						if (!type) return null;
+						
+						return (
+							<>
+								{type === "profile" && <Profile {...props} />}
+								{type === "announcement" && <Announcement {...props} />}
+								{type === "categories" && <Categories {...props} />}
+								{type === "tags" && <Tags {...props} />}
+								{type === "toc" && <SidebarTOC {...props} />}
+								{type === "card-toc" && <CardTOC {...props} />}
+								{type === "music-player" && <MusicPlayer {...props} />}
+								{type === "music-sidebar" && <MusicSidebarWidget {...props} />}
+								{type === "site-stats" && <SiteStats {...props} />}
+								{type === "calendar" && <Calendar {...props} />}
+							</>
+						);
 					})}
 				</div>
 			)

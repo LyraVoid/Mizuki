@@ -1,3 +1,4 @@
+import cloudflare from "@astrojs/cloudflare";
 import sitemap from "@astrojs/sitemap";
 import svelte, { vitePreprocess } from "@astrojs/svelte";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
@@ -36,7 +37,10 @@ export default defineConfig({
 	// base: "/Mizuki/", // Cloudflare Pages 使用根域名，不需要 base 路径
 	trailingSlash: "always",
 
-	output: "static",
+	output: "server",
+	adapter: cloudflare({
+		mode: "advanced",
+	}),
 
 	integrations: [
 		umami({
