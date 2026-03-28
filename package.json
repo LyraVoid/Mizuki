@@ -111,6 +111,9 @@
 		"svelte-eslint-parser": "^1.6.0",
 		"typescript-eslint": "^8.57.1"
 	},
+	"engines": {
+		"node": ">=22.12.0"
+	},
 	"packageManager": "pnpm@10.22.0",
 	"pnpm": {
 		"overrides": {
