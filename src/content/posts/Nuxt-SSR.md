@@ -3,7 +3,7 @@ title: Nuxt4的渲染模式
 published: 2026-03-27
 description: ''
 image: ''
-tags: []
+tags: ['Nuxt','render']
 category: 'Nuxt4'
 draft: false 
 lang: ''
