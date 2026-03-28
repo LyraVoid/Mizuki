@@ -1,0 +1,93 @@
+# 站点配置
+title: Mizuki
+subtitle: 一个演示网站
+description: 使用 Astro 构建的现代博客主题
+baseurl: "/Mizuki"  # 重要：因为部署在子目录，必须设置这个
+url: "https://mcqa2580.github.io"  # 您的 GitHub Pages 域名
+
+# 作者信息
+author:
+  name: mcqa2580
+  email: your.email@example.com
+
+# 构建配置
+markdown: kramdown
+highlighter: rouge
+permalink: /:year/:month/:day/:title/
+
+# GitHub Pages 环境
+lsi: false
+safe: true
+incremental: false
+highlighter: rouge
+gist:
+  noscript: false
+kramdown:
+  math_engine: mathjax
+  syntax_highlighter: rouge
+
+# 排除文件
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .sass-cache
+  - .jekyll-cache
+  - .jekyll-metadata
+  - README.md
+  - package.json
+  - package-lock.json
+  - pnpm-lock.yaml
+  - astro.config.mjs
+  - tsconfig.json
+  - src/
+  - scripts/
+  - .github/
+  - .vscode/
+  - .trae/
+  - my-jekyll-site/
+
+# 包含文件（如果有需要）
+include:
+  - _astro
+  - assets
+  - dist
+
+# 主题（GitHub Pages 支持）
+# theme: minima
+# 或者使用远程主题
+# remote_theme: pages-themes/cayman@v0.2.0
+
+# 插件（GitHub Pages 支持的）
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-paginate
+
+# 分页
+paginate: 10
+paginate_path: "/page:num/"
+
+# 导航菜单
+navigation:
+  - title: 首页
+    url: /
+  - title: 归档
+    url: /archive/
+  - title: 关于
+    url: /about/
+  - title: 友链
+    url: /friends/
+
+# 社交媒体
+social:
+  github: mcqa2580
+  # twitter: yourusername
+  # email: your.email@example.com
+
+# 其他配置
+timezone: Asia/Shanghai
+encoding: utf-8
+lang: zh-CN
