@@ -1,6 +1,4 @@
 ---
-import path from "node:path";
-
 interface Props {
 	id?: string;
 	src: string;
@@ -47,9 +45,8 @@ if (isLocal) {
 	const files = import.meta.glob<ImageMetadata>("../../../**", {
 		import: "default",
 	});
-	const normalizedPath = path
-		.normalize(path.join("../../../", basePath, src))
-		.replace(/\\/g, "/");
+	// 使用字符串操作替代 path.normalize 和 path.join
+	const normalizedPath = normalizePath(`../../../${basePath}/${src}`);
 	const file = files[normalizedPath];
 	if (!file) {
 		console.error(
@@ -67,6 +64,36 @@ const imageStyle = `object-position: ${position}`;
 const isBilibiliImage = !isLocal && src.includes("hdslb.com");
 // 对于外部图片（特别是 Bilibili），需要设置 referrerpolicy 避免 403 错误
 const referrerPolicy = !isLocal && isBilibiliImage ? "no-referrer" : undefined;
+
+// 简单的路径规范化函数，替代 path.normalize
+function normalizePath(path: string): string {
+	// 将反斜杠替换为正斜杠
+	path = path.replace(/\\/g, "/");
+
+	// 处理 ../ 和 ./
+	const parts = path.split("/");
+	const result: string[] = [];
+
+	for (const part of parts) {
+		if (part === ".." && result.length > 0 && result[result.length - 1] !== "..") {
+			result.pop();
+		} else if (part !== "." && part !== "") {
+			result.push(part);
+		}
+	}
+
+	// 保留开头的 ../
+	const prefixParts: string[] = [];
+	for (const part of parts) {
+		if (part === "..") {
+			prefixParts.push(part);
+		} else if (part !== "." && part !== "") {
+			break;
+		}
+	}
+
+	return [...prefixParts, ...result].join("/");
+}
 ---
 
 <div id={id} class:list={[className, "overflow-hidden relative"]}>

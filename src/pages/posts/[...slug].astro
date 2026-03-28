@@ -1,6 +1,4 @@
 ---
-import path from "node:path";
-
 import Comment from "@components/comment/index.astro";
 import {
 	LastModified,
@@ -118,9 +116,8 @@ if (entry.data.image) {
 		const files = import.meta.glob<ImageMetadata>("../../**", {
 			import: "default",
 		});
-		const normalizedPath = path
-			.normalize(path.join("../../", basePath, entry.data.image))
-			.replace(/\\/g, "/");
+		// 使用字符串操作替代 path.normalize 和 path.join
+		const normalizedPath = normalizePath(`../../${basePath}/${entry.data.image}`);
 		const file = files[normalizedPath];
 		if (file) {
 			const img = await file();
@@ -130,7 +127,7 @@ if (entry.data.image) {
 		try {
 			const response = await fetch(entry.data.image);
 			const arrayBuffer = await response.arrayBuffer();
-			const base64 = Buffer.from(arrayBuffer).toString("base64");
+			const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 			const contentType =
 				response.headers.get("content-type") || "image/jpeg";
 			posterCoverUrl = `data:${contentType};base64,${base64}`;
@@ -153,9 +150,8 @@ if (profileConfig.avatar) {
 		const files = import.meta.glob<ImageMetadata>("../../**", {
 			import: "default",
 		});
-		const normalizedPath = path
-			.normalize(path.join("../../", profileConfig.avatar))
-			.replace(/\\/g, "/");
+		// 使用字符串操作替代 path.normalize 和 path.join
+		const normalizedPath = normalizePath(`../../${profileConfig.avatar}`);
 		const file = files[normalizedPath];
 		if (file) {
 			const img = await file();
@@ -184,6 +180,36 @@ const jsonLd = {
 		: siteConfig.lang.replace("_", "-"),
 	// TODO include cover image here
 };
+
+// 简单的路径规范化函数，替代 path.normalize
+function normalizePath(path: string): string {
+	// 将反斜杠替换为正斜杠
+	path = path.replace(/\\/g, "/");
+
+	// 处理 ../ 和 ./
+	const parts = path.split("/");
+	const result: string[] = [];
+
+	for (const part of parts) {
+		if (part === ".." && result.length > 0 && result[result.length - 1] !== "..") {
+			result.pop();
+		} else if (part !== "." && part !== "") {
+			result.push(part);
+		}
+	}
+
+	// 保留开头的 ../
+	const prefixParts: string[] = [];
+	for (const part of parts) {
+		if (part === "..") {
+			prefixParts.push(part);
+		} else if (part !== "." && part !== "") {
+			break;
+		}
+	}
+
+	return [...prefixParts, ...result].join("/");
+}
 ---
 
 <MainGridLayout

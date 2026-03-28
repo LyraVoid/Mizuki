@@ -1,5 +1,3 @@
-import * as fs from "node:fs";
-
 import type { APIContext, GetStaticPaths } from "astro";
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
@@ -20,6 +18,17 @@ interface FontOptions {
 	lang?: string;
 }
 export const prerender = true;
+
+// 使用 import.meta.glob 替代 fs 读取图片文件
+const avatarModules = import.meta.glob<{ default: ImageMetadata }>(
+	"/src/assets/images/**/*.{png,jpg,jpeg,webp}",
+	{ eager: true, import: "default" }
+);
+
+const faviconModules = import.meta.glob<{ default: ImageMetadata }>(
+	"/public/favicon/**/*.{png,ico}",
+	{ eager: true, import: "default" }
+);
 
 export const getStaticPaths: GetStaticPaths = async () => {
 	if (!siteConfig.generateOgImages) {
@@ -103,6 +112,54 @@ async function fetchNotoSansSCFonts() {
 	}
 }
 
+// 获取图片的 base64 数据
+async function getImageBase64(imagePath: string): Promise<string | null> {
+	try {
+		// 尝试从 import.meta.glob 结果中获取
+		const normalizedPath = imagePath.startsWith("/")
+			? imagePath
+			: `/${imagePath}`;
+
+		// 查找匹配的图片模块
+		for (const [path, module] of Object.entries(avatarModules)) {
+			if (path.includes(normalizedPath) || normalizedPath.includes(path.replace("/src/", ""))) {
+				const img = module as ImageMetadata;
+				if (img.src) {
+					// 如果是本地路径，需要获取实际文件内容
+					if (img.src.startsWith("/")) {
+						// 在构建时，我们可以尝试获取文件
+						try {
+							const response = await fetch(`http://localhost:4321${img.src}`);
+							if (response.ok) {
+								const arrayBuffer = await response.arrayBuffer();
+								return `data:image/png;base64,${Buffer.from(arrayBuffer).toString("base64")}`;
+							}
+						} catch {
+							// 如果获取失败，返回 null
+							return null;
+						}
+					}
+				}
+			}
+		}
+
+		// 对于 favicon，尝试从模块中获取
+		for (const [path, module] of Object.entries(faviconModules)) {
+			if (path.includes("favicon")) {
+				const img = module as ImageMetadata;
+				if (img.src) {
+					return img.src;
+				}
+			}
+		}
+
+		return null;
+	} catch (err) {
+		console.warn("Error getting image base64:", err);
+		return null;
+	}
+}
+
 export async function GET({
 	props,
 }: APIContext<{ post: CollectionEntry<"posts"> }>) {
@@ -112,16 +169,27 @@ export async function GET({
 	const { regular: fontRegular, bold: fontBold } =
 		await fetchNotoSansSCFonts();
 
-	// Avatar + icon: still read from disk (small assets)
-	const avatarBuffer = fs.readFileSync(`./src/${profileConfig.avatar}`);
-	const avatarBase64 = `data:image/png;base64,${avatarBuffer.toString("base64")}`;
+	// 获取头像和图标
+	// 注意：在 Cloudflare Workers 环境中，我们无法使用 fs 读取文件
+	// 这里使用占位符或者尝试从网络获取
+	let avatarBase64 = "";
+	let iconBase64 = "";
 
-	let iconPath = "./public/favicon/favicon.ico";
-	if (siteConfig.favicon.length > 0) {
-		iconPath = `./public${siteConfig.favicon[0].src}`;
+	// 尝试获取头像
+	if (profileConfig.avatar) {
+		const avatarUrl = await getImageBase64(profileConfig.avatar);
+		if (avatarUrl) {
+			avatarBase64 = avatarUrl;
+		}
 	}
-	const iconBuffer = fs.readFileSync(iconPath);
-	const iconBase64 = `data:image/png;base64,${iconBuffer.toString("base64")}`;
+
+	// 尝试获取 favicon
+	if (siteConfig.favicon.length > 0) {
+		const iconUrl = await getImageBase64(siteConfig.favicon[0].src);
+		if (iconUrl) {
+			iconBase64 = iconUrl;
+		}
+	}
 
 	const hue = siteConfig.themeColor.hue;
 	const primaryColor = `hsl(${hue}, 90%, 65%)`;
@@ -138,6 +206,172 @@ export async function GET({
 
 	const description = post.data.description;
 
+	const children: any[] = [
+		{
+			type: "div",
+			props: {
+				style: {
+					width: "100%",
+					display: "flex",
+					alignItems: "center",
+					gap: "20px",
+				},
+				children: [
+					iconBase64 && {
+						type: "img",
+						props: {
+							src: iconBase64,
+							width: 48,
+							height: 48,
+							style: { borderRadius: "10px" },
+						},
+					},
+					{
+						type: "div",
+						props: {
+							style: {
+								fontSize: "36px",
+								fontWeight: 600,
+								color: subtleTextColor,
+							},
+							children: siteConfig.title,
+						},
+					},
+				].filter(Boolean),
+			},
+		},
+		{
+			type: "div",
+			props: {
+				style: {
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					flexGrow: 1,
+					gap: "20px",
+				},
+				children: [
+					{
+						type: "div",
+						props: {
+							style: {
+								display: "flex",
+								alignItems: "flex-start",
+							},
+							children: [
+								{
+									type: "div",
+									props: {
+										style: {
+											width: "10px",
+											height: "68px",
+											backgroundColor:
+												primaryColor,
+											borderRadius: "6px",
+											marginTop: "14px",
+										},
+									},
+								},
+								{
+									type: "div",
+									props: {
+										style: {
+											fontSize: "72px",
+											fontWeight: 700,
+											lineHeight: 1.2,
+											color: textColor,
+											marginLeft: "25px",
+											display: "-webkit-box",
+											overflow: "hidden",
+											textOverflow: "ellipsis",
+											lineClamp: 3,
+											WebkitLineClamp: 3,
+											WebkitBoxOrient: "vertical",
+										},
+										children: post.data.title,
+									},
+								},
+							],
+						},
+					},
+					description && {
+						type: "div",
+						props: {
+							style: {
+								fontSize: "32px",
+								lineHeight: 1.5,
+								color: subtleTextColor,
+								paddingLeft: "35px",
+								display: "-webkit-box",
+								overflow: "hidden",
+								textOverflow: "ellipsis",
+								lineClamp: 2,
+								WebkitLineClamp: 2,
+								WebkitBoxOrient: "vertical",
+							},
+							children: description,
+						},
+					},
+				].filter(Boolean),
+			},
+		},
+		{
+			type: "div",
+			props: {
+				style: {
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "center",
+					width: "100%",
+				},
+				children: [
+					{
+						type: "div",
+						props: {
+							style: {
+								display: "flex",
+								alignItems: "center",
+								gap: "20px",
+							},
+							children: [
+								avatarBase64 && {
+									type: "img",
+									props: {
+										src: avatarBase64,
+										width: 60,
+										height: 60,
+										style: { borderRadius: "50%" },
+									},
+								},
+								{
+									type: "div",
+									props: {
+										style: {
+											fontSize: "28px",
+											fontWeight: 600,
+											color: textColor,
+										},
+										children: profileConfig.name,
+									},
+								},
+							].filter(Boolean),
+						},
+					},
+					{
+						type: "div",
+						props: {
+							style: {
+								fontSize: "28px",
+								color: subtleTextColor,
+							},
+							children: pubDate,
+						},
+					},
+				],
+			},
+		},
+	];
+
 	const template = {
 		type: "div",
 		props: {
@@ -151,172 +385,7 @@ export async function GET({
 					'"Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 				padding: "60px",
 			},
-			children: [
-				{
-					type: "div",
-					props: {
-						style: {
-							width: "100%",
-							display: "flex",
-							alignItems: "center",
-							gap: "20px",
-						},
-						children: [
-							{
-								type: "img",
-								props: {
-									src: iconBase64,
-									width: 48,
-									height: 48,
-									style: { borderRadius: "10px" },
-								},
-							},
-							{
-								type: "div",
-								props: {
-									style: {
-										fontSize: "36px",
-										fontWeight: 600,
-										color: subtleTextColor,
-									},
-									children: siteConfig.title,
-								},
-							},
-						],
-					},
-				},
-
-				{
-					type: "div",
-					props: {
-						style: {
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							flexGrow: 1,
-							gap: "20px",
-						},
-						children: [
-							{
-								type: "div",
-								props: {
-									style: {
-										display: "flex",
-										alignItems: "flex-start",
-									},
-									children: [
-										{
-											type: "div",
-											props: {
-												style: {
-													width: "10px",
-													height: "68px",
-													backgroundColor:
-														primaryColor,
-													borderRadius: "6px",
-													marginTop: "14px",
-												},
-											},
-										},
-										{
-											type: "div",
-											props: {
-												style: {
-													fontSize: "72px",
-													fontWeight: 700,
-													lineHeight: 1.2,
-													color: textColor,
-													marginLeft: "25px",
-													display: "-webkit-box",
-													overflow: "hidden",
-													textOverflow: "ellipsis",
-													lineClamp: 3,
-													WebkitLineClamp: 3,
-													WebkitBoxOrient: "vertical",
-												},
-												children: post.data.title,
-											},
-										},
-									],
-								},
-							},
-							description && {
-								type: "div",
-								props: {
-									style: {
-										fontSize: "32px",
-										lineHeight: 1.5,
-										color: subtleTextColor,
-										paddingLeft: "35px",
-										display: "-webkit-box",
-										overflow: "hidden",
-										textOverflow: "ellipsis",
-										lineClamp: 2,
-										WebkitLineClamp: 2,
-										WebkitBoxOrient: "vertical",
-									},
-									children: description,
-								},
-							},
-						],
-					},
-				},
-				{
-					type: "div",
-					props: {
-						style: {
-							display: "flex",
-							justifyContent: "space-between",
-							alignItems: "center",
-							width: "100%",
-						},
-						children: [
-							{
-								type: "div",
-								props: {
-									style: {
-										display: "flex",
-										alignItems: "center",
-										gap: "20px",
-									},
-									children: [
-										{
-											type: "img",
-											props: {
-												src: avatarBase64,
-												width: 60,
-												height: 60,
-												style: { borderRadius: "50%" },
-											},
-										},
-										{
-											type: "div",
-											props: {
-												style: {
-													fontSize: "28px",
-													fontWeight: 600,
-													color: textColor,
-												},
-												children: profileConfig.name,
-											},
-										},
-									],
-								},
-							},
-							{
-								type: "div",
-								props: {
-									style: {
-										fontSize: "28px",
-										color: subtleTextColor,
-									},
-									children: pubDate,
-								},
-							},
-						],
-					},
-				},
-			],
+			children,
 		},
 	};
 

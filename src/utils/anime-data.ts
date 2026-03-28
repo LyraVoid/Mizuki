@@ -1,9 +1,17 @@
-import fs from "node:fs";
-import path from "node:path";
-
 import localAnimeList from "../data/anime";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
+
+// 使用 import.meta.glob 替代 fs，支持 Cloudflare Workers
+const bilibiliDataModule = import.meta.glob<{ default: RawAnimeItem[] }>(
+	"/src/data/bilibili-data.json",
+	{ eager: true }
+);
+
+const bangumiDataModule = import.meta.glob<{ default: RawAnimeItem[] }>(
+	"/src/data/bangumi-data.json",
+	{ eager: true }
+);
 
 export interface RawAnimeItem {
 	title?: string;
@@ -42,17 +50,22 @@ export type AnimeSourceConfig =
 			emptyDescription?: string;
 	  };
 
-export function loadAnimeData(filename: string): AnimeItem[] {
-	const dataPath = path.join(process.cwd(), `src/data/${filename}`);
-
-	if (!fs.existsSync(dataPath)) {
-		console.warn(`[Anime] Data file not found: ${dataPath}`);
-		return [];
-	}
-
+export function loadAnimeData(source: "bilibili" | "bangumi"): AnimeItem[] {
 	try {
-		const fileContent = fs.readFileSync(dataPath, "utf-8");
-		const rawData = JSON.parse(fileContent) as RawAnimeItem[];
+		let rawData: RawAnimeItem[] = [];
+
+		if (source === "bilibili") {
+			const module = Object.values(bilibiliDataModule)[0];
+			rawData = module?.default || [];
+		} else if (source === "bangumi") {
+			const module = Object.values(bangumiDataModule)[0];
+			rawData = module?.default || [];
+		}
+
+		if (!rawData || rawData.length === 0) {
+			console.log(`[Anime] No data found for ${source}`);
+			return [];
+		}
 
 		return rawData.map((item) => ({
 			title: item.title || "Unknown",
@@ -68,7 +81,7 @@ export function loadAnimeData(filename: string): AnimeItem[] {
 			genre: Array.isArray(item.genre) ? item.genre : [],
 		}));
 	} catch (error) {
-		console.error(`[Anime] Failed to parse ${filename}:`, error);
+		console.error(`[Anime] Failed to parse ${source} data:`, error);
 		return [];
 	}
 }
@@ -115,7 +128,12 @@ export function getAnimeList(
 				);
 				animeList = [];
 			} else {
-				animeList = loadAnimeData(currentConfig.filename);
+				// 根据文件名判断数据源
+				if (mode === "bilibili") {
+					animeList = loadAnimeData("bilibili");
+				} else if (mode === "bangumi") {
+					animeList = loadAnimeData("bangumi");
+				}
 			}
 		}
 	} else {
