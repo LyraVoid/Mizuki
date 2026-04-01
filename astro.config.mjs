@@ -177,6 +177,34 @@ export default defineConfig({
 	},
 	vite: {
 		plugins: [tailwindcss()],
+		// 开发环境预打包优化：将常用依赖提前编译，避免首次页面加载时 on-demand 编译导致 8s+ 的等待
+		optimizeDeps: {
+			include: [
+				"@iconify/svelte",
+				"svelte",
+				"svelte/transition",
+				"svelte/easing",
+				"overlayscrollbars",
+				"@fancyapps/ui",
+				"marked",
+				"sanitize-html",
+				"qrcode",
+			],
+		},
+		// 预热常用入口文件，让 Vite 在服务器启动后立即开始转换，而不是等到浏览器请求
+		server: {
+			warmup: {
+				clientFiles: [
+					"src/layouts/Layout.astro",
+					"src/pages/index.astro",
+					"src/components/widgets/music-player/MusicPlayer.svelte",
+					"src/components/organisms/navigation/Search.svelte",
+					"src/components/control/ThemeSwitch.svelte",
+					"src/components/features/settings/DisplaySettings.svelte",
+					"src/scripts/swup-manager.ts",
+				],
+			},
+		},
 		build: {
 			// 静态资源处理优化，防止小图片转 base64 导致 HTML 体积过大
 			assetsInlineLimit: 4096,
