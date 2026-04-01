@@ -111,8 +111,8 @@
 
 1. **克隆儲存庫：**
    ```bash
-   git clone https://github.com/matsuzaka-yuki/mizuki.git
-   cd mizuki
+   git clone https://github.com/LyraVoid/Mizuki.git
+   cd Mizuki
    ```
 
 2. **安裝依賴：**

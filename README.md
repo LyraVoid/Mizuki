@@ -109,8 +109,8 @@ Get started quickly with our comprehensive documentation. Whether you're customi
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/matsuzaka-yuki/mizuki.git
-   cd mizuki
+   git clone https://github.com/LyraVoid/Mizuki.git
+   cd Mizuki
    ```
 
 2. **Install dependencies:**

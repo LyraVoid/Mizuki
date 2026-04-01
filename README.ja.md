@@ -108,8 +108,8 @@
 
 1. **リポジトリをクローン：**
    ```bash
-   git clone https://github.com/matsuzaka-yuki/mizuki.git
-   cd mizuki
+   git clone https://github.com/LyraVoid/Mizuki.git
+   cd Mizuki
    ```
 
 2. **依存関係をインストール：**
