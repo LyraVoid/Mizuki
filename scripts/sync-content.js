@@ -57,12 +57,33 @@ if (!fs.existsSync(CONTENT_DIR)) {
 
 	if (fs.existsSync(path.join(CONTENT_DIR, ".git"))) {
 		try {
-			console.log("正在拉取最新内容...");
-			execSync("git pull --allow-unrelated-histories", {
+			console.log("正在同步远程内容（强制模式）...");
+
+			// 1. 防止本地修改丢失
+			execSync("git stash push --include-untracked -m 'auto-sync'", {
 				stdio: "inherit",
 				cwd: CONTENT_DIR,
 			});
-			console.log("内容更新成功");
+
+			// 2. 更新远程引用
+			execSync("git fetch --all --prune", {
+				stdio: "inherit",
+				cwd: CONTENT_DIR,
+			});
+
+			// 3. 判断分支
+			let branch = "main";
+			try {
+				execSync("git rev-parse --verify origin/main", { cwd: CONTENT_DIR });
+			} catch {
+				branch = "master";
+			}
+
+			// 4. 强制同步
+		execSync(`git checkout ${branch}`, { cwd: CONTENT_DIR });
+		execSync(`git reset --hard origin/${branch}`, { cwd: CONTENT_DIR });
+
+		console.log(`内容同步成功（分支：${branch}）`);
 		} catch (error) {
 			console.warn("内容更新失败：", error.message);
 		}
@@ -117,6 +138,33 @@ for (const mapping of contentMappings) {
 }
 
 console.log("\n内容同步完成\n");
+try {
+	// 1. 获取 content 分支名
+	const branch = execSync("git rev-parse --abbrev-ref HEAD", {
+		cwd: CONTENT_DIR,
+	})
+		.toString()
+		.trim();
+
+	// 2. 获取 content commit hash（短）
+	const hash = execSync("git rev-parse --short HEAD", {
+		cwd: CONTENT_DIR,
+	})
+		.toString()
+		.trim();
+
+	// 3. 提交主仓库
+	execSync("git add .", { cwd: rootDir });
+
+	execSync(
+		`git commit -m "chore(content): sync ${branch}@${hash}"`,
+		{ cwd: rootDir },
+	);
+
+	console.log(`已提交内容更新（${branch}@${hash}）`);
+} catch {
+	console.log("没有变化，跳过提交");
+}
 
 // 递归复制函数
 function copyRecursive(src, dest) {
