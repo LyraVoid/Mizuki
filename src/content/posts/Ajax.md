@@ -104,3 +104,58 @@ AJAX 是异步 JavaScript + XML 的组合技术，核心是 **用 XMLHttpRequest
     
     // 4. 发送请求
     xhr.send(null);
+
+
+#  JSONP 的工作原理，它为什么不是真正的 Ajax？
+
+
+# 一、JSONP 的工作原理
+1. **浏览器允许 `<script src="...">` 跨域加载资源**，不受同源策略限制。
+
+2. 前端**动态创建 `<script>` 标签**，`src` 指向跨域接口，并带上一个**回调函数名**（如 `?callback=abc`）。
+
+3. 后端返回**一段可执行的 JS 代码**：`abc(数据)`。
+
+4. 浏览器加载并执行这段代码，**调用前端预先定义的 abc 函数**，从而拿到数据。
+
+**极简一句话：**
+**JSONP = 利用 script 标签跨域特性，通过回调函数获取数据。**
+
+---
+
+# 二、JSONP 为什么**不是真正的 AJAX**？（核心考点）
+真正 AJAX 的核心是：
+**使用 XMLHttpRequest 对象 发起异步 HTTP 请求。**
+
+而 JSONP：
+1. **没有使用 XMLHttpRequest 对象**
+2. **没有 HTTP 请求的概念**，只是加载 JS 文件
+3. **只有 GET，没有 POST/PUT/DELETE**
+4. **无法拿到状态码、请求头、进度事件**
+
+所以：
+**JSONP 只是跨域获取数据的技巧，不是 AJAX，不是异步 HTTP。**
+
+---
+
+
+## 代码示例
+
+      <script>
+      // 1. 预先定义一个全局回调函数
+      function getData(res) {
+      console.log('获取到数据：', res);
+      }
+      
+      // 2. 动态创建 script 标签，发起跨域请求
+      const script = document.createElement('script');
+      // 关键：callback=getData
+      script.src = 'https://cross-domain.com/api?callback=getData';
+      
+      // 3. 插入页面，发起请求
+      document.body.appendChild(script);
+      </script>
+      
+# 简单总结
+
+**JSONP 利用 script 标签跨域，通过回调函数获取数据，没有 XHR，所以不是 AJAX，只支持 GET。**
