@@ -1,5 +1,6 @@
 ---
 import FriendCard from "@components/features/friends/FriendCard.astro";
+import Comment from "@components/comment/index.astro";
 import { PageHeader } from "@components/features/page-header";
 import Markdown from "@components/misc/Markdown.astro";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
@@ -135,6 +136,10 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 
 	<!-- 引用全局脚本 -->
 	<script is:inline src="/js/friends-page-handler.js"></script>
+
+	<div class="mt-4">
+		<Comment path="/friends/" />
+	</div>
 </MainGridLayout>
 
 <style>

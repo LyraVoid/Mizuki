@@ -1,5 +1,6 @@
 ---
 import { PageHeader } from "@components/features/page-header";
+import Comment from "@components/comment/index.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import { getEntry, render } from "astro:content";
 
@@ -33,5 +34,9 @@ const title = i18n(I18nKey.about);
 				<Content />
 			</Markdown>
 		</div>
+	</div>
+
+	<div class="mt-4">
+		<Comment path="/about/" />
 	</div>
 </MainGridLayout>
