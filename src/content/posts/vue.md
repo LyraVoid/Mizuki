@@ -58,22 +58,3 @@ Vue在性能方面也是与React不相上下(虽然尤老大说react其实不如
           };
         },
       }).mount("#app");
-
-## Vue基础语法
-
-###### 模板语法
-文本插值({{}}):
-
-        <span>Message: {{ msg }}</span>
-
-原始HTML(v-html):
-        
-        //body:
-        <p>Using text interpolation: {{ rawHtml }}</p>
-        <p>Using v-html directive: <span v-html="rawHtml"></span></p>
-
-        //script:
-        const rawHtml = `<span style="color: red">This should be red.</span>`;
-
-Attribute绑定(v-bind):
-        <div :id="dynamicId"></div>
