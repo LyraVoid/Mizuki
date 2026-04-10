@@ -1,5 +1,5 @@
 ---
-title: ai排泄-HTML5
+title: AI排泄-HTML5
 published: 2026-04-07
 description: ''
 image: ''
