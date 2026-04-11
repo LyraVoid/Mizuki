@@ -40,7 +40,21 @@ body.no-banner-mode .absolute.w-full.z-30 {
 /* TOC 垂直对齐优化 */
 body.no-banner-mode #toc-inner-wrapper {
   top: 5.5rem !important;
+  height: calc(100vh - 8rem) !important;
   max-height: calc(100vh - 8rem) !important;
+}
+
+/* 低高度屏幕下给目录更多可用空间，避免滚动区域被过度压缩 */
+@media (max-height: 860px) {
+  #toc-inner-wrapper {
+    height: calc(100vh - 5.5rem) !important;
+    max-height: calc(100vh - 5.5rem) !important;
+  }
+
+  body.no-banner-mode #toc-inner-wrapper {
+    height: calc(100vh - 6.5rem) !important;
+    max-height: calc(100vh - 6.5rem) !important;
+  }
 }
 
 /* 全屏壁纸模式下的 TOC 毛玻璃背景 */

@@ -269,11 +269,11 @@ const defaultPostListLayout = siteConfig.postListLayout?.defaultMode || "list";
 					>
 						<div
 							id="toc-inner-wrapper"
-							class="fixed top-14 w-(--toc-width) max-h-[calc(100vh-10rem)] overflow-x-hidden overflow-y-auto"
+							class="fixed top-14 w-(--toc-width) h-[calc(100vh-6rem)] max-h-[calc(100vh-6rem)] overflow-x-hidden overflow-y-auto"
 						>
 							<div
 								id="toc-container"
-								class="w-full transition-swup-fade"
+								class="w-full h-full transition-swup-fade"
 							>
 								<SidebarTOC headings={headings} />
 							</div>

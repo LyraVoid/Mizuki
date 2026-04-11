@@ -137,6 +137,12 @@ const { class: className } = Astro.props;
 				top = (bottommost as HTMLElement).offsetTop - tocHeight * 0.8;
 			}
 
+			const maxTop = Math.max(0, scrollContainer.scrollHeight - tocHeight);
+			top = Math.max(0, Math.min(top, maxTop));
+
+			// 小于一个行高级别的位移不触发滚动，减少active更新时的抖动感
+			if (Math.abs((scrollContainer.scrollTop || 0) - top) < 24) return;
+
 			scrollContainer.scrollTo({ top, left: 0, behavior: "smooth" });
 		}, 100);
 
