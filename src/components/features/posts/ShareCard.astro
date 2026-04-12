@@ -28,6 +28,8 @@ const {
 	avatar,
 	class: className,
 } = Astro.props;
+
+const finalAuthor = author || profileConfig.name;
 ---
 
 <div
@@ -63,7 +65,7 @@ const {
 			<SharePoster
 				client:visible
 				{title}
-				{author}
+				author={finalAuthor}
 				description={description || ""}
 				{pubDate}
 				coverImage={coverImage ?? null}
