@@ -165,7 +165,7 @@
 		align-items: center;
 		gap: 0.2rem;
 		font-size: 10px;
-		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-family: inherit;
 		color: var(--content-meta);
 		white-space: nowrap;
 		flex-shrink: 0;
