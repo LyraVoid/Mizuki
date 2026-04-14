@@ -226,7 +226,7 @@ Make the emoji component display correctly when there are too many emoji packs
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):active,
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):focus,
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):hover {
-  @apply !text-(--primary) !border-(--primary)/50;
+  @apply !text-(--primary) !border-(--primary)/50 !bg-(--primary)/10;
 }
 
 /* Text button default state */
