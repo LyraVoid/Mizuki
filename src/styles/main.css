@@ -43,6 +43,28 @@
   font-display: swap;
 }
 
+/* 自定义签名字体（优先使用系统手写体，回退到通用花体） */
+@font-face {
+  font-family: "YunLouSignature";
+  src: local("Segoe Script"), local("Bradley Hand"), local("Snell Roundhand");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+.yunlou-signature {
+  font-family: "YunLouSignature", "Brush Script MT", "Lucida Handwriting", cursive;
+  font-weight: 1000;
+  letter-spacing: 0.04em;
+  color: inherit;
+  text-shadow: none;
+}
+
+:root.dark .yunlou-signature {
+  color: inherit;
+  text-shadow: none;
+}
+
 /* 确保平滑滚动，并稳定滚动条宽度以避免布局左右抖动 */
 html {
   scroll-behavior: smooth;

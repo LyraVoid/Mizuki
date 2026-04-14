@@ -1,5 +1,7 @@
-# 🌸 Mizuki 
-<img align='right' src='logo.png' width='200px' alt="Mizuki logo">
+# 🌸 YunLuoBlog
+<img align='right' src='logo.png' width='200px' alt="YunLuoBlog logo">
+
+> This project is a fork of [Mizuki](https://github.com/matsuzaka-yuki/Mizuki) and is actively maintained with custom changes by YunLuoBlog.
 
 A modern, feature-rich static blog template built with [Astro](https://astro.build), featuring advanced functionality and beautiful design.
 
@@ -9,14 +11,14 @@ A modern, feature-rich static blog template built with [Astro](https://astro.bui
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue)](https://www.typescriptlang.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache)](https://opensource.org/licenses/Apache-2.0)
 
-[**🖥️ Live Demo**](https://mizuki.mysqil.com/) | [**📝 Documentation**](https://docs.mizuki.mysqil.com/)
+[**🖥️ Live Demo**](https://yunluostar.com/) | [**📝 Official Documentation**](https://docs.mizuki.mysqil.com/)
 
 🌏 **README Languages:**
 [**English**](./README.md) / [**中文**](./README.zh.md) / [**日本語**](./README.ja.md) / [**中文繁体**](./README.tw.md) /
 
 Get started quickly with our comprehensive documentation. Whether you're customizing your theme, configuring features, or deploying to production, the documentation covers everything you need to launch your blog successfully.
 
-[📚 Read Full Documentation](https://docs.mizuki.mysqil.com/) →
+[📚 Read Official Documentation](https://docs.mizuki.mysqil.com/) →
 
 ![Mizuki Preview](./README.webp)
 

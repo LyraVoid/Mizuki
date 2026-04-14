@@ -369,8 +369,8 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "assets/images/avatar.webp", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
-	name: "まつざか ゆき",
+	avatar: "assets/images/avatar2.jpeg", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
+	name: "Yun Lou",
 	bio: "世界は大きい、君は行かなければならない",
 	typewriter: {
 		enable: true, // 启用个人简介打字机效果
@@ -382,26 +382,26 @@ export const profileConfig: ProfileConfig = {
 			icon: "fa7-brands:bilibili",
 			url: "https://space.bilibili.com/171212943",
 		},
-		{
-			name: "Gitee",
-			icon: "mdi:git",
-			url: "",
-		},
+		// {
+		// 	name: "Gitee",
+		// 	icon: "mdi:git",
+		// 	url: "",
+		// },
 		{
 			name: "GitHub",
 			icon: "fa7-brands:github",
 			url: "https://github.com/yunluoxincheng",
 		},
-		{
-			name: "Codeberg",
-			icon: "simple-icons:codeberg",
-			url: "",
-		},
-		{
-			name: "Discord",
-			icon: "fa7-brands:discord",
-			url: "",
-		},
+		// {
+		// 	name: "Codeberg",
+		// 	icon: "simple-icons:codeberg",
+		// 	url: "",
+		// },
+		// {
+		// 	name: "Discord",
+		// 	icon: "fa7-brands:discord",
+		// 	url: "",
+		// },
 	],
 };
 
@@ -518,7 +518,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 组件类型：用户资料组件
 			type: "profile",
 			// 组件位置："top" 表示固定在顶部
-			position: "top",
+			position: "sticky",
 			// CSS 类名，用于应用样式和动画
 			class: "onload-animation",
 			// 动画延迟时间（毫秒），用于错开动画效果
@@ -528,7 +528,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 组件类型：公告组件
 			type: "announcement",
 			// 组件位置："top" 表示固定在顶部
-			position: "top",
+			position: "sticky",
 			// CSS 类名
 			class: "onload-animation",
 			// 动画延迟时间
@@ -560,7 +560,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 组件类型：标签组件
 			type: "tags",
 			// 组件位置："sticky" 表示粘性定位
-			position: "top",
+			position: "sticky",
 			// CSS 类名
 			class: "onload-animation",
 			// 动画延迟时间

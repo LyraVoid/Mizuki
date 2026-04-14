@@ -1,5 +1,7 @@
-# 🌸 Mizuki
-<img align='right' src='logo.png' width='200px' alt="Mizuki logo">
+# 🌸 YunLuoBlog
+<img align='right' src='logo.png' width='200px' alt="YunLuoBlog logo">
+
+> 本项目基于 [Mizuki](https://github.com/matsuzaka-yuki/Mizuki) Fork 并进行二次开发，由 YunLuoBlog 持续维护。
 
 一个现代化、功能丰富的静态博客模板，基于 [Astro](https://astro.build) 构建，具有先进的功能和精美的设计。
 
@@ -9,14 +11,14 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue)](https://www.typescriptlang.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache)](https://opensource.org/licenses/Apache-2.0)
 
-[**🖥️ 在线演示**](https://mizuki.mysqil.com/) | [**📝 用户文档**](https://docs.mizuki.mysqil.com/)
+[**🖥️ 在线演示**](https://yunluostar.com/) | [**📝 官方文档**](https://docs.mizuki.mysqil.com/)
 
 🌏 **README 语言:**
 [**English**](./README.md) / [**中文**](./README.zh.md) / [**日本語**](./README.ja.md) / [**中文繁体**](./README.tw.md) /
 
 通过我们的综合文档快速开始。无论是自定义主题、配置功能，还是部署到生产环境，文档涵盖了您成功启动博客所需的所有内容。
 
-[📚 阅读完整文档](https://docs.mizuki.mysqil.com/) →
+[📚 阅读官方文档](https://docs.mizuki.mysqil.com/) →
 
 ![Mizuki Preview](./README.webp)
 

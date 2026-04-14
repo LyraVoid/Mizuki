@@ -1,5 +1,7 @@
-# 🌸 Mizuki
-<img align='right' src='logo.png' width='200px' alt="Mizuki logo">
+# 🌸 YunLuoBlog
+<img align='right' src='logo.png' width='200px' alt="YunLuoBlog logo">
+
+> このプロジェクトは [Mizuki](https://github.com/matsuzaka-yuki/Mizuki) を Fork して二次開発したもので、YunLuoBlog が継続的にメンテナンスしています。
 
 [Astro](https://astro.build) で構築された高度な機能と美しいデザインを備えた、モダンで機能が豊富な静的ブログテンプレート。
 
@@ -9,14 +11,14 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue)](https://www.typescriptlang.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache)](https://opensource.org/licenses/Apache-2.0)
 
-[**🖥️ ライブデモ**](https://mizuki.mysqil.com/) | [**📝 ドキュメント**](https://docs.mizuki.mysqil.com/)
+[**🖥️ ライブデモ**](https://yunluostar.com/) | [**📝 公式ドキュメント**](https://docs.mizuki.mysqil.com/)
 
 🌏 **README の言語:**
 [**English**](./README.md) / [**中文**](./README.zh.md) / [**日本語**](./README.ja.md) / [**中文繁体**](./README.tw.md) /
 
 包括的なドキュメントですぐに始めましょう。テーマのカスタマイズや機能の設定、本番環境へのデプロイなどブログを完成させるために必要なすべての情報がドキュメントに網羅されています。
 
-[📚 完全なドキュメントを読む](https://docs.mizuki.mysqil.com/) →
+[📚 公式ドキュメントを読む](https://docs.mizuki.mysqil.com/) →
 
 ![Mizuki Preview](./README.webp)
 
