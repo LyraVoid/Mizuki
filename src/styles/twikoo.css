@@ -244,3 +244,13 @@ Make the emoji component display correctly when there are too many emoji packs
 .tk-pagination-pager.__current {
   @apply !bg-(--primary);
 }
+
+/* Native select dropdown options (light mode) */
+.twikoo select option {
+  @apply !text-black !bg-white;
+}
+
+/* Native select dropdown options (dark mode) */
+html.dark .twikoo select option {
+  @apply !text-gray-300 !bg-gray-800;
+}
