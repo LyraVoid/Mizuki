@@ -131,11 +131,16 @@ html.dark {
   opacity: 1;
 }
 
-/* Admin Actions, For Each Comment */
+/* Admin actions, For each comment */
 .tk-actions {
   button {
     @apply !text-(--primary);
   }
+}
+
+/* Commenter Nickname Link, on hover */
+.tk-nick-link:hover {
+  @apply !text-(--primary);
 }
 
 /* Replies */
