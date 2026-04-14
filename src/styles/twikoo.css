@@ -85,7 +85,7 @@ html.dark {
 
 .tk-meta {
   .tk-tag {
-    @apply border-none rounded-lg text-(--btn-content);
+    @apply border-none rounded-lg text-(--btn-content) -translate-y-[2px];
   }
 
   .tk-tag-green {
