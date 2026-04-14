@@ -242,7 +242,7 @@ Make the emoji component display correctly when there are too many emoji packs
 
 /* Active pagination page */
 .tk-pagination-pager.__current {
-  @apply !bg-(--primary);
+  @apply !bg-(--primary) !rounded-lg;
 }
 
 /* Native select dropdown options (light mode) */
