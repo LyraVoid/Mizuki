@@ -208,3 +208,39 @@ Make the emoji component display correctly when there are too many emoji packs
   position: relative;
   z-index: 100;
 }
+
+/* Admin Panel */
+/* Primary buttons (e.g. Save, Submit) */
+.el-button--primary {
+  @apply !bg-(--primary) !border-(--primary);
+}
+
+/* Input & textarea focus border */
+.twikoo .el-input__inner:focus,
+.twikoo .el-textarea__inner:focus,
+.el-input.is-active .el-input__inner {
+  @apply !border-(--primary);
+}
+
+/* Non-primary button hover/focus/active states */
+.twikoo .el-button:not(.el-button--primary):not(.el-button--text):active,
+.twikoo .el-button:not(.el-button--primary):not(.el-button--text):focus,
+.twikoo .el-button:not(.el-button--primary):not(.el-button--text):hover {
+  @apply !text-(--primary) !border-(--primary)/50;
+}
+
+/* Text button default state */
+.el-button--text {
+  @apply !text-(--primary) !border-transparent !bg-transparent;
+}
+
+/* Text button hover/focus state */
+.el-button--text:focus,
+.el-button--text:hover {
+  @apply !text-(--primary)/60 !border-transparent !bg-transparent;
+}
+
+/* Active pagination page */
+.tk-pagination-pager.__current {
+  @apply !bg-(--primary);
+}
