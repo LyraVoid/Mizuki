@@ -19,7 +19,7 @@
   }
 
   .title {
-    font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family: var(--ec-codeFontFml, "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
   }
 
   /* 复制按钮样式 (Copy Button) */
