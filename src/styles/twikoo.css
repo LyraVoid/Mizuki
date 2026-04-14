@@ -120,6 +120,17 @@ html.dark {
   }
 }
 
+/* Sort Buttons */
+.tk-sort-item {
+  @apply !text-(--primary);
+  opacity: 0.6;
+}
+
+.tk-sort-item.__active {
+  @apply !text-(--primary);
+  opacity: 1;
+}
+
 /* Admin Actions, For Each Comment */
 .tk-actions {
   button {
