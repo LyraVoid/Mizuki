@@ -254,3 +254,9 @@ Make the emoji component display correctly when there are too many emoji packs
 html.dark .twikoo select option {
   @apply !text-gray-300 !bg-gray-800;
 }
+
+/* Admin panel rounded corners */
+.tk-admin {
+  @apply !rounded-lg;
+  clip-path: inset(0 round 0.5rem) !important;
+}
