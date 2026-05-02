@@ -32,6 +32,8 @@ import Encryptor from "../../components/features/auth/Encryptor.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 
+import { getImage } from "astro:assets";
+
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
 
@@ -104,8 +106,10 @@ const relatedPosts = relatedPostsConfig.enable
 	? await getRelatedPosts(entry, relatedPostsConfig.maxCount)
 	: [];
 
-// Process cover image for SharePoster
+// Process cover image, for both OG and SharePoster
+let ogCoverUrl: string | undefined;
 let posterCoverUrl = entry.data.image;
+
 if (entry.data.image) {
 	const isLocal = !(
 		entry.data.image.startsWith("/") ||
@@ -125,8 +129,21 @@ if (entry.data.image) {
 		if (file) {
 			const img = await file();
 			posterCoverUrl = img.src;
+
+			// Resize for OG
+			const ogImage = await getImage({
+				src: img,
+				width: 1200,
+				format: "jpeg",
+				quality: 80,
+			});
+			ogCoverUrl = ogImage.src;
 		}
 	} else if (entry.data.image.startsWith("http")) {
+		// Retain the original URL for OG
+		ogCoverUrl = entry.data.image;
+
+		// Convert to base64 only for poster
 		try {
 			const response = await fetch(entry.data.image);
 			const arrayBuffer = await response.arrayBuffer();
@@ -137,6 +154,8 @@ if (entry.data.image) {
 		} catch {
 			posterCoverUrl = entry.data.image;
 		}
+	} else {
+		ogCoverUrl = entry.data.image;  // absolute path like "/images/foo.png"
 	}
 }
 
@@ -194,6 +213,7 @@ const jsonLd = {
 	setOGTypeArticle={true}
 	postSlug={entry.id}
 	headings={headings}
+	coverImage={ogCoverUrl}
 >
 	<script
 		is:inline
