@@ -29,9 +29,10 @@ interface Props {
 	lang?: string;
 	setOGTypeArticle?: boolean;
 	postSlug?: string;
+	coverImage?: string;
 }
 
-let { title, banner, description, lang, setOGTypeArticle, postSlug } =
+let { title, banner, description, lang, setOGTypeArticle, postSlug, coverImage } =
 	Astro.props;
 
 // apply a class to the body element to decide the height of the banner, only used for initial page load
@@ -100,7 +101,17 @@ if (title) {
 
 let ogImageUrl: string | undefined;
 if (siteConfig.generateOgImages && postSlug) {
-	ogImageUrl = new URL(`/og/${postSlug}.png`, Astro.site).toString();
+    ogImageUrl = new URL(`/og/${postSlug}.png`, Astro.site).toString();
+} else if (coverImage) {
+    // For post pages with cover images, use the resolved cover image
+    ogImageUrl = coverImage.startsWith('http')
+        ? coverImage
+        : new URL(coverImage, Astro.site).toString();
+} else if (banner) {
+    // For others, use the first banner as OG image
+    ogImageUrl = banner.startsWith('http')
+        ? banner
+        : new URL(banner, Astro.site).toString();
 }
 
 // const siteLang = siteConfig.lang.replace('_', '-')
