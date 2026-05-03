@@ -10,7 +10,7 @@ const { class: className, style }: SidebarMusicWidgetProps = Astro.props;
 const widgetId = `music-sidebar-widget-${Math.random().toString(36).substring(2, 9)}`;
 ---
 
-{#if musicPlayerConfig.enable}
+{musicPlayerConfig.enable && (
 	<WidgetLayout
 		id={widgetId}
 		class={className}
@@ -19,4 +19,4 @@ const widgetId = `music-sidebar-widget-${Math.random().toString(36).substring(2,
 	>
 		<SidebarMusicClient client:only="svelte" />
 	</WidgetLayout>
-{/if}
+)}
