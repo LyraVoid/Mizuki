@@ -18,6 +18,11 @@ Get started quickly with our comprehensive documentation. Whether you're customi
 
 [📚 Read Full Documentation](https://docs.mizuki.mysqil.com/) →
 
+### 這一版的改動部分說明
+
+[**補充改動**](./docs/OtherFeature.md)
+
+
 ![Mizuki Preview](./README.webp)
 
 <table>
