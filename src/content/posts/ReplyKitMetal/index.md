@@ -35,3 +35,15 @@ Metal 著色文件有時候改動後 得把應用刪掉重新裝
 使用TikTok/Twitch直接進行手機直播 如果他有改動與此相關的處理部分
 
 很有可能覆蓋安裝 沒有正確更新對應部分 可能殘留著色器舊快取資源文件
+
+---
+
+# 異常演示
+
+以下 是我從**錯誤回放**裡取一段 畫面處理異常的片段
+
+主要是畫面發生奇怪 撕裂拖影
+
+<iframe src="https://clips.twitch.tv/embed?clip=ObedientJazzyPotatoItsBoshyTime-mF5Hxoxt4KvJYTRV&parent=nuclearblog.pages.dev" frameborder="0" allowfullscreen="true" scrolling="no" height="378" width="100%"></iframe>
+
+---
