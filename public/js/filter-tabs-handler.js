@@ -4,11 +4,11 @@
 // Cards/entries should have a matching data attribute (e.g. data-category, data-type)
 
 (function () {
-	function initFilterTabs() {
+	function initFilterTabs(reset) {
 		var containers = document.querySelectorAll(".filter-tabs");
 
 		containers.forEach(function (container) {
-			if (container.dataset.initialized) return;
+			if (!reset && container.dataset.initialized) return;
 			container.dataset.initialized = "true";
 
 			var tabs = container.querySelectorAll(".filter-tabs-item");
@@ -53,9 +53,14 @@
 		});
 	}
 
+	// Expose for dynamic tab rebuild (e.g. Memos API fetch)
+	window.__initFilterTabs = function () {
+		initFilterTabs(true);
+	};
+
 	function onInit() {
 		if (document.querySelector(".filter-tabs")) {
-			initFilterTabs();
+			initFilterTabs(false);
 		}
 	}
 

@@ -90,6 +90,9 @@ export const siteConfig: SiteConfig = {
 		mode: "local", // 番剧页面模式："bangumi" 使用Bangumi API，"local" 使用本地配置，"bilibili" 使用Bilibili API
 	},
 
+	// 日记页面 Memos API 地址，留空则使用静态数据
+	diaryApiUrl: "",
+
 	// 文章列表布局配置
 	postListLayout: {
 		// 默认布局模式："list" 列表模式（单列布局），"grid" 网格模式（双列布局）

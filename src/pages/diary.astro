@@ -34,6 +34,9 @@ const minutesAgo = i18n(I18nKey.diaryMinutesAgo);
 const hoursAgo = i18n(I18nKey.diaryHoursAgo);
 const daysAgo = i18n(I18nKey.diaryDaysAgo);
 
+const diaryApiUrl = siteConfig.diaryApiUrl || "";
+const timeZone = siteConfig.timeZone;
+
 const title = i18n(I18nKey.diary);
 const subtitle = i18n(I18nKey.diarySubtitle);
 ---
@@ -98,7 +101,7 @@ const subtitle = i18n(I18nKey.diarySubtitle);
 					)
 				}
 
-				<div id="diary-list" class="space-y-4">
+				<div id="diary-list" class="space-y-4" data-memos-api={diaryApiUrl || ""} data-time-zone={timeZone} data-minutes-ago={minutesAgo} data-hours-ago={hoursAgo} data-days-ago={daysAgo}>
 					{
 						moments.map((moment, index) => (
 							<MomentCard
@@ -144,4 +147,302 @@ const subtitle = i18n(I18nKey.diarySubtitle);
 			</div>
 		</div>
 	</div>
+
+	{
+		diaryApiUrl && (
+			<script is:inline>
+				(function () {
+					var container = document.getElementById("diary-list");
+					if (!container) return;
+					var apiUrl = container.dataset.memosApi;
+					if (!apiUrl) return;
+					var timeZone = parseInt(container.dataset.timeZone) || 8;
+					var minutesAgo = container.dataset.minutesAgo || "minutes ago";
+					var hoursAgo = container.dataset.hoursAgo || "hours ago";
+					var daysAgo = container.dataset.daysAgo || "days ago";
+
+					// Derive base URL for file attachments (strip /api/...)
+					var baseUrl = apiUrl.replace(/\/api\/.*$/, "");
+
+					function transformMemosToDiary(memos) {
+						return memos
+							.filter(function (m) {
+								return (
+									m.visibility === "PUBLIC" && m.state === "NORMAL"
+								);
+							})
+							.map(function (m, i) {
+								var images =
+									m.attachments && m.attachments.length > 0
+										? m.attachments
+												.filter(function (a) {
+													return a.type.indexOf("image/") === 0;
+												})
+												.map(function (a) {
+													return (
+														baseUrl + "/file/" + a.name + "/" + a.filename
+													);
+												})
+										: [];
+								return {
+									id: i,
+									content: m.content,
+									date: m.createTime,
+									tags: m.tags || [],
+									images: images.length > 0 ? images : undefined,
+									location: m.location ? m.location.placeholder : undefined,
+									pinned: m.pinned,
+								};
+							})
+							.sort(function (a, b) {
+								if (a.pinned && !b.pinned) return -1;
+								if (!a.pinned && b.pinned) return 1;
+								return new Date(b.date).getTime() - new Date(a.date).getTime();
+							});
+					}
+
+					function formatRelativeTime(dateString) {
+						var now = new Date();
+						var utc =
+							now.getTime() + now.getTimezoneOffset() * 60 * 1000;
+						var localNow = utc + timeZone * 60 * 60 * 1000;
+						var date = new Date(dateString);
+						var diffInMinutes = Math.floor(
+							(localNow - date.getTime()) / (1000 * 60),
+						);
+						if (diffInMinutes < 60)
+							return diffInMinutes + minutesAgo;
+						if (diffInMinutes < 1440)
+							return Math.floor(diffInMinutes / 60) + hoursAgo;
+						return Math.floor(diffInMinutes / 1440) + daysAgo;
+					}
+
+					function escapeHtml(text) {
+						var map = {
+							"&": "&amp;",
+							"<": "&lt;",
+							">": "&gt;",
+							'"': "&quot;",
+							"'": "&#039;",
+						};
+						return text.replace(/[&<>"']/g, function (c) {
+							return map[c];
+						});
+					}
+
+					function getImageLayoutClass(count) {
+						if (count === 1) return "diary-images-single";
+						if (count === 2) return "diary-images-double";
+						if (count === 3) return "diary-images-triple";
+						return "diary-images-grid";
+					}
+
+					function renderMomentCards(moments) {
+						return moments
+							.map(function (moment, index) {
+								var relativeTime = formatRelativeTime(moment.date);
+								var tagsAttr = (moment.tags || []).join(",");
+
+								var imagesHtml = "";
+								if (moment.images && moment.images.length > 0) {
+									var layoutClass = getImageLayoutClass(moment.images.length);
+									var imgs = moment.images
+										.map(function (img, i) {
+											return (
+												'<div class="relative rounded-lg overflow-hidden aspect-square cursor-pointer">' +
+												'<a href="javascript:void(0)" data-src="' +
+												escapeHtml(img) +
+												'" data-fancybox="diary-' +
+												index +
+												"-" +
+												i +
+												'" class="block w-full h-full">' +
+												'<img src="' +
+												escapeHtml(img) +
+												'" alt="diary moment image" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" loading="lazy" decoding="async" />' +
+												"</a></div>"
+											);
+										})
+										.join("");
+									imagesHtml =
+										'<div class="diary-images grid gap-2 mb-3 ' +
+										layoutClass +
+										'">' +
+										imgs +
+										"</div>";
+								}
+
+								var tagsHtml = "";
+								if (moment.tags && moment.tags.length > 0) {
+									var tagSpans = moment.tags
+										.map(function (tag) {
+											return (
+												'<span class="btn-regular h-6 text-xs px-2 rounded-lg">' +
+												escapeHtml(tag) +
+												"</span>"
+											);
+										})
+										.join("");
+									tagsHtml =
+										'<div class="flex flex-wrap gap-1.5 mb-3">' +
+										tagSpans +
+										"</div>";
+								}
+
+								var locationHtml = moment.location
+									? '<span class="flex items-center gap-1"><iconify-icon icon="material-symbols:location-on" class="text-xs w-3.5 h-3.5"></iconify-icon>' +
+										escapeHtml(moment.location) +
+										"</span>"
+									: "";
+
+								return (
+									'<div class="moment-card group relative bg-transparent rounded-xl border border-black/10 dark:border-white/10 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1" data-tags="' +
+									tagsAttr +
+									'">' +
+									'<div class="p-5">' +
+									'<p class="text-sm md:text-base text-black/90 dark:text-white/90 leading-relaxed mb-3">' +
+									escapeHtml(moment.content) +
+									"</p>" +
+									imagesHtml +
+									tagsHtml +
+									'<hr class="border-t border-black/5 dark:border-white/5 my-3" />' +
+									'<div class="flex items-center justify-between text-xs text-black/50 dark:text-white/50 flex-wrap gap-2">' +
+									'<div class="flex items-center gap-1.5">' +
+									'<iconify-icon icon="material-symbols:schedule" class="text-xs w-3.5 h-3.5"></iconify-icon>' +
+									'<time datetime="' +
+									escapeHtml(moment.date) +
+									'">' +
+									relativeTime +
+									"</time>" +
+									"</div>" +
+									'<div class="flex items-center gap-3">' +
+									locationHtml +
+									"</div>" +
+									"</div>" +
+									"</div>" +
+									'<div class="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl"></div>' +
+									"</div>"
+								);
+							})
+							.join("");
+					}
+
+					function rebuildFilterTabs(moments) {
+						var filterContainer = document.querySelector(".filter-tabs");
+						if (!filterContainer) {
+							// No filter tabs in static render — need to create the container
+							var contentArea = document.querySelector(".card-base .px-6.sm\\:px-9.pt-2.pb-6");
+							if (!contentArea) return;
+							filterContainer = document.createElement("div");
+							filterContainer.className = "filter-tabs mb-8";
+							contentArea.insertBefore(filterContainer, contentArea.firstChild);
+						}
+
+						var allTags = [];
+						var seen = {};
+						moments.forEach(function (m) {
+							(m.tags || []).forEach(function (t) {
+								if (!seen[t]) {
+									seen[t] = true;
+									allTags.push(t);
+								}
+							});
+						});
+						allTags.sort();
+
+						// Remove existing tabs
+						var existingTabs = filterContainer.querySelectorAll(
+							".filter-tabs-item",
+						);
+						existingTabs.forEach(function (tab) {
+							tab.remove();
+						});
+
+						// Create "all" tab
+						var allTab = document.createElement("button");
+						allTab.className = "filter-tabs-item active";
+						allTab.setAttribute("data-filter-value", "all");
+						allTab.setAttribute("data-filter-attr", "tags");
+						allTab.innerHTML =
+							'<iconify-icon icon="material-symbols:apps"></iconify-icon>' +
+							'<span class="count">' +
+							moments.length +
+							"</span>";
+						filterContainer.appendChild(allTab);
+
+						// Create tag tabs
+						allTags.forEach(function (tag) {
+							var count = moments.filter(function (m) {
+								return m.tags && m.tags.indexOf(tag) !== -1;
+							}).length;
+							var tab = document.createElement("button");
+							tab.className = "filter-tabs-item";
+							tab.setAttribute("data-filter-value", tag);
+							tab.setAttribute("data-filter-attr", "tags");
+							tab.innerHTML =
+								"<span>" +
+								escapeHtml(tag) +
+								'</span><span class="count">' +
+								count +
+								"</span>";
+							filterContainer.appendChild(tab);
+						});
+
+						// Re-init filter handler
+						if (
+							typeof window !== "undefined" &&
+							window.__initFilterTabs
+						) {
+							window.__initFilterTabs();
+						}
+					}
+
+					function updateCountDisplay(count) {
+						var countEl = document.querySelector(
+							".card-base .shrink-0 .text-2xl",
+						);
+						if (countEl) {
+							countEl.textContent = String(count);
+						}
+					}
+
+					function fetchAndRender() {
+						if (!apiUrl) return;
+
+						fetch(apiUrl)
+							.then(function (res) {
+								if (!res.ok) throw new Error("HTTP " + res.status);
+								return res.json();
+							})
+							.then(function (data) {
+								var memos = data.memos || [];
+								if (memos.length === 0) return;
+
+								var moments = transformMemosToDiary(memos);
+								var container = document.getElementById("diary-list");
+								if (!container) return;
+
+								container.innerHTML = renderMomentCards(moments);
+								updateCountDisplay(moments.length);
+								rebuildFilterTabs(moments);
+							})
+							.catch(function () {
+								// Silent fallback — static data already rendered
+							});
+					}
+
+					// IIFE: run immediately (handles Swup pre-render case)
+					fetchAndRender();
+
+					// DOMContentLoaded
+					if (document.readyState === "loading") {
+						document.addEventListener("DOMContentLoaded", fetchAndRender);
+					}
+
+					// Swup page transitions
+					document.addEventListener("swup:contentReplaced", fetchAndRender);
+				})();
+			</script>
+		)
+	}
 </MainGridLayout>
