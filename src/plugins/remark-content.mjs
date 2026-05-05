@@ -97,6 +97,13 @@ function getNodeText(node) {
 	// 如果是图片，提取 alt 文本 (可选，这里选择提取以保持语义)
 	if (node.type === "image") return node.alt || "";
 
+	if (node.type === "element" && node.tagName === "video") {
+		return (
+			node.properties?.["aria-label"] ||
+			`[video: ${node.properties?.src || ""}]`
+		);
+	}
+
 	// 跳过代码块和 HTML 标签
 	if (
 		node.type === "code" ||

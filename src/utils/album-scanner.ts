@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { AlbumGroup, Photo } from "../types/album";
+import type { AlbumGroup, Photo, Video } from "../types/album";
 
 export async function scanAlbums(): Promise<AlbumGroup[]> {
 	const albumsDir = path.join(process.cwd(), "public/images/albums");
@@ -55,6 +55,7 @@ async function processAlbumFolder(
 	// 检查是否为外链模式
 	const isExternalMode = info.mode === "external";
 	let photos: Photo[] = [];
+	var videos: Video[] = [];
 	let cover: string;
 
 	if (isExternalMode) {
@@ -75,7 +76,13 @@ async function processAlbumFolder(
 		}
 
 		cover = `/images/albums/${folderName}/cover.jpg`;
-		photos = scanPhotos(folderPath, folderName);
+
+		// ✅ 一次呼叫 scanMedia，解構出 photos 和 videos
+		console.log(folderName);
+		const media = scanMedia(folderPath, folderName);
+		photos = media.photos;
+
+		videos = media.videos;
 	}
 
 	// 检查是否隐藏相册
@@ -96,6 +103,7 @@ async function processAlbumFolder(
 		layout: info.layout || "grid",
 		columns: info.columns || 3,
 		photos,
+		videos,
 	};
 }
 
@@ -141,6 +149,117 @@ function scanPhotos(folderPath: string, albumId: string): Photo[] {
 	});
 
 	return photos;
+}
+
+function scanVideos(folderPath: string, albumId: string): Video[] {
+	const videos: Video[] = [];
+	const files = fs.readdirSync(folderPath);
+
+	// 過濾出影片檔案
+	const videoFiles = files.filter((file) => {
+		const ext = path.extname(file).toLowerCase();
+		return [
+			".mp4",
+			".webm",
+			".ogg",
+			".mov",
+			".mkv",
+			".avi",
+			".flv",
+		].includes(ext);
+	});
+
+	// 處理每個影片
+	videoFiles.forEach((file, index) => {
+		const filePath = path.join(folderPath, file);
+		const stats = fs.statSync(filePath);
+
+		// 解析檔名中的標籤
+		const { baseName, tags } = parseFileName(file);
+
+		videos.push({
+			id: `${albumId}-video-${index}`,
+			src: `/videos/albums/${albumId}/${file}`, // ✅ 專門給 VideoComponent 用的路徑
+			alt: baseName, // 可作為 aria-label 或 figcaption
+			title: baseName,
+			tags: tags,
+			date: stats.mtime.toISOString().split("T")[0],
+		});
+	});
+
+	return videos;
+}
+
+function scanMedia(
+	folderPath: string,
+	albumId: string,
+): { photos: Photo[]; videos: Video[]; cover?: string } {
+	const photos: Photo[] = [];
+	const videos: Video[] = [];
+	let cover: string | undefined;
+
+	const files = fs.readdirSync(folderPath);
+
+	files.forEach((file) => {
+		const ext = path.extname(file).toLowerCase();
+		const filePath = path.join(folderPath, file);
+		const stats = fs.statSync(filePath);
+
+		const { baseName, tags } = parseFileName(file);
+
+		// 封面檔案處理
+		if (file === "cover.jpg") {
+			cover = `/images/albums/${albumId}/cover.jpg`;
+			return;
+		}
+		if (file === "cover.mp4") {
+			cover = `/videos/albums/${albumId}/cover.mp4`;
+			return;
+		}
+
+		// 圖片
+		if (
+			[
+				".jpg",
+				".jpeg",
+				".png",
+				".gif",
+				".webp",
+				".svg",
+				".avif",
+				".bmp",
+				".tiff",
+				".tif",
+			].includes(ext)
+		) {
+			photos.push({
+				id: `${albumId}-photo-${photos.length}`,
+				src: `/images/albums/${albumId}/${file}`, // ✅ 已經更正成 public 路徑
+				alt: baseName,
+				title: baseName,
+				tags,
+				date: stats.mtime.toISOString().split("T")[0],
+			});
+		}
+
+		// 影片
+		if (
+			[".mp4", ".webm", ".ogg", ".mov", ".mkv", ".avi", ".flv"].includes(
+				ext,
+			)
+		) {
+			videos.push({
+				id: `${albumId}-video-${videos.length}`,
+				src: `/videos/albums/${albumId}/${file}`, // ✅ 已經更正成 public 路徑
+				alt: baseName,
+				title: baseName,
+				tags,
+				date: stats.mtime.toISOString().split("T")[0],
+			});
+		}
+	});
+
+	return { photos, videos, cover };
 }
 
 function processExternalPhotos(

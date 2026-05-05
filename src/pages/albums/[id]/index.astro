@@ -26,6 +26,12 @@ interface Props {
 
 const { album } = Astro.props;
 
+// ✅ 打日誌
+console.log("正在渲染相簿頁面:", album.id);
+console.log("照片數量:", album.photos.length);
+console.log("影片數量:", album.videos.length);
+
+
 if (!album) {
 	return Astro.redirect("/404/");
 }

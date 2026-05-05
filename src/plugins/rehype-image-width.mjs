@@ -1,7 +1,8 @@
 import { visit } from "unist-util-visit";
 
 export function rehypeImageWidth() {
-	const regex = / w-([0-9]+)%/;
+	const regexW = / w-([0-9]+)(%|px)?/;
+	const regexH = / h-([0-9]+)(%|px)?/;
 
 	return (tree) => {
 		visit(tree, "element", (node, index, parent) => {
@@ -11,48 +12,65 @@ export function rehypeImageWidth() {
 				node.properties.alt
 			) {
 				const alt = node.properties.alt;
-				const match = alt.match(regex);
 
-				if (match) {
-					const width = match[1];
-					node.properties.alt = alt.replace(regex, "").trim();
-					node.properties.width = `${width}%`;
-					node.properties.style = "display: block; margin: 0 auto;";
+				const matchW = alt.match(regexW);
+				const matchH = alt.match(regexH);
 
-					const figureChildren = [node];
+				let width = "100%";
+				let height = "auto";
 
-					if (node.properties.title) {
-						const figcaption = {
-							type: "element",
-							tagName: "figcaption",
-							properties: {
-								style: "text-align: center; margin-top: 0.5em; font-size: 0.9em; color: #666;",
-							},
-							children: [
-								{
-									type: "text",
-									value: node.properties.title,
-								},
-							],
-						};
-						figureChildren.push(figcaption);
-					}
+				if (matchW) {
+					width = matchW[2]
+						? `${matchW[1]}${matchW[2]}`
+						: `${matchW[1]}%`;
+				}
+				if (matchH) {
+					height = matchH[2]
+						? `${matchH[1]}${matchH[2]}`
+						: `${matchH[1]}%`;
+				}
 
-					const figure = {
+				// 清理 alt 裡的語法
+				node.properties.alt = alt
+					.replace(regexW, "")
+					.replace(regexH, "")
+					.trim();
+
+				// 套用寬高
+				node.properties.style = `display:block; margin:0 auto; width:${width}; height:${height};object-fit:contain;`;
+
+				const figureChildren = [node];
+
+				if (node.properties.title) {
+					const figcaption = {
 						type: "element",
-						tagName: "figure",
+						tagName: "figcaption",
 						properties: {
-							style: "margin: 1em 0;",
+							style: "text-align:center; margin-top:0.5em; font-size:0.9em; color:#666;",
 						},
-						children: figureChildren,
+						children: [
+							{
+								type: "text",
+								value: node.properties.title,
+							},
+						],
 					};
+					figureChildren.push(figcaption);
+				}
 
-					if (parent && index !== undefined) {
-						parent.children[index] = figure;
-					}
+				const figure = {
+					type: "element",
+					tagName: "figure",
+					properties: {
+						style: "margin:1em 0;",
+					},
+					children: figureChildren,
+				};
+
+				if (parent && index !== undefined) {
+					parent.children[index] = figure;
 				}
 			}
 		});
 	};
 }
-

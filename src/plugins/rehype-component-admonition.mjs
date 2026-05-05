@@ -11,6 +11,8 @@ import { h } from "hastscript";
  * @returns {import('mdast').Parent} The created admonition component.
  */
 export function AdmonitionComponent(properties, children, type) {
+	console.log("TipWorking", properties, children, type);
+
 	if (!Array.isArray(children) || children.length === 0)
 		return h(
 			"div",
@@ -26,8 +28,22 @@ export function AdmonitionComponent(properties, children, type) {
 		label.tagName = "div"; // Change the tag <p> to <div>
 	}
 
-	return h("blockquote", { class: `admonition bdm-${type}` }, [
-		h("span", { class: "bdm-title" }, label ? label : type.toUpperCase()),
-		...children,
-	]);
+	return h(
+		"blockquote",
+		{
+			class: `admonition bdm-${type}`,
+			style: "padding:0.75em 1em; margin:1em 0;",
+		},
+		[
+			h(
+				"span",
+				{
+					class: "bdm-title",
+					style: "display:block; font-weight:bold; margin-bottom:0.5em;",
+				},
+				label ? label : type.toUpperCase(),
+			),
+			...children,
+		],
+	);
 }

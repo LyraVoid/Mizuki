@@ -12,6 +12,15 @@ export interface Photo {
 	height?: number;
 }
 
+export interface Video {
+	id: string;
+	src: string;
+	title: string;
+	alt: string;
+	tags: string[];
+	date: string;
+}
+
 export interface AlbumGroup {
 	id: string;
 	title: string;
@@ -23,4 +32,5 @@ export interface AlbumGroup {
 	layout?: "grid" | "masonry";
 	columns?: number;
 	photos: Photo[];
+	videos: Video[];
 }

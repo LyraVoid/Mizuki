@@ -21,12 +21,20 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
+
+// 視頻組件
+import { VideoComponent } from "./src/plugins/rehype-video-component.mjs";
+
 import { rehypeMermaid } from "./src/plugins/rehype-mermaid.mjs";
 import { rehypeWrapTable } from "./src/plugins/rehype-wrap-table.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkMermaid } from "./src/plugins/remark-mermaid.js";
 import { remarkContent } from "./src/plugins/remark-content.mjs";
 import { rehypeImageWidth } from "./src/plugins/rehype-image-width.mjs";
+
+import { rehypeVideoWidth } from "./src/plugins/rehype-video-width.mjs";
+
+import rehypeRaw from "rehype-raw";
 
 // https://astro.build/config
 export default defineConfig({
@@ -135,6 +143,8 @@ export default defineConfig({
 			rehypeWrapTable,
 			rehypeMermaid,
 			rehypeImageWidth,
+			rehypeVideoWidth,
+			rehypeRaw,
 			[
 				rehypeComponents,
 				{
@@ -146,6 +156,7 @@ export default defineConfig({
 							AdmonitionComponent(x, y, "important"),
 						caution: (x, y) => AdmonitionComponent(x, y, "caution"),
 						warning: (x, y) => AdmonitionComponent(x, y, "warning"),
+						VideoComponent: VideoComponent,
 					},
 				},
 			],
