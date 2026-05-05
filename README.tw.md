@@ -43,6 +43,8 @@
 [**日本語**](./README.ja.md) /
 [**中文繁体**](./README.tw.md) /
 
+[**補充改動**](./docs/OtherFeature.md)
+
 
 
 
