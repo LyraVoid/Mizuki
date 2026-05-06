@@ -40,7 +40,7 @@
 		"@swup/astro": "^1.8.0",
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.2.4",
-		"astro": "6.2.1",
+		"astro": "6.2.2",
 		"astro-expressive-code": "^0.41.7",
 		"astro-icon": "^1.1.5",
 		"axios": "^1.16.0",
