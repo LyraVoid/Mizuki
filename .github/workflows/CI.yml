@@ -40,6 +40,9 @@ jobs:
         env:
           ENABLE_CONTENT_SYNC: false
 
+      - name: Run TypeScript Check
+        run: pnpm type-check
+
   build:
     name: Astro Build
     runs-on: ubuntu-latest
