@@ -1127,6 +1127,7 @@ async function compressFonts() {
 						)
 						.use(
 							Fontmin.ttf2woff2({
+								clone: false,
 								deflate: true,
 							}),
 						)
