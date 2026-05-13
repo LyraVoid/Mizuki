@@ -45,7 +45,7 @@
 				class="btn-regular w-7 h-7 rounded-md active:scale-90"
 				class:opacity-0={hue === defaultHue}
 				class:pointer-events-none={hue === defaultHue}
-				on:click={resetHue}
+				onclick={resetHue}
 			>
 				<div class="text-[var(--btn-content)]">
 					<Icon

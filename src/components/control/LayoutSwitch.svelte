@@ -172,7 +172,7 @@
 		class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 flex items-center justify-center theme-switch-btn {isSwitching
 			? 'switching'
 			: ''}"
-		on:click={switchLayout}
+		onclick={switchLayout}
 		disabled={isSwitching}
 		title={userPreference === "list"
 			? i18n(I18nKey.switchToGridMode)
@@ -180,7 +180,7 @@
 	>
 		<div
 			class="icon-container w-5 h-5 flex items-center justify-center relative"
-			on:animationend={onAnimationEnd}
+			onanimationend={onAnimationEnd}
 		>
 			{#if userPreference === "list"}
 				<svg

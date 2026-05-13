@@ -39,7 +39,7 @@
 	class="music-fab btn-card"
 	aria-label={ariaLabel}
 	title={ariaLabel}
-	on:click={toggleControlCenter}
+	onclick={toggleControlCenter}
 >
 	<span class="music-fab__icon" aria-hidden="true">
 		<Icon icon={statusIcon} />
