@@ -1,4 +1,5 @@
 ---
+import { getPostHomeContent } from "@utils/post-card-content";
 import { render } from "astro:content";
 import { Icon } from "astro-icon/components";
 
@@ -22,6 +23,7 @@ const {
 	category,
 	image,
 	description,
+	hideHomeContent,
 	pinned,
 	encrypted,
 	password,
@@ -32,6 +34,10 @@ const hasCover = image !== undefined && image !== null && image !== "";
 const coverWidth = "28%";
 
 const { remarkPluginFrontmatter } = await render(entry);
+const homeContent = getPostHomeContent(
+	{ description, hideHomeContent, password },
+	remarkPluginFrontmatter.excerpt,
+);
 ---
 
 <div
@@ -106,7 +112,7 @@ const { remarkPluginFrontmatter } = await render(entry);
 				{ "line-clamp-2 md:line-clamp-1": !description },
 			]}
 		>
-			{description || remarkPluginFrontmatter.excerpt}
+			{homeContent}
 		</div>
 
 		<div class="flex flex-wrap gap-2 mt-2">

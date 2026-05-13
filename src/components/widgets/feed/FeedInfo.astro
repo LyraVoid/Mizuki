@@ -4,6 +4,7 @@ import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
 import { formatDateToYYYYMMDD } from "@utils/date-utils";
+import { getPostPublicDescription } from "@utils/post-card-content";
 import { Icon } from "astro-icon/components";
 
 interface Props {
@@ -13,6 +14,8 @@ interface Props {
 const { type } = Astro.props;
 const posts = (await getSortedPosts()).filter((post) => !post.data.encrypted);
 const recentPosts = posts.slice(0, 6);
+const getDescription = (post: (typeof recentPosts)[number]) =>
+	getPostPublicDescription(post.data);
 
 const feedUrl = type === "rss" ? "rss.xml" : "atom.xml";
 const prefix = type === "rss" ? "rss" : "atom";
@@ -103,9 +106,9 @@ const t = (key: string) => i18n(key as I18nKey);
 									{post.data.title}
 								</a>
 							</h3>
-							{post.data.description && (
+							{getDescription(post) && (
 								<p class="text-75 mb-3 line-clamp-2">
-									{post.data.description}
+									{getDescription(post)}
 								</p>
 							)}
 							<div class="flex items-center gap-4 text-sm text-60">

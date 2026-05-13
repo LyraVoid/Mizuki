@@ -10,6 +10,7 @@ import sanitizeHtml from "sanitize-html";
 import { siteConfig } from "@/config";
 import { getSortedPosts } from "@/utils/content-utils";
 import { initPostIdMap } from "@/utils/permalink-utils";
+import { getPostPublicDescription } from "@/utils/post-card-content";
 import { getPostUrl } from "@/utils/url-utils";
 
 const markdownParser = new MarkdownIt();
@@ -115,7 +116,7 @@ export async function GET(context: APIContext) {
 
 		feed.push({
 			title: post.data.title,
-			description: post.data.description,
+			description: getPostPublicDescription(post.data),
 			pubDate: post.data.published,
 			link: getPostUrl(post),
 			// sanitize the new html string with corrected image paths

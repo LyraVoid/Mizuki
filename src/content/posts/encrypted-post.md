@@ -6,6 +6,7 @@ encrypted: true
 pinned: true
 password: "123456"
 passwordHint: "123456"
+hideHomeContent: true
 alias: "encrypted-example"
 tags: ["Test", "Encryption"]
 category: "Technology"
@@ -48,6 +49,7 @@ draft: false
 | `encrypted`   | Whether this post is password protected.                                                                                                                                                                    |
 | `password`    | The password to unlock the encrypted post.                                                                                                                                                                  |
 | `passwordHint`| A hint to help users remember the password. Displayed below the password input.                                                                                                                             |
+| `hideHomeContent` | Whether to hide public post summaries, including the home page, meta tags, feed/API summaries, and share previews. Defaults to `true` when `password` is set.                                      |
 
 ## Where to Place the Post Files
 
@@ -112,6 +114,7 @@ published: 2024-01-15
 encrypted: true
 password: "my-secret-password"
 passwordHint: "Hint: The password is my dog's name"
+hideHomeContent: true
 ---
 ```
 
@@ -122,6 +125,7 @@ passwordHint: "Hint: The password is my dog's name"
 | `encrypted`    | Yes      | Set to `true` to enable password protection              |
 | `password`     | Yes      | The password to unlock the post                          |
 | `passwordHint` | No       | A hint displayed below the password input to help users |
+| `hideHomeContent` | No   | Hide public summaries as `该文章已加密`. Defaults to `true` when `password` is set. Set to `false` to show the normal summary. |
 
 ### How the Unlock Box Looks
 

@@ -14,10 +14,15 @@ const showCategoryBar = siteConfig.postListLayout.categoryBar?.enable ?? false;
 
 // 1. 修复类型兼容性：将 category 的 null 转换为 undefined
 const posts = sortedPostsList.map((post) => ({
-	...post,
+	id: post.id,
+	url: post.url,
 	data: {
-		...post.data,
+		title: post.data.title,
+		tags: post.data.tags,
 		category: post.data.category === null ? undefined : post.data.category,
+		published: post.data.published,
+		alias: post.data.alias,
+		permalink: post.data.permalink,
 	},
 }));
 

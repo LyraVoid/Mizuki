@@ -25,6 +25,7 @@ import {
 	hasCustomPermalink,
 	initPostIdMap,
 } from "@utils/permalink-utils";
+import { getPostPublicDescription } from "@utils/post-card-content";
 import { getFileDirFromPath } from "@utils/url-utils";
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
@@ -82,6 +83,10 @@ const { remarkPluginFrontmatter } = await render(entry);
 // 处理加密逻辑
 let encryptedContent = "";
 const isEncrypted = entry.data.encrypted && entry.data.password;
+const publicDescription = getPostPublicDescription(
+	entry.data,
+	entry.data.title,
+);
 
 if (isEncrypted) {
 	const contentToEncrypt = "MIZUKI-VERIFY:" + entry.body;
@@ -95,7 +100,7 @@ const jsonLd = {
 	"@context": "https://schema.org",
 	"@type": "BlogPosting",
 	headline: entry.data.title,
-	description: entry.data.description || entry.data.title,
+	description: publicDescription,
 	keywords: entry.data.tags,
 	author: {
 		"@type": "Person",
@@ -112,7 +117,7 @@ const jsonLd = {
 <MainGridLayout
 	banner={entry.data.image}
 	title={entry.data.title}
-	description={entry.data.description}
+	description={publicDescription}
 	lang={entry.data.lang}
 	setOGTypeArticle={true}
 	postSlug={entry.id}

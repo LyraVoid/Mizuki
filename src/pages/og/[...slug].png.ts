@@ -6,6 +6,7 @@ import { getCollection } from "astro:content";
 import satori from "satori";
 import sharp from "sharp";
 
+import { getPostPublicDescription } from "@/utils/post-card-content";
 import { removeFileExtension } from "@/utils/url-utils";
 
 import { profileConfig, siteConfig } from "../../config";
@@ -136,7 +137,7 @@ export async function GET({
 		day: "numeric",
 	});
 
-	const description = post.data.description;
+	const description = getPostPublicDescription(post.data);
 
 	const template = {
 		type: "div",
