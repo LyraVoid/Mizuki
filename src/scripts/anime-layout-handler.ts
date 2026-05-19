@@ -187,9 +187,9 @@ export function initAnimeLayoutHandler(options: LayoutHandlerOptions) {
 
 	window.addEventListener(
 		"layoutChange",
-		(event: CustomEvent<{ layout: string }>) => {
-			updateAnimeListLayout(event.detail.layout);
-		},
+  		((event: CustomEvent<{ layout: string }>) => {
+    		updateAnimeListLayout(event.detail.layout);
+  		}) as EventListener,
 	);
 }
 
