@@ -1,6 +1,7 @@
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - esbuild
-  - sharp
-  - swup
-  - ttf2woff2
+allowBuilds:
+  esbuild: true
+  sharp: true
+  ttf2woff2: true
+minimumReleaseAgeExclude:
+  - '@astrojs/*'
+  - astro
