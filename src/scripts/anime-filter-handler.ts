@@ -18,7 +18,7 @@ export function initFilterHandler() {
 		window.animeFilterEventListeners = [];
 
 		filterTags.forEach((tag) => {
-			const clickHandler = function () {
+			const clickHandler = function (this: HTMLElement) {
 				if (this.classList.contains("anime-active")) {
 					return;
 				}

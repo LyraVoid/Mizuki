@@ -27,7 +27,10 @@ if (footerConfig.enable) {
 				.replace(/<!--[\s\S]*?-->/g, "")
 				.trim();
 		} catch (error) {
-			console.warn("FooterConfig.html文件读取失败:", error.message);
+			console.warn(
+				"FooterConfig.html文件读取失败:",
+				error instanceof Error ? error.message : error,
+			);
 		}
 	}
 }
