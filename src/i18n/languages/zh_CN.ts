@@ -191,6 +191,25 @@ export const zh_CN: Translation = {
 	[Key.skillsByCategory]: "按分类分布",
 	[Key.noData]: "暂无数据",
 
+	// AI 工具（关于页面）
+	[Key.aiTools]: "我使用的 AI 工具",
+	[Key.aiToolsSubtitle]: "目前在日常工作流中常用的 AI 助手与服务",
+	[Key.aiToolsCategoryChat]: "对话助手",
+	[Key.aiToolsCategoryCoding]: "编码协作",
+	[Key.aiToolsCategoryImage]: "图像生成",
+	[Key.aiToolsCategoryAudio]: "音频",
+	[Key.aiToolsCategoryVideo]: "视频",
+	[Key.aiToolsCategoryWriting]: "写作 / 笔记",
+	[Key.aiToolsCategorySearch]: "搜索 / 研究",
+	[Key.aiToolsCategoryOther]: "其他",
+	[Key.aiToolsFrequencyDaily]: "每天",
+	[Key.aiToolsFrequencyWeekly]: "每周",
+	[Key.aiToolsFrequencyOccasional]: "偶尔",
+	[Key.aiToolsFrequencyExperimental]: "尝鲜",
+	[Key.aiToolsUsage]: "使用量",
+	[Key.aiToolsVisit]: "前往官网",
+	[Key.aiToolsNoResults]: "没有匹配的 AI 工具",
+
 	// 时间线页面
 	[Key.timeline]: "时间线",
 	[Key.timelineSubtitle]: "我的成长历程和重要里程碑",

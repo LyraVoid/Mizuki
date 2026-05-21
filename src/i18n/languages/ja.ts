@@ -273,6 +273,25 @@ export const ja: Translation = {
 	[Key.skillsByCategory]: "カテゴリー別",
 	[Key.noData]: "データなし",
 
+	// AI ツール（Aboutページ）
+	[Key.aiTools]: "使っている AI ツール",
+	[Key.aiToolsSubtitle]: "日常のワークフローで使用している AI アシスタントとサービス",
+	[Key.aiToolsCategoryChat]: "チャットアシスタント",
+	[Key.aiToolsCategoryCoding]: "コーディング",
+	[Key.aiToolsCategoryImage]: "画像生成",
+	[Key.aiToolsCategoryAudio]: "音声",
+	[Key.aiToolsCategoryVideo]: "動画",
+	[Key.aiToolsCategoryWriting]: "ライティング / ノート",
+	[Key.aiToolsCategorySearch]: "検索 / リサーチ",
+	[Key.aiToolsCategoryOther]: "その他",
+	[Key.aiToolsFrequencyDaily]: "毎日",
+	[Key.aiToolsFrequencyWeekly]: "毎週",
+	[Key.aiToolsFrequencyOccasional]: "時々",
+	[Key.aiToolsFrequencyExperimental]: "お試し",
+	[Key.aiToolsUsage]: "使用量",
+	[Key.aiToolsVisit]: "公式サイト",
+	[Key.aiToolsNoResults]: "該当する AI ツールがありません",
+
 	// タイムラインページ
 	[Key.timeline]: "タイムライン",
 	[Key.timelineSubtitle]: "成長への旅と重要なマイルストーン",

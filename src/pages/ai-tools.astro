@@ -1,0 +1,143 @@
+---
+import { FilterTabs } from "@components/atoms/filter-tabs";
+import { AIToolCard } from "@components/features/ai-tools";
+import { PageHeader } from "@components/features/page-header";
+import { Icon } from "astro-icon/components";
+
+import { siteConfig } from "../config";
+import { aiToolsData } from "../data/ai-tools";
+import I18nKey from "../i18n/i18nKey";
+import { i18n } from "../i18n/translation";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+
+if (!siteConfig.featurePages.aiTools) {
+	return Astro.redirect("/404/");
+}
+
+const categories = [...new Set(aiToolsData.map((tool) => tool.category))];
+
+const getCategoryText = (category: string) => {
+	switch (category) {
+		case "chat":
+			return i18n(I18nKey.aiToolsCategoryChat);
+		case "coding":
+			return i18n(I18nKey.aiToolsCategoryCoding);
+		case "image":
+			return i18n(I18nKey.aiToolsCategoryImage);
+		case "audio":
+			return i18n(I18nKey.aiToolsCategoryAudio);
+		case "video":
+			return i18n(I18nKey.aiToolsCategoryVideo);
+		case "writing":
+			return i18n(I18nKey.aiToolsCategoryWriting);
+		case "search":
+			return i18n(I18nKey.aiToolsCategorySearch);
+		case "other":
+			return i18n(I18nKey.aiToolsCategoryOther);
+		default:
+			return category;
+	}
+};
+
+const getCategoryIcon = (category: string) => {
+	switch (category) {
+		case "chat":
+			return "material-symbols:forum-outline";
+		case "coding":
+			return "material-symbols:code";
+		case "image":
+			return "material-symbols:image-outline";
+		case "audio":
+			return "material-symbols:graphic-eq";
+		case "video":
+			return "material-symbols:movie-outline";
+		case "writing":
+			return "material-symbols:edit-note";
+		case "search":
+			return "material-symbols:search";
+		case "other":
+			return "material-symbols:widgets-outline";
+		default:
+			return "material-symbols:category";
+	}
+};
+
+const filterTabs = [
+	{
+		value: "all",
+		label: i18n(I18nKey.friendsFilterAll),
+		icon: "material-symbols:apps",
+		count: aiToolsData.length,
+	},
+	...categories.map((category) => ({
+		value: category,
+		label: getCategoryText(category),
+		icon: getCategoryIcon(category),
+		count: aiToolsData.filter((t) => t.category === category).length,
+	})),
+];
+
+const title = i18n(I18nKey.aiTools);
+const subtitle = i18n(I18nKey.aiToolsSubtitle);
+---
+
+<MainGridLayout title={title} description={subtitle}>
+	<script>
+		import("../scripts/right-sidebar-layout.js");
+		import { loadIconify } from "../utils/icon-loader";
+
+		loadIconify().catch((error) => {
+			console.error("Failed to load Iconify:", error);
+		});
+	</script>
+
+	<script is:inline src="/js/filter-tabs-handler.js"></script>
+
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
+		<div class="card-base z-10 px-6 sm:px-9 py-6 relative w-full">
+			<PageHeader title={title} subtitle={subtitle} />
+
+			<div class="mb-8">
+				<FilterTabs tabs={filterTabs} dataAttr="category" />
+			</div>
+
+			<div id="ai-tools-grid" class="grid gap-6 items-start">
+				{aiToolsData.map((tool) => <AIToolCard tool={tool} />)}
+			</div>
+
+			<div id="no-results" class="hidden text-center py-16">
+				<Icon
+					name="material-symbols:search-off-rounded"
+					class="text-6xl text-black/15 dark:text-white/15 mb-4"
+				/>
+				<p class="text-black/40 dark:text-white/40 text-lg">
+					{i18n(I18nKey.aiToolsNoResults)}
+				</p>
+			</div>
+		</div>
+	</div>
+</MainGridLayout>
+
+<style is:global>
+	#ai-tools-grid {
+		grid-template-columns: 1fr;
+	}
+
+	@media (min-width: 640px) {
+		#ai-tools-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	#main-grid[data-layout-mode="grid"] #ai-tools-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	@media (max-width: 639px) {
+		#main-grid[data-layout-mode="grid"] #ai-tools-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

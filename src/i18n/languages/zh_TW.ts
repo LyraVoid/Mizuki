@@ -229,6 +229,25 @@ export const zh_TW: Translation = {
 	[Key.skillsByLevel]: "按等級分布",
 	[Key.skillsByCategory]: "按分類分布",
 
+	// AI 工具（關於頁面）
+	[Key.aiTools]: "我使用的 AI 工具",
+	[Key.aiToolsSubtitle]: "目前在日常工作流程中常用的 AI 助手與服務",
+	[Key.aiToolsCategoryChat]: "對話助手",
+	[Key.aiToolsCategoryCoding]: "編碼協作",
+	[Key.aiToolsCategoryImage]: "圖像生成",
+	[Key.aiToolsCategoryAudio]: "音訊",
+	[Key.aiToolsCategoryVideo]: "影片",
+	[Key.aiToolsCategoryWriting]: "寫作 / 筆記",
+	[Key.aiToolsCategorySearch]: "搜尋 / 研究",
+	[Key.aiToolsCategoryOther]: "其他",
+	[Key.aiToolsFrequencyDaily]: "每天",
+	[Key.aiToolsFrequencyWeekly]: "每週",
+	[Key.aiToolsFrequencyOccasional]: "偶爾",
+	[Key.aiToolsFrequencyExperimental]: "嘗鮮",
+	[Key.aiToolsUsage]: "使用量",
+	[Key.aiToolsVisit]: "前往官網",
+	[Key.aiToolsNoResults]: "沒有匹配的 AI 工具",
+
 	// 時間線頁面
 	[Key.timeline]: "時間線",
 	[Key.timelineSubtitle]: "我的成長歷程和重要里程碑",
