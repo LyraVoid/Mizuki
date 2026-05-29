@@ -21,20 +21,20 @@ import { LinkPreset } from "./types/config";
 // 移除i18n导入以避免循环依赖
 
 // 定义站点语言
-const SITE_LANG = "en"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
+const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
 const SITE_TIMEZONE = 8; //设置你的网站时区 from -12 to 12 default in UTC+8
 export const siteConfig: SiteConfig = {
-	title: "Mizuki",
-	subtitle: "One demo website",
+	title: "白玖的笔记",
+	subtitle: "科技、摄影、活动记录",
 	siteURL: "https://mizuki.mysqil.com/", // 请替换为你的站点URL，以斜杠结尾
-	siteStartDate: "2025-01-01", // 站点开始运行日期，用于站点统计组件计算运行天数
+	siteStartDate: "2026-06-01", // 站点开始运行日期，用于站点统计组件计算运行天数
 
 	timeZone: SITE_TIMEZONE,
 
 	lang: SITE_LANG,
 
 	themeColor: {
-		hue: 240, // 主题色的默认色相，范围从 0 到 360。例如：红色：0，青色：200，蓝绿色：250，粉色：345
+		hue: 300, // 主题色的默认色相，范围从 0 到 360。例如：红色：0，青色：200，蓝绿色：250，粉色：345
 		fixed: false, // 对访问者隐藏主题色选择器
 	},
 
@@ -55,7 +55,7 @@ export const siteConfig: SiteConfig = {
 		// 显示模式："text-icon" 显示图标+文本，"logo" 仅显示Logo
 		mode: "text-icon",
 		// 顶栏标题文本
-		text: "MizukiUI",
+		text: "白玖的笔记",
 		// 顶栏标题图标路径，默认使用 public/assets/home/home.webp
 		icon: "assets/home/home.webp",
 		// 网站Logo图片路径
@@ -197,7 +197,7 @@ export const siteConfig: SiteConfig = {
 		desktopSidebar: true, // 电脑端右侧边栏 TOC
 		floating: true, // 悬浮 TOC 按钮
 		depth: 2, // 目录深度，1-6，1 表示只显示 h1 标题，2 表示显示 h1 和 h2 标题，依此类推
-		useJapaneseBadge: true, // 使用日语假名标记（あいうえお...）代替数字，开启后会将 1、2、3... 改为 あ、い、う...
+		useJapaneseBadge: false, // 使用日语假名标记（あいうえお...）代替数字，开启后会将 1、2、3... 改为 あ、い、う...
 	},
 	showCoverInContent: true, // 在文章内容页显示文章封面
 	generateOgImages: false, // 启用生成OpenGraph图片功能,注意开启后要渲染很长时间，不建议本地调试的时候开启
@@ -271,8 +271,9 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
+		LinkPreset.About,
 		// 支持自定义导航栏链接，支持多级菜单
-		{
+/* 		{
 			name: "Links",
 			url: "/links/",
 			icon: "material-symbols:link",
@@ -324,8 +325,8 @@ export const navBarConfig: NavBarConfig = {
 					external: false,
 				},
 			],
-		},
-		{
+		}, */
+		/* {
 			name: "About",
 			url: "/content/",
 			icon: "material-symbols:info",
@@ -341,8 +342,8 @@ export const navBarConfig: NavBarConfig = {
 					icon: "material-symbols:group",
 				},
 			],
-		},
-		{
+		}, */
+/* 		{
 			name: "Others",
 			url: "#",
 			icon: "material-symbols:more-horiz",
@@ -363,14 +364,14 @@ export const navBarConfig: NavBarConfig = {
 					icon: "material-symbols:timeline",
 				},
 			],
-		},
+		}, */
 	],
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "assets/images/avatar.webp", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
-	name: "まつざか ゆき",
-	bio: "世界は大きい、君は行かなければならない",
+	avatar: "assets/images/TENKA.JPG", // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
+	name: "白玖",
+	bio: "做高质量可替换的支持者",
 	typewriter: {
 		enable: true, // 启用个人简介打字机效果
 		speed: 80, // 打字速度（毫秒）
@@ -382,25 +383,26 @@ export const profileConfig: ProfileConfig = {
 			url: "https://space.bilibili.com/701864046",
 		},
 		{
-			name: "Gitee",
-			icon: "mdi:git",
+			name: "Weibo",
+			icon: "fa7-brands:weibo",
 			url: "https://gitee.com/matsuzakayuki",
+		},
+		{
+			name: "RedNote",
+			icon: "simple-icons:xiaohongshu",
+			url: "https://codeberg.org",
 		},
 		{
 			name: "GitHub",
 			icon: "fa7-brands:github",
 			url: "https://github.com/matsuzaka-yuki",
 		},
-		{
-			name: "Codeberg",
-			icon: "simple-icons:codeberg",
-			url: "https://codeberg.org",
-		},
-		{
+		
+		/* {
 			name: "Discord",
 			icon: "fa7-brands:discord",
 			url: "https://discord.gg/MqW6TcQtVM",
-		},
+		}, */
 	],
 };
 
@@ -486,8 +488,8 @@ export const announcementConfig: AnnouncementConfig = {
 };
 
 export const musicPlayerConfig: MusicPlayerConfig = {
-	enable: true, // 启用音乐播放器功能
-	showFloatingPlayer: true, // 显示悬浮播放器 UI
+	enable: false, // 启用音乐播放器功能
+	showFloatingPlayer: false, // 显示悬浮播放器 UI
 	floatingEntryMode: "fab", // 悬浮入口模式："default" 为独立悬浮播放器，"fab" 为集成到通用 FAB 组
 	mode: "local", // 音乐播放器模式，可选 "local" 或 "meting"
 	meting_api:
@@ -533,13 +535,13 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			// 动画延迟时间
 			animationDelay: 50,
 		},
-		{
+		/* {
 			// 组件类型：侧栏音乐组件
 			type: "music-sidebar",
 			position: "sticky",
 			class: "onload-animation",
 			animationDelay: 100,
-		},
+		}, */
 		{
 			// 组件类型：分类组件
 			type: "categories",
@@ -604,12 +606,12 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 
 	// 侧栏组件布局配置
 	components: {
-		left: ["profile", "announcement", "tags", "card-toc"],
-		right: ["site-stats", "calendar", "categories", "music-sidebar"],
+		left: ["profile", "announcement", "tags", "card-toc", "calendar"],
+		right: ["site-stats", "categories"/* , "music-sidebar" */],
 		drawer: [
 			"profile",
 			"announcement",
-			"music-sidebar",
+			/* "music-sidebar", */
 			"categories",
 			"tags",
 		],

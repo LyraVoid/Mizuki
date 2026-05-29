@@ -1,9 +1,10 @@
 ---
-title: Hello,World!
-published: 2026-06-01
+title: Markdown Extended Features
+published: 2024-05-01
+updated: 2024-11-29
 description: 'Read more about Markdown features in Mizuki'
 image: ''
-tags: [Demo]
+tags: [Demo, Example, Markdown, Mizuki]
 category: 'Examples'
 draft: false 
 ---
