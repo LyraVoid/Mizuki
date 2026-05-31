@@ -241,9 +241,9 @@ export function getDefaultFullscreenOpacity(): number {
 }
 
 export function getStoredFullscreenOpacity(): number {
-	const sw = fullscreenWallpaperConfig.overlay?.switchable;
+	const sw = fullscreenWallpaperConfig.fullscreen?.switchable;
 	const isSwitchable =
-		typeof sw === "object" ? (sw.fullscreenOpacity ?? true) : (sw ?? true);
+		typeof sw === "object" ? (sw.opacity ?? true) : (sw ?? true);
 	if (!isSwitchable) return getDefaultFullscreenOpacity();
 	const stored = localStorage.getItem("fullscreenOpacity");
 	return stored ? Number(stored) : getDefaultFullscreenOpacity();
@@ -270,9 +270,9 @@ export function getDefaultFullscreenBlur(): number {
 }
 
 export function getStoredFullscreenBlur(): number {
-	const sw = fullscreenWallpaperConfig.overlay?.switchable;
+	const sw = fullscreenWallpaperConfig.fullscreen?.switchable;
 	const isSwitchable =
-		typeof sw === "object" ? (sw.fullscreenBlur ?? true) : (sw ?? true);
+		typeof sw === "object" ? (sw.blur ?? true) : (sw ?? true);
 	if (!isSwitchable) return getDefaultFullscreenBlur();
 	const stored = localStorage.getItem("fullscreenBlur");
 	return stored ? Number(stored) : getDefaultFullscreenBlur();
