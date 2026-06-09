@@ -42,8 +42,8 @@ const { headings = [] } = Astro.props;
 <style>
 	:global(:root) {
 		--fab-group-right: 1.5rem;
-		--fab-group-bottom: 10rem;
-		--fab-group-base-bottom: 10rem;
+		--fab-group-bottom: 4rem;
+		--fab-group-base-bottom: 4rem;
 		--fab-group-gap: 0.5rem;
 		--fab-button-size: 3rem;
 		--fab-visible-count: 1;
@@ -248,7 +248,6 @@ const { headings = [] } = Astro.props;
 			const items = document.querySelectorAll(
 				".floating-control-item[data-control-key]",
 			);
-			const totalItems = items.length;
 			let hasVisibleItem = false;
 			let visibleCount = 0;
 
@@ -277,28 +276,6 @@ const { headings = [] } = Astro.props;
 				"--fab-visible-count",
 				String(Math.max(visibleCount, 1)),
 			);
-
-			if (visibleCount >= totalItems) {
-				document.documentElement.style.removeProperty(
-					"--fab-group-bottom",
-				);
-			} else {
-				const baseBottom = parseFloat(
-					getComputedStyle(document.documentElement).getPropertyValue(
-						"--fab-group-base-bottom",
-					),
-				);
-				if (!isNaN(baseBottom) && totalItems > 0) {
-					const minBottom = 1.5;
-					const ratio = visibleCount / totalItems;
-					const newBottom =
-						minBottom + (baseBottom - minBottom) * ratio;
-					document.documentElement.style.setProperty(
-						"--fab-group-bottom",
-						newBottom + "rem",
-					);
-				}
-			}
 		}
 
 		function observeFloatingControlButton(id) {
