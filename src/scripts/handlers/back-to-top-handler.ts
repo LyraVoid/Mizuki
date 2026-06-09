@@ -21,6 +21,10 @@ export class BackToTopHandler {
 	private navbar: HTMLElement | null = null;
 	private bannerEnabled: boolean;
 	private scrollHandler: () => void;
+	private resizeHandler: () => void;
+	private rafId: number | null = null;
+	private isInitialized = false;
+	private backToTopVisible = false;
 
 	constructor(bannerEnabled: boolean) {
 		this.bannerEnabled = bannerEnabled;
@@ -28,6 +32,7 @@ export class BackToTopHandler {
 			this.handleScroll.bind(this),
 			SCROLL_CONFIG.throttleInterval,
 		);
+		this.resizeHandler = this.handleResize.bind(this);
 	}
 
 	/**
@@ -35,7 +40,17 @@ export class BackToTopHandler {
 	 */
 	init(): void {
 		this.cacheElements();
+
+		if (this.isInitialized) {
+			this.handleResize();
+			this.handleScroll();
+			return;
+		}
+
 		this.bindEvents();
+		this.isInitialized = true;
+		this.handleResize();
+		this.handleScroll();
 	}
 
 	/**
@@ -49,6 +64,9 @@ export class BackToTopHandler {
 		this.navbar = document.getElementById(
 			SWUP_SELECTORS.navbarWrapper.slice(1),
 		);
+		this.backToTopVisible = Boolean(
+			this.backToTopBtn && !this.backToTopBtn.classList.contains("hide"),
+		);
 	}
 
 	/**
@@ -59,7 +77,7 @@ export class BackToTopHandler {
 		window.addEventListener("scroll", this.scrollHandler, {
 			passive: true,
 		});
-		window.addEventListener("resize", this.handleResize.bind(this), {
+		window.addEventListener("resize", this.resizeHandler, {
 			passive: true,
 		});
 	}
@@ -75,11 +93,16 @@ export class BackToTopHandler {
 		const showBackToTopThreshold = this.calculateShowThreshold(scrollTop);
 
 		// 批量处理 DOM 操作
-		requestAnimationFrame(() => {
+		if (this.rafId !== null) {
+			cancelAnimationFrame(this.rafId);
+		}
+
+		this.rafId = requestAnimationFrame(() => {
 			this.updateBackToTopButton(scrollTop, showBackToTopThreshold);
 			this.updateTOCVisibility(scrollTop, bannerHeight);
 			this.updateNavbarVisibility(scrollTop);
 			this.updatePageOverlayScroll(scrollTop);
+			this.rafId = null;
 		});
 	}
 
@@ -111,11 +134,13 @@ export class BackToTopHandler {
 			return;
 		}
 
-		if (scrollTop > threshold) {
-			this.backToTopBtn.classList.remove("hide");
-		} else {
-			this.backToTopBtn.classList.add("hide");
+		const shouldBeVisible = scrollTop > threshold;
+		if (shouldBeVisible === this.backToTopVisible) {
+			return;
 		}
+
+		this.backToTopVisible = shouldBeVisible;
+		this.backToTopBtn.classList.toggle("hide", !shouldBeVisible);
 	}
 
 	/**
@@ -204,11 +229,21 @@ export class BackToTopHandler {
 	 * 销毁处理器
 	 */
 	destroy(): void {
-		window.removeEventListener("scroll", this.scrollHandler);
-		window.removeEventListener("resize", this.handleResize.bind(this));
+		if (this.isInitialized) {
+			window.removeEventListener("scroll", this.scrollHandler);
+			window.removeEventListener("resize", this.resizeHandler);
+		}
+
+		if (this.rafId !== null) {
+			cancelAnimationFrame(this.rafId);
+			this.rafId = null;
+		}
+
 		this.backToTopBtn = null;
 		this.toc = null;
 		this.navbar = null;
+		this.isInitialized = false;
+		this.backToTopVisible = false;
 	}
 
 	/**
