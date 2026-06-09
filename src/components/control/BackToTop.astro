@@ -19,6 +19,8 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 		window.BackToTopManager = class BackToTopManager {
 			constructor() {
 				this.button = document.getElementById("back-to-top-btn");
+				this.isVisible = false;
+				this.rafId = null;
 				this.init();
 			}
 
@@ -31,15 +33,28 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 
 			setupScrollListener() {
 				const updateVisibility = () => {
-					const scrollTop =
-						window.pageYOffset ||
-						document.documentElement.scrollTop;
-
-					if (scrollTop > 200) {
-						this.button.classList.remove("hide");
-					} else {
-						this.button.classList.add("hide");
+					if (this.rafId !== null) {
+						cancelAnimationFrame(this.rafId);
 					}
+
+					this.rafId = requestAnimationFrame(() => {
+						const scrollTop =
+							window.pageYOffset ||
+							document.documentElement.scrollTop;
+
+						const shouldBeVisible = scrollTop > 200;
+
+						if (shouldBeVisible !== this.isVisible) {
+							this.isVisible = shouldBeVisible;
+							if (shouldBeVisible) {
+								this.button.classList.remove("hide");
+							} else {
+								this.button.classList.add("hide");
+							}
+						}
+
+						this.rafId = null;
+					});
 				};
 
 				window.addEventListener("scroll", updateVisibility, {
@@ -48,10 +63,6 @@ import FloatingButton from "@components/common/FloatingButton.astro";
 			}
 		};
 	}
-
-	document.addEventListener("DOMContentLoaded", () => {
-		new window.BackToTopManager();
-	});
 
 	if (document.readyState === "loading") {
 		document.addEventListener("DOMContentLoaded", () => {
