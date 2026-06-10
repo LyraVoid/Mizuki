@@ -894,13 +894,13 @@ mkdir -p src/components/ComplexComponent/utils
 ```typescript
 // 提取状态管理和业务逻辑
 export function useFeature() {
-  const state = $state(initialValue)
+  const actualState = $state(initialValue)
 
   const action = () => {
     // 逻辑
   }
 
-  return { state, action }
+  return { actualState, action }
 }
 ```
 

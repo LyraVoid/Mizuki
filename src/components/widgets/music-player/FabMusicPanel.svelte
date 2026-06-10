@@ -10,13 +10,13 @@ import SidebarPlaylist from "../music-sidebar/components/SidebarPlaylist.svelte"
 import SidebarProgress from "../music-sidebar/components/SidebarProgress.svelte";
 import SidebarTrackInfo from "../music-sidebar/components/SidebarTrackInfo.svelte";
 
-let state: MusicPlayerState = $state(musicPlayerStore.getState());
+let playerState: MusicPlayerState = $state(musicPlayerStore.getState());
 let showPlaylist = $state(false);
 
 function handleStateUpdate(event: Event) {
 	const custom = event as CustomEvent<MusicPlayerState>;
 	if (custom.detail) {
-		state = custom.detail;
+		playerState = custom.detail;
 	}
 }
 
@@ -72,31 +72,31 @@ function setVolume(volume: number) {
 >
 	<div class="fab-music-header">
 		<SidebarCover
-			currentSong={state.currentSong}
-			isPlaying={state.isPlaying}
-			isLoading={state.isLoading}
+			currentSong={playerState.currentSong}
+			isPlaying={playerState.isPlaying}
+			isLoading={playerState.isLoading}
 		/>
 		<SidebarTrackInfo
-			currentSong={state.currentSong}
-			currentTime={state.currentTime}
-			duration={state.duration}
-			volume={state.volume}
-			isMuted={state.isMuted}
+			currentSong={playerState.currentSong}
+			currentTime={playerState.currentTime}
+			duration={playerState.duration}
+			volume={playerState.volume}
+			isMuted={playerState.isMuted}
 			onToggleMute={toggleMute}
 			onSetVolume={setVolume}
 		/>
 	</div>
 
 	<SidebarProgress
-		currentTime={state.currentTime}
-		duration={state.duration}
+		currentTime={playerState.currentTime}
+		duration={playerState.duration}
 		onSeek={seek}
 	/>
 
 	<SidebarControls
-		isPlaying={state.isPlaying}
-		isShuffled={state.isShuffled}
-		repeatMode={state.isRepeating}
+		isPlaying={playerState.isPlaying}
+		isShuffled={playerState.isShuffled}
+		repeatMode={playerState.isRepeating}
 		onToggleMode={toggleMode}
 		onPrev={prev}
 		onNext={next}
@@ -105,9 +105,9 @@ function setVolume(volume: number) {
 	/>
 
 	<SidebarPlaylist
-		playlist={state.playlist}
-		currentIndex={state.currentIndex}
-		isPlaying={state.isPlaying}
+		playlist={playerState.playlist}
+		currentIndex={playerState.currentIndex}
+		isPlaying={playerState.isPlaying}
 		show={showPlaylist}
 		onClose={togglePlaylistView}
 		onPlaySong={playIndex}
