@@ -28,17 +28,17 @@ const t = (key: string) => i18n(key as I18nKey);
 		import("../../../scripts/right-sidebar-layout.js");
 	</script>
 	<div class="onload-animation">
-		<div class="card-base rounded-[var(--radius-large)] p-8 mb-6">
+		<div class="card-base rounded-(--radius-large) p-8 mb-6">
 			<div class="text-center">
 				<div
-					class="inline-flex items-center justify-center w-16 h-16 bg-[var(--primary)] rounded-2xl mb-4"
+					class="inline-flex items-center justify-center w-16 h-16 bg-(--primary) rounded-2xl mb-4"
 				>
 					<Icon
 						name="material-symbols:rss-feed"
 						class="text-white text-3xl"
 					/>
 				</div>
-				<h1 class="text-3xl font-bold text-[var(--primary)] mb-3">
+				<h1 class="text-3xl font-bold text-(--primary) mb-3">
 					{t(`${prefix}`)}
 				</h1>
 				<p class="text-75 max-w-2xl mx-auto">
@@ -47,13 +47,13 @@ const t = (key: string) => i18n(key as I18nKey);
 			</div>
 		</div>
 
-		<div class="card-base rounded-[var(--radius-large)] p-6 mb-6">
+		<div class="card-base rounded-(--radius-large) p-6 mb-6">
 			<div
 				class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
 			>
 				<div class="flex items-center">
 					<div
-						class="w-12 h-12 bg-[var(--primary)] rounded-xl flex items-center justify-center mr-4"
+						class="w-12 h-12 bg-(--primary) rounded-xl flex items-center justify-center mr-4"
 					>
 						<Icon
 							name="material-symbols:link"
@@ -71,13 +71,13 @@ const t = (key: string) => i18n(key as I18nKey);
 				</div>
 				<div class="flex flex-col sm:flex-row gap-3">
 					<code
-						class="bg-[var(--card-bg)] px-3 py-2 rounded-lg text-sm font-mono text-75 border border-[var(--line-divider)] break-all"
+						class="bg-(--card-bg) px-3 py-2 rounded-lg text-sm font-mono text-75 border border-(--line-divider) break-all"
 					>
 						{Astro.site}{feedUrl}
 					</code>
 					<button
 						id={`copy-${prefix}-btn`}
-						class="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:opacity-80 transition-all duration-200 font-medium text-sm whitespace-nowrap"
+						class="px-4 py-2 bg-(--primary) text-white rounded-lg hover:opacity-80 transition-all duration-200 font-medium text-sm whitespace-nowrap"
 						data-url={`${Astro.site}${feedUrl}`}
 					>
 						{t(`${prefix}CopyLink`)}
@@ -86,19 +86,19 @@ const t = (key: string) => i18n(key as I18nKey);
 			</div>
 		</div>
 
-		<div class="card-base rounded-[var(--radius-large)] p-6 mb-6">
+		<div class="card-base rounded-(--radius-large) p-6 mb-6">
 			<h2 class="text-xl font-bold text-90 mb-4 flex items-center">
 				<Icon
 					name="material-symbols:article"
-					class="mr-2 text-[var(--primary)]"
+					class="mr-2 text-(--primary)"
 				/>
 				{t(`${prefix}LatestPosts`)}
 			</h2>
 			<div class="space-y-4">
 				{
 					recentPosts.map((post) => (
-						<article class="bg-[var(--card-bg)] rounded-xl p-4 border border-[var(--line-divider)] hover:border-[var(--primary)] transition-all duration-300">
-							<h3 class="text-lg font-semibold text-90 mb-2 hover:text-[var(--primary)] transition-colors">
+						<article class="bg-(--card-bg) rounded-xl p-4 border border-(--line-divider) hover:border-(--primary) transition-all duration-300">
+							<h3 class="text-lg font-semibold text-90 mb-2 hover:text-(--primary) transition-colors">
 								<a
 									href={`/posts/${post.id}/`}
 									class="hover:underline"
@@ -125,11 +125,11 @@ const t = (key: string) => i18n(key as I18nKey);
 			</div>
 		</div>
 
-		<div class="card-base rounded-[var(--radius-large)] p-6">
+		<div class="card-base rounded-(--radius-large) p-6">
 			<h2 class="text-xl font-bold text-90 mb-4 flex items-center">
 				<Icon
 					name="material-symbols:help-outline"
-					class="mr-2 text-[var(--primary)]"
+					class="mr-2 text-(--primary)"
 				/>
 				{
 					t(

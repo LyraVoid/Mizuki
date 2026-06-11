@@ -76,7 +76,7 @@ const getPageUrl = (p: number) => {
 		href={page.url.prev || ""}
 		aria-label="上一页"
 		class:list={[
-			"btn-card overflow-hidden rounded-lg text-[var(--primary)] w-11 h-11",
+			"btn-card overflow-hidden rounded-lg text-(--primary) w-11 h-11",
 			{ disabled: page.url.prev == undefined },
 		]}
 	>
@@ -86,7 +86,7 @@ const getPageUrl = (p: number) => {
 		/>
 	</a>
 	<div
-		class="bg-[var(--card-bg)] flex flex-row rounded-lg items-center text-neutral-700 dark:text-neutral-300 font-bold"
+		class="bg-(--card-bg) flex flex-row rounded-lg items-center text-neutral-700 dark:text-neutral-300 font-bold"
 	>
 		{
 			pages.map((p) => {
@@ -98,7 +98,7 @@ const getPageUrl = (p: number) => {
 				if (p == page.currentPage) {
 					return (
 						<div
-							class="h-11 w-11 rounded-lg bg-[var(--primary)] flex items-center justify-center
+							class="h-11 w-11 rounded-lg bg-(--primary) flex items-center justify-center
                     font-bold text-white dark:text-black/70"
 						>
 							{p}
@@ -121,7 +121,7 @@ const getPageUrl = (p: number) => {
 		href={page.url.next || ""}
 		aria-label="下一页"
 		class:list={[
-			"btn-card overflow-hidden rounded-lg text-[var(--primary)] w-11 h-11",
+			"btn-card overflow-hidden rounded-lg text-(--primary) w-11 h-11",
 			{ disabled: page.url.next == undefined },
 		]}
 	>

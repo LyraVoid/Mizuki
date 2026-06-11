@@ -231,7 +231,7 @@ const getActivePadding = (level: number): string => {
 	onclick={togglePanel}
 	aria-label="Table of Contents"
 	id="mobile-toc-switch"
-	class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 lg:!hidden theme-switch-btn"
+	class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 lg:hidden! theme-switch-btn"
 >
 	<Icon icon="material-symbols:format-list-bulleted" class="text-[1.25rem]" />
 </button>
@@ -241,7 +241,7 @@ const getActivePadding = (level: number): string => {
 	class="float-panel float-panel-closed mobile-toc-panel absolute md:w-[20rem] w-[calc(100vw-2rem)] top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-4"
 >
 	<div class="flex items-center justify-between mb-4">
-		<h3 class="text-lg font-bold text-[var(--primary)]">
+		<h3 class="text-lg font-bold text-(--primary)">
 			{isHomePage
 				? i18n(I18nKey.postList)
 				: i18n(I18nKey.tableOfContents)}

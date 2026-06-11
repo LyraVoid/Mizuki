@@ -1,5 +1,5 @@
 ---
-import type { Device } from "../../../data/devices";
+import type { Device } from "@/data/devices";
 
 interface Props {
 	device: Device;
@@ -14,16 +14,16 @@ const { device, index, viewDetailsText } = Astro.props;
 	href={device.link}
 	target="_blank"
 	rel="noopener noreferrer"
-	class="device-card group relative overflow-hidden rounded-xl border border-[var(--line-divider)] bg-[var(--card-bg)] transition-all duration-300 hover:border-[var(--primary)]/50 hover:shadow-md hover:shadow-black/5 dark:hover:shadow-white/5 hover:scale-[1.02] hover:-translate-y-0.5 block cursor-pointer"
+	class="device-card group relative overflow-hidden rounded-xl border border-(--line-divider) bg-(--card-bg) transition-all duration-300 hover:border-(--primary)/50 hover:shadow-md hover:shadow-black/5 dark:hover:shadow-white/5 hover:scale-[1.02] hover:-translate-y-0.5 block cursor-pointer"
 	style={`animation-delay: ${index * 100}ms`}
 >
 	<!-- 设备图片区域 -->
 	<div class="relative p-6 pb-0">
 		<div
-			class="flex justify-center items-center h-48 bg-gradient-to-br from-[var(--card-bg)] to-[var(--btn-regular-bg)] rounded-lg overflow-hidden relative"
+			class="flex justify-center items-center h-48 bg-linear-to-br from-(--card-bg) to-(--btn-regular-bg) rounded-lg overflow-hidden relative"
 		>
 			<div
-				class="absolute inset-0 bg-[var(--primary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+				class="absolute inset-0 bg-(--primary)/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
 			>
 			</div>
 			<img
@@ -39,12 +39,12 @@ const { device, index, viewDetailsText } = Astro.props;
 	<div class="p-6 pt-4 relative z-10">
 		<div class="flex items-start justify-between mb-3">
 			<h3
-				class="text-lg font-bold text-black/90 dark:text-white/90 group-hover:text-[var(--primary)] transition-colors duration-300"
+				class="text-lg font-bold text-black/90 dark:text-white/90 group-hover:text-(--primary) transition-colors duration-300"
 			>
 				{device.name}
 			</h3>
 			<div
-				class="p-1.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+				class="p-1.5 rounded-full bg-(--primary)/10 text-(--primary) opacity-0 group-hover:opacity-100 transition-opacity duration-300"
 			>
 				<svg
 					class="w-5 h-5"
@@ -65,7 +65,7 @@ const { device, index, viewDetailsText } = Astro.props;
 
 		<div class="mb-4">
 			<div
-				class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--btn-regular-bg)] text-black/70 dark:text-white/70 text-sm mb-3"
+				class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-(--btn-regular-bg) text-black/70 dark:text-white/70 text-sm mb-3"
 			>
 				<svg
 					class="w-4 h-4"
@@ -98,13 +98,13 @@ const { device, index, viewDetailsText } = Astro.props;
 
 		<!-- 查看详情按钮 -->
 		<div
-			class="flex items-center justify-between pt-3 border-t border-[var(--line-divider)] border-dashed opacity-0 group-hover:opacity-100 transition-all duration-300"
+			class="flex items-center justify-between pt-3 border-t border-(--line-divider) border-dashed opacity-0 group-hover:opacity-100 transition-all duration-300"
 		>
-			<span class="text-sm font-medium text-[var(--primary)]"
+			<span class="text-sm font-medium text-(--primary)"
 				>{viewDetailsText}</span
 			>
 			<svg
-				class="w-5 h-5 text-[var(--primary)]"
+				class="w-5 h-5 text-(--primary)"
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
 				viewBox="0 0 24 24"

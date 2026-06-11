@@ -99,7 +99,7 @@ const hasLinks = item.links && item.links.length > 0;
 		<div class="p-5 sm:p-6">
 			<div class="flex items-start gap-3 mb-3">
 				<div
-					class="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center bg-[var(--btn-regular-bg)]"
+					class="w-10 h-10 shrink-0 rounded-lg flex items-center justify-center bg-(--btn-regular-bg)"
 				>
 					<Icon
 						name={icon}
@@ -111,7 +111,7 @@ const hasLinks = item.links && item.links.length > 0;
 				<div class="flex-1 min-w-0">
 					<div class="flex items-center gap-2 mb-0.5">
 						<h3
-							class="text-lg font-bold text-black/90 dark:text-white/90 group-hover:text-[var(--primary)] transition-colors duration-200"
+							class="text-lg font-bold text-black/90 dark:text-white/90 group-hover:text-(--primary) transition-colors duration-200"
 						>
 							{item.title}
 						</h3>
@@ -119,7 +119,7 @@ const hasLinks = item.links && item.links.length > 0;
 							item.featured && (
 								<Icon
 									name="material-symbols:star-rounded"
-									class="text-base w-4 h-4 text-[var(--primary)] flex-shrink-0"
+									class="text-base w-4 h-4 text-(--primary) shrink-0"
 								/>
 							)
 						}
@@ -134,7 +134,7 @@ const hasLinks = item.links && item.links.length > 0;
 					}
 				</div>
 
-				<div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
+				<div class="flex items-center gap-1.5 shrink-0 ml-2">
 					{
 						isCurrent && (
 							<span class="px-2 py-0.5 text-xs rounded-md bg-green-500/10 text-green-600 dark:text-green-400 font-medium">
@@ -143,7 +143,7 @@ const hasLinks = item.links && item.links.length > 0;
 						)
 					}
 					<span
-						class="px-2 py-0.5 text-xs rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-medium"
+						class="px-2 py-0.5 text-xs rounded-md bg-(--primary)/10 text-(--primary) font-medium"
 					>
 						{typeText}
 					</span>
@@ -160,7 +160,7 @@ const hasLinks = item.links && item.links.length > 0;
 				item.skills && item.skills.length > 0 && (
 					<div class="flex flex-wrap gap-2 mb-4">
 						{item.skills.map((skill) => (
-							<span class="px-2 py-1 text-xs rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-medium">
+							<span class="px-2 py-1 text-xs rounded-md bg-(--primary)/10 text-(--primary) font-medium">
 								{skill}
 							</span>
 						))}
@@ -179,7 +179,7 @@ const hasLinks = item.links && item.links.length > 0;
 								<li class="text-sm text-black/70 dark:text-white/70 flex items-start gap-2">
 									<Icon
 										name="material-symbols:check-circle"
-										class="text-base w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"
+										class="text-base w-4 h-4 text-green-500 shrink-0 mt-0.5"
 									/>
 									<span>{achievement}</span>
 								</li>
@@ -242,7 +242,7 @@ const hasLinks = item.links && item.links.length > 0;
 		</div>
 
 		<div
-			class="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl"
+			class="absolute inset-0 bg-linear-to-br from-(--primary)/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl"
 		>
 		</div>
 	</div>

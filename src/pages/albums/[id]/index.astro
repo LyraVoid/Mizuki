@@ -69,13 +69,13 @@ if (isEncrypted) {
 	<div class="w-full rounded-(--radius-large) overflow-hidden relative">
 		{
 			album.cover ? (
-				<div class="relative w-full aspect-[3/1] min-h-[200px] max-h-[360px]">
+				<div class="relative w-full aspect-3/1 min-h-50 max-h-90">
 					<img
 						src={album.cover}
 						alt={album.title}
 						class="w-full h-full object-cover"
 					/>
-					<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+					<div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
 
 					{/* Back button */}
 					<a

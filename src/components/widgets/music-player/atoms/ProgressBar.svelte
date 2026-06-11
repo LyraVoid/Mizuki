@@ -13,7 +13,7 @@ const { currentTime, duration, onclick, onkeydown }: Props = $props();
 </script>
 
 <div
-	class="progress-bar flex-1 h-2 bg-[var(--btn-regular-bg)] rounded-full cursor-pointer"
+	class="progress-bar flex-1 h-2 bg-(--btn-regular-bg) rounded-full cursor-pointer"
 	{onclick}
 	{onkeydown}
 	role="slider"
@@ -24,7 +24,7 @@ const { currentTime, duration, onclick, onkeydown }: Props = $props();
 	aria-valuenow={duration > 0 ? (currentTime / duration) * 100 : 0}
 >
 	<div
-		class="h-full bg-[var(--primary)] rounded-full transition-all duration-100"
+		class="h-full bg-(--primary) rounded-full transition-all duration-100"
 		style="width: {duration > 0 ? (currentTime / duration) * 100 : 0}%"
 	></div>
 </div>

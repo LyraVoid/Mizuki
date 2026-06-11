@@ -16,3 +16,8 @@ export interface Post {
 		permalink?: string;
 	};
 }
+
+export interface Group {
+	year: number;
+	posts: Post[];
+}

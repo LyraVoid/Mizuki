@@ -5508,8 +5508,8 @@ packages:
     peerDependencies:
       swup: ^4.6.0
 
-  swup@4.9.0:
-    resolution: {integrity: sha512-XRM9gfvIAXMh/FxeQLJXMAqmKv3jmr4jCm0Efpv1qz5RRII714EqvpPACS2jZFp58RMGbAS/+5R5HxPVy9g0hw==}
+  swup@4.9.1:
+    resolution: {integrity: sha512-cDf/RZ2XUP+PUjOoAb3p6MNjcRE4z2bZim0NoPhsRZgO0PsHH2lFgl7r5TpyyRwMhcj7ZFGhscKLpNXW9I6Q2Q==}
 
   tailwindcss@4.3.0:
     resolution: {integrity: sha512-y6nxMGB1nMW9R6k96e5gdIFzcfL/gTJRNaqGes1YvkLnPVXzWgbqFF2yLC0T8G774n24cx3Pe8XrKoniCOAH+Q==}
@@ -7852,78 +7852,78 @@ snapshots:
       vite: 7.3.5(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.32.0)(stylus@0.64.0)(terser@5.48.0)(yaml@2.9.0)
       vitefu: 1.1.3(vite@7.3.5(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.32.0)(stylus@0.64.0)(terser@5.48.0)(yaml@2.9.0))
 
-  '@swup/a11y-plugin@5.1.0(swup@4.9.0)':
+  '@swup/a11y-plugin@5.1.0(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 4.0.0
       focus-options-polyfill: 1.6.0
-      swup: 4.9.0
+      swup: 4.9.1
 
   '@swup/astro@1.8.0':
     dependencies:
-      '@swup/a11y-plugin': 5.1.0(swup@4.9.0)
-      '@swup/body-class-plugin': 3.3.0(swup@4.9.0)
-      '@swup/debug-plugin': 4.1.0(swup@4.9.0)
-      '@swup/fade-theme': 2.0.2(swup@4.9.0)
-      '@swup/forms-plugin': 3.6.0(swup@4.9.0)
-      '@swup/fragment-plugin': 1.3.1(swup@4.9.0)
-      '@swup/head-plugin': 2.3.1(swup@4.9.0)
-      '@swup/overlay-theme': 2.0.2(swup@4.9.0)
-      '@swup/parallel-plugin': 0.4.0(swup@4.9.0)
-      '@swup/preload-plugin': 3.2.11(swup@4.9.0)
-      '@swup/progress-plugin': 3.2.0(swup@4.9.0)
-      '@swup/route-name-plugin': 4.1.0(swup@4.9.0)
-      '@swup/scripts-plugin': 2.1.0(swup@4.9.0)
-      '@swup/scroll-plugin': 3.3.2(swup@4.9.0)
-      '@swup/slide-theme': 2.0.2(swup@4.9.0)
-      swup: 4.9.0
-      swup-morph-plugin: 1.3.0(swup@4.9.0)
+      '@swup/a11y-plugin': 5.1.0(swup@4.9.1)
+      '@swup/body-class-plugin': 3.3.0(swup@4.9.1)
+      '@swup/debug-plugin': 4.1.0(swup@4.9.1)
+      '@swup/fade-theme': 2.0.2(swup@4.9.1)
+      '@swup/forms-plugin': 3.6.0(swup@4.9.1)
+      '@swup/fragment-plugin': 1.3.1(swup@4.9.1)
+      '@swup/head-plugin': 2.3.1(swup@4.9.1)
+      '@swup/overlay-theme': 2.0.2(swup@4.9.1)
+      '@swup/parallel-plugin': 0.4.0(swup@4.9.1)
+      '@swup/preload-plugin': 3.2.11(swup@4.9.1)
+      '@swup/progress-plugin': 3.2.0(swup@4.9.1)
+      '@swup/route-name-plugin': 4.1.0(swup@4.9.1)
+      '@swup/scripts-plugin': 2.1.0(swup@4.9.1)
+      '@swup/scroll-plugin': 3.3.2(swup@4.9.1)
+      '@swup/slide-theme': 2.0.2(swup@4.9.1)
+      swup: 4.9.1
+      swup-morph-plugin: 1.3.0(swup@4.9.1)
     transitivePeerDependencies:
       - '@types/babel__core'
       - rolldown
       - supports-color
       - ts-node
 
-  '@swup/body-class-plugin@3.3.0(swup@4.9.0)':
+  '@swup/body-class-plugin@3.3.0(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 4.0.0
-      swup: 4.9.0
+      swup: 4.9.1
 
   '@swup/browserslist-config@1.0.1': {}
 
-  '@swup/debug-plugin@4.1.0(swup@4.9.0)':
+  '@swup/debug-plugin@4.1.0(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 4.0.0
-      swup: 4.9.0
+      swup: 4.9.1
 
-  '@swup/fade-theme@2.0.2(swup@4.9.0)':
+  '@swup/fade-theme@2.0.2(swup@4.9.1)':
     dependencies:
-      '@swup/theme': 2.1.0(swup@4.9.0)
-      swup: 4.9.0
+      '@swup/theme': 2.1.0(swup@4.9.1)
+      swup: 4.9.1
 
-  '@swup/forms-plugin@3.6.0(swup@4.9.0)':
-    dependencies:
-      '@swup/plugin': 4.0.0
-      swup: 4.9.0
-
-  '@swup/fragment-plugin@1.3.1(swup@4.9.0)':
+  '@swup/forms-plugin@3.6.0(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 4.0.0
-      swup: 4.9.0
+      swup: 4.9.1
 
-  '@swup/head-plugin@2.3.1(swup@4.9.0)':
+  '@swup/fragment-plugin@1.3.1(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 4.0.0
-      swup: 4.9.0
+      swup: 4.9.1
 
-  '@swup/overlay-theme@2.0.2(swup@4.9.0)':
+  '@swup/head-plugin@2.3.1(swup@4.9.1)':
     dependencies:
-      '@swup/theme': 2.1.0(swup@4.9.0)
-      swup: 4.9.0
+      '@swup/plugin': 4.0.0
+      swup: 4.9.1
 
-  '@swup/parallel-plugin@0.4.0(swup@4.9.0)':
+  '@swup/overlay-theme@2.0.2(swup@4.9.1)':
+    dependencies:
+      '@swup/theme': 2.1.0(swup@4.9.1)
+      swup: 4.9.1
+
+  '@swup/parallel-plugin@0.4.0(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 3.0.1
-      swup: 4.9.0
+      swup: 4.9.1
     transitivePeerDependencies:
       - '@types/babel__core'
       - rolldown
@@ -7939,7 +7939,7 @@ snapshots:
       prettier: 2.8.8
       shelljs: 0.8.5
       shelljs-live: 0.0.5(shelljs@0.8.5)
-      swup: 4.9.0
+      swup: 4.9.1
     transitivePeerDependencies:
       - '@types/babel__core'
       - rolldown
@@ -7948,50 +7948,50 @@ snapshots:
 
   '@swup/plugin@4.0.0':
     dependencies:
-      swup: 4.9.0
+      swup: 4.9.1
 
-  '@swup/preload-plugin@3.2.11(swup@4.9.0)':
+  '@swup/preload-plugin@3.2.11(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 4.0.0
-      swup: 4.9.0
+      swup: 4.9.1
 
   '@swup/prettier-config@1.1.0': {}
 
-  '@swup/progress-plugin@3.2.0(swup@4.9.0)':
+  '@swup/progress-plugin@3.2.0(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 4.0.0
-      swup: 4.9.0
+      swup: 4.9.1
 
-  '@swup/route-name-plugin@4.1.0(swup@4.9.0)':
+  '@swup/route-name-plugin@4.1.0(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 3.0.1
-      swup: 4.9.0
+      swup: 4.9.1
     transitivePeerDependencies:
       - '@types/babel__core'
       - rolldown
       - supports-color
       - ts-node
 
-  '@swup/scripts-plugin@2.1.0(swup@4.9.0)':
+  '@swup/scripts-plugin@2.1.0(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 4.0.0
-      swup: 4.9.0
+      swup: 4.9.1
 
-  '@swup/scroll-plugin@3.3.2(swup@4.9.0)':
+  '@swup/scroll-plugin@3.3.2(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 4.0.0
       scrl: 2.0.0
-      swup: 4.9.0
+      swup: 4.9.1
 
-  '@swup/slide-theme@2.0.2(swup@4.9.0)':
+  '@swup/slide-theme@2.0.2(swup@4.9.1)':
     dependencies:
-      '@swup/theme': 2.1.0(swup@4.9.0)
-      swup: 4.9.0
+      '@swup/theme': 2.1.0(swup@4.9.1)
+      swup: 4.9.1
 
-  '@swup/theme@2.1.0(swup@4.9.0)':
+  '@swup/theme@2.1.0(swup@4.9.1)':
     dependencies:
       '@swup/plugin': 4.0.0
-      swup: 4.9.0
+      swup: 4.9.1
 
   '@tailwindcss/node@4.3.0':
     dependencies:
@@ -12517,13 +12517,13 @@ snapshots:
       picocolors: 1.1.1
       sax: 1.6.0
 
-  swup-morph-plugin@1.3.0(swup@4.9.0):
+  swup-morph-plugin@1.3.0(swup@4.9.1):
     dependencies:
       '@swup/plugin': 4.0.0
       morphdom: 2.7.8
-      swup: 4.9.0
+      swup: 4.9.1
 
-  swup@4.9.0:
+  swup@4.9.1:
     dependencies:
       delegate-it: 6.4.0
       path-to-regexp: 6.3.0

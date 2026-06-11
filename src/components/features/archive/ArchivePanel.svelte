@@ -2,30 +2,7 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { onMount } from "svelte";
-
-interface Post {
-	id: string;
-	url?: string; // 预计算的文章 URL
-	data: {
-		title: string;
-		tags: string[];
-		category?: string;
-		published: Date;
-		alias?: string;
-		permalink?: string; // 自定义固定链接
-	};
-}
-
-interface Group {
-	year: number;
-	posts: Post[];
-}
-
-interface ArchivePanelProps {
-	tags?: string[];
-	categories?: string[];
-	sortedPosts?: Post[];
-}
+import { ArchivePanelProps, Post, Group } from "./types";
 
 let {
 	tags = $bindable([]),
@@ -102,7 +79,7 @@ onMount(async () => {
 <div class="card-base px-8 py-6">
 	{#each groups as group (group.year)}
 		<div>
-			<div class="flex flex-row w-full items-center h-[3.75rem]">
+			<div class="flex flex-row w-full items-center h-15">
 				<div
 					class="w-[15%] md:w-[10%] transition text-2xl font-bold text-right text-75"
 				>

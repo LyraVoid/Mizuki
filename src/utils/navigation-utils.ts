@@ -96,7 +96,7 @@ export function waitForSwup(timeout = 5000): Promise<boolean> {
 			return;
 		}
 
-		let timeoutId: NodeJS.Timeout;
+		let timeoutId: ReturnType<typeof setTimeout>;
 
 		const checkSwup = () => {
 			if (isSwupReady()) {

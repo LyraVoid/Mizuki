@@ -40,7 +40,7 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 	</script>
 
 	<div
-		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+		class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
 	>
 		<div class="card-base z-10 px-9 py-6 relative w-full">
 			<PageHeader
@@ -57,10 +57,10 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 							type="text"
 							id="friend-search"
 							placeholder={i18n(I18nKey.friendsSearchPlaceholder)}
-							class="w-full px-4 py-2 pl-10 rounded-lg bg-[var(--btn-regular-bg)]
+							class="w-full px-4 py-2 pl-10 rounded-lg bg-(--btn-regular-bg)
 									text-black/90 dark:text-white/90
 									border border-black/10 dark:border-white/10
-									focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50
+									focus:outline-none focus:ring-2 focus:ring-(--primary)/50
 									transition-all duration-200"
 						/>
 						<svg

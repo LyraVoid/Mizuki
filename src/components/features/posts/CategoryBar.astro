@@ -21,7 +21,7 @@ const archiveUrl = url("/archive/");
 	<div class="category-bar-inner flex gap-2">
 		<a
 			href={homeUrl}
-			class="category-pill text-sm px-2 py-1 rounded-lg flex-shrink-0
+			class="category-pill text-sm px-2 py-1 rounded-lg shrink-0
 				   transition-colors duration-200 flex items-center justify-center"
 			data-category-name=""
 			aria-label={i18n(I18nKey.home)}
@@ -30,14 +30,14 @@ const archiveUrl = url("/archive/");
 		</a>
 		<a
 			href={archiveUrl}
-			class="category-pill text-sm px-3 py-1 rounded-lg whitespace-nowrap flex-shrink-0
+			class="category-pill text-sm px-3 py-1 rounded-lg whitespace-nowrap shrink-0
 				   transition-colors duration-200 flex items-center justify-center"
 			data-category-name="__archive__"
 		>
 			{i18n(I18nKey.archive)}
 			<span class="text-xs opacity-60 ml-1">{totalPosts}</span>
 		</a>
-		<div class="category-divider flex-shrink-0"></div>
+		<div class="category-divider shrink-0"></div>
 		<div class="scroll-area relative">
 			<div class="scroll-fade scroll-fade-left" aria-hidden="true"></div>
 			<div class="category-scroll flex gap-2 overflow-x-auto">

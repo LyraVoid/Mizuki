@@ -125,7 +125,7 @@ const jsonLd = {
 		import("../scripts/right-sidebar-layout.js");
 	</script>
 	<div
-		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4"
+		class="flex w-full rounded-(--radius-large) overflow-hidden relative mb-4"
 	>
 		<div
 			id="post-container"
@@ -180,8 +180,8 @@ const jsonLd = {
 					class="transition w-full block font-bold mb-3
                     text-3xl md:text-[2.25rem]/[2.75rem]
                     text-black/90 dark:text-white/90
-                    md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
-                    before:absolute before:top-[0.75rem] before:left-[-1.125rem]"
+                    md:before:w-1 before:h-5 before:rounded-md before:bg-(--primary)
+                    before:absolute before:top-3 before:-left-4.5"
 				>
 					{entry.data.title}
 				</div>
@@ -201,7 +201,7 @@ const jsonLd = {
 					(!entry.data.image ||
 						(entry.data.image &&
 							!siteConfig.showCoverInContent)) && (
-						<div class="mt-4 border-[var(--line-divider)] border-dashed border-b-[1px] mb-5" />
+						<div class="mt-4 border-(--line-divider) border-dashed border-b mb-5" />
 					)
 				}
 			</div>

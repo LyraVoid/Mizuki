@@ -41,7 +41,7 @@ const containerClasses = {
 
 {#if size === "orb"}
 	<div
-		class="orb-player w-12 h-12 bg-[var(--primary)] rounded-full shadow-lg cursor-pointer transition-all duration-500 ease-in-out flex items-center justify-center hover:scale-110 active:scale-95"
+		class="orb-player w-12 h-12 bg-(--primary) rounded-full shadow-lg cursor-pointer transition-all duration-500 ease-in-out flex items-center justify-center hover:scale-110 active:scale-95"
 		{onclick}
 		onkeydown={(e) => {
 			if (e.key === "Enter" || e.key === " ") {

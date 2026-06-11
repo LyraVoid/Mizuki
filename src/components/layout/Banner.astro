@@ -666,7 +666,7 @@ const bannerFormats = getImageFormats();
 	<!-- 水波纹效果 -->
 	{showWave && (
 		<div
-			class="waves absolute -bottom-[1px] h-[10vh] max-h-[9.375rem] min-h-[3.125rem] w-full md:h-[15vh]"
+			class="waves absolute -bottom-px h-[10vh] max-h-37.5 min-h-12.5 w-full md:h-[15vh]"
 			id="header-waves"
 			style="transform: translateZ(0); will-change: fill;"
 		>
@@ -691,28 +691,28 @@ const bannerFormats = getImageFormats();
 						xlink:href="#gentle-wave"
 						x="48"
 						y="0"
-						class="opacity-25 fill-[var(--page-bg)]"
+						class="opacity-25 fill-(--page-bg)"
 						style="animation-delay: -2s; animation-duration: 7s; will-change: transform;"
 					></use>
 					<use
 						xlink:href="#gentle-wave"
 						x="48"
 						y="3"
-						class="opacity-50 fill-[var(--page-bg)]"
+						class="opacity-50 fill-(--page-bg)"
 						style="animation-delay: -3s; animation-duration: 10s; will-change: transform;"
 					></use>
 					<use
 						xlink:href="#gentle-wave"
 						x="48"
 						y="5"
-						class="opacity-75 fill-[var(--page-bg)]"
+						class="opacity-75 fill-(--page-bg)"
 						style="animation-delay: -4s; animation-duration: 13s; will-change: transform;"
 					></use>
 					<use
 						xlink:href="#gentle-wave"
 						x="48"
 						y="7"
-						class="fill-[var(--page-bg)]"
+						class="fill-(--page-bg)"
 						style="animation-delay: -5s; animation-duration: 20s; will-change: transform;"
 					></use>
 				</g>
@@ -729,7 +729,7 @@ const bannerFormats = getImageFormats();
 			rel="noopener"
 			aria-label="Visit image source"
 			class:list={[
-				"group onload-animation transition-all absolute flex justify-center items-center rounded-full px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9",
+				"group onload-animation transition-all absolute flex justify-center items-center rounded-full px-3 right-4 -top-13 bg-black/60 hover:bg-black/70 h-9",
 				{ "hover:pr-9 active:bg-black/80": hasBannerLink },
 			]}
 		>

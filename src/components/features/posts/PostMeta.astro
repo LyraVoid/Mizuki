@@ -80,10 +80,10 @@ const {
             <div class="flex flex-row flex-nowrap items-center">
                 {(tags && tags.length > 0) && tags.map((tag, i) => (
                     <>
-                        <div class:list={[{"hidden": i == 0}, "mx-1.5 text-[var(--meta-divider)] text-sm"]}>/</div>
+                        <div class:list={[{"hidden": i == 0}, "mx-1.5 text-(--meta-divider) text-sm"]}>/</div>
                         <a href={getTagUrl(tag)} aria-label={`View all posts with the ${tag.trim()} tag`}
                            class="link-lg transition text-50 text-sm font-medium
-                                        hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
+                                        hover:text-(--primary) dark:hover:text-(--primary) whitespace-nowrap">
                             {tag.trim()}
                         </a>
                     </>
@@ -94,7 +94,7 @@ const {
     )}
     
     {!isHome && id && (
-        <div class="flex items-center umami-page-views hidden" data-id={id}>
+        <div class="flex items-center umami-page-views" data-id={id}>
             <div class="meta-icon">
                 <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
             </div>

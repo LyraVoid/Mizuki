@@ -32,7 +32,7 @@ const getStatusText = (status: string) => {
 >
 	{
 		showImageArea && (
-			<div class="aspect-video overflow-hidden relative bg-gradient-to-br from-[var(--primary)]/5 to-[var(--primary)]/10">
+			<div class="aspect-video overflow-hidden relative bg-linear-to-br from-(--primary)/5 to-(--primary)/10">
 				{hasImage ? (
 					<img
 						src={project.image!}
@@ -42,17 +42,17 @@ const getStatusText = (status: string) => {
 					/>
 				) : (
 					<div class="w-full h-full flex items-center justify-center">
-						<span class="text-4xl font-bold text-[var(--primary)]/15 select-none tracking-wide">
+						<span class="text-4xl font-bold text-(--primary)/15 select-none tracking-wide">
 							{project.title}
 						</span>
 					</div>
 				)}
-				<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+				<div class="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 				{project.featured && (
 					<div class="absolute top-3 right-3">
 						<Icon
 							name="material-symbols:star-rounded"
-							class="text-[var(--primary)] text-xl drop-shadow-sm"
+							class="text-(--primary) text-xl drop-shadow-sm"
 							style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));"
 						/>
 					</div>
@@ -64,19 +64,19 @@ const getStatusText = (status: string) => {
 	<div class="p-5">
 		<div class="flex items-center justify-between mb-3">
 			<h3
-				class="text-lg font-bold text-black/90 dark:text-white/90 truncate group-hover:text-[var(--primary)] transition-colors duration-200"
+				class="text-lg font-bold text-black/90 dark:text-white/90 truncate group-hover:text-(--primary) transition-colors duration-200"
 			>
 				{project.title}
 			</h3>
 			<span
-				class="shrink-0 ml-3 px-2 py-0.5 text-xs rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-medium"
+				class="shrink-0 ml-3 px-2 py-0.5 text-xs rounded-md bg-(--primary)/10 text-(--primary) font-medium"
 			>
 				{getStatusText(project.status)}
 			</span>
 		</div>
 
 		<p
-			class="text-sm text-black/60 dark:text-white/60 mb-4 line-clamp-2 min-h-[2.5rem]"
+			class="text-sm text-black/60 dark:text-white/60 mb-4 line-clamp-2 min-h-10"
 		>
 			{project.description}
 		</p>
@@ -85,12 +85,12 @@ const getStatusText = (status: string) => {
 			project.techStack && project.techStack.length > 0 && (
 				<div class="flex flex-wrap gap-2 mb-4">
 					{project.techStack.slice(0, maxTechStack).map((tech) => (
-						<span class="px-2 py-1 text-xs rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-medium">
+						<span class="px-2 py-1 text-xs rounded-md bg-(--primary)/10 text-(--primary) font-medium">
 							{tech}
 						</span>
 					))}
 					{project.techStack.length > maxTechStack && (
-						<span class="px-2 py-1 text-xs rounded-md bg-[var(--btn-regular-bg)] text-black/50 dark:text-white/50 font-medium">
+						<span class="px-2 py-1 text-xs rounded-md bg-(--btn-regular-bg) text-black/50 dark:text-white/50 font-medium">
 							+{project.techStack.length - maxTechStack}
 						</span>
 					)}
@@ -133,7 +133,7 @@ const getStatusText = (status: string) => {
 	</div>
 
 	<div
-		class="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+		class="absolute inset-0 bg-linear-to-br from-(--primary)/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
 	>
 	</div>
 </div>

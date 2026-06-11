@@ -26,7 +26,7 @@ const { playlist, currentIndex, isPlaying, show, onClose, onPlaySong }: Props =
 		transition:slide={{ duration: 300, axis: "y" }}
 	>
 		<div
-			class="playlist-header flex items-center justify-between p-4 border-b border-[var(--line-divider)]"
+			class="playlist-header flex items-center justify-between p-4 border-b border-(--line-divider)"
 		>
 			<h3 class="text-lg font-semibold text-90">
 				{i18n(Key.musicPlayerPlaylist)}

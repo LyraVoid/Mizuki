@@ -31,10 +31,10 @@ const progressPercent =
 ---
 
 <div
-	class="group relative bg-[var(--card-bg)] border border-[var(--line-divider)] rounded-[var(--radius-large)] overflow-hidden hover:shadow-lg"
+	class="group relative bg-(--card-bg) border border-(--line-divider) rounded-(--radius-large) overflow-hidden hover:shadow-lg"
 	data-anime-status={anime.status}
 >
-	<div class="relative anime-cover-container aspect-[2/3] overflow-hidden">
+	<div class="relative anime-cover-container aspect-2/3 overflow-hidden">
 		<a
 			href={anime.link}
 			target="_blank"
@@ -49,7 +49,7 @@ const progressPercent =
 				sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
 			/>
 			<div
-				class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+				class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
 			>
 				<div class="absolute inset-0 flex items-center justify-center">
 					<div
@@ -91,10 +91,10 @@ const progressPercent =
 
 		{
 			anime.status === "watching" && (
-				<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+				<div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-2">
 					<div class="w-full bg-white/20 rounded-full h-1.5 mb-1">
 						<div
-							class="bg-gradient-to-r from-emerald-400 to-teal-400 h-1.5 rounded-full transition-all duration-300"
+							class="bg-linear-to-r from-emerald-400 to-teal-400 h-1.5 rounded-full transition-all duration-300"
 							style={`width: ${progressPercent}%`}
 						/>
 					</div>
@@ -136,7 +136,7 @@ const progressPercent =
 					{studioLabel}
 				</span>
 				<span
-					class="text-black/70 dark:text-white/70 text-right ml-2 line-clamp-2 break-words"
+					class="text-black/70 dark:text-white/70 text-right ml-2 line-clamp-2 wrap-break-word"
 					title={anime.studio}
 				>
 					{anime.studio}
@@ -145,7 +145,7 @@ const progressPercent =
 			<div class="flex flex-wrap gap-1 mt-2">
 				{
 					anime.genre.map((g) => (
-						<span class="px-1.5 py-0.5 bg-[var(--btn-regular-bg)] text-black/70 dark:text-white/70 rounded text-xs">
+						<span class="px-1.5 py-0.5 bg-(--btn-regular-bg) text-black/70 dark:text-white/70 rounded text-xs">
 							{g}
 						</span>
 					))

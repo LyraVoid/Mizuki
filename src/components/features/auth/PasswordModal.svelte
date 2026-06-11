@@ -25,7 +25,7 @@ function handleSubmit(e: Event) {
 	}
 }
 
-function handleKeypress(e: KeyboardEvent) {
+function handleKeydown(e: KeyboardEvent) {
 	if (e.key === "Enter" && password.trim()) {
 		dispatchUnlock(password);
 	}
@@ -89,7 +89,7 @@ onMount(() => {
 				placeholder={i18n(I18nKey.passwordPlaceholder)}
 				class="password-input"
 				bind:value={password}
-				onkeypress={handleKeypress}
+				onkeydown={handleKeydown}
 				disabled={isLoading}
 				autocomplete="off"
 			/>

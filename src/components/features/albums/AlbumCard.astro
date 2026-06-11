@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 
 import I18nKey from "../../../i18n/i18nKey";
-import { i18n } from "../../../i18n/translation";
+import { i18n } from "@i18n/translation";
 import type { AlbumCardProps } from "./types";
 
 const { album } = Astro.props as AlbumCardProps;
@@ -25,7 +25,7 @@ const { album } = Astro.props as AlbumCardProps;
 					decoding="async"
 				/>
 			) : (
-				<div class="w-full h-full bg-[var(--btn-regular-bg)] flex items-center justify-center">
+				<div class="w-full h-full bg-(--btn-regular-bg) flex items-center justify-center">
 					<Icon
 						name="material-symbols:photo-library"
 						class="text-5xl text-black/20 dark:text-white/20"
@@ -55,7 +55,7 @@ const { album } = Astro.props as AlbumCardProps;
 
 		<!-- Gradient overlay + info -->
 		<div
-			class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+			class="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent"
 		>
 		</div>
 		<div class="absolute bottom-0 left-0 right-0 p-4">

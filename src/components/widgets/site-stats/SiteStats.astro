@@ -125,10 +125,10 @@ const stats = [
 			stats.map((stat) => (
 				<div class="flex items-center justify-between px-2 py-2">
 					<div class="flex items-center gap-2.5 flex-1 min-w-0">
-						<div class="text-[var(--primary)] text-xl shrink-0">
+						<div class="text-(--primary) text-xl shrink-0">
 							<Icon name={stat.icon} />
 						</div>
-						<span class="text-neutral-700 dark:text-neutral-300 font-medium text-sm break-words leading-tight">
+						<span class="text-neutral-700 dark:text-neutral-300 font-medium text-sm wrap-break-word leading-tight">
 							{stat.label}
 						</span>
 					</div>
