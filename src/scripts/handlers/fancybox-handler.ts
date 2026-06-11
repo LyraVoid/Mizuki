@@ -5,6 +5,7 @@
 
 import {
 	FANCYBOX_SELECTORS,
+	type FancyboxConfig,
 	getDefaultFancyboxConfig,
 } from "../core/swup-config";
 
@@ -76,14 +77,10 @@ export class FancyboxHandler {
 		const commonConfig = getDefaultFancyboxConfig();
 
 		// 绑定相册/文章图片
-		this.Fancybox.bind(FANCYBOX_SELECTORS.albumImages, {
-			...commonConfig,
-			groupAll: true,
-			Carousel: {
-				transition: "slide",
-				preload: 2,
-			},
-		});
+		this.Fancybox.bind(
+			FANCYBOX_SELECTORS.albumImages,
+			this.createAlbumImagesConfig(commonConfig),
+		);
 		this.boundSelectors.push(FANCYBOX_SELECTORS.albumImages);
 
 		// 绑定相册链接
@@ -98,6 +95,28 @@ export class FancyboxHandler {
 		// 绑定单独的 fancybox 图片
 		this.Fancybox.bind(FANCYBOX_SELECTORS.singleFancybox, commonConfig);
 		this.boundSelectors.push(FANCYBOX_SELECTORS.singleFancybox);
+	}
+
+	/**
+	 * 创建相册/文章图片配置
+	 * 保留默认 Carousel 插件配置，避免覆盖旋转工具栏
+	 */
+	private createAlbumImagesConfig(commonConfig: FancyboxConfig): FancyboxConfig {
+		const carouselConfig = commonConfig.Carousel ?? {};
+		const lazyloadConfig = carouselConfig.Lazyload;
+
+		return {
+			...commonConfig,
+			groupAll: true,
+			Carousel: {
+				...carouselConfig,
+				transition: "slide",
+				Lazyload: {
+					...(typeof lazyloadConfig === "object" ? lazyloadConfig : {}),
+					preload: 2,
+				},
+			},
+		};
 	}
 
 	/**
