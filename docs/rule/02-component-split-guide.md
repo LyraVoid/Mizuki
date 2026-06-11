@@ -1008,15 +1008,14 @@ import NextButton from './NextButton.astro'
 
 **修正**：
 ```svelte
----
-// ✅ 合理拆分：使用一个组件处理播放控制
-interface Props {
-  isPlaying: boolean
-  onTogglePlay: () => void
-  onPrev: () => void
-  onNext: () => void
-}
----
+<script lang="ts">
+  // ✅ 合理拆分：使用一个组件处理播放控制
+  interface Props {
+    isPlaying: boolean
+    onTogglePlay: () => void
+    onPrev: () => void
+    onNext: () => void
+  }
   let { isPlaying, onTogglePlay, onPrev, onNext }: Props = $props()
 </script>
 
