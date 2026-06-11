@@ -5,25 +5,37 @@ import { onMount } from "svelte";
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
 import {
-	calculateDimensions,
-	drawDateBadge,
-	drawDecorativeCircles,
-	drawRoundedRect,
-	getLines,
-	loadImage,
-	type PosterConfig,
-	parseDate,
-	type SizeConfig,
-} from "./utils/poster-renderer";
+    calculateDimensions,
+    drawDateBadge,
+    drawDecorativeCircles,
+    drawRoundedRect,
+    getLines,
+    loadImage,
+    parseDate,
+    type SizeConfig
+} from "./utils/poster-renderer"
 
-export let title: string;
-export let author: string;
-export let description = "";
-export let pubDate: string;
-export let coverImage: string | null = null;
-export let url: string;
-export let siteTitle: string;
-export let avatar: string | null = null;
+interface SharePosterProps {
+	title: string;
+	author: string;
+	description?: string;
+	pubDate: string;
+	coverImage?: string | null;
+	url: string;
+	siteTitle: string;
+	avatar?: string | null;
+}
+
+let {
+	title,
+	author,
+	description = "",
+	pubDate,
+	coverImage = null,
+	url,
+	siteTitle,
+	avatar = null,
+}: SharePosterProps = $props();
 
 // Constants
 const SCALE = 2;
@@ -33,10 +45,10 @@ const CONTENT_WIDTH = WIDTH - PADDING * 2;
 const FONT_FAMILY = "'Roboto', sans-serif";
 
 // State
-let showModal = false;
-let posterImage: string | null = null;
-let generating = false;
-let themeColor = "#558e88";
+let showModal = $state(false);
+let posterImage = $state<string | null>(null);
+let generating = $state(false);
+let themeColor = $state("#558e88");
 
 function isDarkMode(): boolean {
 	return document.documentElement.classList.contains("dark");
@@ -335,7 +347,7 @@ function closeModal() {
 	showModal = false;
 }
 
-let copied = false;
+let copied = $state(false);
 const COPY_FEEDBACK_DURATION = 2000;
 
 async function copyLink() {
@@ -377,7 +389,7 @@ function portal(node: HTMLElement) {
 {#if showModal}
 	<div
 		use:portal
-		class="fixed inset-0 z-[9999] flex items-center justify-center p-4 transition-opacity"
+		class="fixed inset-0 z-9999 flex items-center justify-center p-4 transition-opacity"
 		style="background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);"
 		onclick={closeModal}
 		role="button"
@@ -401,7 +413,7 @@ function portal(node: HTMLElement) {
 			tabindex="0"
 		>
 			<div
-				class="p-6 flex justify-center min-h-[200px] items-center"
+				class="p-6 flex justify-center min-h-50 items-center"
 				style="background-color: var(--card-bg);"
 			>
 				{#if posterImage}

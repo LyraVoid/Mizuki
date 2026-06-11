@@ -293,7 +293,7 @@ function handleVolumeChange(vol: number) {
 </script>
 
 <div class="music-player">
-  <button on:click={togglePlay}>{isPlaying ? 'Pause' : 'Play'}</button>
+  <button onclick={togglePlay}>{isPlaying ? 'Pause' : 'Play'}</button>
   <input type="range" bind:value={currentTime} />
   <input type="range" bind:value={volume} />
   <!-- 更多 UI -->
@@ -338,20 +338,22 @@ export function useAudio() {
 2. **controls/PlayControls.svelte**
 ```svelte
 <script lang="ts">
-  export let isPlaying: boolean
-  export let onTogglePlay: () => void
-  export let onPrev: () => void
-  export let onNext: () => void
+  let { isPlaying, onTogglePlay, onPrev, onNext } = $props<{
+    isPlaying: boolean
+    onTogglePlay: () => void
+    onPrev: () => void
+    onNext: () => void
+  }>()
 </script>
 
 <div class="play-controls">
-  <button on:click={onPrev}>
+  <button onclick={onPrev}>
     <Icon name="material-symbols:skip-previous" />
   </button>
-  <button on:click={onTogglePlay}>
+  <button onclick={onTogglePlay}>
     <Icon name={isPlaying ? 'material-symbols:pause' : 'material-symbols:play-arrow'} />
   </button>
-  <button on:click={onNext}>
+  <button onclick={onNext}>
     <Icon name="material-symbols:skip-next" />
   </button>
 </div>
@@ -367,9 +369,11 @@ export function useAudio() {
 3. **controls/ProgressBar.svelte**
 ```svelte
 <script lang="ts">
-  export let currentTime: number
-  export let duration: number
-  export let onSeek: (time: number) => void
+  let { currentTime, duration, onSeek } = $props<{
+    currentTime: number
+    duration: number
+    onSeek: (time: number) => void
+  }>()
 </script>
 
 <div class="progress-container">
@@ -378,7 +382,7 @@ export function useAudio() {
     min="0"
     max={duration}
     value={currentTime}
-    on:input={(e) => onSeek(Number((e.target as HTMLInputElement).value))}
+    oninput={(e) => onSeek(Number((e.target as HTMLInputElement).value))}
     class="progress-bar"
   />
   <span class="time">
@@ -470,18 +474,20 @@ Calendar/
 1. **CalendarHeader.svelte**
 ```svelte
 <script lang="ts">
-  export let year: number
-  export let month: number
-  export let onPrevMonth: () => void
-  export let onNextMonth: () => void
+  let { year, month, onPrevMonth, onNextMonth } = $props<{
+    year: number
+    month: number
+    onPrevMonth: () => void
+    onNextMonth: () => void
+  }>()
 </script>
 
 <header class="calendar-header">
-  <button on:click={onPrevMonth}>
+  <button onclick={onPrevMonth}>
     <Icon name="material-symbols:chevron-left" />
   </button>
   <div class="title">{year}年{month + 1}月</div>
-  <button on:click={onNextMonth}>
+  <button onclick={onNextMonth}>
     <Icon name="material-symbols:chevron-right" />
   </button>
 </header>
@@ -490,9 +496,11 @@ Calendar/
 2. **CalendarGrid.svelte**
 ```svelte
 <script lang="ts">
-  export let dates: Date[]
-  export let selectedDate: Date | null
-  export let onSelectDate: (date: Date) => void
+  let { dates, selectedDate, onSelectDate } = $props<{
+    dates: Date[]
+    selectedDate: Date | null
+    onSelectDate: (date: Date) => void
+  }>()
 </script>
 
 <div class="calendar-grid">
@@ -500,7 +508,7 @@ Calendar/
     <div
       class="date-cell"
       class:selected={isSameDay(date, selectedDate)}
-      on:click={() => onSelectDate(date)}
+      onclick={() => onSelectDate(date)}
     >
       {date.getDate()}
     </div>
@@ -571,14 +579,14 @@ const calendar = useCalendar()
   }
 
   // UI 逻辑
-  let password = ''
-  let error = ''
+  let password = $state('')
+  let error = $state('')
   // ... 更多 UI 状态
 </script>
 
 <form>
   <input type="password" bind:value={password} />
-  <button on:click={handleSubmit}>解锁</button>
+  <button onclick={handleSubmit}>解锁</button>
 </form>
 
 <style>
@@ -909,11 +917,13 @@ export function useFeature() {
 ```astro
 ---
 // 子组件专注于 UI 渲染
-export let value: string
-export let onChange: (value: string) => void
+let { value, onChange } = $props<{
+  value: string
+  onChange: (value: string) => void
+}>()
 ---
 
-<input type="text" bind:value={value} on:input={(e) => onChange(e.target.value)} />
+<input type="text" bind:value={value} oninput={(e) => onChange(e.target.value)} />
 ```
 
 #### 步骤 5：更新主组件
@@ -1007,13 +1017,15 @@ interface Props {
   onNext: () => void
 }
 ---
+  let { isPlaying, onTogglePlay, onPrev, onNext }: Props = $props()
+</script>
 
 <div class="controls">
-  <button on:click={onPrev}>Prev</button>
-  <button on:click={onTogglePlay}>
+  <button onclick={onPrev}>Prev</button>
+  <button onclick={onTogglePlay}>
     {isPlaying ? 'Pause' : 'Play'}
   </button>
-  <button on:click={onNext}>Next</button>
+  <button onclick={onNext}>Next</button>
 </div>
 ```
 
