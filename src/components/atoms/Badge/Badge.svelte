@@ -4,7 +4,7 @@ import type { BadgeProps } from "./types";
 const { value, class: className = "" }: BadgeProps = $props();
 </script>
 
-{#if value !== undefined && value !== null && value !== ""}
+{#if value != null && value !== ""}
 	<div class="badge {className}">
 		{value}
 	</div>
