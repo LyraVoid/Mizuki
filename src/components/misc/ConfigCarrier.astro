@@ -1,0 +1,45 @@
+---
+import {
+	expressiveCodeConfig,
+	fullscreenWallpaperConfig,
+	sakuraConfig,
+	siteConfig,
+} from "@/config";
+---
+
+<div
+	id="config-carrier"
+	data-hue={siteConfig.themeColor.hue}
+	data-hide-code-blocks-during-transition={expressiveCodeConfig.hideDuringThemeTransition
+		? "true"
+		: "false"}
+	data-overlay-opacity={fullscreenWallpaperConfig.overlay?.opacity ?? 0.8}
+	data-overlay-blur={fullscreenWallpaperConfig.overlay?.blur ?? 10}
+	data-overlay-card-opacity={fullscreenWallpaperConfig.overlay?.cardOpacity ?? 0.5}
+	data-fullscreen-opacity={fullscreenWallpaperConfig.opacity ?? 0.8}
+	data-fullscreen-blur={fullscreenWallpaperConfig.blur ?? 0}
+	data-default-wallpaper-mode={siteConfig.wallpaperMode.defaultMode}
+	data-sakura-enabled={sakuraConfig.enable ? "true" : "false"}
+	data-waves-enabled={siteConfig.banner?.waves?.enable ? "true" : "false"}
+	data-banner-title-enabled={siteConfig.banner?.homeText?.enable ? "true" : "false"}
+	data-banner-carousel-enabled={siteConfig.banner?.carousel?.enable ? "true" : "false"}
+>
+</div>
+
+<script
+	is:inline
+	define:vars={{
+		tocEnable: siteConfig.toc.enable,
+		tocDepth: siteConfig.toc.depth,
+		tocUseJapaneseBadge: siteConfig.toc.useJapaneseBadge,
+	}}
+>
+	window.siteConfig = window.siteConfig || {};
+	window.siteConfig.toc = {
+		enable: tocEnable,
+		depth: tocDepth,
+		useJapaneseBadge: tocUseJapaneseBadge,
+	};
+
+	console.log("TOC Config:", window.siteConfig.toc);
+</script>

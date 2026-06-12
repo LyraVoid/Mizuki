@@ -1,0 +1,441 @@
+---
+import type { MarkdownHeading } from "astro";
+
+import { musicPlayerConfig, siteConfig } from "../../config";
+import FloatingTOC from "../features/toc/FloatingTOC.astro";
+import BackToHome from "./BackToHome.astro";
+import BackToTop from "./BackToTop.astro";
+import MusicFabButton from "./MusicFabButton.svelte";
+
+interface Props {
+	headings?: MarkdownHeading[];
+}
+
+const { headings = [] } = Astro.props;
+---
+
+<div class="floating-controls-container">
+	{
+		musicPlayerConfig.enable &&
+			musicPlayerConfig.showFloatingPlayer &&
+			(musicPlayerConfig.floatingEntryMode ?? "default") === "fab" && (
+				<div class="floating-control-item" data-control-key="music">
+					<MusicFabButton client:idle />
+				</div>
+			)
+	}
+	{
+		siteConfig.toc.enable && siteConfig.toc.floating && (
+			<div class="floating-control-item" data-control-key="toc">
+				<FloatingTOC headings={headings} />
+			</div>
+		)
+	}
+	<div class="floating-control-item" data-control-key="home">
+		<BackToHome />
+	</div>
+	<div class="floating-control-item" data-control-key="top">
+		<BackToTop />
+	</div>
+</div>
+
+<style>
+	:global(:root) {
+		--fab-group-right: 1.5rem;
+		--fab-group-bottom: 4rem;
+		--fab-group-base-bottom: 4rem;
+		--fab-group-gap: 0.5rem;
+		--fab-button-size: 3rem;
+		--fab-visible-count: 1;
+	}
+
+	.floating-controls-container {
+		position: fixed;
+		z-index: 50;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		pointer-events: none;
+
+		right: var(--fab-group-right);
+		bottom: var(--fab-group-bottom);
+		transition: bottom 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.floating-control-item {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		pointer-events: auto;
+		max-height: var(--fab-button-size);
+		opacity: 1;
+		transform: translateY(0) scale(1);
+		transform-origin: bottom right;
+		transition:
+			max-height 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 0.2s ease,
+			transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+			margin-top 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+		overflow: visible;
+	}
+
+	.floating-control-item.is-stacked {
+		margin-top: var(--fab-group-gap);
+	}
+
+	.floating-control-item.is-collapsed {
+		max-height: 0;
+		opacity: 0;
+		transform: translateY(0.25rem) scale(0.92);
+		margin-top: 0 !important;
+		pointer-events: none;
+	}
+
+	:global(html.fab-visibility-locked #floating-toc-btn.fab-lock-visible),
+	:global(html.fab-visibility-locked #back-to-home-btn.fab-lock-visible),
+	:global(html.fab-visibility-locked #back-to-top-btn.fab-lock-visible) {
+		min-width: var(--fab-button-size) !important;
+		min-height: var(--fab-button-size) !important;
+		transform: scale(1) !important;
+		opacity: 1 !important;
+		pointer-events: auto !important;
+		width: var(--fab-button-size) !important;
+		height: var(--fab-button-size) !important;
+		margin: 0 !important;
+		border-width: 1px !important;
+		border-style: solid !important;
+		border-color: rgba(255, 255, 255, 0.15) !important;
+		padding: 0.25rem !important;
+		overflow: hidden !important;
+		box-sizing: border-box !important;
+	}
+
+	:global(
+		html:not(.dark).fab-visibility-locked #floating-toc-btn.fab-lock-visible
+	),
+	:global(
+		html:not(.dark).fab-visibility-locked #back-to-home-btn.fab-lock-visible
+	),
+	:global(
+		html:not(.dark).fab-visibility-locked #back-to-top-btn.fab-lock-visible
+	) {
+		border-color: var(--line-color) !important;
+	}
+
+	:global(html.fab-visibility-locked #floating-toc-btn.fab-lock-visible.hide),
+	:global(html.fab-visibility-locked #back-to-home-btn.fab-lock-visible.hide),
+	:global(html.fab-visibility-locked #back-to-top-btn.fab-lock-visible.hide) {
+		transform: scale(1) !important;
+		opacity: 1 !important;
+		pointer-events: auto !important;
+		width: var(--fab-button-size) !important;
+		height: var(--fab-button-size) !important;
+		min-width: var(--fab-button-size) !important;
+		min-height: var(--fab-button-size) !important;
+		margin: 0 !important;
+		padding: 0.25rem !important;
+		border-width: 1px !important;
+		border-style: solid !important;
+	}
+
+	:global(html.fab-visibility-locked #floating-toc-btn.fab-lock-visible svg),
+	:global(html.fab-visibility-locked #back-to-home-btn.fab-lock-visible svg),
+	:global(html.fab-visibility-locked #back-to-top-btn.fab-lock-visible svg) {
+		opacity: 1 !important;
+	}
+
+	:global(
+		html.fab-visibility-locked .floating-control-item.fab-lock-collapsed
+	) {
+		max-height: 0 !important;
+		opacity: 0 !important;
+		transform: translateY(0.25rem) scale(0.92) !important;
+		margin-top: 0 !important;
+		pointer-events: none !important;
+		overflow: hidden !important;
+	}
+
+	@media (max-width: 1024px) {
+		:global(:root) {
+			--fab-group-right: 1rem;
+			--fab-group-bottom: 6rem;
+			--fab-group-base-bottom: 6rem;
+		}
+
+		.floating-controls-container {
+			right: var(--fab-group-right);
+			bottom: var(--fab-group-bottom);
+		}
+	}
+
+	@media (max-width: 768px) {
+		:global(:root) {
+			--fab-group-right: 0.75rem;
+			--fab-group-bottom: 5rem;
+			--fab-group-base-bottom: 5rem;
+			--fab-button-size: 2.75rem;
+		}
+
+		.floating-controls-container {
+			right: var(--fab-group-right);
+			bottom: var(--fab-group-bottom);
+		}
+	}
+
+	@media (max-width: 480px) {
+		:global(:root) {
+			--fab-group-right: 0.5rem;
+			--fab-group-bottom: 4.5rem;
+			--fab-group-base-bottom: 4.5rem;
+			--fab-button-size: 2.5rem;
+		}
+
+		.floating-controls-container {
+			right: var(--fab-group-right);
+			bottom: var(--fab-group-bottom);
+		}
+	}
+
+	@media (max-width: 320px) {
+		:global(:root) {
+			--fab-group-right: 0.25rem;
+			--fab-group-bottom: 4rem;
+			--fab-group-base-bottom: 4rem;
+		}
+
+		.floating-controls-container {
+			right: var(--fab-group-right);
+			bottom: var(--fab-group-bottom);
+		}
+	}
+
+	@media (orientation: landscape) and (max-height: 500px) {
+		:global(:root) {
+			--fab-group-bottom: 4rem;
+			--fab-group-base-bottom: 4rem;
+		}
+
+		.floating-controls-container {
+			bottom: var(--fab-group-bottom);
+		}
+	}
+</style>
+
+<script is:inline>
+	(() => {
+		if (!window.__floatingControlObservers) {
+			window.__floatingControlObservers = new Map();
+		}
+
+		if (!window.__floatingControlState) {
+			window.__floatingControlState = {
+				isMusicPanelExpanded: false,
+				visibilityUpdateScheduled: false,
+				mermaidRendering: false,
+				mermaidRenderTimer: null,
+				listenersRegistered: false,
+			};
+		}
+
+		const state = window.__floatingControlState;
+		const controlButtonIds = [
+			"floating-toc-btn",
+			"back-to-home-btn",
+			"back-to-top-btn",
+		];
+
+		function isButtonVisible(id) {
+			const element = document.getElementById(id);
+			return Boolean(element && !element.classList.contains("hide"));
+		}
+
+		function updateFloatingControlVisibility() {
+			if (state.isMusicPanelExpanded) {
+				return;
+			}
+
+			const items = document.querySelectorAll(
+				".floating-control-item[data-control-key]",
+			);
+			let hasVisibleItem = false;
+			let visibleCount = 0;
+
+			for (const item of items) {
+				const key = item.getAttribute("data-control-key");
+				let visible = true;
+
+				if (key === "toc") {
+					visible = isButtonVisible("floating-toc-btn");
+				} else if (key === "home") {
+					visible = isButtonVisible("back-to-home-btn");
+				} else if (key === "top") {
+					visible = isButtonVisible("back-to-top-btn");
+				}
+
+				item.classList.toggle("is-collapsed", !visible);
+				item.classList.toggle("is-stacked", visible && hasVisibleItem);
+
+				if (visible) {
+					hasVisibleItem = true;
+					visibleCount += 1;
+				}
+			}
+
+			document.documentElement.style.setProperty(
+				"--fab-visible-count",
+				String(Math.max(visibleCount, 1)),
+			);
+		}
+
+		function observeFloatingControlButton(id) {
+			const target = document.getElementById(id);
+			if (!target) {
+				return;
+			}
+
+			const existing = window.__floatingControlObservers.get(id);
+			if (existing) {
+				existing.disconnect();
+			}
+
+			const observer = new MutationObserver(() => {
+				scheduleVisibilityUpdate();
+			});
+
+			observer.observe(target, {
+				attributes: true,
+				attributeFilter: ["class"],
+			});
+
+			window.__floatingControlObservers.set(id, observer);
+		}
+
+		function initFloatingControlVisibility() {
+			updateFloatingControlVisibility();
+			observeFloatingControlButton("floating-toc-btn");
+			observeFloatingControlButton("back-to-home-btn");
+			observeFloatingControlButton("back-to-top-btn");
+		}
+
+		function lockFloatingControlVisibility() {
+			document.documentElement.classList.add("fab-visibility-locked");
+
+			const items = document.querySelectorAll(
+				".floating-control-item[data-control-key]",
+			);
+			for (const item of items) {
+				const key = item.getAttribute("data-control-key");
+				const id =
+					key === "toc"
+						? "floating-toc-btn"
+						: key === "home"
+							? "back-to-home-btn"
+							: key === "top"
+								? "back-to-top-btn"
+								: null;
+
+				if (!id) {
+					continue;
+				}
+
+				const button = document.getElementById(id);
+				const isVisible = Boolean(
+					button && !button.classList.contains("hide"),
+				);
+				item.classList.toggle("fab-lock-collapsed", !isVisible);
+			}
+
+			for (const id of controlButtonIds) {
+				const button = document.getElementById(id);
+				if (!button) {
+					continue;
+				}
+
+				const isVisible = !button.classList.contains("hide");
+				button.classList.toggle("fab-lock-visible", isVisible);
+			}
+		}
+
+		function unlockFloatingControlVisibility() {
+			document.documentElement.classList.remove("fab-visibility-locked");
+
+			const items = document.querySelectorAll(
+				".floating-control-item[data-control-key]",
+			);
+			for (const item of items) {
+				item.classList.remove("fab-lock-collapsed");
+			}
+
+			for (const id of controlButtonIds) {
+				const button = document.getElementById(id);
+				button?.classList.remove("fab-lock-visible");
+			}
+		}
+
+		function handleMusicPanelState(event) {
+			const expanded = Boolean(event?.detail?.isExpanded);
+			if (expanded === state.isMusicPanelExpanded) {
+				return;
+			}
+
+			state.isMusicPanelExpanded = expanded;
+			if (state.isMusicPanelExpanded) {
+				lockFloatingControlVisibility();
+			} else {
+				unlockFloatingControlVisibility();
+				updateFloatingControlVisibility();
+			}
+		}
+
+		function handleMermaidRenderStart() {
+			state.mermaidRendering = true;
+		}
+
+		function handleMermaidRenderDone() {
+			clearTimeout(state.mermaidRenderTimer);
+			state.mermaidRenderTimer = setTimeout(() => {
+				state.mermaidRendering = false;
+				updateFloatingControlVisibility();
+			}, 120);
+		}
+
+		if (!state.listenersRegistered) {
+			document.addEventListener(
+				"DOMContentLoaded",
+				initFloatingControlVisibility,
+			);
+			document.addEventListener(
+				"astro:page-load",
+				initFloatingControlVisibility,
+			);
+			window.addEventListener(
+				"music-sidebar:state",
+				handleMusicPanelState,
+			);
+			window.addEventListener(
+				"mermaid:render:start",
+				handleMermaidRenderStart,
+			);
+			window.addEventListener(
+				"mermaid:render:done",
+				handleMermaidRenderDone,
+			);
+			state.listenersRegistered = true;
+		}
+
+		initFloatingControlVisibility();
+
+		function scheduleVisibilityUpdate() {
+			if (state.visibilityUpdateScheduled || state.mermaidRendering) {
+				return;
+			}
+			state.visibilityUpdateScheduled = true;
+			requestAnimationFrame(() => {
+				state.visibilityUpdateScheduled = false;
+				if (!state.mermaidRendering) {
+					updateFloatingControlVisibility();
+				}
+			});
+		}
+	})();
+</script>

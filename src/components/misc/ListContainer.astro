@@ -1,0 +1,34 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	title: string;
+	badge?: string;
+	icon?: string;
+	class?: string;
+}
+
+const { title, badge, icon, class: className } = Astro.props;
+---
+
+<div class:list={["card-base p-5 md:p-6 flex flex-col", className]}>
+	<div
+		class="flex items-center gap-2 pb-3 mb-1 border-b border-dashed border-(--line-divider)"
+	>
+		{icon && <Icon name={icon} class="text-xl text-(--primary)" />}
+		<span
+			class="text-base font-bold text-black/75 dark:text-white/75 transition"
+		>
+			{title}
+		</span>
+		{
+			badge && (
+				<span class="ml-auto text-xs px-2 py-0.5 rounded-full bg-(--btn-regular-bg) text-(--btn-content) transition">
+					{badge}
+				</span>
+			)
+		}
+	</div>
+
+	<slot />
+</div>

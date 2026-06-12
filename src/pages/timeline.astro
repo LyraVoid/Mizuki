@@ -1,41 +1,21 @@
 ---
-import Icon from "../components/misc/Icon.astro";
-import IconifyLoader from "../components/misc/IconifyLoader.astro";
+import { FilterTabs } from "@components/atoms/filter-tabs";
+import { PageHeader } from "@components/features/page-header";
+import { TimelineCard } from "@components/features/timeline";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { Icon } from "astro-icon/components";
+
 import { siteConfig } from "../config";
-import {
-	getCurrentItems,
-	// getFeaturedTimeline,
-	getTimelineByType,
-	getTimelineStats,
-	getTotalWorkExperience,
-	timelineData,
-} from "../data/timeline";
+import { timelineData } from "../data/timeline";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import MainGridLayout from "../layouts/MainGridLayout.astro";
 
-// 检查时间线页面是否启用
 if (!siteConfig.featurePages.timeline) {
 	return Astro.redirect("/404/");
 }
 
-// const { lang } = Astro.props;
+const types = ["education", "work", "project", "achievement"] as const;
 
-// 收集所有时间线图标用于预加载
-const allIcons = timelineData
-	.map((item) => item.icon || getTypeIcon(item.type))
-	.filter(Boolean);
-
-// 获取时间线统计信息
-const stats = getTimelineStats();
-// const featuredItems = getFeaturedTimeline();
-const currentItems = getCurrentItems();
-const workExperience = getTotalWorkExperience();
-
-// 获取所有时间线项目（按时间倒序）
-const allTimelineItems = getTimelineByType();
-
-// 类型图标映射
 const getTypeIcon = (type: string) => {
 	switch (type) {
 		case "education":
@@ -47,379 +27,96 @@ const getTypeIcon = (type: string) => {
 		case "achievement":
 			return "material-symbols:emoji-events";
 		default:
-			return "material-symbols:event";
+			return "material-symbols:apps";
 	}
 };
 
-// 类型颜色映射
-// const getTypeColor = (type: string) => {
-// 	switch (type) {
-// 		case "education":
-// 			return "bg-blue-500";
-// 		case "work":
-// 			return "bg-green-500";
-// 		case "project":
-// 			return "bg-purple-500";
-// 		case "achievement":
-// 			return "bg-orange-500";
-// 		default:
-// 			return "bg-gray-500";
-// 	}
-// };
-
-// 格式化日期
-const formatDate = (dateString: string) => {
-	const date = new Date(dateString);
-	return date.toLocaleDateString("zh-CN", { year: "numeric", month: "long" });
+const getTypeText = (type: string) => {
+	switch (type) {
+		case "education":
+			return i18n(I18nKey.timelineEducation);
+		case "work":
+			return i18n(I18nKey.timelineWork);
+		case "project":
+			return i18n(I18nKey.timelineProject);
+		case "achievement":
+			return i18n(I18nKey.timelineAchievement);
+		default:
+			return type;
+	}
 };
 
-// 计算持续时间
-const getDuration = (startDate: string, endDate?: string) => {
-	const start = new Date(startDate);
-	const end = endDate ? new Date(endDate) : new Date();
-	const diffTime = Math.abs(end.getTime() - start.getTime());
-	const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
-
-	if (diffMonths < 12) {
-		return `${diffMonths} ${i18n(I18nKey.timelineMonths)}`;
-	}
-	const years = Math.floor(diffMonths / 12);
-	const months = diffMonths % 12;
-	if (months === 0) {
-		return `${years} ${i18n(I18nKey.timelineYears)}`;
-	}
-	return `${years} ${i18n(I18nKey.timelineYears)} ${months} ${i18n(I18nKey.timelineMonths)}`;
-};
+const filterTabs = [
+	{
+		value: "all",
+		label: i18n(I18nKey.friendsFilterAll),
+		icon: "material-symbols:apps",
+		count: timelineData.length,
+	},
+	...types.map((type) => ({
+		value: type,
+		label: getTypeText(type),
+		icon: getTypeIcon(type),
+		count: timelineData.filter((item) => item.type === type).length,
+	})),
+];
 
 const title = i18n(I18nKey.timeline);
 const subtitle = i18n(I18nKey.timelineSubtitle);
 ---
 
-
 <MainGridLayout title={title} description={subtitle}>
-  <!-- 引入右侧边栏布局管理器 -->
-  <script>
-    import('../scripts/right-sidebar-layout.js');
-  </script>
-  <!-- 图标加载器，预加载所有时间线图标 -->
-  <IconifyLoader preloadIcons={allIcons} />
-  <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-    <div class="card-base z-10 px-6 py-8 md:px-9 md:py-1ss0 relative w-full">
-      <!-- 页面标题 -->
-      <div class="flex flex-col items-start justify-center mb-10">
-        <h1 class="text-3xl md:text-4xl font-bold text-black/90 dark:text-white/90 mb-3 relative
-                  before:w-1 before:h-8 before:rounded-md before:bg-[var(--primary)]
-                  before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4">
-          {i18n(I18nKey.timeline)}
-        </h1>
-        <p class="text-base md:text-lg text-black/60 dark:text-white/60">
-          {i18n(I18nKey.timelineSubtitle)}
-        </p>
-      </div>
+	<script>
+		import("../scripts/right-sidebar-layout.js");
+		import { loadIconify } from "../utils/icon-loader";
 
-      <!-- 统计信息卡片 -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        <div class="bg-blue-500/10 dark:bg-blue-900/30 rounded-xl p-5 border border-blue-500/20 dark:border-blue-900/30 hover:shadow-lg transition-shadow duration-300">
-          <div class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">{stats.total}</div>
-          <div class="text-sm text-blue-600/70 dark:text-blue-400/70">{i18n(I18nKey.timelineTotal)}</div>
-        </div>
-        <div class="bg-green-500/10 dark:bg-green-900/30 rounded-xl p-5 border border-green-500/20 dark:border-green-900/30 hover:shadow-lg transition-shadow duration-300">
-          <div class="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">{stats.byType.work}</div>
-          <div class="text-sm text-green-600/70 dark:text-green-400/70">{i18n(I18nKey.timelineWork)}</div>
-        </div>
-        <div class="bg-purple-500/10 dark:bg-purple-900/30 rounded-xl p-5 border border-purple-500/20 dark:border-purple-900/30 hover:shadow-lg transition-shadow duration-300">
-          <div class="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1">{stats.byType.project}</div>
-          <div class="text-sm text-purple-600/70 dark:text-purple-400/70">{i18n(I18nKey.timelineProjects)}</div>
-        </div>
-        <div class="bg-orange-500/10 dark:bg-orange-900/30 rounded-xl p-5 border border-orange-500/20 dark:border-orange-900/30 hover:shadow-lg transition-shadow duration-300">
-          <div class="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-1">
-            {workExperience.years}+
-          </div>
-          <div class="text-sm text-orange-600/70 dark:text-orange-400/70">{i18n(I18nKey.timelineExperience)}</div>
-        </div>
-      </div>
+		loadIconify().catch((error) => {
+			console.error("Failed to load Iconify:", error);
+		});
+	</script>
 
-      <!-- 当前进行中的项目 -->
-      {currentItems.length > 0 && (
-        <div class="mb-12">
-          <h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-6 flex items-center">
-            <span class="w-3 h-3 rounded-full bg-green-500 mr-3"></span>
-            {i18n(I18nKey.timelineCurrent)}
-          </h2>
-          <div class="grid grid-cols-1 gap-6">
-            {currentItems.map((item) => (
-              <div class="bg-transparent rounded-xl border border-black/10 dark:border-white/10 p-6 hover:shadow-lg transition-shadow duration-300">
-                <div class="flex flex-col md:flex-row md:items-start gap-5">
-                  <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style={`background-color: ${item.color || 'rgb(99 102 241)'}20`}>
-                    <Icon 
-                      icon={item.icon || getTypeIcon(item.type)} 
-                      class="text-2xl" 
-                      color={item.color || 'rgb(99 102 241)'}
-                      fallback={item.title.charAt(0)}
-                      loading="eager"
-                    />
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-3">
-                      <div>
-                        <h3 class="text-xl font-semibold text-black/90 dark:text-white/90 mb-1">
-                          {item.title}
-                        </h3>
-                        {item.organization && (
-                          <div class="text-sm text-black/70 dark:text-white/70">
-                            {item.organization} {item.position && `• ${item.position}`}
-                          </div>
-                        )}
-                      </div>
-                      <span class="px-3 py-1.5 text-xs bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full self-start">
-                        {i18n(I18nKey.timelineCurrent)}
-                      </span>
-                    </div>
-                    
-                    {item.location && (
-                      <div class="flex items-center text-sm text-black/60 dark:text-white/60 mb-3">
-                        <span class="mr-2">📍</span>
-                        <span>{item.location}</span>
-                      </div>
-                    )}
-                    
-                    <p class="text-black/70 dark:text-white/70 mb-4">
-                      {item.description}
-                    </p>
-                    
-                    <div class="flex flex-wrap items-center gap-4 mb-4">
-                      <div class="text-sm text-black/70 dark:text-white/70">
-                        <span class="font-medium">{i18n(I18nKey.timelineStartDate)}:</span> {formatDate(item.startDate)}
-                      </div>
-                      <div class="text-sm text-black/70 dark:text-white/70">
-                        <span class="font-medium">{i18n(I18nKey.timelineDuration)}:</span> {getDuration(item.startDate)}
-                      </div>
-                    </div>
-                    
-                    {item.skills && item.skills.length > 0 && (
-                      <div class="flex flex-wrap gap-2 mb-4">
-                        {item.skills.map((skill) => (
-                          <span class="px-3 py-1.5 text-xs bg-indigo-600/20 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-full">
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {item.links && item.links.length > 0 && (
-                      <div class="flex flex-wrap gap-4 pt-2">
-                        {item.links.map((link) => (
-                          <a 
-                            href={link.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            class="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium flex items-center gap-1"
-                          >
-                            {link.type === 'certificate' && '🏆'}
-                            {link.type === 'project' && '🔗'}
-                            {link.type === 'website' && '🌐'}
-                            {link.name}
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+	<script is:inline src="/js/filter-tabs-handler.js"></script>
 
-      <!-- 时间线 -->
-      <div class="mb-12">
-        <h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-8 flex items-center">
-          <span class="w-3 h-3 rounded-full bg-indigo-500 mr-3"></span>
-          {i18n(I18nKey.timelineHistory)}
-        </h2>
-        
-        <!-- 横向时间线容器 -->
-        <div class="relative overflow-hidden rounded-xl bg-transparent border border-black/10 dark:border-white/10 p-6 hover:shadow-lg transition-shadow duration-300">
-          <!-- 水平滚动区域 -->
-          <div class="flex overflow-x-auto pb-6 -mx-2 px-2 timeline-horizontal-scroll" id="timeline-scrollbar">
-            
-            <div class="flex space-x-8 min-w-max">
-              {allTimelineItems.map((item, index) => (
-                <div class="flex flex-col items-center flex-shrink-0 w-72" data-key={index}>
-                  {/* 时间线节点 */}
-                  <div class="relative z-10 w-16 h-16 rounded-xl flex items-center justify-center mb-6" style={`background-color: ${item.color || 'rgb(99 102 241)'}`}>
-                    <Icon 
-                      icon={item.icon || getTypeIcon(item.type)} 
-                      class="text-2xl text-white" 
-                      color="white"
-                      fallback={item.title.charAt(0)}
-                      loading="eager"
-                    />
-                    {/* 节点外圈装饰 */}
-                    <div class="absolute inset-0 rounded-xl border-2 border-white/30"></div>
-                  </div>
-                  
-                  {/* 时间点 */}
-                  <div class="text-xs text-black/50 dark:text-white/50 mb-2">
-                    {formatDate(item.startDate)}
-                  </div>
-                  
-                  {/* 内容卡片 */}
-                  <div class="flex-1 bg-transparent rounded-xl border border-black/10 dark:border-white/10 p-5 w-full">
-                    <div class="flex flex-col gap-3">
-                      <div>
-                        <h3 class="text-lg font-semibold text-black/90 dark:text-white/90 line-clamp-2">
-                          {item.title}
-                        </h3>
-                        {item.organization && (
-                          <div class="text-xs text-black/70 dark:text-white/70 mt-1">
-                            {item.organization} {item.position && `• ${item.position}`}
-                          </div>
-                        )}
-                      </div>
-                      
-                      <span class={`px-2 py-1 text-xs rounded-full self-start ${
-                        item.type === 'education' ? 'bg-blue-600/20 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                        item.type === 'work' ? 'bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                        item.type === 'project' ? 'bg-purple-600/20 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
-                        'bg-orange-600/20 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-                      }`}>
-                        {i18n(item.type === 'education' ? I18nKey.timelineEducation :
-                              item.type === 'work' ? I18nKey.timelineWork :
-                              item.type === 'project' ? I18nKey.timelineProject :
-                              I18nKey.timelineAchievement)}
-                      </span>
-                      
-                      <p class="text-sm text-black/70 dark:text-white/70 line-clamp-3">
-                        {item.description}
-                      </p>
-                      
-                      <div class="flex items-center justify-between text-xs text-black/60 dark:text-white/60 mt-2">
-                        <div>
-                          {getDuration(item.startDate, item.endDate)}
-                        </div>
-                        {item.location && (
-                          <div class="flex items-center">
-                            <span class="mr-1">📍</span>
-                            <span class="truncate max-w-[80px]">{item.location}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* 滚动指示器 */}
-          <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-transparent to-transparent pointer-events-none hidden md:block"></div>
-        </div>
-      </div>
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
+		<div class="card-base z-10 px-6 sm:px-9 py-6 relative w-full">
+			<PageHeader title={title} subtitle={subtitle} />
 
-    </div>
-  </div>
+			<div class="mb-8">
+				<FilterTabs tabs={filterTabs} dataAttr="type" />
+			</div>
+
+			<div id="timeline-list" class="timeline-list">
+				{timelineData.map((item) => <TimelineCard item={item} />)}
+			</div>
+
+			<div id="no-results" class="hidden text-center py-16">
+				<Icon
+					name="material-symbols:search-off-rounded"
+					class="text-6xl text-black/15 dark:text-white/15 mb-4"
+				/>
+				<p class="text-black/40 dark:text-white/40 text-lg">
+					No matching items
+				</p>
+			</div>
+		</div>
+	</div>
 </MainGridLayout>
 
 <style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  /* 时间线节点动画 */
-  @keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-  }
-  
-  .timeline-node {
-    animation: pulse 2s infinite;
-  }
-  
-  /* 优化夜间模式下的原生滚动条样式 */
+	.timeline-list {
+		position: relative;
+	}
 
-  .timeline-horizontal-scroll::-webkit-scrollbar {
-    height: 8px;
-  }
-  
-  .timeline-horizontal-scroll::-webkit-scrollbar-track {
-    background: #e5e7eb;
-    border-radius: 4px;
-  }
-  
-  .timeline-horizontal-scroll::-webkit-scrollbar-thumb {
-    background: hsl(var(--hue), 70%, 60%); /* 使用动态主题色 */
-    border-radius: 4px;
-  }
-  
-
-
-
-
+	.timeline-list::before {
+		content: "";
+		position: absolute;
+		left: 9px;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		background: var(--line-divider);
+		border-radius: 1px;
+	}
 </style>
-
-<script>
-  // 确保图标库已加载，并处理页面导航
-  function initTimelinePage() {
-    // 如果图标加载器存在，确保图标已加载
-    if (window.__iconifyLoader) {
-      window.__iconifyLoader.load().then(function() {
-        // 图标加载完成后，触发时间线项目的重新渲染
-        var timelineItems = document.querySelectorAll('.timeline-item');
-        timelineItems.forEach(function(item) {
-          item.dispatchEvent(new CustomEvent('iconify-ready'));
-        });
-      }).catch(function(error) {
-        console.error('Failed to load icons on timeline page:', error);
-      });
-    }
-    
-    // 添加时间线节点动画效果
-    var timelineNodes = document.querySelectorAll('.timeline-node');
-    timelineNodes.forEach(function(node, index) {
-      // 添加延迟，使动画依次出现
-      (node as HTMLElement).style.animationDelay = (index * 0.2) + 's';
-    });
-  }
-  
-  // 页面加载完成后初始化
-  document.addEventListener('DOMContentLoaded', function() {
-    initTimelinePage();
-  });
-  
-  // 处理页面导航时的图标重新加载
-  if (typeof window !== 'undefined') {
-    // 监听页面显示事件（包括前进/后退导航）
-    window.addEventListener('pageshow', function(event) {
-      if (event.persisted && window.__iconifyLoader) {
-        // 页面从缓存恢复，重新检查图标状态
-        setTimeout(function() {
-          window.__iconifyLoader?.load().catch(console.error);
-        }, 100);
-      }
-    });
-    
-    // 增强对 Astro 导航的支持
-    document.addEventListener('astro:page-load', function() {
-      setTimeout(initTimelinePage, 100);
-    });
-    
-    document.addEventListener('astro:after-swap', function() {
-      setTimeout(initTimelinePage, 100);
-    });
-    
-    // 监听 SWUP 事件
-    document.addEventListener('swup:contentReplaced', function() {
-      setTimeout(initTimelinePage, 100);
-    });
-    
-    document.addEventListener('swup:pageView', function() {
-      setTimeout(initTimelinePage, 100);
-    });
-  }
-</script>
-

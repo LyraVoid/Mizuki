@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }
+</style>
+</head>
+<body>
+<script src="/pio/l2d-widget.min.js"></script>
+<script>
+  var widgetInstance = null;
+  var activeConfigKey = '';
+  var loadingConfigKey = '';
+  var lastContentHeight = 500;
+
+  var menuActions = {
+    home: function() { parent.postMessage({ type: 'l2d-action', action: 'home' }, '*'); },
+    scrollToTop: function() { parent.postMessage({ type: 'l2d-action', action: 'scrollToTop' }, '*'); },
+    sleep: function(w) { w.sleep(); },
+  };
+
+  function notifyLoaded() {
+    var maxBottom = 0;
+    document.querySelectorAll('*').forEach(function(el) {
+      if (el.getBoundingClientRect) {
+        var r = el.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0 && r.bottom > maxBottom) {
+          maxBottom = r.bottom;
+        }
+      }
+    });
+
+    lastContentHeight = Math.ceil(maxBottom) || lastContentHeight || 500;
+    parent.postMessage({ type: 'l2d-loaded', contentHeight: lastContentHeight }, '*');
+  }
+
+  function hideAboutMenu() {
+    if (document.getElementById('l2d-hide-about')) return;
+    var style = document.createElement('style');
+    style.id = 'l2d-hide-about';
+    style.textContent = 'button[title="About"] { display: none !important; }';
+    document.head.appendChild(style);
+  }
+
+  function destroyWidget() {
+    if (!widgetInstance) return;
+    try {
+      widgetInstance.destroy();
+    } catch (err) {
+      console.error('Failed to destroy Live2D widget:', err);
+    }
+    widgetInstance = null;
+  }
+
+  window.addEventListener('message', function(e) {
+    if (e.data.type !== 'l2d-init') return;
+    var config = e.data.config;
+    var configKey = JSON.stringify(config);
+
+    if (widgetInstance && activeConfigKey === configKey) {
+      notifyLoaded();
+      return;
+    }
+
+    if (loadingConfigKey === configKey) {
+      return;
+    }
+
+    loadingConfigKey = configKey;
+    if (widgetInstance) {
+      destroyWidget();
+    }
+
+    if (config.menus && config.menus.items) {
+      config.menus.items = config.menus.items.map(function(item) {
+        return {
+          icon: item.icon,
+          label: item.label,
+          onClick: menuActions[item.action] || function() {}
+        };
+      });
+    }
+
+    try {
+      widgetInstance = L2D_WIDGET.createWidget(config);
+      activeConfigKey = configKey;
+    } catch (err) {
+      loadingConfigKey = '';
+      activeConfigKey = '';
+      console.error('Failed to initialize Live2D widget:', err);
+      return;
+    }
+    loadingConfigKey = '';
+
+    if (config._hideAbout) {
+      hideAboutMenu();
+    }
+
+    var notified = false;
+    function notifyOnce() {
+      if (notified) return;
+      notified = true;
+      notifyLoaded();
+    }
+
+    var checkInterval = setInterval(function() {
+      var canvas = document.querySelector('canvas');
+      if (canvas && canvas.width > 0 && canvas.height > 0) {
+        clearInterval(checkInterval);
+        setTimeout(notifyOnce, 300);
+      }
+    }, 200);
+
+    setTimeout(function() {
+      clearInterval(checkInterval);
+      loadingConfigKey = '';
+      notifyOnce();
+    }, 15000);
+  });
+</script>
+</body>
+</html>

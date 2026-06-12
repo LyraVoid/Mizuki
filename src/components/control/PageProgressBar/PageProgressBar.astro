@@ -1,0 +1,59 @@
+---
+import "./page-progress-bar.css";
+
+interface Props {
+	enable: boolean;
+	height: number;
+	duration: number;
+}
+
+const { enable, height, duration } = Astro.props;
+---
+
+{enable && (
+	<>
+		<div
+			id="page-progress-bar"
+			style={`--page-progress-bar-height: ${height}px; --page-progress-bar-duration: ${duration}ms;`}
+		/>
+
+		<script is:inline define:vars={{ enable }}>
+			if (!enable) {
+				const el = document.getElementById("page-progress-bar");
+			if (el) {el.remove();}
+			}
+
+			function setupProgressBar() {
+				if (!window.swup) {return;}
+
+				window.swup.hooks.on("visit:start", () => {
+					const bar = document.getElementById("page-progress-bar");
+					if (bar) {
+						bar.classList.remove("finishing", "done");
+						void bar.offsetWidth;
+						bar.classList.add("loading");
+					}
+				});
+
+				window.swup.hooks.on("visit:end", () => {
+					const bar = document.getElementById("page-progress-bar");
+					if (bar) {
+						bar.classList.remove("loading");
+						bar.classList.add("finishing");
+						setTimeout(() => {
+							bar.classList.remove("finishing");
+							bar.classList.add("done");
+							setTimeout(() => bar.classList.remove("done"), 300);
+						}, 200);
+					}
+				});
+			}
+
+			if (window.swup) {
+				setupProgressBar();
+			} else {
+				document.addEventListener("swup:enable", setupProgressBar);
+			}
+		</script>
+	</>
+)}

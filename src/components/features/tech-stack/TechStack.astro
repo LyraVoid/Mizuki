@@ -1,0 +1,72 @@
+---
+import { SectionTitle } from "../section-title";
+import type { TechStackProps } from "./types";
+
+const {
+	techStack,
+	title,
+	class: className = "",
+} = Astro.props as TechStackProps;
+---
+
+<div class={className}>
+	{title && <SectionTitle title={title} />}
+	<div class="flex flex-wrap gap-2">
+		{
+			techStack.map((tech) => (
+				<span class="tech-chip px-3 py-1.5 rounded-full bg-[var(--primary)]/8 text-[var(--primary)] text-sm font-medium hover:bg-[var(--primary)]/15 transition-all duration-200 cursor-default">
+					{tech}
+				</span>
+			))
+		}
+	</div>
+</div>
+
+<style>
+	.tech-chip {
+		animation: fadeIn 0.3s ease-out forwards;
+		opacity: 0;
+	}
+
+	.tech-chip:nth-child(1) {
+		animation-delay: 0.02s;
+	}
+	.tech-chip:nth-child(2) {
+		animation-delay: 0.04s;
+	}
+	.tech-chip:nth-child(3) {
+		animation-delay: 0.06s;
+	}
+	.tech-chip:nth-child(4) {
+		animation-delay: 0.08s;
+	}
+	.tech-chip:nth-child(5) {
+		animation-delay: 0.1s;
+	}
+	.tech-chip:nth-child(6) {
+		animation-delay: 0.12s;
+	}
+	.tech-chip:nth-child(7) {
+		animation-delay: 0.14s;
+	}
+	.tech-chip:nth-child(8) {
+		animation-delay: 0.16s;
+	}
+	.tech-chip:nth-child(9) {
+		animation-delay: 0.18s;
+	}
+	.tech-chip:nth-child(10) {
+		animation-delay: 0.2s;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+</style>

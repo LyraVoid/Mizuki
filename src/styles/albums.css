@@ -5,157 +5,24 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.album-card:hover {
-  transform: translateY(-4px);
+/* 瀑布流布局 */
+.gallery-masonry {
+  column-width: 240px;
+  column-gap: 0.75rem;
 }
 
-/* 照片网格布局 */
+.gallery-masonry .gallery-photo-card {
+  break-inside: avoid;
+}
+
+/* 照片网格加载动画 */
 .photo-gallery {
   animation: fadeInUp 0.6s ease-out;
 }
 
-.photo-item {
-  transition: all 0.3s ease;
-}
-
-/* 瀑布流布局优化 */
-.masonry-layout .photo-item {
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-
-/* 照片悬停效果 */
-.photo-container {
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.5rem;
-}
-
-.photo-image {
-  transition: transform 0.3s ease;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.photo-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.photo-item:hover .photo-overlay {
-  opacity: 1;
-}
-
-.photo-info {
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-}
-
-.photo-item:hover .photo-info {
-  transform: translateY(0);
-}
-
-/* 灯箱样式 */
-.lightbox {
-  backdrop-filter: blur(8px);
-  z-index: 9999;
-}
-
-.lightbox-content {
-  max-width: 95vw;
-  max-height: 95vh;
-}
-
-.lightbox-image-container {
-  min-height: 60vh;
-}
-
-#lightbox-image {
-  max-width: 100%;
-  max-height: 80vh;
-  object-fit: contain;
-  border-radius: 0.5rem;
-}
-
-/* 灯箱按钮 */
-.lightbox button {
-  backdrop-filter: blur(4px);
-  transition: all 0.2s ease;
-}
-
-.lightbox button:hover {
-  background-color: rgba(0, 0, 0, 0.7);
-  transform: scale(1.05);
-}
-
-/* 灯箱信息面板 */
-#lightbox-info {
-  backdrop-filter: blur(8px);
-  border-radius: 0.5rem;
-  max-height: 30vh;
-  overflow-y: auto;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .albums-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .masonry-layout {
-    columns: 1;
-  }
-
-  .photo-gallery[data-columns="3"],
-  .photo-gallery[data-columns="4"] {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .lightbox-content {
-    padding: 1rem;
-  }
-
-  #lightbox-prev,
-  #lightbox-next {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-
-  #lightbox-info {
-    position: static;
-    margin-top: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .photo-gallery {
-    grid-template-columns: 1fr !important;
-  }
-
-  .masonry-layout {
-    columns: 1;
-  }
-}
-
-/* 加载动画 */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 图片懒加载占位符 */
+/* 图片懒加载占位符 - 使用主题色变量 */
 .photo-image[loading="lazy"] {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, var(--btn-regular-bg) 25%, var(--card-bg) 50%, var(--btn-regular-bg) 75%);
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
 }
@@ -169,62 +36,26 @@
   }
 }
 
-/* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .photo-image[loading="lazy"] {
-    background: linear-gradient(90deg, #2a2a2a 25%, #1a1a1a 50%, #2a2a2a 75%);
-    background-size: 200% 100%;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* 标签筛选动画 */
-.album-filter-tag {
-  position: relative;
-  overflow: hidden;
-}
-
-.album-filter-tag::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.album-filter-tag:hover::before {
-  left: 100%;
-}
-
-/* 相册卡片内容对齐 */
-.album-card .p-4 {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.album-card h3 {
-  flex-grow: 1;
-}
-
-/* 打印样式 */
-@media print {
-  .lightbox,
-  .album-filter-tag,
-  button {
-    display: none !important;
+/* 响应式瀑布流 */
+@media (max-width: 768px) {
+  .gallery-masonry {
+    column-width: 180px;
   }
+}
 
-  .photo-gallery {
-    display: block !important;
-    columns: 2;
-    column-gap: 1rem;
-  }
-
-  .photo-item {
-    break-inside: avoid;
-    margin-bottom: 1rem;
+@media (max-width: 480px) {
+  .gallery-masonry {
+    column-width: 140px;
   }
 }

@@ -1,0 +1,27 @@
+/**
+ * 过渡动画 CSS 变量
+ * 通过 JS 动态控制，实现可配置的过渡效果
+ */
+
+:root {
+  --transition-duration: 120ms;
+  --transition-easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-easing-out: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  --transition-translate: 1.5rem;
+  --transition-stagger: 35ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-duration: 0.01ms;
+    --transition-stagger: 0ms;
+    --transition-translate: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --transition-translate: 0.5rem;
+    --transition-duration: 150ms;
+  }
+}

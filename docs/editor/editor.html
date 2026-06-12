@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title data-i18n="pageTitle">Mizuki 可视化编辑器</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/github-dark.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="editor.css">
+</head>
+<body>
+<!-- Theme Color Picker Floating Button -->
+<div id="themePickerBtn" class="theme-picker-btn" data-i18n-title="themeColor" title="主题颜色">🎨</div>
+<div id="themePickerPanel" class="theme-picker-panel hidden">
+  <h4 data-i18n="themeColor">主题颜色</h4>
+  <input type="range" id="hueSlider" min="0" max="360" value="60">
+  <div id="huePreview" class="hue-preview"></div>
+  <div class="preset-colors">
+    <span class="preset" data-hue="0" style="--ph:0" data-i18n-title="colorRed" title="红色"></span>
+    <span class="preset" data-hue="30" style="--ph:30" data-i18n-title="colorOrange" title="橙色"></span>
+    <span class="preset" data-hue="60" style="--ph:60" data-i18n-title="colorYellow" title="黄色"></span>
+    <span class="preset" data-hue="120" style="--ph:120" data-i18n-title="colorGreen" title="绿色"></span>
+    <span class="preset" data-hue="180" style="--ph:180" data-i18n-title="colorCyan" title="青色"></span>
+    <span class="preset" data-hue="210" style="--ph:210" data-i18n-title="colorBlue" title="蓝色"></span>
+    <span class="preset" data-hue="270" style="--ph:270" data-i18n-title="colorPurple" title="紫色"></span>
+    <span class="preset" data-hue="330" style="--ph:330" data-i18n-title="colorPink" title="粉色"></span>
+  </div>
+  <div class="theme-switcher">
+    <h4 data-i18n="themeMode">主题模式</h4>
+    <div class="theme-options">
+      <div class="theme-opt active" data-theme="dark">
+        <span class="dot"></span>
+        <div class="theme-opt-preview"><span style="background:#1a1a14"></span><span style="background:#2a2a22"></span><span style="background:#e5e5d9"></span></div>
+        <span data-i18n="themeDark">默认深色</span>
+      </div>
+      <div class="theme-opt" data-theme="light">
+        <span class="dot"></span>
+        <div class="theme-opt-preview"><span style="background:#f5f5f0"></span><span style="background:#ededea"></span><span style="background:#222"></span></div>
+        <span data-i18n="themeLight">亮色主题</span>
+      </div>
+      <div class="theme-opt" data-theme="deep-blue">
+        <span class="dot"></span>
+        <div class="theme-opt-preview"><span style="background:#141c2e"></span><span style="background:#1c2840"></span><span style="background:#5bb5e8"></span></div>
+        <span data-i18n="themeDeepBlue">深蓝主题</span>
+      </div>
+      <div class="theme-opt" data-theme="high-contrast">
+        <span class="dot"></span>
+        <div class="theme-opt-preview"><span style="background:#000"></span><span style="background:#111"></span><span style="background:#ffdd00"></span></div>
+        <span data-i18n="themeHighContrast">高对比度</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Top Toolbar -->
+<header id="toolbar" class="toolbar">
+  <div class="toolbar-left">
+    <button id="toggleModules" class="tool-btn" data-i18n-title="modulePanel" title="模块面板">☰</button>
+    <span class="brand">✦ Mizuki Editor</span>
+  </div>
+  <div class="toolbar-center">
+    <div class="tool-group">
+      <button class="tool-btn" data-cmd="heading" data-i18n-title="cmdHeading" title="标题">H</button>
+      <button class="tool-btn" data-cmd="bold" data-i18n-title="cmdBold" title="加粗"><b>B</b></button>
+      <button class="tool-btn" data-cmd="italic" data-i18n-title="cmdItalic" title="斜体"><i>I</i></button>
+      <button class="tool-btn" data-cmd="strikethrough" data-i18n-title="cmdStrikethrough" title="删除线"><s>S</s></button>
+    </div>
+    <div class="tool-sep"></div>
+    <div class="tool-group">
+      <button class="tool-btn" data-cmd="ul" data-i18n-title="cmdUl" title="无序列表">⊙</button>
+      <button class="tool-btn" data-cmd="ol" data-i18n-title="cmdOl" title="有序列表">①</button>
+      <button class="tool-btn" data-cmd="task" data-i18n-title="cmdTask" title="任务列表">☑</button>
+      <button class="tool-btn" data-cmd="quote" data-i18n-title="cmdQuote" title="引用">❝</button>
+    </div>
+    <div class="tool-sep"></div>
+    <div class="tool-group">
+      <button class="tool-btn" data-cmd="code" data-i18n-title="cmdCode" title="行内代码">⌥</button>
+      <button class="tool-btn" data-cmd="codeblock" data-i18n-title="cmdCodeblock" title="代码块">{ }</button>
+      <button class="tool-btn" data-cmd="link" data-i18n-title="cmdLink" title="链接">🔗</button>
+      <button class="tool-btn" data-cmd="image" data-i18n-title="cmdImage" title="图片">🖼</button>
+      <button class="tool-btn" data-cmd="table" data-i18n-title="cmdTable" title="表格">▦</button>
+      <button class="tool-btn" data-cmd="hr" data-i18n-title="cmdHr" title="分割线">─</button>
+    </div>
+  </div>
+  <div class="toolbar-right">
+    <div class="view-switch">
+      <button class="view-btn active" data-view="edit" data-i18n="viewEdit" data-i18n-title="viewEdit" title="编辑">编辑</button>
+      <button class="view-btn" data-view="split" data-i18n="viewSplit" data-i18n-title="viewSplit" title="分屏">分屏</button>
+      <button class="view-btn" data-view="preview" data-i18n="viewPreview" data-i18n-title="viewPreview" title="预览">预览</button>
+    </div>
+    <button id="btnFrontMatter" class="tool-btn accent" title="Front Matter">FM</button>
+    <button id="btnImport" class="tool-btn" data-i18n-title="importFile" title="导入">📥</button>
+    <button id="btnExport" class="tool-btn" data-i18n-title="exportFile" title="导出">📤</button>
+    <button id="btnLang" class="tool-btn lang-btn" title="语言/Language">🌐</button>
+  </div>
+</header>
+
+<!-- Language Selector Dropdown -->
+<div id="langDropdown" class="lang-dropdown hidden">
+  <div class="lang-opt active" data-lang="zh-CN"><span class="lang-flag">🇨🇳</span> 简体中文</div>
+  <div class="lang-opt" data-lang="zh-TW"><span class="lang-flag">🇹🇼</span> 繁體中文</div>
+  <div class="lang-opt" data-lang="en"><span class="lang-flag">🇬🇧</span> English</div>
+  <div class="lang-opt" data-lang="ja"><span class="lang-flag">🇯🇵</span> 日本語</div>
+</div>
+
+<!-- Main Layout -->
+<main id="mainLayout" class="main-layout">
+  <!-- Left: Module Panel -->
+  <aside id="modulePanel" class="module-panel">
+    <div class="panel-header">
+      <h3 data-i18n="modulePanel">模块面板</h3>
+      <input type="text" id="moduleSearch" class="module-search" data-i18n-placeholder="searchModules" placeholder="搜索模块...">
+    </div>
+    <div id="moduleList" class="module-list"></div>
+  </aside>
+
+  <!-- Center: Editor -->
+  <section id="editorSection" class="editor-section">
+    <textarea id="editor" class="editor-textarea" data-i18n-placeholder="editorPlaceholder" placeholder="在此输入 Markdown 内容..." spellcheck="false"></textarea>
+  </section>
+
+  <!-- Right: Preview -->
+  <section id="previewSection" class="preview-section hidden">
+    <div id="preview" class="preview-content"></div>
+  </section>
+</main>
+
+<!-- Front Matter Modal -->
+<div id="fmModal" class="modal hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 data-i18n="fmConfig">Front Matter 配置</h3>
+      <button id="fmClose" class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fm-grid">
+        <label><span data-i18n="fmTitle">标题</span> <input type="text" id="fm-title" data-i18n-placeholder="fmTitlePh" placeholder="文章标题"></label>
+        <label><span data-i18n="fmPublished">发布日期</span> <input type="date" id="fm-published"></label>
+        <label><span data-i18n="fmUpdated">更新日期</span> <input type="date" id="fm-updated"></label>
+        <label><span data-i18n="fmDesc">描述</span> <textarea id="fm-description" rows="2" data-i18n-placeholder="fmDescPh" placeholder="文章描述"></textarea></label>
+        <label><span data-i18n="fmImage">封面图片</span> <input type="text" id="fm-image" placeholder="./cover.webp"></label>
+        <label><span data-i18n="fmCategory">分类</span> <input type="text" id="fm-category" data-i18n-placeholder="fmCategoryPh" placeholder="分类名称"></label>
+        <label><span data-i18n="fmTags">标签</span> <input type="text" id="fm-tags" data-i18n-placeholder="fmTagsPh" placeholder="标签1, 标签2, 标签3"></label>
+        <div class="fm-row">
+          <label class="fm-check"><input type="checkbox" id="fm-draft"> <span data-i18n="fmDraft">草稿</span></label>
+          <label class="fm-check"><input type="checkbox" id="fm-pinned"> <span data-i18n="fmPinned">置顶</span></label>
+          <label class="fm-check"><input type="checkbox" id="fm-comment" checked> <span data-i18n="fmComment">评论</span></label>
+          <label class="fm-check"><input type="checkbox" id="fm-encrypted"> <span data-i18n="fmEncrypted">加密</span></label>
+        </div>
+        <label id="fm-password-row" class="hidden"><span data-i18n="fmPassword">密码</span> <input type="text" id="fm-password" data-i18n-placeholder="fmPasswordPh" placeholder="访问密码"></label>
+        <label><span data-i18n="fmPriority">优先级</span> <input type="number" id="fm-priority" placeholder="0" min="0"></label>
+        <label><span data-i18n="fmAlias">别名</span> <input type="text" id="fm-alias" placeholder="custom-url-slug"></label>
+        <label><span data-i18n="fmLang">语言</span> <select id="fm-lang"><option value="" data-i18n="fmLangDefault">默认</option><option value="zh-CN">简体中文</option><option value="en">English</option><option value="ja">日本語</option></select></label>
+        <label><span data-i18n="fmLicense">许可证</span> <input type="text" id="fm-license" placeholder="CC BY-NC-SA 4.0"></label>
+        <label><span data-i18n="fmAuthor">作者</span> <input type="text" id="fm-author" data-i18n-placeholder="fmAuthorPh" placeholder="作者名"></label>
+        <label><span data-i18n="fmSourceLink">来源链接</span> <input type="text" id="fm-source" placeholder="https://..."></label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="fmApply" class="btn-primary" data-i18n="fmApply">应用到文章</button>
+      <button id="fmCancel" class="btn-secondary" data-i18n="fmCancelBtn">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div id="exportModal" class="modal hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-content modal-sm">
+    <div class="modal-header"><h3 data-i18n="exportTitle">导出文件</h3><button class="modal-close" onclick="toggleModal('exportModal',false)">✕</button></div>
+    <div class="modal-body export-options">
+      <button class="export-btn" data-format="md">📝 Markdown (.md)</button>
+      <button class="export-btn" data-format="html">🌐 HTML (.html)</button>
+      <button class="export-btn" data-format="txt" data-i18n="exportTxt">📄 纯文本 (.txt)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import Drop Zone Overlay -->
+<div id="dropOverlay" class="drop-overlay hidden">
+  <div class="drop-message"><span data-i18n="dropMain">📂 拖拽文件到此处导入</span><br><small data-i18n="dropSub">支持 .md .txt .html</small></div>
+</div>
+
+<!-- Hidden File Input -->
+<input type="file" id="fileInput" accept=".md,.txt,.html,.markdown" style="display:none">
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11"></script>
+<script src="editor.js"></script>
+</body>
+</html>

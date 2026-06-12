@@ -1,0 +1,38 @@
+---
+import ListContainer from "@/components/misc/ListContainer.astro";
+import ListDivider from "@/components/misc/ListDivider.astro";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import type { PostForList } from "@/utils/content-utils";
+
+import PostListItem from "./PostListItem.astro";
+
+interface Props {
+	relatedPosts: PostForList[];
+}
+
+const { relatedPosts } = Astro.props;
+---
+
+{
+	relatedPosts.length > 0 && (
+		<ListContainer
+			title={i18n(I18nKey.relatedPosts)}
+			badge={i18n(I18nKey.smartRecommend)}
+			icon="material-symbols:signpost"
+		>
+			<div class="flex flex-col -mx-1">
+				{relatedPosts.map((post, idx) => (
+					<>
+						<PostListItem
+							post={post}
+							index={idx}
+							dateFormat="description"
+						/>
+						{idx < relatedPosts.length - 1 && <ListDivider />}
+					</>
+				))}
+			</div>
+		</ListContainer>
+	)
+}

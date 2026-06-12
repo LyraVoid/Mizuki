@@ -1,12 +1,25 @@
+@reference "tailwindcss";
+
 .expressive-code {
   @apply relative;
+
+  /* Mermaid 全屏按钮与按钮体系的配色保持一致 */
+  .mermaid-fullscreen-btn {
+    background: var(--btn-regular-bg);
+    color: var(--btn-content);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+  }
+
+  .mermaid-fullscreen-btn:hover {
+    background: var(--btn-regular-bg-hover);
+  }
 
   .frame {
     @apply !shadow-none;
   }
 
   .title {
-    font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family: var(--ec-codeFontFml, "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
   }
 
   /* 复制按钮样式 (Copy Button) */
@@ -43,7 +56,7 @@
 
   /* 成功状态下的切换动画 */
   .copy-btn.success .copy-icon {
-    @apply opacity-0 fill-[var(--deep-text)];
+    @apply opacity-0 fill-(--deep-text);
   }
 
   .copy-btn.success .success-icon {

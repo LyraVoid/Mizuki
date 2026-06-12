@@ -22,7 +22,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/matsuzaka-yuki/Mizuki.git
+git clone https://github.com/LyraVoid/Mizuki.git
 cd Mizuki
 
 # 安装依赖
@@ -518,7 +518,7 @@ git clone https://github.com/your-username/Mizuki-Content.git content
 
 ## 🤝 需要帮助?
 
-- 查看 [GitHub Issues](https://github.com/matsuzaka-yuki/Mizuki/issues)
+- 查看 [GitHub Issues](https://github.com/LyraVoid/Mizuki/issues)
 - 阅读 [完整文档](../README.zh.md)
 - 运行 `pnpm run check-env` 检查配置
 

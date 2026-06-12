@@ -2,7 +2,7 @@
 title: Simple Guides for Mizuki
 published: 2024-04-01
 description: "How to use this blog template."
-image: "./cover.png"
+image: "./cover.webp"
 tags: ["Mizuki", "Blogging", "Customization"]
 category: Guides
 draft: false
@@ -54,6 +54,6 @@ Your post files should be placed in `src/content/posts/` directory. You can also
 src/content/posts/
 ├── post-1.md
 └── post-2/
-    ├── cover.png
+    ├── cover.webp
     └── index.md
 ```

@@ -1,0 +1,175 @@
+---
+import { commentConfig } from "@/config";
+
+interface Props {
+	path: string;
+}
+
+const config = {
+	...commentConfig.giscus,
+	term: Astro.props.path,
+};
+---
+
+<div id="giscus-container" class="giscus-container"></div>
+
+<script is:inline define:vars={{ config }}>
+	(function () {
+		const GISCUS_CONTAINER_ID = "giscus-container";
+		const ROOT_MARGIN = "200px";
+
+		let observer = null;
+
+		function getCurrentPath() {
+			const pathname = window.location.pathname;
+			return pathname.endsWith("/") && pathname.length > 1
+				? pathname.slice(0, -1)
+				: pathname;
+		}
+
+		async function initGiscus() {
+			const container = document.getElementById(GISCUS_CONTAINER_ID);
+			if (!container) {
+				return;
+			}
+
+			let theme = config.theme;
+			if (theme === "preferred_color_scheme") {
+				const isDark =
+					document.documentElement.classList.contains("dark") ||
+					document.documentElement
+						.getAttribute("data-theme")
+						?.includes("dark");
+				theme = isDark ? "dark" : "light";
+			}
+
+			container.innerHTML = "";
+
+			const script = document.createElement("script");
+			script.src = "https://giscus.app/client.js";
+			script.setAttribute("data-repo", config.repo);
+			script.setAttribute("data-repo-id", config.repoId);
+			script.setAttribute("data-category", config.category);
+			script.setAttribute("data-category-id", config.categoryId);
+			script.setAttribute("data-mapping", config.mapping);
+			script.setAttribute("data-term", getCurrentPath());
+			script.setAttribute("data-strict", config.strict);
+			script.setAttribute(
+				"data-reactions-enabled",
+				config.reactionsEnabled,
+			);
+			script.setAttribute("data-emit-metadata", config.emitMetadata);
+			script.setAttribute("data-input-position", config.inputPosition);
+			script.setAttribute("data-theme", theme);
+			script.setAttribute(
+				"data-lang",
+				config.lang ? config.lang.replace("_", "-") : "en",
+			);
+			script.setAttribute("data-loading", config.loading);
+			script.crossOrigin = "anonymous";
+			script.async = true;
+
+			container.appendChild(script);
+		}
+
+		function cleanup() {
+			if (observer) {
+				observer.disconnect();
+				observer = null;
+			}
+			if (window.swup?.hooks) {
+				window.swup.hooks.off("content:replace", initGiscus);
+			}
+		}
+
+		function setupLazyLoad() {
+			const container = document.getElementById(GISCUS_CONTAINER_ID);
+			if (!container) {
+				return;
+			}
+
+			observer = new IntersectionObserver(
+				(entries) => {
+					if (entries[0].isIntersecting) {
+						observer.disconnect();
+						observer = null;
+						initGiscus();
+					}
+				},
+				{ rootMargin: ROOT_MARGIN },
+			);
+
+			observer.observe(container);
+		}
+
+		function setupSwupHooks() {
+			if (window.swup?.hooks) {
+				window.swup.hooks.on("content:replace", () => {
+					setTimeout(setupLazyLoad, 200);
+				});
+			} else {
+				document.addEventListener(
+					"swup:enable",
+					() => {
+						if (window.swup?.hooks) {
+							window.swup.hooks.on("content:replace", () => {
+								setTimeout(setupLazyLoad, 200);
+							});
+						}
+					},
+					{ once: true },
+				);
+			}
+		}
+
+		document.addEventListener("mizuki:page:loaded", () => {
+			setupLazyLoad();
+		});
+
+		window.addEventListener("beforeunload", cleanup);
+
+		if (document.readyState === "loading") {
+			document.addEventListener("DOMContentLoaded", () => {
+				setupLazyLoad();
+				setupSwupHooks();
+			});
+		} else {
+			setupLazyLoad();
+			setupSwupHooks();
+		}
+
+		const observer_theme = new MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				if (
+					mutation.attributeName === "class" ||
+					mutation.attributeName === "data-theme"
+				) {
+					const isDark =
+						document.documentElement.classList.contains("dark") ||
+						document.documentElement
+							.getAttribute("data-theme")
+							?.includes("dark");
+					const theme = isDark ? "dark" : "light";
+
+					const iframe = document.querySelector(
+						"iframe.giscus-frame",
+					);
+					if (iframe) {
+						iframe.contentWindow?.postMessage(
+							{ giscus: { setConfig: { theme } } },
+							"https://giscus.app",
+						);
+					}
+				}
+			});
+		});
+
+		observer_theme.observe(document.documentElement, { attributes: true });
+	})();
+</script>
+
+<style>
+	.giscus-container {
+		min-height: 200px;
+	}
+</style>

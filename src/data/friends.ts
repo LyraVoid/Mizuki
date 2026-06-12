@@ -23,7 +23,8 @@ export const friendsData: FriendItem[] = [
 	{
 		id: 2,
 		title: "Mizuki Docs",
-		imgurl: "http://q.qlogo.cn/headimg_dl?dst_uin=3231515355&spec=640&img_type=jpg",
+		imgurl:
+			"https://q.qlogo.cn/headimg_dl?dst_uin=3231515355&spec=640&img_type=jpg",
 		desc: "Mizuki User Manual",
 		siteurl: "https://docs.mizuki.mysqil.com",
 		tags: ["Docs"],

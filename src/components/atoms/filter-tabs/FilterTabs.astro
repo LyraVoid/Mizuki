@@ -1,0 +1,114 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface FilterTab {
+	value: string;
+	label: string;
+	icon?: string;
+	count?: number;
+}
+
+interface Props {
+	tabs: FilterTab[];
+	dataAttr: string;
+	activeValue?: string;
+	class?: string;
+}
+
+const {
+	tabs,
+	dataAttr,
+	activeValue = "all",
+	class: className = "",
+} = Astro.props;
+---
+
+<div class:list={["filter-tabs", className]}>
+	{
+		tabs.map((tab) => (
+			<button
+				class:list={[
+					"filter-tabs-item",
+					{ active: tab.value === activeValue },
+				]}
+				data-filter-value={tab.value}
+				data-filter-attr={dataAttr}
+			>
+				{tab.icon && <Icon name={tab.icon} class="text-base w-4 h-4" />}
+				<span>{tab.label}</span>
+				{tab.count !== undefined && (
+					<span class="filter-tabs-count">({tab.count})</span>
+				)}
+			</button>
+		))
+	}
+</div>
+
+<style>
+	.filter-tabs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.filter-tabs-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.5rem 1rem;
+		border: 1px solid var(--line-divider);
+		border-radius: var(--radius-large);
+		background: var(--btn-regular-bg);
+		color: var(--btn-content);
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		white-space: nowrap;
+	}
+
+	.filter-tabs-item iconify-icon {
+		flex-shrink: 0;
+		opacity: 0.7;
+		transition: opacity 0.2s ease;
+	}
+
+	.filter-tabs-item:hover:not(.active) {
+		background: var(--btn-regular-bg-hover);
+		border-color: var(--primary);
+	}
+
+	.filter-tabs-item:hover:not(.active) iconify-icon {
+		opacity: 1;
+	}
+
+	.filter-tabs-item.active {
+		background: var(--primary);
+		color: white;
+		border-color: var(--primary);
+	}
+
+	.filter-tabs-item.active iconify-icon {
+		opacity: 1;
+	}
+
+	.filter-tabs-count {
+		opacity: 0.6;
+		font-size: 0.8rem;
+	}
+
+	@media (max-width: 768px) {
+		.filter-tabs {
+			gap: 0.375rem;
+		}
+
+		.filter-tabs-item {
+			padding: 0.4rem 0.8rem;
+			font-size: 0.8rem;
+		}
+
+		.filter-tabs-count {
+			display: none;
+		}
+	}
+</style>

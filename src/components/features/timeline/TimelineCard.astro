@@ -1,0 +1,347 @@
+---
+import { Icon } from "astro-icon/components";
+
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import type { TimelineCardProps } from "./types";
+
+const { item } = Astro.props as TimelineCardProps;
+
+const isCurrent = !item.endDate;
+
+const getTypeIcon = (type: string) => {
+	switch (type) {
+		case "education":
+			return "material-symbols:school";
+		case "work":
+			return "material-symbols:work";
+		case "project":
+			return "material-symbols:code";
+		case "achievement":
+			return "material-symbols:emoji-events";
+		default:
+			return "material-symbols:event";
+	}
+};
+
+const getTypeText = (type: string) => {
+	switch (type) {
+		case "education":
+			return i18n(I18nKey.timelineEducation);
+		case "work":
+			return i18n(I18nKey.timelineWork);
+		case "project":
+			return i18n(I18nKey.timelineProject);
+		case "achievement":
+			return i18n(I18nKey.timelineAchievement);
+		default:
+			return type;
+	}
+};
+
+const getLinkIcon = (type: string) => {
+	switch (type) {
+		case "certificate":
+			return "material-symbols:verified";
+		case "project":
+			return "material-symbols:open-in-new";
+		case "website":
+			return "material-symbols:language";
+		default:
+			return "material-symbols:description";
+	}
+};
+
+const formatDate = (dateString: string) => {
+	const date = new Date(dateString);
+	return date.toLocaleDateString("zh-CN", {
+		year: "numeric",
+		month: "short",
+	});
+};
+
+const getDuration = (startDate: string, endDate?: string) => {
+	const start = new Date(startDate);
+	const end = endDate ? new Date(endDate) : new Date();
+	const diffTime = Math.abs(end.getTime() - start.getTime());
+	const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
+
+	if (diffMonths < 12) {
+		return `${diffMonths} ${i18n(I18nKey.timelineMonths)}`;
+	}
+	const years = Math.floor(diffMonths / 12);
+	const months = diffMonths % 12;
+	if (months === 0) {
+		return `${years} ${i18n(I18nKey.timelineYears)}`;
+	}
+	return `${years} ${i18n(I18nKey.timelineYears)} ${months} ${i18n(I18nKey.timelineMonths)}`;
+};
+
+const icon = item.icon || getTypeIcon(item.type);
+const typeText = getTypeText(item.type);
+const dateRange = `${formatDate(item.startDate)} - ${item.endDate ? formatDate(item.endDate) : i18n(I18nKey.timelinePresent)}`;
+const duration = getDuration(item.startDate, item.endDate);
+const nodeColor = isCurrent ? "#22c55e" : item.color || "var(--primary)";
+const hasLinks = item.links && item.links.length > 0;
+---
+
+<div
+	class:list={["timeline-entry", { "is-current": isCurrent }]}
+	data-type={item.type}
+>
+	<div class="timeline-node" style={`background-color: ${nodeColor};`}>
+		<Icon name={icon} class="w-2.5 h-2.5" style="color: white;" />
+	</div>
+
+	<div
+		class="timeline-card group relative rounded-xl border border-black/10 dark:border-white/10 overflow-hidden transition-all duration-300 hover:shadow-lg"
+	>
+		<div class="p-5 sm:p-6">
+			<div class="flex items-start gap-3 mb-3">
+				<div
+					class="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center bg-[var(--btn-regular-bg)]"
+				>
+					<Icon
+						name={icon}
+						class="text-lg"
+						style={`color: ${item.color || "var(--primary)"};`}
+					/>
+				</div>
+
+				<div class="flex-1 min-w-0">
+					<div class="flex items-center gap-2 mb-0.5">
+						<h3
+							class="text-lg font-bold text-black/90 dark:text-white/90 group-hover:text-[var(--primary)] transition-colors duration-200"
+						>
+							{item.title}
+						</h3>
+						{
+							item.featured && (
+								<Icon
+									name="material-symbols:star-rounded"
+									class="text-base w-4 h-4 text-[var(--primary)] flex-shrink-0"
+								/>
+							)
+						}
+					</div>
+					{
+						item.organization && (
+							<p class="text-sm text-black/60 dark:text-white/60">
+								{item.organization}
+								{item.position ? ` · ${item.position}` : ""}
+							</p>
+						)
+					}
+				</div>
+
+				<div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
+					{
+						isCurrent && (
+							<span class="px-2 py-0.5 text-xs rounded-md bg-green-500/10 text-green-600 dark:text-green-400 font-medium">
+								{i18n(I18nKey.timelineCurrent)}
+							</span>
+						)
+					}
+					<span
+						class="px-2 py-0.5 text-xs rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-medium"
+					>
+						{typeText}
+					</span>
+				</div>
+			</div>
+
+			<p
+				class="text-sm text-black/70 dark:text-white/70 mb-4 leading-relaxed"
+			>
+				{item.description}
+			</p>
+
+			{
+				item.skills && item.skills.length > 0 && (
+					<div class="flex flex-wrap gap-2 mb-4">
+						{item.skills.map((skill) => (
+							<span class="px-2 py-1 text-xs rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-medium">
+								{skill}
+							</span>
+						))}
+					</div>
+				)
+			}
+
+			{
+				item.achievements && item.achievements.length > 0 && (
+					<div class="mb-4">
+						<h4 class="text-xs font-semibold text-black/50 dark:text-white/50 uppercase tracking-wider mb-2">
+							{i18n(I18nKey.timelineAchievements)}
+						</h4>
+						<ul class="space-y-1.5">
+							{item.achievements.map((achievement) => (
+								<li class="text-sm text-black/70 dark:text-white/70 flex items-start gap-2">
+									<Icon
+										name="material-symbols:check-circle"
+										class="text-base w-4 h-4 text-green-500 flex-shrink-0 mt-0.5"
+									/>
+									<span>{achievement}</span>
+								</li>
+							))}
+						</ul>
+					</div>
+				)
+			}
+
+			<div
+				class="flex items-center gap-4 text-xs text-black/50 dark:text-white/50 mb-1 pt-3 border-t border-black/5 dark:border-white/5"
+			>
+				<span class="flex items-center gap-1">
+					<Icon
+						name="material-symbols:calendar-month-outline"
+						class="text-xs w-3.5 h-3.5"
+					/>
+					{dateRange}
+				</span>
+				<span class="flex items-center gap-1">
+					<Icon
+						name="material-symbols:schedule-outline"
+						class="text-xs w-3.5 h-3.5"
+					/>
+					{duration}
+				</span>
+				{
+					item.location && (
+						<span class="flex items-center gap-1">
+							<Icon
+								name="material-symbols:location-on-outline"
+								class="text-xs w-3.5 h-3.5"
+							/>
+							{item.location}
+						</span>
+					)
+				}
+			</div>
+
+			{
+				hasLinks && (
+					<div class="flex flex-wrap gap-2 mt-3">
+						{item.links!.map((link) => (
+							<a
+								href={link.url}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="btn-regular flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium"
+							>
+								<Icon
+									name={getLinkIcon(link.type)}
+									class="text-xs w-3.5 h-3.5"
+								/>
+								{link.name}
+							</a>
+						))}
+					</div>
+				)
+			}
+		</div>
+
+		<div
+			class="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl"
+		>
+		</div>
+	</div>
+</div>
+
+<style>
+	.timeline-entry {
+		position: relative;
+		padding-left: 2.5rem;
+		padding-bottom: 2rem;
+		animation: fadeInUp 0.5s ease-out forwards;
+		opacity: 0;
+	}
+
+	.timeline-entry:last-child {
+		padding-bottom: 0;
+	}
+
+	.timeline-entry.filtered-out {
+		display: none;
+	}
+
+	.timeline-node {
+		position: absolute;
+		left: 0;
+		top: 1.5rem;
+		width: 1.25rem;
+		height: 1.25rem;
+		border-radius: 50%;
+		border: 2.5px solid white;
+		box-shadow: 0 0 0 2px var(--line-divider);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 2;
+		transition:
+			transform 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.timeline-entry:hover .timeline-node {
+		transform: scale(1.15);
+		box-shadow:
+			0 0 0 2px var(--primary),
+			0 0 12px rgba(0, 0, 0, 0.1);
+	}
+
+	.timeline-entry.is-current .timeline-node {
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	@keyframes pulse {
+		0%,
+		100% {
+			box-shadow: 0 0 0 2px var(--line-divider);
+		}
+		50% {
+			box-shadow:
+				0 0 0 2px #22c55e,
+				0 0 8px rgba(34, 197, 94, 0.3);
+		}
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.timeline-entry:nth-child(1) {
+		animation-delay: 0.05s;
+	}
+	.timeline-entry:nth-child(2) {
+		animation-delay: 0.1s;
+	}
+	.timeline-entry:nth-child(3) {
+		animation-delay: 0.15s;
+	}
+	.timeline-entry:nth-child(4) {
+		animation-delay: 0.2s;
+	}
+	.timeline-entry:nth-child(5) {
+		animation-delay: 0.25s;
+	}
+	.timeline-entry:nth-child(6) {
+		animation-delay: 0.3s;
+	}
+	.timeline-entry:nth-child(7) {
+		animation-delay: 0.35s;
+	}
+	.timeline-entry:nth-child(8) {
+		animation-delay: 0.4s;
+	}
+	.timeline-entry:nth-child(9) {
+		animation-delay: 0.45s;
+	}
+</style>

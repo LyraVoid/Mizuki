@@ -1,0 +1,25 @@
+---
+import type { SectionTitleProps } from "./types";
+
+const {
+	title,
+	count,
+	icon,
+	class: className = "",
+} = Astro.props as SectionTitleProps;
+---
+
+<h2
+	class={`text-xl font-bold text-black/90 dark:text-white/90 mb-5 pl-3 relative
+			before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-5 before:rounded-full before:bg-[var(--primary)] ${className}`}
+>
+	{icon && <span class={`w-3 h-3 rounded-full ${icon} mr-3`} />}
+	{title}
+	{
+		count !== undefined && (
+			<span class="text-sm font-medium text-[var(--primary)]/70 ml-2">
+				({count})
+			</span>
+		)
+	}
+</h2>

@@ -1,16 +1,17 @@
 ---
-// 可靠的图标组件
-// 提供加载状态管理和错误处理
+/**
+ * Icon 组件 - 向后兼容包装器
+ *
+ * 此文件包装 atoms/Icon/ 以保持向后兼容性
+ * 新代码应直接从 @components/atoms/Icon 导入
+ *
+ * @deprecated 请使用 import from "@components/atoms/Icon"
+ */
 
-export interface Props {
-	icon: string;
-	class?: string;
-	style?: string;
-	size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
-	color?: string;
-	fallback?: string; // 备用图标或文本
-	loading?: "lazy" | "eager";
-}
+import BaseIcon from "../atoms/Icon/Icon.astro";
+import type { IconProps } from "../atoms/Icon/types";
+
+export interface Props extends IconProps {}
 
 const {
 	icon,
@@ -21,161 +22,14 @@ const {
 	fallback = "●",
 	loading = "lazy",
 } = Astro.props;
-
-// 尺寸映射
-const sizeClasses = {
-	xs: "text-xs",
-	sm: "text-sm",
-	md: "text-base",
-	lg: "text-lg",
-	xl: "text-xl",
-	"2xl": "text-2xl",
-};
-
-const sizeClass = sizeClasses[size] || sizeClasses.md;
-const colorStyle = color ? `color: ${color};` : "";
-const combinedStyle = `${colorStyle}${style}`;
-const combinedClass = `${sizeClass} ${className}`.trim();
-
-// 生成唯一ID
-const iconId = `icon-${Math.random().toString(36).substring(2, 9)}`;
 ---
 
-<span 
-  class={`inline-flex items-center justify-center ${combinedClass}`}
-  style={combinedStyle}
-  data-icon-container={iconId}
->
-  <!-- 加载状态指示器 -->
-  <span 
-    class="icon-loading animate-pulse opacity-50"
-    data-loading-indicator
-  >
-    {fallback}
-  </span>
-  
-  <!-- 实际图标 -->
-  <iconify-icon 
-    icon={icon}
-    class="icon-content opacity-0 transition-opacity duration-200"
-    data-icon-element
-    loading={loading}
-  ></iconify-icon>
-</span>
-
-<script is:inline define:vars={{ iconId, icon }}>
-  // 图标加载和显示逻辑
-  (function() {
-    const container = document.querySelector(`[data-icon-container="${iconId}"]`);
-    if (!container) return;
-    
-    const loadingIndicator = container.querySelector('[data-loading-indicator]');
-    const iconElement = container.querySelector('[data-icon-element]');
-    
-    if (!loadingIndicator || !iconElement) return;
-
-    // 检查图标是否已经加载
-    function checkIconLoaded() {
-      // 检查iconify-icon元素是否已经渲染
-      const hasContent = iconElement.shadowRoot && 
-                        iconElement.shadowRoot.children.length > 0;
-      
-      if (hasContent) {
-        showIcon();
-        return true;
-      }
-      return false;
-    }
-
-    // 显示图标，隐藏加载指示器
-    function showIcon() {
-      loadingIndicator.style.display = 'none';
-      iconElement.classList.remove('opacity-0');
-      iconElement.classList.add('opacity-100');
-    }
-
-    // 显示加载指示器，隐藏图标
-    function showLoading() {
-      loadingIndicator.style.display = 'inline-flex';
-      iconElement.classList.remove('opacity-100');
-      iconElement.classList.add('opacity-0');
-    }
-
-    // 初始状态
-    showLoading();
-
-    // 监听图标加载事件
-    iconElement.addEventListener('load', () => {
-      showIcon();
-    });
-
-    // 监听图标加载错误
-    iconElement.addEventListener('error', () => {
-      // 保持显示fallback
-      console.warn(`Failed to load icon: ${icon}`);
-    });
-
-    // 使用MutationObserver监听shadow DOM变化
-    if (window.MutationObserver) {
-      const observer = new MutationObserver(() => {
-        if (checkIconLoaded()) {
-          observer.disconnect();
-        }
-      });
-
-      // 监听iconify-icon元素的变化
-      observer.observe(iconElement, {
-        childList: true,
-        subtree: true,
-        attributes: true
-      });
-
-      // 设置超时，避免无限等待
-      setTimeout(() => {
-        observer.disconnect();
-        if (!checkIconLoaded()) {
-          console.warn(`Icon load timeout: ${icon}`);
-        }
-      }, 5000);
-    }
-
-    // 立即检查一次（可能已经加载完成）
-    setTimeout(() => {
-      checkIconLoaded();
-    }, 100);
-  })();
-</script>
-
-<style>
-  .icon-loading {
-    min-width: 1em;
-    min-height: 1em;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .icon-content {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  [data-icon-container] {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1em;
-    min-height: 1em;
-  }
-  
-  [data-icon-container] .icon-loading,
-  [data-icon-container] .icon-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
-</style>
+<BaseIcon
+	icon={icon}
+	class={className}
+	style={style}
+	size={size}
+	color={color}
+	fallback={fallback}
+	loading={loading}
+/>

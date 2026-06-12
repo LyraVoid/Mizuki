@@ -1,6 +1,7 @@
 import type { CollectionEntry } from "astro:content";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
+
 import { permalinkConfig } from "../config";
 import { generatePermalinkSlug } from "./permalink-utils";
 
@@ -40,12 +41,11 @@ export function getPostUrl(post: {
 	id: string;
 	data: { alias?: string; permalink?: string };
 }): string;
+// biome-ignore lint/suspicious/noExplicitAny: overload union
 export function getPostUrl(post: any): string {
 	// 如果文章有自定义 permalink，优先使用（在根目录下）
 	if (post.data.permalink) {
-		const slug = post.data.permalink
-			.replace(/^\/+/, "")
-			.replace(/\/+$/, "");
+		const slug = post.data.permalink.replace(/^\/+/, "").replace(/\/+$/, "");
 		return url(`/${slug}/`);
 	}
 
@@ -65,7 +65,9 @@ export function getPostUrl(post: any): string {
 }
 
 export function getTagUrl(tag: string): string {
-	if (!tag) return url("/archive/");
+	if (!tag) {
+		return url("/archive/");
+	}
 	return url(`/archive/?tag=${encodeURIComponent(tag.trim())}`);
 }
 
@@ -73,10 +75,10 @@ export function getCategoryUrl(category: string | null): string {
 	if (
 		!category ||
 		category.trim() === "" ||
-		category.trim().toLowerCase() ===
-			i18n(I18nKey.uncategorized).toLowerCase()
-	)
+		category.trim().toLowerCase() === i18n(I18nKey.uncategorized).toLowerCase()
+	) {
 		return url("/archive/?uncategorized=true");
+	}
 	return url(`/archive/?category=${encodeURIComponent(category.trim())}`);
 }
 

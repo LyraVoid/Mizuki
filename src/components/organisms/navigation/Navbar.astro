@@ -1,0 +1,341 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { navBarConfig, siteConfig } from "../../../config";
+import { LinkPresets } from "../../../constants/link-presets";
+import { LinkPreset, type NavBarLink } from "../../../types/config";
+import { url } from "../../../utils/url-utils";
+import ThemeSwitch from "../../control/ThemeSwitch.svelte";
+import SettingsPanel from "../../features/settings/SettingsPanel.svelte";
+import MobileTOC from "../../features/toc/MobileTOC.svelte";
+import DropdownMenu from "./DropdownMenu.astro";
+import NavMenuPanel from "./NavMenuPanel.astro";
+import Search from "./Search.svelte";
+
+const className = Astro.props.class;
+
+// 获取导航栏透明模式配置
+const navbarTransparentMode =
+	siteConfig.banner?.navbar?.transparentMode || "semi";
+
+const isHomePage = Astro.url.pathname === "/" || Astro.url.pathname === "";
+
+// featurePage URL -> config key mapping
+const featurePageUrlMap: Record<string, string> = {
+	"/anime/": "anime",
+	"/diary/": "diary",
+	"/friends/": "friends",
+	"/projects/": "projects",
+	"/skills/": "skills",
+	"/timeline/": "timeline",
+	"/albums/": "albums",
+	"/devices/": "devices",
+};
+
+function isFeaturePageDisabled(url: string): boolean {
+	const key = featurePageUrlMap[url];
+	if (
+		key &&
+		!siteConfig.featurePages[key as keyof typeof siteConfig.featurePages]
+	) {
+		return true;
+	}
+	return false;
+}
+
+function filterLinksByFeaturePages(
+	items: (NavBarLink | LinkPreset)[],
+): NavBarLink[] {
+	return items
+		.map((item: NavBarLink | LinkPreset): NavBarLink | null => {
+			if (typeof item === "number") {
+				const resolved = LinkPresets[item];
+				if (isFeaturePageDisabled(resolved.url)) {
+					return null;
+				}
+				return resolved;
+			}
+			if (isFeaturePageDisabled(item.url)) {
+				return null;
+			}
+			if (item.children) {
+				const filteredChildren = filterLinksByFeaturePages(item.children);
+				if (filteredChildren.length === 0) {
+					return null;
+				}
+				return { ...item, children: filteredChildren };
+			}
+			return item;
+		})
+		.filter((item): item is NavBarLink => item !== null);
+}
+
+const links: NavBarLink[] = filterLinksByFeaturePages(navBarConfig.links);
+
+const rawLogo = siteConfig.navbarTitle?.logo;
+const logoSrc = rawLogo?.match(/^(http|https|\/\/)/)
+	? rawLogo
+	: rawLogo
+		? url(rawLogo)
+		: "";
+
+const rawIcon = siteConfig.navbarTitle?.icon;
+const iconSrc = rawIcon?.match(/^(http|https|\/\/)/)
+	? rawIcon
+	: rawIcon
+		? url(rawIcon)
+		: "";
+
+const isLogoExternal = rawLogo?.match(/^(http|https|\/\/)/);
+const isIconExternal = rawIcon?.match(/^(http|https|\/\/)/);
+const hasLogoPngFallback = rawLogo?.endsWith(".png") && !isLogoExternal;
+const hasIconPngFallback = rawIcon?.endsWith(".png") && !isIconExternal;
+const logoWebpSrc = hasLogoPngFallback
+	? logoSrc.replace(/\.png$/i, ".webp")
+	: logoSrc;
+const iconWebpSrc = hasIconPngFallback
+	? iconSrc.replace(/\.png$/i, ".webp")
+	: iconSrc;
+---
+<div id="navbar" class="z-50 onload-animation group" data-transparent-mode={navbarTransparentMode} data-is-home={isHomePage}>
+    <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div> <!-- used for onload animation -->
+    <div class:list={[className, "!overflow-visible max-w-[var(--page-width)] h-[4.5rem] mx-auto flex items-center justify-between px-4"]}>
+        <a href={url('/')} class="btn-plain scale-animation rounded-lg h-[2.5rem] md:h-[3.25rem] md:[.enable-banner_&]:h-[2.5rem] md:[.enable-banner_&]:group-[.scrolled]:h-[3.25rem] px-5 font-bold active:scale-95 shrink-0 transition-all duration-300">
+            <div class="flex flex-row items-center text-md">
+				{/* 使用navbarTitle配置或默认配置 */}
+                {siteConfig.navbarTitle ? (
+                    siteConfig.navbarTitle.mode === "logo" ? (
+                        hasLogoPngFallback ? (
+                            <picture>
+                                <source srcset={logoWebpSrc} type="image/webp" />
+                                <img src={logoSrc} alt={siteConfig.navbarTitle.text} class="h-[2.5rem] md:h-[3.25rem] md:[.enable-banner_&]:h-[2.5rem] md:[.enable-banner_&]:group-[.scrolled]:h-[3.25rem] max-w-full object-contain transition-all duration-300" loading="lazy" />
+                            </picture>
+                        ) : (
+                            <img src={logoSrc} alt={siteConfig.navbarTitle.text} class="h-[2.5rem] md:h-[3.25rem] md:[.enable-banner_&]:h-[2.5rem] md:[.enable-banner_&]:group-[.scrolled]:h-[3.25rem] max-w-full object-contain transition-all duration-300" loading="lazy" />
+                        )
+                    ) : (
+                        <>
+                            {hasIconPngFallback ? (
+                                <picture>
+                                    <source srcset={iconWebpSrc} type="image/webp" />
+                                    <img src={iconSrc} alt="" class="h-[1.75rem] w-[1.75rem] mr-2 object-contain" loading="lazy" />
+                                </picture>
+                            ) : (
+                                <img src={iconSrc} alt="" class="h-[1.75rem] w-[1.75rem] mr-2 object-contain" loading="lazy" />
+                            )}
+                            <span class="dark:text-white text-black">{siteConfig.navbarTitle.text}</span>
+                        </>
+                    )
+                ) : (
+                    <>
+                        <Icon name="material-symbols:home-pin-outline" class="text-[1.75rem] mr-2" />
+                        <span class="dark:text-white text-black">{siteConfig.title}</span>
+                    </>
+                )}
+            </div>
+        </a>
+        <div id="navbar-links-container" class="hidden md:flex items-center space-x-1 transition-opacity duration-300">
+            {links.map((l) => {
+                return <DropdownMenu link={l} />;
+            })}
+        </div>
+        <div class="flex items-center gap-1">
+            <div id="search-container">
+                <Search client:only="svelte"></Search>
+            </div>
+            {/* 只在 sidebar 模式下显示移动端 TOC 按钮 */}
+			{siteConfig.toc.enable && siteConfig.toc.mobileTop && <MobileTOC client:only="svelte"></MobileTOC>}
+            <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch">
+                <Icon name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
+            </button>
+            <ThemeSwitch client:only="svelte"></ThemeSwitch>
+            <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch">
+                <Icon name="material-symbols:unfold-more" class="text-[1.25rem]"></Icon>
+            </button>
+        </div>
+        <NavMenuPanel links={links}></NavMenuPanel>
+        <SettingsPanel client:only="svelte"></SettingsPanel>
+    </div>
+</div>
+
+<script>
+	const searchContainer = document.getElementById("search-container");
+	const navbarLinksContainer = document.getElementById("navbar-links-container");
+
+	if (searchContainer && navbarLinksContainer) {
+		// 鼠标移入/触摸开始时隐藏导航链接
+		const hideLinks = () => {
+			if (window.matchMedia("(min-width: 1280px)").matches && window.matchMedia("(hover: hover)").matches) {
+				navbarLinksContainer.style.opacity = "0";
+			}
+		};
+
+		// 鼠标移出/触摸结束时显示导航链接
+		const showLinks = () => {
+			const navbar = document.getElementById("navbar");
+			if (navbar && !navbar.classList.contains("is-searching")) {
+				navbarLinksContainer.style.opacity = "1";
+			}
+		};
+
+		searchContainer.addEventListener("mouseenter", hideLinks);
+		searchContainer.addEventListener("mouseleave", showLinks);
+
+		// 移动端/触摸屏支持
+		searchContainer.addEventListener("touchstart", hideLinks, { passive: true });
+		searchContainer.addEventListener("touchend", showLinks);
+
+		// 监听 navbar 的 class 变化，当搜索框折叠时确保链接显示
+		const navbar = document.getElementById("navbar");
+		if (navbar) {
+			const observer = new MutationObserver((mutations) => {
+				mutations.forEach((mutation) => {
+					if (mutation.type === "attributes" && mutation.attributeName === "class") {
+						if (!navbar.classList.contains("is-searching")) {
+							// 搜索框已折叠，如果此时鼠标不在搜索容器内，强制显示链接
+							if (!searchContainer.matches(':hover')) {
+								showLinks();
+							}
+						}
+					}
+				});
+			});
+			observer.observe(navbar, { attributes: true });
+		}
+	}
+
+function loadButtonScript() {
+    let settingBtn = document.getElementById("display-settings-switch");
+    if (settingBtn) {
+        settingBtn.onclick = function () {
+            let settingPanel = document.getElementById("display-setting");
+            if (settingPanel) {
+                settingPanel.classList.toggle("float-panel-closed");
+            }
+        };
+    }
+
+    let menuBtn = document.getElementById("nav-menu-switch");
+    if (menuBtn) {
+        menuBtn.onclick = function () {
+            let menuPanel = document.getElementById("nav-menu-panel");
+            if (menuPanel) {
+                menuPanel.classList.toggle("float-panel-closed");
+            }
+        };
+    }
+
+    document.addEventListener("click", function(event) {
+        const panels = ["display-setting", "nav-menu-panel"];
+        const buttons = ["display-settings-switch", "nav-menu-switch"];
+        panels.forEach((id, index) => {
+            const panel = document.getElementById(id);
+            const button = document.getElementById(buttons[index]);
+            if (panel && button && !panel.classList.contains("float-panel-closed")) {
+                if (event.target instanceof Node && !panel.contains(event.target) && !button.contains(event.target)) {
+                    panel.classList.add("float-panel-closed");
+                }
+            }
+        });
+    });
+}
+
+loadButtonScript();
+
+// 为semifull模式添加滚动检测逻辑
+function initSemifullScrollDetection() {
+    const navbar = document.getElementById('navbar');
+    if (!navbar) {return;}
+    
+    // 移除之前的滚动事件监听器（如果存在）
+    // @ts-ignore
+    if (window.semifullScrollHandler) {
+        // @ts-ignore
+        window.removeEventListener('scroll', window.semifullScrollHandler);
+    }
+    
+    // 获取当前是否为首页
+    // @ts-ignore
+    const isHomePage = navbar.dataset.isHome === 'true';
+
+    // 如果不是首页，在平板/桌面端强制显示为scrolled状态
+    if (!isHomePage) {
+        navbar.classList.add('scrolled');
+        return;
+    }
+    
+    let ticking = false;
+    
+    function updateNavbarState() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const threshold = 50; // 滚动阈值，可以根据需要调整
+        
+        if (navbar && scrollTop > threshold) {
+            navbar.classList.add('scrolled');
+        } else if (navbar) {
+            navbar.classList.remove('scrolled');
+        }
+        
+        ticking = false;
+    }
+    
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateNavbarState);
+            ticking = true;
+        }
+    }
+    
+    // 保存新的事件处理器引用
+    // @ts-ignore
+    window.semifullScrollHandler = requestTick;
+    
+    // 监听滚动事件
+    window.addEventListener('scroll', requestTick, { passive: true });
+    
+    // 初始化状态
+    updateNavbarState();
+}
+
+// 将函数暴露到全局对象，供页面切换时调用
+// @ts-ignore
+window.initSemifullScrollDetection = initSemifullScrollDetection;
+
+// 页面加载完成后初始化滚动检测
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSemifullScrollDetection);
+} else {
+    initSemifullScrollDetection();
+}
+</script>
+
+{import.meta.env.PROD && <script is:inline define:vars={{scriptUrl: url('/pagefind/pagefind.js')}}>
+window.loadPagefind = async function() {
+    if (window.pagefind) {return;}
+    try {
+        const response = await fetch(scriptUrl, { method: 'HEAD' });
+        if (!response.ok) {
+            throw new Error(`Pagefind script not found: ${response.status}`);
+        }
+
+        const pagefind = await import(scriptUrl);
+
+        await pagefind.options({
+            excerptLength: 20
+        });
+
+        window.pagefind = pagefind;
+
+        document.dispatchEvent(new CustomEvent('pagefindready'));
+        console.log('Pagefind loaded and initialized successfully, event dispatched.');
+    } catch (error) {
+        console.error('Failed to load Pagefind:', error);
+        window.pagefind = {
+            search: () => Promise.resolve({ results: [] }),
+            options: () => Promise.resolve(),
+        };
+        document.dispatchEvent(new CustomEvent('pagefindloaderror'));
+        console.log('Pagefind load error, event dispatched.');
+    }
+};
+</script>}

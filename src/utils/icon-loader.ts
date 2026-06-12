@@ -12,7 +12,7 @@ class IconLoader {
 	private isLoaded = false;
 	private isLoading = false;
 	private loadPromise: Promise<void> | null = null;
-	private observers: Set<() => void> = new Set();
+	private observers = new Set<() => void>();
 
 	private constructor() {}
 
@@ -100,7 +100,7 @@ class IconLoader {
 
 			const script = document.createElement("script");
 			script.src =
-				"https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js";
+				"https://code.iconify.design/iconify-icon/3-latest/iconify-icon.min.js";
 			script.async = true;
 			script.defer = true;
 

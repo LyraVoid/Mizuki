@@ -1,32 +1,28 @@
+@reference "tailwindcss";
+
 .custom-md {
   h1 {
     @apply text-3xl;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  :is(h1, h2, h3, h4, h5, h6) {
     .anchor {
-      @apply transition -m-0.5 ml-[0.2ch] p-0.5 select-none opacity-0 no-underline !important;
+      @apply transition -m-0.5 ms-[0.2ch] p-0.5 select-none opacity-0 no-underline;
 
       .anchor-icon {
-        @apply mx-[0.45ch] !important;
+        @apply mx-[0.45ch];
       }
     }
 
-    &:hover {
-      .anchor {
-        @apply opacity-100 !important;
-      }
+    &:hover .anchor {
+      @apply opacity-100;
     }
   }
 
+  /* --- 链接 --- */
   a:not(.no-styling) {
-    @apply relative bg-none font-medium text-[var(--primary)]
-        underline decoration-[var(--link-underline)] decoration-1 decoration-dashed underline-offset-4;
+    @apply relative bg-none font-medium text-(--primary)
+        underline decoration-(--link-underline) decoration-1 decoration-dashed underline-offset-4;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
 
@@ -39,22 +35,25 @@
     }
   }
 
+  /* --- 代码块 --- */
   code {
-    @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
+    @apply bg-(--inline-code-bg) text-(--inline-code-color) px-1 py-0.5 rounded-md overflow-hidden;
 
-    font-family:
+    font-family: var(
+      --ec-codeFontFml,
       "JetBrains Mono Variable",
+      "JetBrains Mono",
       ui-monospace,
       SFMono-Regular,
       Menlo,
       Monaco,
       Consolas,
-      Liberation Mono,
-      Courier New,
-      monospace;
-    &:before {
-      content: none;
-    }
+      "Liberation Mono",
+      "Courier New",
+      monospace
+    );
+
+    &:before,
     &:after {
       content: none;
     }
@@ -62,7 +61,7 @@
     counter-reset: line;
     span.line {
       &:before {
-        @apply text-white/25 mr-4 w-4 inline-block;
+        @apply text-white/25 mr-4 w-4 inline-block select-none;
         content: counter(line);
         counter-increment: line;
         direction: rtl;
@@ -74,30 +73,28 @@
     }
   }
 
-  .expressive-code {
-    @apply my-4;
-    ::selection {
-      @apply bg-[var(--codeblock-selection)];
-      color: #ffffff;
-    }
+  /* --- 标题间距 --- */
+  :is(h1, h2, h3) {
+    @apply mt-4 mb-2;
   }
 
+  /* --- 列表 --- */
   ul,
   ol {
     li::marker {
-      @apply text-[var(--primary)];
+      @apply text-(--primary);
     }
   }
 
+  /* --- 引用块 --- */
   blockquote {
     @apply not-italic border-transparent relative;
     font-weight: inherit;
 
     &:before {
-      @apply content-[''] absolute -left-1 block transition bg-[var(--btn-regular-bg)] h-full w-1 rounded-full;
+      @apply content-[''] absolute left-0 block transition bg-(--btn-regular-bg) h-full w-1 rounded-full;
     }
 
-    /* Remove the double quotes from default styles */
     p:before,
     p:after {
       @apply content-none;
@@ -106,11 +103,8 @@
 
   /* --- 表格样式 --- */
   .table-wrapper {
-    overflow-x: auto;
+    @apply w-full overflow-x-auto m-0 rounded-(--radius-large);
     -webkit-overflow-scrolling: touch;
-    width: 100%;
-    border-radius: var(--radius-large);
-    margin: 0;
 
     /* --- 滚动条样式 --- */
     &::-webkit-scrollbar {
@@ -134,25 +128,21 @@
   }
 
   table {
-    display: table;
-    width: 100%;
+    @apply w-full border-separate m-0 bg-(--card-bg);
     border-spacing: 0;
-    border-collapse: separate;
-    margin: 0;
-    background-color: var(--card-bg);
 
-    /* 外观设置 */
     border: 1px solid var(--line-divider);
     border-radius: var(--radius-large);
+
+    overflow: hidden;
   }
 
   th,
   td {
-    padding: 0.75rem 1rem;
-    white-space: nowrap;
+    @apply px-4 py-3 whitespace-nowrap;
     border-bottom: 1px solid var(--line-divider);
     border-right: 1px solid var(--line-divider);
-    transition: none !important;
+    transition: none;
   }
 
   th {
@@ -162,25 +152,10 @@
     text-align: left;
   }
 
-  /* 圆角处理 */
-  th:first-child {
-    border-top-left-radius: calc(var(--radius-large) - 1px);
-  }
-  th:last-child {
-    border-top-right-radius: calc(var(--radius-large) - 1px);
-    border-right: none;
-  }
-  tr:last-child td:first-child {
-    border-bottom-left-radius: calc(var(--radius-large) - 1px);
-  }
-  tr:last-child td:last-child {
-    border-bottom-right-radius: calc(var(--radius-large) - 1px);
-    border-right: none;
-  }
-
   tr:last-child td {
     border-bottom: none;
   }
+  th:last-child,
   td:last-child {
     border-right: none;
   }
@@ -190,21 +165,53 @@
   }
   tr:hover td {
     background-color: var(--btn-plain-bg-hover);
-    transition: none !important;
+    transition: none;
   }
 
-  .katex-display-container {
-    max-width: 100%;
-    overflow-x: auto;
-    margin: 1em 0;
+  /* --- 数学公式样式 --- */
+  .katex-display {
+    @apply w-full overflow-x-auto overflow-y-hidden box-border my-4;
+    padding-bottom: 6px;
+    padding-top: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-bg);
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-bg-hover);
+    }
+    &::-webkit-scrollbar-thumb:active {
+      background: var(--scrollbar-bg-active);
+    }
+  }
+
+  .katex-display > .katex {
+    display: block;
+    width: fit-content;
+    min-width: calc(100% - 2px);
+  }
+
+  .katex-display > .katex:has(.tag) > .katex-html {
+    display: block;
+    padding-right: 3rem;
+    box-sizing: border-box;
   }
 }
 
-/* 修复代码块内列表项标记颜色问题 */
-.custom-md .expressive-code ul li::marker,
-.custom-md .expressive-code ol li::marker {
+/* 外部覆盖样式 */
+.custom-md .expressive-code :is(ul, ol) li::marker {
   @apply text-inherit;
 }
+
 :root:not(.dark) .custom-md spoiler {
   --_spoiler-mask: color-mix(in oklch, var(--primary) 55%, white 45%);
 }

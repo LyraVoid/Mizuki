@@ -1,0 +1,205 @@
+---
+/**
+ * HeadTags.astro
+ * Head 标签组件 - 包含 SEO meta 标签、主题初始化脚本、CSS 变量等
+ *
+ * 提取自 Layout.astro 以实现更好的代码组织
+ */
+
+import { profileConfig, siteConfig } from "@/config";
+
+import {
+	DARK_MODE,
+	DEFAULT_THEME,
+	LIGHT_MODE,
+} from "../../constants/constants";
+import { defaultFavicons } from "../../constants/icon";
+import type { Favicon } from "../../types/config";
+import { url } from "../../utils/url-utils";
+
+interface Props {
+	// SEO
+	title: string;
+	description?: string;
+
+	// Open Graph
+	ogImageUrl?: string;
+	setOGTypeArticle?: boolean;
+
+	// 配置
+	configHue: number;
+}
+
+const {
+	title,
+	description,
+	ogImageUrl,
+	setOGTypeArticle = false,
+	configHue,
+} = Astro.props;
+
+// 关键词
+const keywords = siteConfig.keywords;
+
+// Favicons
+const favicons: Favicon[] =
+	siteConfig.favicon.length > 0 ? siteConfig.favicon : defaultFavicons;
+---
+
+<!-- SEO Meta Tags -->
+<title>{title}</title>
+<meta name="description" content={description || title} />
+{
+	keywords && keywords.length > 0 && (
+		<meta name="keywords" content={keywords.join(", ")} />
+	)
+}
+<meta name="author" content={profileConfig.name} />
+
+<!-- Open Graph Tags -->
+<meta property="og:site_name" content={siteConfig.title} />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description || title} />
+{ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+{ogImageUrl && <meta property="og:image:width" content="1200" />}
+{ogImageUrl && <meta property="og:image:height" content="630" />}
+{
+	setOGTypeArticle ? (
+		<meta property="og:type" content="article" />
+	) : (
+		<meta property="og:type" content="website" />
+	)
+}
+
+<!-- Twitter Card Tags -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={Astro.url} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description || title} />
+{ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+<!-- Viewport and Generator -->
+<meta name="viewport" content="width=device-width" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Favicons -->
+{
+	favicons.map((favicon) => (
+		<link
+			rel="icon"
+			href={favicon.src.startsWith("/") ? url(favicon.src) : favicon.src}
+			sizes={favicon.sizes}
+			media={favicon.theme && `(prefers-color-scheme: ${favicon.theme})`}
+		/>
+	))
+}
+
+<!-- 字体通过构建脚本压缩到 /assets/font/ 目录，此处不再预加载以避免 404 -->
+<!-- 字体在构建时通过 scripts/compress-fonts.js 处理并复制到 dist/ -->
+
+<!-- 预连接 Iconify API 以减少图标加载延迟 -->
+<link rel="preconnect" href="https://api.iconify.design" crossorigin />
+
+<!-- Set the theme before the page is rendered to avoid a flash -->
+<script
+	is:inline
+	define:vars={{
+		DEFAULT_THEME,
+		LIGHT_MODE,
+		DARK_MODE,
+		BANNER_HEIGHT_EXTEND: 30,
+		configHue,
+		themeColorFixed: siteConfig.themeColor.fixed ?? false,
+		pageScaling: siteConfig.pageScaling,
+	}}
+>
+	// Load the theme from local storage
+	const theme = localStorage.getItem("theme") || DEFAULT_THEME;
+	let isDark = false;
+	switch (theme) {
+		case LIGHT_MODE:
+			document.documentElement.classList.remove("dark");
+			isDark = false;
+			break;
+		case DARK_MODE:
+			document.documentElement.classList.add("dark");
+			isDark = true;
+			break;
+	}
+
+	// Set the theme for Expressive Code based on current mode
+	const expressiveTheme = isDark ? "github-dark" : "github-light";
+	const currentTheme = document.documentElement.getAttribute("data-theme");
+	// 只在主题不同时才更新，避免触发不必要的重绘
+	if (currentTheme !== expressiveTheme) {
+		document.documentElement.setAttribute("data-theme", expressiveTheme);
+	}
+
+	// Load the hue from local storage
+	const hue = themeColorFixed ? configHue : (localStorage.getItem("hue") || configHue);
+	document.documentElement.style.setProperty("--hue", hue);
+
+	// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
+	let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
+	offset = offset - (offset % 4);
+	document.documentElement.style.setProperty(
+		"--banner-height-extend",
+		`${offset}px`,
+	);
+
+	// 自动缩放逻辑 (Moved from MainGridLayout to here for earlier execution)
+	(function () {
+		if (pageScaling && pageScaling.enable) {
+			function adjustPageScale() {
+				const isTouch =
+					(window.matchMedia &&
+						(window.matchMedia("(pointer:coarse)").matches ||
+							window.matchMedia("(hover: none)").matches)) ||
+					"ontouchstart" in window;
+				const isPortrait =
+					window.matchMedia &&
+					window.matchMedia("(orientation: portrait)").matches;
+				const isTabletLike = isTouch || window.innerWidth <= 1280;
+				if (isTabletLike || isPortrait) {
+					document.documentElement.style.fontSize = "";
+					return;
+				}
+				const targetWidth = pageScaling.targetWidth || 2000;
+				const currentWidth = document.documentElement.clientWidth;
+				let scale = currentWidth / targetWidth;
+				if (scale > 1) {
+					scale = 1;
+				}
+				if (scale < 0.85) {
+					scale = 0.85;
+				}
+				document.documentElement.style.fontSize = `${scale * 100}%`;
+			}
+
+			// 立即执行一次
+			adjustPageScale();
+
+			// 监听窗口大小变化
+			window.addEventListener("resize", adjustPageScale);
+
+			// Swup 页面切换后也需要检查
+			document.addEventListener("swup:page:view", adjustPageScale);
+			window.addEventListener("orientationchange", adjustPageScale);
+		}
+	})();
+</script>
+
+<!-- Dev mode script - avoid swup replacing head styles -->
+<script is:inline define:vars={{ IS_DEV: import.meta.env.DEV }}>
+	// Dev 模式下，避免 swup 在页面切换时反复替换 head 中的样式标签，导致偶发样式丢失
+	if (IS_DEV) {
+		document.addEventListener("swup:enable", () => {
+			if (window?.swup?.options) {
+				window.swup.options.updateHead = false;
+			}
+		});
+		if (window?.swup?.options) {
+			window.swup.options.updateHead = false;
+		}
+	}
+</script>

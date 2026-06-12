@@ -9,16 +9,19 @@ import type {
  * 组件映射表 - 将组件类型映射到实际的组件路径
  */
 export const WIDGET_COMPONENT_MAP = {
-	profile: "../components/widget/Profile.astro",
-	announcement: "../components/widget/Announcement.astro",
-	categories: "../components/widget/Categories.astro",
-	tags: "../components/widget/Tags.astro",
-	toc: "../components/widget/TOC.astro",
-	"music-player": "../components/widget/MusicPlayer.svelte",
-	pio: "../components/widget/Pio.astro", // 添加 Pio 组件映射
-	"site-stats": "../components/widget/SiteStats.astro", // 站点统计组件
-	calendar: "../components/widget/Calendar.astro", // 日历组件
-	custom: null, // 自定义组件需要在配置中指定路径
+	profile: "../components/widgets/profile/Profile.astro",
+	announcement: "../components/widgets/announcement/Announcement.astro",
+	categories: "../components/widgets/categories/Categories.astro",
+	tags: "../components/widgets/tags/Tags.astro",
+	toc: "../components/widgets/toc/TOC.astro",
+	"card-toc": "../components/widgets/card-toc/CardTOC.astro",
+	"music-player": "../components/widgets/music-player/MusicPlayer.svelte",
+	"music-sidebar":
+		"../components/widgets/music-sidebar/MusicSidebarWidget.astro",
+	pio: "../components/widget/Pio.astro",
+	"site-stats": "../components/widgets/site-stats/SiteStats.astro",
+	calendar: "../components/widgets/calendar/Calendar.astro",
+	custom: null,
 } as const;
 
 /**
@@ -27,11 +30,9 @@ export const WIDGET_COMPONENT_MAP = {
  */
 export class WidgetManager {
 	private config: SidebarLayoutConfig;
-	private enabledComponents: WidgetComponentConfig[];
 
 	constructor(config: SidebarLayoutConfig = sidebarLayoutConfig) {
 		this.config = config;
-		this.enabledComponents = this.getEnabledComponents();
 	}
 
 	/**
@@ -42,42 +43,48 @@ export class WidgetManager {
 	}
 
 	/**
-	 * 获取启用的组件列表
-	 */
-	private getEnabledComponents(): WidgetComponentConfig[] {
-		return this.config.components
-			.filter((component) => component.enable)
-			.sort((a, b) => a.order - b.order);
-	}
-
-	/**
 	 * 根据位置获取组件列表
 	 * @param position 组件位置：'top' | 'sticky'
-	 * @param sidebar 侧边栏位置（可选）：'left' | 'right'
+	 * @param sidebar 侧边栏位置（可选）：'left' | 'right' | 'drawer'
+	 * @param deviceType 设备类型（可选）：'mobile' | 'tablet' | 'desktop'
 	 */
 	getComponentsByPosition(
 		position: "top" | "sticky",
-		sidebar?: "left" | "right",
+		sidebar: "left" | "right" | "drawer" = "left",
+		deviceType: "mobile" | "tablet" | "desktop" = "desktop",
 	): WidgetComponentConfig[] {
-		let components = this.enabledComponents.filter(
-			(component) => component.position === position,
-		);
+		let activeSidebar = sidebar;
 
-		// 如果指定了侧边栏位置，则进一步过滤
-		if (sidebar) {
-			components = components.filter((component) => {
-				// 如果组件没有指定 sidebar 属性,默认分配到左侧
-				const componentSidebar = component.sidebar || "left";
-				return componentSidebar === sidebar;
-			});
-		} else if (
-			this.config.position === "unilateral" ||
-			this.config.position === "both"
-		) {
-			// 单侧边栏模式下，只显示对应侧的组件
+		// 手机端逻辑：完全由 drawer 决定，不合并左右侧栏
+		if (deviceType === "mobile") {
+			activeSidebar = "drawer";
+		}
+		// 平板端逻辑：在左侧有配置组件的情况下仅保留左侧组件，左侧没有配置组件时则将右侧的组件移到左侧
+		else if (deviceType === "tablet") {
+			if (sidebar === "right") {
+				return [];
+			}
+			if (sidebar === "left") {
+				activeSidebar =
+					this.config.components.left.length > 0 ? "left" : "right";
+			}
 		}
 
-		return components;
+		const componentTypes = this.config.components[activeSidebar] || [];
+
+		return componentTypes
+			.map((type) => {
+				const prop = this.config.properties.find((p) => p.type === type);
+				if (prop && prop.position === position) {
+					return prop;
+				}
+				// 如果没有在 properties 中找到配置，且位置匹配默认的 top，则返回一个基础配置
+				if (!prop && position === "top") {
+					return { type, position: "top" } as WidgetComponentConfig;
+				}
+				return null;
+			})
+			.filter(Boolean) as WidgetComponentConfig[];
 	}
 
 	/**
@@ -105,21 +112,12 @@ export class WidgetManager {
 	 * @param component 组件配置
 	 * @param index 组件在列表中的索引
 	 */
-	getComponentClass(
-		component: WidgetComponentConfig,
-		_index: number,
-	): string {
+	getComponentClass(component: WidgetComponentConfig, _index: number): string {
 		const classes: string[] = [];
 
 		// 添加基础类名
 		if (component.class) {
 			classes.push(component.class);
-		}
-
-		// 双侧边栏模式下，右侧边栏的组件在平板端自动隐藏
-		// 使用 Tailwind 标准断点：lg(1024px) 以下全部隐藏
-		if (this.config.position === "both" && component.sidebar === "right") {
-			classes.push("hidden", "lg:block");
 		}
 
 		// 添加响应式隐藏类名
@@ -189,8 +187,20 @@ export class WidgetManager {
 	 * @param deviceType 设备类型
 	 */
 	shouldShowSidebar(deviceType: "mobile" | "tablet" | "desktop"): boolean {
-		const layoutMode = this.config.responsive.layout[deviceType];
-		return layoutMode === "sidebar";
+		if (deviceType === "mobile") {
+			return this.config.components.drawer.length > 0;
+		}
+		if (deviceType === "tablet") {
+			return (
+				this.config.components.left.length > 0 ||
+				this.config.components.right.length > 0
+			);
+		}
+		// desktop
+		return (
+			this.config.components.left.length > 0 ||
+			this.config.components.right.length > 0
+		);
 	}
 
 	/**
@@ -206,60 +216,36 @@ export class WidgetManager {
 	 */
 	updateConfig(newConfig: Partial<SidebarLayoutConfig>): void {
 		this.config = { ...this.config, ...newConfig };
-		this.enabledComponents = this.getEnabledComponents();
 	}
 
 	/**
-	 * 添加新组件
-	 * @param component 组件配置
+	 * 添加新组件到布局中
+	 * @param type 组件类型
+	 * @param sidebar 侧边栏位置
 	 */
-	addComponent(component: WidgetComponentConfig): void {
-		this.config.components.push(component);
-		this.enabledComponents = this.getEnabledComponents();
-	}
-
-	/**
-	 * 移除组件
-	 * @param componentType 组件类型
-	 */
-	removeComponent(componentType: WidgetComponentType): void {
-		this.config.components = this.config.components.filter(
-			(component) => component.type !== componentType,
-		);
-		this.enabledComponents = this.getEnabledComponents();
-	}
-
-	/**
-	 * 启用/禁用组件
-	 * @param componentType 组件类型
-	 * @param enable 是否启用
-	 */
-	toggleComponent(componentType: WidgetComponentType, enable: boolean): void {
-		const component = this.config.components.find(
-			(c) => c.type === componentType,
-		);
-		if (component) {
-			component.enable = enable;
-			this.enabledComponents = this.getEnabledComponents();
-		}
-	}
-
-	/**
-	 * 重新排序组件
-	 * @param componentType 组件类型
-	 * @param newOrder 新的排序值
-	 */
-	reorderComponent(
-		componentType: WidgetComponentType,
-		newOrder: number,
+	addComponentToLayout(
+		type: WidgetComponentType,
+		sidebar: "left" | "right" | "drawer" = "left",
 	): void {
-		const component = this.config.components.find(
-			(c) => c.type === componentType,
-		);
-		if (component) {
-			component.order = newOrder;
-			this.enabledComponents = this.getEnabledComponents();
+		if (!this.config.components[sidebar].includes(type)) {
+			this.config.components[sidebar].push(type);
 		}
+	}
+
+	/**
+	 * 从布局中移除组件
+	 * @param type 组件类型
+	 */
+	removeComponentFromLayout(type: WidgetComponentType): void {
+		this.config.components.left = this.config.components.left.filter(
+			(t) => t !== type,
+		);
+		this.config.components.right = this.config.components.right.filter(
+			(t) => t !== type,
+		);
+		this.config.components.drawer = this.config.components.drawer.filter(
+			(t) => t !== type,
+		);
 	}
 
 	/**
@@ -286,7 +272,7 @@ export function getComponentConfig(
 ): WidgetComponentConfig | undefined {
 	return widgetManager
 		.getConfig()
-		.components.find((c) => c.type === componentType);
+		.properties.find((p) => p.type === componentType);
 }
 
 /**
@@ -296,16 +282,17 @@ export function getComponentConfig(
 export function isComponentEnabled(
 	componentType: WidgetComponentType,
 ): boolean {
-	const config = getComponentConfig(componentType);
-	return config?.enable ?? false;
+	const config = widgetManager.getConfig().components;
+	return (
+		config.left.includes(componentType) ||
+		config.right.includes(componentType) ||
+		config.drawer.includes(componentType)
+	);
 }
 
 /**
  * 工具函数：获取所有启用的组件类型(左侧边栏为主)
  */
 export function getEnabledComponentTypes(): WidgetComponentType[] {
-	const enabledComponents = widgetManager
-		.getComponentsByPosition("top", "left")
-		.concat(widgetManager.getComponentsByPosition("sticky", "left"));
-	return enabledComponents.map((c) => c.type);
+	return widgetManager.getConfig().components.left;
 }

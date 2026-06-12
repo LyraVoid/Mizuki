@@ -1,0 +1,158 @@
+---
+import type { IconProps } from "./types";
+
+const {
+	icon,
+	class: className = "",
+	style = "",
+	size = "md",
+	color,
+	fallback = "●",
+	loading = "lazy",
+} = Astro.props as IconProps;
+
+const sizeClasses = {
+	xs: "text-xs",
+	sm: "text-sm",
+	md: "text-base",
+	lg: "text-lg",
+	xl: "text-xl",
+	"2xl": "text-2xl",
+};
+
+const sizeClass = sizeClasses[size] || sizeClasses.md;
+const colorStyle = color ? `color: ${color};` : "";
+const combinedStyle = `${colorStyle}${style}`;
+const combinedClass = `${sizeClass} ${className}`.trim();
+
+const iconId = `icon-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<span
+	class={`inline-flex items-center justify-center ${combinedClass}`}
+	style={combinedStyle}
+	data-icon-container={iconId}
+>
+	<span class="icon-loading animate-pulse opacity-50" data-loading-indicator>
+		{fallback}
+	</span>
+
+	<iconify-icon
+		icon={icon}
+		class="icon-content opacity-0 transition-opacity duration-200"
+		data-icon-element
+		loading={loading}></iconify-icon>
+</span>
+
+<script is:inline define:vars={{ iconId, icon }}>
+	(function () {
+		const container = document.querySelector(
+			`[data-icon-container="${iconId}"]`,
+		);
+		if (!container) {
+			return;
+		}
+
+		const loadingIndicator = container.querySelector(
+			"[data-loading-indicator]",
+		);
+		const iconElement = container.querySelector("[data-icon-element]");
+
+		if (!loadingIndicator || !iconElement) {
+			return;
+		}
+
+		function checkIconLoaded() {
+			const hasContent =
+				iconElement.shadowRoot &&
+				iconElement.shadowRoot.children.length > 0;
+
+			if (hasContent) {
+				showIcon();
+				return true;
+			}
+			return false;
+		}
+
+		function showIcon() {
+			loadingIndicator.style.display = "none";
+			iconElement.classList.remove("opacity-0");
+			iconElement.classList.add("opacity-100");
+		}
+
+		function showLoading() {
+			loadingIndicator.style.display = "inline-flex";
+			iconElement.classList.remove("opacity-100");
+			iconElement.classList.add("opacity-0");
+		}
+
+		showLoading();
+
+		iconElement.addEventListener("load", () => {
+			showIcon();
+		});
+
+		iconElement.addEventListener("error", () => {
+			console.warn(`Failed to load icon: ${icon}`);
+		});
+
+		if (window.MutationObserver) {
+			const observer = new MutationObserver(() => {
+				if (checkIconLoaded()) {
+					observer.disconnect();
+				}
+			});
+
+			observer.observe(iconElement, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+			});
+
+			setTimeout(() => {
+				observer.disconnect();
+				if (!checkIconLoaded()) {
+					console.warn(`Icon load timeout: ${icon}`);
+				}
+			}, 5000);
+		}
+
+		setTimeout(() => {
+			checkIconLoaded();
+		}, 100);
+	})();
+</script>
+
+<style>
+	.icon-loading {
+		min-width: 1em;
+		min-height: 1em;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.icon-content {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	[data-icon-container] {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 1em;
+		min-height: 1em;
+	}
+
+	[data-icon-container] .icon-loading,
+	[data-icon-container] .icon-content {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+</style>

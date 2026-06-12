@@ -1,67 +1,17 @@
 ---
-import { Icon } from "astro-icon/components";
+import FloatingButton from "@components/common/FloatingButton.astro";
 ---
 
-<!-- There can't be a filter on parent element, or it will break `fixed` -->
-<div class="back-to-top-wrapper block">
-    <div id="back-to-top-btn" class="back-to-top-btn hide flex items-center rounded-2xl overflow-hidden transition"
-         onclick="backToTop()">
-        <button aria-label="Back to Top" class="btn-card h-[3.75rem] w-[3.75rem]">
-            <Icon name="material-symbols:keyboard-arrow-up-rounded" class="mx-auto"></Icon>
-        </button>
-    </div>
-</div>
-
-<style lang="stylus">
-  .back-to-top-wrapper
-    width: 3.75rem
-    height: 3.75rem
-    position: absolute
-    right: 0
-    top: 0
-    pointer-events: none
-
-  .back-to-top-btn
-    color: var(--primary)
-    font-size: 2.25rem
-    font-weight: bold
-    border: none
-    position: fixed
-    bottom: 10rem
-    opacity: 1
-    right: 6rem
-    cursor: pointer
-    transform: translateX(5rem)
-    pointer-events: auto
-    transition: box-shadow 1s ease-in-out
-
-    i
-      font-size: 1.75rem
-
-    &.hide
-      transform: translateX(5rem) scale(0.9)
-      opacity: 0
-      pointer-events: none
-
-    &:active
-      transform: translateX(5rem) scale(0.9)
-
-  @media (max-width: 1560px)
-    .back-to-top-btn
-      box-shadow:
-              0 0 0 1px var(--btn-regular-bg) ,
-              0 0 1em var(--btn-regular-bg) ;
-
-  // 手机端隐藏返回顶部按钮
-  @media (max-width: 768px)
-    .back-to-top-wrapper
-      display: none
-
-</style>
+<FloatingButton
+	id="back-to-top-btn"
+	icon="material-symbols:keyboard-arrow-up-rounded"
+	ariaLabel="Back to Top"
+	onclick="backToTop()"
+	class="hide"
+/>
 
 <script is:raw is:inline>
-    function backToTop() {
-        // 直接使用原生滚动，避免OverlayScrollbars冲突
-        window.scroll({top: 0, behavior: 'smooth'});
-    }
+	function backToTop() {
+		window.scroll({ top: 0, behavior: "smooth" });
+	}
 </script>

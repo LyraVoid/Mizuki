@@ -1,0 +1,141 @@
+{
+  "repo_notes": [
+    {
+      "content": "整个文档主要采用简体中文编写,且 wiki 应重点覆盖各配置项的作用及使用方法,注意不要那么多emoji,不要废话",
+      "author": "yCENzh"
+    }
+  ],
+  "pages": [
+    {
+      "title": "从这里开始",
+      "purpose": ""
+    },
+    {
+      "title": "概述",
+      "purpose": "介绍这个仓库,核心功能,技术栈与架构设计,让用户从整体上了解系统功能与结构",
+      "parent": "从这里开始"
+    },
+    {
+      "title": "快速开始",
+      "purpose": "即项目入门指南,包含环境依赖,项目启动步骤",
+      "parent": "从这里开始"
+    },
+    {
+      "title": "部署",
+      "purpose": "包含在各大托管平台等的部署教程",
+      "parent": "从这里开始",
+      "page_notes": [
+        {
+          "content": "如vercel,netlify,cloudflare pages,edgeone pages,github pages,服务器部署,docker部署和本地构建"
+        }
+      ]
+    },
+    {
+      "title": "配置",
+      "purpose": "介绍整个项目的配置体系架构"
+    },
+    {
+      "title": "config.ts",
+      "purpose": "详细介绍config.ts这一配置文件,具体到每一个配置项",
+      "page_notes": [
+        {
+          "content": "注意用中文编写"
+        }
+      ],
+      "parent": "配置"
+    },
+    {
+      "title": "astro.config.mjs",
+      "purpose": "详细介绍astro.config.mjs这一配置文件,注意用中文编写",
+      "page_notes": [
+        {
+          "content": "注意用中文编写"
+        }
+      ],
+      "parent": "配置"
+    },
+    {
+      "title": "其他配置",
+      "purpose": "包括评论区相关(评论区的实现原理之类),如何自定义字体,页脚配置,expressive-code代码块相关配置,",
+      "parent": "配置"
+    },
+    {
+      "title": "页面配置",
+      "purpose": "介绍一下整个项目的页面体系架构,然后详细介绍关于,日记,友链,时间线,技能,设备,番剧,相册和项目页面",
+      "page_notes": [
+        {
+          "content": "主要是配置方式,数据结构说明等"
+        }
+      ],
+      "parent": "配置"
+    },
+    {
+      "title": "文章",
+      "purpose": "介绍一下项目的文章支持及文章体系架构",
+      "page_notes": [
+        {
+          "content": ",要讲一下文章的各个元数据类型等,可以带过一下如何添加mdx支持"
+        }
+      ]
+    },
+    {
+      "title": "Markdowm",
+      "purpose": "详细介绍markdowm及其基本语法",
+      "parent": "文章"
+    },
+    {
+      "title": "私有语法",
+      "purpose": "介绍一下该项目自行添加的markdowm私有语法",
+      "page_notes": [
+        {
+          "content": "比如github卡片,链接卡片,expressive-code语法,github语法兼容等私有语法"
+        }
+      ],
+      "parent": "Markdowm"
+    },
+    {
+      "title": "图表",
+      "purpose": "介绍一下在文章中绘制图表的实现及方法",
+      "page_notes": [
+        {
+          "content": "比如Mermaid.js的各种语法,各个图表,以及拓展用法(比如注释,自定义样式,子图子组)"
+        }
+      ],
+      "parent": "Markdowm"
+    },
+    {
+      "title": "结构",
+      "purpose": "就是组织方式",
+      "page_notes": [
+        {
+          "content": "比如说单文件(文章名.md)和文件夹(创建文件夹下的index.md)"
+        }
+      ],
+      "parent": "文章"
+    },
+    {
+      "title": "资源嵌入",
+      "purpose": "详细讲解文章中的资源嵌入方法",
+      "page_notes": [
+        {
+          "content": "比如图片嵌入,外部链接等语法,以及bilibili,YouTube视频嵌入的私有语法等"
+        }
+      ],
+      "parent": "文章"
+    },
+    {
+      "title": "内容分离",
+      "purpose": "代码仓库与内容仓库分离的具体实现及配置方法",
+      "page_notes": [
+        {
+          "content": "包括.env环境变量的配置,内容仓库的理想结构及配置方式等,以及启用内容分离后,默认只有代码仓库更新会触发部署,内容仓库更新不会自动触发的解决办法,还有迁移指南"
+        }
+      ],
+      "parent": "文章"
+    },
+    {
+      "title": "提问的艺术",
+      "purpose": "核心前提,提问格式与内容要求,交流礼仪,问题速查等"
+    }
+  ]
+}

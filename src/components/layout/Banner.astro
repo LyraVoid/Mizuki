@@ -1,0 +1,778 @@
+---
+/**
+ * Banner 组件
+ * 支持单图模式和轮播图模式，包含文字覆盖层和水波纹效果
+ * 轮播模式使用 Ken Burns + Crossfade 动画（参考 Firefly 实现）
+ */
+
+import Image from "@components/atoms/Image/Image.astro";
+import TypewriterText from "@components/atoms/typewriter-text/TypewriterText.astro";
+import { Icon } from "astro-icon/components";
+import { siteConfig } from "../../config";
+import { BANNER_HEIGHT_EXTEND } from "../../constants/constants";
+import { getImageFormats, getImageQuality } from "../../utils/image-utils";
+
+interface Props {
+	// Banner 配置
+	bannerImages: {
+		desktop: string | string[];
+		mobile: string | string[];
+	};
+
+	// 响应式
+	mobileNonHomeBannerClass?: string;
+
+	// 文字覆盖层
+	showTextOverlay?: boolean;
+	overlayTitle?: string;
+	overlaySubtitle?: string | string[];
+	typewriter?: boolean;
+
+	// 水波纹效果
+	showWave?: boolean;
+}
+
+const {
+	bannerImages,
+	mobileNonHomeBannerClass = "",
+	showTextOverlay = false,
+	overlayTitle = siteConfig.banner.homeText?.title,
+	overlaySubtitle = siteConfig.banner.homeText?.subtitle,
+	typewriter = siteConfig.banner.homeText?.typewriter?.enable ?? false,
+	showWave = siteConfig.banner.waves?.enable ?? true,
+} = Astro.props;
+
+// 标准化图片数组
+const normalizeToArray = (images: string | string[]): string[] =>
+	Array.isArray(images) ? images : [images];
+
+const desktopImages = normalizeToArray(bannerImages.desktop).filter(Boolean);
+const mobileImages = normalizeToArray(bannerImages.mobile).filter(Boolean);
+
+const isCarouselEnabled =
+	siteConfig.banner.carousel?.enable &&
+	(desktopImages.length > 1 || mobileImages.length > 1);
+
+// 轮播间隔最小 1.5 秒，防止 setInterval 卡顿
+const carouselIntervalMs = Math.max(
+	(siteConfig.banner.carousel?.interval || 6) * 1000,
+	1500,
+);
+
+// 淡入淡出时间：间隔的 40%，范围 500ms ~ 1500ms
+const fadeMs = Math.min(
+	Math.max(Math.round(carouselIntervalMs * 0.4), 500),
+	1500,
+);
+
+// Ken Burns 动画时长 = 间隔 + 淡入，确保旧图在 crossfade 期间仍在运动，消除停顿感
+const kbDurationMs = carouselIntervalMs + fadeMs;
+
+const hasBannerCredit = siteConfig.banner.credit.enable;
+const hasBannerLink = !!siteConfig.banner.credit.url;
+
+const bannerQuality = getImageQuality();
+const bannerMobileQuality = Math.round(bannerQuality * 0.9);
+const bannerFormats = getImageFormats();
+---
+
+<div
+	id="banner-wrapper"
+	class={`absolute z-10 w-full transition duration-700 overflow-hidden ${mobileNonHomeBannerClass}`}
+	style={`top: -${BANNER_HEIGHT_EXTEND}vh`}
+>
+	{isCarouselEnabled ? (
+		/* 轮播图模式：Ken Burns + Crossfade */
+		<div
+			id="banner-carousel"
+			class="relative h-full w-full"
+			data-mobile-count={mobileImages.length}
+			data-desktop-count={desktopImages.length}
+			data-carousel-interval={carouselIntervalMs}
+			data-fade-ms={fadeMs}
+		>
+			{/* 移动端：第一张图直接渲染，其余放入 template 延迟加载 */}
+			{mobileImages.length > 0 && (
+				<div class="banner-image-slot-mobile absolute inset-0 block md:hidden">
+					<Image
+						alt="Mobile banner image 1"
+						class="object-cover h-full w-full"
+						src={mobileImages[0]}
+						position={siteConfig.banner.position}
+						widths={[640, 1024, 1536]}
+						sizes="100vw"
+						loading="eager"
+						fetchpriority="high"
+						quality={bannerMobileQuality}
+						formats={bannerFormats}
+					/>
+				</div>
+			)}
+			{mobileImages.slice(1).map((src, i) => (
+				<template class="banner-tpl-mobile">
+					<Image
+						alt={`Mobile banner image ${i + 2}`}
+						class="object-cover h-full w-full"
+						src={src}
+						position={siteConfig.banner.position}
+						widths={[640, 1024, 1536]}
+						sizes="100vw"
+						loading="eager"
+						fetchpriority="high"
+						quality={bannerMobileQuality}
+						formats={bannerFormats}
+					/>
+				</template>
+			))}
+
+			{/* 桌面端：第一张图直接渲染，其余放入 template 延迟加载 */}
+			{desktopImages.length > 0 && (
+				<div class="banner-image-slot-desktop absolute inset-0 hidden md:block">
+					<Image
+						id="banner"
+						alt="Desktop banner image 1"
+						class="object-cover h-full w-full"
+						src={desktopImages[0]}
+						position={siteConfig.banner.position}
+						widths={[1024, 1536, 2048, 2560]}
+						sizes="100vw"
+						loading="eager"
+						fetchpriority="high"
+						quality={bannerQuality}
+						formats={bannerFormats}
+					/>
+				</div>
+			)}
+			{desktopImages.slice(1).map((src, i) => (
+				<template class="banner-tpl-desktop">
+					<Image
+						alt={`Desktop banner image ${i + 2}`}
+						class="object-cover h-full w-full"
+						src={src}
+						position={siteConfig.banner.position}
+						widths={[1024, 1536, 2048, 2560]}
+						sizes="100vw"
+						loading="eager"
+						fetchpriority="high"
+						quality={bannerQuality}
+						formats={bannerFormats}
+					/>
+				</template>
+			))}
+		</div>
+	) : (
+		/* 单图模式 */
+		<div id="banner-single-container" class="relative h-full w-full">
+			<script
+				is:inline
+				define:vars={{
+					desktopImages: bannerImages.desktop,
+					mobileImages: bannerImages.mobile,
+					position: siteConfig.banner.position,
+				}}
+			>
+				(function () {
+					const getRandomImage = (images, storageKey) => {
+						if (Array.isArray(images)) {
+							if (images.length === 0) {return null;}
+							if (images.length === 1) {return images[0];}
+
+							const lastIndex = sessionStorage.getItem(storageKey);
+							let newIndex;
+
+							do {
+								newIndex = Math.floor(Math.random() * images.length);
+							} while (newIndex === parseInt(lastIndex || "-1"));
+
+							sessionStorage.setItem(storageKey, newIndex.toString());
+							return images[newIndex];
+						}
+						return images || null;
+					};
+
+					const container = document.getElementById("banner-single-container");
+
+					// 检查容器是否已有图片，避免在页面切换或缩放时重复创建
+					if (container.querySelector("img")) {
+						return;
+					}
+
+					const desktopSrc = getRandomImage(desktopImages, "banner_desktop_index");
+					const mobileSrc = getRandomImage(mobileImages, "banner_mobile_index");
+
+					if (mobileSrc) {
+						const mobileImg = document.createElement("img");
+						mobileImg.alt = "Mobile banner image of the blog";
+						mobileImg.className =
+							"block md:hidden object-cover h-full w-full transition duration-700 opacity-100";
+						mobileImg.src = mobileSrc;
+						mobileImg.loading = "eager";
+						mobileImg.fetchPriority = "high";
+						mobileImg.dataset.position = position;
+						container.appendChild(mobileImg);
+					}
+
+					if (desktopSrc) {
+						const desktopImg = document.createElement("img");
+						desktopImg.id = "banner";
+						desktopImg.alt = "Desktop banner image of the blog";
+						desktopImg.className =
+							"hidden md:block object-cover h-full w-full transition duration-700 opacity-100";
+						desktopImg.src = desktopSrc;
+						desktopImg.loading = "eager";
+						desktopImg.fetchPriority = "high";
+						desktopImg.dataset.position = position;
+						container.appendChild(desktopImg);
+					}
+				})();
+			</script>
+		</div>
+	)}
+
+	<!-- Ken Burns 动画样式（放在 body 中，不受 Swup head 替换影响） -->
+	{isCarouselEnabled && (
+		<Fragment set:html={`<style>
+			@keyframes bannerKenBurns {
+				0% { transform: scale(1.03); }
+				100% { transform: scale(1.13); }
+			}
+			.banner-kb {
+				animation: bannerKenBurns ${kbDurationMs}ms ease-out forwards;
+			}
+		</style>`} />
+	)}
+
+	<!-- 轮播脚本：随机起始 + 帧收集 + Ken Burns + Crossfade + 触摸/鼠标事件 -->
+	{isCarouselEnabled && (
+		<script is:inline data-swup-ignore-script>
+			(function initBannerCarousel() {
+				var container = document.getElementById('banner-carousel');
+				if (!container) return;
+
+				var mobileCount = parseInt(container.dataset.mobileCount || '0', 10);
+				var desktopCount = parseInt(container.dataset.desktopCount || '0', 10);
+				var interval = parseInt(container.dataset.carouselInterval || '6000', 10);
+				var FADE_MS = parseInt(container.dataset.fadeMs || '1500', 10);
+
+				if (mobileCount <= 1 && desktopCount <= 1) return;
+
+				// 清理上一次 Swup 导航遗留的监听器和定时器
+				if (window.__bannerCarouselCleanup) {
+					window.__bannerCarouselCleanup();
+					window.__bannerCarouselCleanup = null;
+				}
+
+				// 保存初始帧 HTML，供帧收集使用
+				if (typeof window.__bannerInitialFrameHtml === 'undefined') {
+					window.__bannerInitialFrameHtml = {};
+				}
+
+				function rememberInitialFrame(slotClass) {
+					var slot = container.querySelector('.' + slotClass);
+					if (!slot) return;
+					if (!window.__bannerInitialFrameHtml[slotClass]) {
+						window.__bannerInitialFrameHtml[slotClass] = slot.innerHTML;
+					}
+				}
+
+				rememberInitialFrame('banner-image-slot-mobile');
+				rememberInitialFrame('banner-image-slot-desktop');
+
+				// 随机起始索引（Swup 导航间保留，F5 刷新重置）
+				if (typeof window.__bannerRandomIndex === 'undefined') {
+					window.__bannerRandomIndex = {
+						mobile: mobileCount > 1 ? Math.floor(Math.random() * mobileCount) : 0,
+						desktop: desktopCount > 1 ? Math.floor(Math.random() * desktopCount) : 0
+					};
+				}
+
+				// 从 template 替换默认图片
+				function applyRandom(slotClass, tplClass, randomIndex) {
+					if (randomIndex === 0) return;
+					var slot = container.querySelector('.' + slotClass);
+					var templates = container.querySelectorAll('.' + tplClass);
+					if (!slot || !templates.length) return;
+					var tpl = templates[randomIndex - 1];
+					if (!tpl) return;
+					slot.innerHTML = '';
+					slot.appendChild(tpl.content.cloneNode(true));
+				}
+
+				applyRandom('banner-image-slot-mobile', 'banner-tpl-mobile', window.__bannerRandomIndex.mobile);
+				applyRandom('banner-image-slot-desktop', 'banner-tpl-desktop', window.__bannerRandomIndex.desktop);
+
+				// 收集所有帧 HTML 字符串（仅首次）
+				if (!window.__bannerCarouselFrames) window.__bannerCarouselFrames = {};
+
+				function collectFrames(slotClass, tplClass) {
+					if (window.__bannerCarouselFrames[slotClass]) return;
+					var frames = [];
+					var initialFrame = window.__bannerInitialFrameHtml && window.__bannerInitialFrameHtml[slotClass];
+					var slot = container.querySelector('.' + slotClass);
+					if (initialFrame) {
+						frames.push(initialFrame);
+					} else if (slot) {
+						frames.push(slot.innerHTML);
+					}
+					var tpls = container.querySelectorAll('.' + tplClass);
+					for (var i = 0; i < tpls.length; i++) {
+						frames.push(tpls[i].innerHTML);
+					}
+					window.__bannerCarouselFrames[slotClass] = frames;
+				}
+
+				collectFrames('banner-image-slot-mobile', 'banner-tpl-mobile');
+				collectFrames('banner-image-slot-desktop', 'banner-tpl-desktop');
+
+				if (typeof window.__bannerCarouselIndex === 'undefined') {
+					window.__bannerCarouselIndex = {
+						mobile: window.__bannerRandomIndex ? window.__bannerRandomIndex.mobile : 0,
+						desktop: window.__bannerRandomIndex ? window.__bannerRandomIndex.desktop : 0
+					};
+				}
+
+				// 断点检测（md = 768px）
+				function isSlotHiddenByBreakpoint(slot) {
+					var cl = slot.classList;
+					var isMd = window.matchMedia('(min-width: 768px)').matches;
+					if (cl.contains('md:hidden') && isMd) return true;
+					if (cl.contains('hidden') && !cl.contains('md:hidden') && !isMd) return true;
+					return false;
+				}
+
+				// 给首张图启动 Ken Burns
+				function applyInitialKB(slotClass) {
+					var slot = container.querySelector('.' + slotClass);
+					if (!slot || isSlotHiddenByBreakpoint(slot)) return;
+					slot.classList.remove('banner-kb');
+					void slot.offsetWidth;
+					slot.classList.add('banner-kb');
+				}
+
+				// 暂停 Ken Burns 动画（保持当前进度）
+				function pauseKenBurns() {
+					var slots = container.querySelectorAll('.banner-kb');
+					for (var i = 0; i < slots.length; i++) {
+						slots[i].style.animationPlayState = 'paused';
+					}
+				}
+
+				// 恢复 Ken Burns 动画（从暂停位置继续）
+				function resumeKenBurns() {
+					var slots = container.querySelectorAll('.banner-kb');
+					for (var i = 0; i < slots.length; i++) {
+						slots[i].style.animationPlayState = 'running';
+					}
+				}
+
+				// Crossfade 防重入锁（每种 slot 类型独立）
+				var isCrossfading = { mobile: false, desktop: false };
+
+				// 清理 orphaned 中间层（快速滑动时可能残留）
+				function cleanupOrphanedLayers(slotClass, currentSlot) {
+					var allSlots = container.querySelectorAll('.' + slotClass);
+					for (var i = 0; i < allSlots.length; i++) {
+						if (allSlots[i] !== currentSlot && allSlots[i].parentNode) {
+							allSlots[i].parentNode.removeChild(allSlots[i]);
+						}
+					}
+				}
+
+				// Crossfade：创建新层叠在旧层上方，淡入后移除旧层
+				function crossfadeToIndex(slotClass, totalCount, type, targetIndex) {
+					if (totalCount <= 1) return;
+					if (isCrossfading[type]) return;
+
+					var frames = window.__bannerCarouselFrames[slotClass];
+					if (!frames || frames.length === 0) return;
+
+					var oldSlot = container.querySelector('.' + slotClass);
+					if (!oldSlot) return;
+					if (isSlotHiddenByBreakpoint(oldSlot)) return;
+
+					isCrossfading[type] = true;
+					window.__bannerCarouselIndex[type] = targetIndex;
+
+					// 清理快速交互可能残留的中间层
+					cleanupOrphanedLayers(slotClass, oldSlot);
+
+					var newSlot = document.createElement('div');
+					var baseClass = oldSlot.className.replace(/\bbanner-kb\b/g, '').trim();
+					newSlot.className = baseClass;
+					newSlot.style.opacity = '0';
+					newSlot.style.transition = 'opacity ' + FADE_MS + 'ms ease-in-out';
+					newSlot.innerHTML = frames[targetIndex];
+					oldSlot.parentNode.insertBefore(newSlot, oldSlot.nextSibling);
+
+					// 双 rAF：确保 opacity:0 已绘制，然后同时触发淡入 + Ken Burns
+					requestAnimationFrame(function() {
+						requestAnimationFrame(function() {
+							newSlot.style.opacity = '1';
+							newSlot.classList.add('banner-kb');
+						});
+					});
+
+					// 淡入完成后：移除旧层，清理 transition，释放锁
+					setTimeout(function() {
+						if (oldSlot.parentNode) oldSlot.parentNode.removeChild(oldSlot);
+						newSlot.style.transition = '';
+						isCrossfading[type] = false;
+					}, FADE_MS + 50);
+				}
+
+				// 自动轮播用的 crossfade（前进到下一张）
+				function crossfade(slotClass, totalCount, type) {
+					var frames = window.__bannerCarouselFrames[slotClass];
+					if (!frames || frames.length === 0) return;
+					var currentIndex = window.__bannerCarouselIndex[type];
+					var nextIndex = (currentIndex + 1) % frames.length;
+					crossfadeToIndex(slotClass, totalCount, type, nextIndex);
+				}
+
+				var timerId = null;
+				var isPaused = false;
+				var intervalStartTime = 0;
+				var remainingTime = 0;
+				var resumeTimerId = null;
+
+				// 触摸手势状态
+				var touchStartX = 0;
+				var touchStartY = 0;
+				var isSwiping = false;
+
+				function startCarousel(isFromResume) {
+					stopCarousel();
+					if (isPaused) return;
+
+					if (!isFromResume) {
+						applyInitialKB('banner-image-slot-mobile');
+						applyInitialKB('banner-image-slot-desktop');
+					}
+
+					intervalStartTime = Date.now();
+					timerId = setInterval(function() {
+						if (!isPaused) {
+							intervalStartTime = Date.now();
+							crossfade('banner-image-slot-mobile', mobileCount, 'mobile');
+							crossfade('banner-image-slot-desktop', desktopCount, 'desktop');
+						}
+					}, interval);
+				}
+
+				function stopCarousel() {
+					if (resumeTimerId !== null) {
+						clearTimeout(resumeTimerId);
+						resumeTimerId = null;
+					}
+					if (timerId !== null) {
+						var elapsed = Date.now() - intervalStartTime;
+						remainingTime = Math.max(0, interval - elapsed);
+						clearInterval(timerId);
+						timerId = null;
+					}
+				}
+
+				// 页面可见性：后台标签页暂停轮播
+				var visibilityHandler = function() {
+					if (document.hidden) {
+						stopCarousel();
+						pauseKenBurns();
+					} else if (!isPaused) {
+						resumeKenBurns();
+						if (remainingTime > 0) {
+							resumeTimerId = setTimeout(function() {
+								resumeTimerId = null;
+								crossfade('banner-image-slot-mobile', mobileCount, 'mobile');
+								crossfade('banner-image-slot-desktop', desktopCount, 'desktop');
+								startCarousel(true);
+							}, remainingTime);
+						} else {
+							startCarousel(true);
+						}
+					}
+				};
+				document.addEventListener('visibilitychange', visibilityHandler);
+
+				// 事件处理函数引用（用于清理）
+				var onTouchStart = function(e) {
+					touchStartX = e.touches[0].clientX;
+					touchStartY = e.touches[0].clientY;
+					isSwiping = false;
+					isPaused = true;
+					stopCarousel();
+				};
+
+				var onTouchMove = function(e) {
+					if (!touchStartX || !touchStartY) return;
+					var diffX = Math.abs(e.touches[0].clientX - touchStartX);
+					var diffY = Math.abs(e.touches[0].clientY - touchStartY);
+					if (diffX > diffY && diffX > 30) {
+						isSwiping = true;
+						e.preventDefault();
+					}
+				};
+
+				var onTouchEnd = function(e) {
+					if (!touchStartX || !touchStartY || !isSwiping) {
+						isPaused = false;
+						resumeKenBurns();
+						if (remainingTime > 0) {
+							resumeTimerId = setTimeout(function() {
+								resumeTimerId = null;
+								crossfade('banner-image-slot-mobile', mobileCount, 'mobile');
+								crossfade('banner-image-slot-desktop', desktopCount, 'desktop');
+								startCarousel(true);
+							}, remainingTime);
+						} else {
+							startCarousel(true);
+						}
+						return;
+					}
+
+					var endX = e.changedTouches[0].clientX;
+					var diffX = touchStartX - endX;
+					var isMobile = window.innerWidth < 768;
+					var slotClass = isMobile
+						? 'banner-image-slot-mobile'
+						: 'banner-image-slot-desktop';
+					var type = isMobile ? 'mobile' : 'desktop';
+					var count = isMobile ? mobileCount : desktopCount;
+					var current = window.__bannerCarouselIndex[type];
+
+					if (Math.abs(diffX) > 50) {
+						if (diffX > 0) {
+							var next = (current + 1) % count;
+							crossfadeToIndex(slotClass, count, type, next);
+						} else {
+							var prev = (current - 1 + count) % count;
+							crossfadeToIndex(slotClass, count, type, prev);
+						}
+					}
+
+					touchStartX = 0;
+					touchStartY = 0;
+					isSwiping = false;
+					isPaused = false;
+					startCarousel();
+				};
+
+				var onMouseEnter = function() {
+					isPaused = true;
+					stopCarousel();
+					pauseKenBurns();
+				};
+
+				var onMouseLeave = function() {
+					isPaused = false;
+					resumeKenBurns();
+					if (remainingTime > 0) {
+						resumeTimerId = setTimeout(function() {
+							resumeTimerId = null;
+							crossfade('banner-image-slot-mobile', mobileCount, 'mobile');
+							crossfade('banner-image-slot-desktop', desktopCount, 'desktop');
+							startCarousel(true);
+						}, remainingTime);
+					} else {
+						startCarousel(true);
+					}
+				};
+
+				// 移动端触摸事件
+				if ('ontouchstart' in window) {
+					container.addEventListener('touchstart', onTouchStart, { passive: true });
+					container.addEventListener('touchmove', onTouchMove, { passive: false });
+					container.addEventListener('touchend', onTouchEnd, { passive: true });
+				}
+
+				// 鼠标悬停暂停（桌面端）
+				container.addEventListener('mouseenter', onMouseEnter);
+				container.addEventListener('mouseleave', onMouseLeave);
+
+				startCarousel();
+
+				// 注册清理函数，供下次 Swup 导航或销毁时调用
+				window.__bannerCarouselCleanup = function() {
+					stopCarousel();
+					remainingTime = 0;
+					intervalStartTime = 0;
+					document.removeEventListener('visibilitychange', visibilityHandler);
+					if ('ontouchstart' in window) {
+						container.removeEventListener('touchstart', onTouchStart);
+						container.removeEventListener('touchmove', onTouchMove);
+						container.removeEventListener('touchend', onTouchEnd);
+					}
+					container.removeEventListener('mouseenter', onMouseEnter);
+					container.removeEventListener('mouseleave', onMouseLeave);
+					isCrossfading = { mobile: false, desktop: false };
+				};
+			})();
+		</script>
+	)}
+
+	<!-- 首页文字覆盖层 -->
+	{siteConfig.banner.homeText?.enable && (
+		<div class={`banner-text-overlay absolute inset-0 z-20 flex items-center justify-center ${!showTextOverlay ? "hidden" : ""}`}>
+			<div class="w-4/5 lg:w-3/4 text-center mb-0">
+				<div class="flex flex-col">
+					{overlayTitle && (
+						<h1 class="banner-title text-6xl lg:text-8xl text-white drop-shadow-lg mb-2 lg:mb-4">
+							{overlayTitle}
+						</h1>
+					)}
+					{overlaySubtitle && (
+						<h2 class="banner-subtitle text-xl lg:text-3xl text-white/90 drop-shadow-md">
+							<span class="inline-block min-h-[1.2em]">
+								{typewriter && Array.isArray(overlaySubtitle) ? (
+									<TypewriterText
+										text={overlaySubtitle}
+										speed={siteConfig.banner.homeText?.typewriter?.speed}
+										deleteSpeed={siteConfig.banner.homeText?.typewriter?.deleteSpeed}
+										pauseTime={siteConfig.banner.homeText?.typewriter?.pauseTime}
+									/>
+								) : Array.isArray(overlaySubtitle) ? (
+									overlaySubtitle[0]
+								) : (
+									overlaySubtitle
+								)}
+							</span>
+						</h2>
+					)}
+				</div>
+			</div>
+		</div>
+	)}
+
+	<!-- 非首页页面标题覆盖层（持久化容器，JS 动态填充文本） -->
+	<div id="banner-page-overlay" class="banner-page-overlay hidden lg:flex absolute inset-0 z-20 pointer-events-none">
+		<div class="flex flex-col items-center justify-center w-full text-center px-4">
+			<h2 id="page-overlay-title" class="page-overlay-title text-3xl lg:text-5xl text-white font-bold drop-shadow-lg px-4"></h2>
+			<div id="page-overlay-meta" class="page-overlay-meta hidden flex-wrap items-center justify-center gap-x-5 gap-y-2 text-white/80 text-sm md:text-base mt-4">
+				<span class="inline-flex items-center gap-1.5">
+					<Icon name="material-symbols:calendar-month-outline-rounded" class="text-[1.05em]" />
+					<span id="page-overlay-date"></span>
+				</span>
+				<span class="inline-flex items-center gap-1.5">
+					<Icon name="material-symbols:folder-outline" class="text-[1.05em]" />
+					<span id="page-overlay-category"></span>
+				</span>
+				<span class="inline-flex items-center gap-1.5">
+					<Icon name="material-symbols:ink-pen-outline-rounded" class="text-[1.05em]" />
+					<span id="page-overlay-words"></span>
+				</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- 水波纹效果 -->
+	{showWave && (
+		<div
+			class="waves absolute -bottom-[1px] h-[10vh] max-h-[9.375rem] min-h-[3.125rem] w-full md:h-[15vh]"
+			id="header-waves"
+			style="transform: translateZ(0); will-change: fill;"
+		>
+			<svg
+				class="waves"
+				xmlns="http://www.w3.org/2000/svg"
+				xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 20 150 32"
+				preserveAspectRatio="none"
+				shape-rendering="auto"
+				style="transform: translateZ(0); backface-visibility: hidden;"
+			>
+				<defs>
+					<path
+						id="gentle-wave"
+						d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v48h-352z"
+					>
+					</path>
+				</defs>
+				<g class="parallax" style="transform: translateZ(0);">
+					<use
+						xlink:href="#gentle-wave"
+						x="48"
+						y="0"
+						class="opacity-25 fill-[var(--page-bg)]"
+						style="animation-delay: -2s; animation-duration: 7s; will-change: transform;"
+					></use>
+					<use
+						xlink:href="#gentle-wave"
+						x="48"
+						y="3"
+						class="opacity-50 fill-[var(--page-bg)]"
+						style="animation-delay: -3s; animation-duration: 10s; will-change: transform;"
+					></use>
+					<use
+						xlink:href="#gentle-wave"
+						x="48"
+						y="5"
+						class="opacity-75 fill-[var(--page-bg)]"
+						style="animation-delay: -4s; animation-duration: 13s; will-change: transform;"
+					></use>
+					<use
+						xlink:href="#gentle-wave"
+						x="48"
+						y="7"
+						class="fill-[var(--page-bg)]"
+						style="animation-delay: -5s; animation-duration: 20s; will-change: transform;"
+					></use>
+				</g>
+			</svg>
+		</div>
+	)}
+
+	<!-- Banner 图片来源标注 -->
+	{hasBannerCredit && (
+		<a
+			href={siteConfig.banner.credit.url}
+			id="banner-credit"
+			target="_blank"
+			rel="noopener"
+			aria-label="Visit image source"
+			class:list={[
+				"group onload-animation transition-all absolute flex justify-center items-center rounded-full px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9",
+				{ "hover:pr-9 active:bg-black/80": hasBannerLink },
+			]}
+		>
+			<Icon
+				class="text-white/75 text-[1.25rem] mr-1"
+				name="material-symbols:copyright-outline-rounded"
+			/>
+			<div class="text-white/75 text-xs">{siteConfig.banner.credit.text}</div>
+			<Icon
+				class:list={[
+					"transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0",
+					{ "group-hover:opacity-100": hasBannerLink },
+				]}
+				name="fa7-solid:arrow-up-right-from-square"
+			>
+			</Icon>
+		</a>
+	)}
+</div>
+
+<style>
+	/* Banner 文本样式 */
+	.banner-title {
+		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+		animation: fadeInUp 1s ease-out;
+		font-weight: bold;
+	}
+
+	.banner-subtitle {
+		text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+		animation: fadeInUp 1s ease-out 0.3s both;
+		min-height: 1.5em;
+		line-height: 1.2;
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>

@@ -1,0 +1,25 @@
+---
+// AnimeSortBar - 排序栏组件
+// 当前页面没有排序功能，预留接口以便后续扩展
+interface Props {
+	sortByLabel?: string;
+	sortOptions?: { value: string; label: string }[];
+}
+
+const { sortByLabel = "Sort", sortOptions = [] } = Astro.props;
+---
+
+{
+	sortOptions.length > 0 && (
+		<div class="anime-sort-bar mb-4">
+			<span class="text-sm text-[var(--text-muted)] mr-2">
+				{sortByLabel}:
+			</span>
+			<select class="anime-sort-select px-3 py-1.5 rounded-lg bg-[var(--btn-regular-bg)] border border-[var(--line-divider)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50">
+				{sortOptions.map((option) => (
+					<option value={option.value}>{option.label}</option>
+				))}
+			</select>
+		</div>
+	)
+}

@@ -1,0 +1,117 @@
+---
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import { Icon } from "astro-icon/components";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+interface Props {
+	updatedDate: Date;
+	class?: string;
+}
+
+dayjs.extend(utc);
+
+const { updatedDate, class: className } = Astro.props;
+
+const lastModified = dayjs(updatedDate).utc().format("YYYY-MM-DDTHH:mm:ss");
+---
+
+<>
+	<div
+		id="last-modified"
+		data-last-modified={lastModified}
+		data-prefix={i18n(I18nKey.lastModifiedPrefix)}
+		data-year={i18n(I18nKey.year)}
+		data-month={i18n(I18nKey.month)}
+		data-day={i18n(I18nKey.day)}
+		data-hour={i18n(I18nKey.hour)}
+		data-minute={i18n(I18nKey.minute)}
+		data-second={i18n(I18nKey.second)}
+		style="display: none;"
+	>
+	</div>
+
+	<div class:list={["card-base p-6 mb-4", className]}>
+		<script is:inline>
+			function runtime() {
+				const lastModifiedElement =
+					document.getElementById("last-modified");
+				if (!lastModifiedElement) {
+					return;
+				}
+
+				const startDate = new Date(
+					lastModifiedElement.dataset.lastModified,
+				);
+				const currentDate = new Date();
+				const diff = currentDate - startDate;
+				const seconds = Math.floor(diff / 1000);
+				const days = Math.floor(seconds / 86400);
+				const hours = Math.floor((seconds % 86400) / 3600);
+				const minutes = Math.floor((seconds % 3600) / 60);
+				const secs = seconds % 60;
+
+				const years = Math.floor(days / 365);
+				const months = Math.floor((days % 365) / 30);
+				const remainingDays = days % 30;
+
+				const prefix = lastModifiedElement.dataset.prefix;
+				const yearKey = lastModifiedElement.dataset.year;
+				const monthKey = lastModifiedElement.dataset.month;
+				const dayKey = lastModifiedElement.dataset.day;
+				const hourKey = lastModifiedElement.dataset.hour;
+				const minuteKey = lastModifiedElement.dataset.minute;
+				const secondKey = lastModifiedElement.dataset.second;
+
+				let runtimeString = prefix + " ";
+				if (years > 0) {
+					runtimeString += `${years} ${yearKey} `;
+				}
+				if (months > 0) {
+					runtimeString += `${months} ${monthKey} `;
+				}
+				if (remainingDays > 0) {
+					runtimeString += `${remainingDays} ${dayKey} `;
+				}
+				runtimeString += `${hours} ${hourKey} `;
+				if (minutes < 10) {
+					runtimeString += `0${minutes} ${minuteKey} `;
+				} else {
+					runtimeString += `${minutes} ${minuteKey} `;
+				}
+				if (secs < 10) {
+					runtimeString += `0${secs} ${secondKey}`;
+				} else {
+					runtimeString += `${secs} ${secondKey}`;
+				}
+
+				document.getElementById("modifiedtime").innerHTML =
+					runtimeString;
+			}
+			setInterval(runtime, 1000);
+		</script>
+		<div class="flex items-center gap-3">
+			<div
+				class="flex items-center justify-center h-12 w-12 rounded-lg bg-[var(--enter-btn-bg)]"
+			>
+				<Icon
+					name="material-symbols:history-rounded"
+					class="text-3xl text-[var(--primary)]"
+				/>
+			</div>
+			<div class="flex flex-col gap-1">
+				<div
+					id="modifiedtime"
+					class="text-[1.0rem] leading-tight text-black/75 dark:text-white/75"
+				>
+				</div>
+				<p
+					class="text-[0.8rem] leading-tight text-black/75 dark:text-white/75"
+				>
+					{i18n(I18nKey.lastModifiedOutdated)}
+				</p>
+			</div>
+		</div>
+	</div>
+</>

@@ -1,0 +1,236 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { LinkPresets } from "../../../constants/link-presets";
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import { url } from "../../../utils/url-utils";
+import type { DropdownMenuProps } from "./types";
+
+const { link, class: className } = Astro.props as DropdownMenuProps;
+
+const navTitleMap: Record<string, I18nKey> = {
+	Links: I18nKey.navLinks,
+	My: I18nKey.navMy,
+	About: I18nKey.navAbout,
+	Others: I18nKey.navOthers,
+	Anime: I18nKey.anime,
+	Diary: I18nKey.diary,
+	Gallery: I18nKey.albums,
+	Devices: I18nKey.devices,
+	Projects: I18nKey.projects,
+	Skills: I18nKey.skills,
+	Timeline: I18nKey.timeline,
+	Friends: I18nKey.friends,
+};
+
+const getLocalizedName = (name: string): string => {
+	return name in navTitleMap ? i18n(navTitleMap[name]) : name;
+};
+
+const children =
+	link.children?.map((child) =>
+		typeof child === "number" ? LinkPresets[child] : child,
+	) ?? [];
+
+const hasChildren = children.length > 0;
+---
+
+<div class:list={["dropdown-container group", className]} data-dropdown>
+	{
+		hasChildren ? (
+			<>
+				<button
+					class="btn-plain scale-animation rounded-lg h-11 font-bold w-11 lg:w-auto lg:px-5 active:scale-95 dropdown-trigger flex items-center justify-center lg:justify-start whitespace-nowrap"
+					aria-expanded="false"
+					aria-haspopup="true"
+					data-dropdown-trigger
+				>
+					{link.icon && (
+						<Icon
+							name={link.icon}
+							class="text-[1.1rem] lg:mr-2 flex-shrink-0"
+						/>
+					)}
+					<span class="truncate hidden lg:inline">
+						{getLocalizedName(link.name)}
+					</span>
+					<Icon
+						name="material-symbols:keyboard-arrow-down-rounded"
+						class="text-[1.25rem] transition-transform duration-200 dropdown-arrow ml-1 flex-shrink-0 hidden lg:inline"
+					/>
+				</button>
+
+				<div class="dropdown-menu" data-dropdown-menu>
+					<div class="dropdown-content">
+						{children.map((child) => (
+							<a
+								href={
+									child.external ? child.url : url(child.url)
+								}
+								target={child.external ? "_blank" : null}
+								rel={
+									child.external
+										? "noopener noreferrer"
+										: null
+								}
+								class="dropdown-item"
+								aria-label={child.name}
+							>
+								<div class="flex items-center">
+									{child.icon && (
+										<Icon
+											name={child.icon}
+											class="text-[1rem] mr-2"
+										/>
+									)}
+									<span>{getLocalizedName(child.name)}</span>
+								</div>
+								{child.external && (
+									<Icon
+										name="fa7-solid:arrow-up-right-from-square"
+										class="text-[0.75rem] text-black/25 dark:text-white/25 ml-2"
+									/>
+								)}
+							</a>
+						))}
+					</div>
+				</div>
+			</>
+		) : (
+			<a
+				aria-label={link.name}
+				href={link.external ? link.url : url(link.url)}
+				target={link.external ? "_blank" : null}
+				rel={link.external ? "noopener noreferrer" : null}
+				class="btn-plain scale-animation rounded-lg h-11 font-bold w-11 lg:w-auto lg:px-5 active:scale-95 flex items-center justify-center lg:justify-start whitespace-nowrap"
+			>
+				{link.icon && (
+					<Icon
+						name={link.icon}
+						class="text-[1.1rem] lg:mr-2 flex-shrink-0"
+					/>
+				)}
+				<span class="truncate hidden lg:inline">
+					{getLocalizedName(link.name)}
+				</span>
+				{link.external && (
+					<Icon
+						name="fa7-solid:arrow-up-right-from-square"
+						class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2] flex-shrink-0 hidden lg:inline"
+					/>
+				)}
+			</a>
+		)
+	}
+</div>
+
+<style>
+	@reference "tailwindcss";
+	@custom-variant dark (&:where(.dark, .dark *));
+
+	.dropdown-container {
+		@apply relative;
+	}
+
+	.dropdown-menu {
+		@apply absolute top-full left-0 pt-2 opacity-0 invisible pointer-events-none translate-y-[-8px] transition-all duration-200 ease-out z-50;
+	}
+
+	.dropdown-container:hover .dropdown-menu,
+	.dropdown-container:focus-within .dropdown-menu,
+	.dropdown-trigger[aria-expanded="true"] + .dropdown-menu {
+		@apply opacity-100 visible pointer-events-auto translate-y-0;
+	}
+
+	.dropdown-container:hover .dropdown-arrow,
+	.dropdown-container:focus-within .dropdown-arrow,
+	.dropdown-trigger[aria-expanded="true"] .dropdown-arrow {
+		@apply rotate-180;
+	}
+
+	.dropdown-content {
+		@apply bg-[var(--float-panel-bg)] rounded-[var(--radius-large)] shadow-xl dark:shadow-none border border-black/5 dark:border-white/10 p-2 min-w-[12rem];
+	}
+
+	.dropdown-item {
+		@apply flex items-center justify-between px-4 py-2.5 text-black/75 dark:text-white/75 hover:text-[var(--primary)] hover:bg-[var(--btn-plain-bg-hover)] transition-colors duration-150 font-medium rounded-lg;
+	}
+
+	@media (max-width: 767px) {
+		.dropdown-container {
+			@apply hidden;
+		}
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const dropdowns = document.querySelectorAll("[data-dropdown]");
+
+		dropdowns.forEach((dropdown) => {
+			const trigger = dropdown.querySelector(
+				"[data-dropdown-trigger]",
+			) as HTMLElement;
+			const menu = dropdown.querySelector(
+				"[data-dropdown-menu]",
+			) as HTMLElement;
+			const items = dropdown.querySelectorAll(
+				".dropdown-item",
+			) as NodeListOf<HTMLElement>;
+
+			if (!trigger || !menu) {
+				return;
+			}
+
+			const closeMenu = () => {
+				trigger.setAttribute("aria-expanded", "false");
+			};
+
+			const toggleMenu = () => {
+				const isExpanded =
+					trigger.getAttribute("aria-expanded") === "true";
+				trigger.setAttribute("aria-expanded", String(!isExpanded));
+			};
+
+			trigger.addEventListener("keydown", (e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					toggleMenu();
+				} else if (e.key === "ArrowDown") {
+					e.preventDefault();
+					trigger.setAttribute("aria-expanded", "true");
+					if (items.length > 0) {
+						items[0].focus();
+					}
+				} else if (e.key === "Escape") {
+					closeMenu();
+				}
+			});
+
+			items.forEach((item, index) => {
+				item.addEventListener("keydown", (e) => {
+					if (e.key === "ArrowDown") {
+						e.preventDefault();
+						items[(index + 1) % items.length].focus();
+					} else if (e.key === "ArrowUp") {
+						e.preventDefault();
+						items[
+							(index - 1 + items.length) % items.length
+						].focus();
+					} else if (e.key === "Escape") {
+						e.preventDefault();
+						closeMenu();
+						trigger.focus();
+					}
+				});
+			});
+
+			document.addEventListener("click", (e) => {
+				if (!dropdown.contains(e.target as Node)) {
+					closeMenu();
+				}
+			});
+		});
+	});
+</script>

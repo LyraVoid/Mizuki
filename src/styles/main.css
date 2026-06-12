@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* 导入相册样式 */
 @import "./albums.css";
 /* 导入追番页面样式 */
@@ -7,12 +9,27 @@
 @import "./animation-enhancements.css";
 /* 导入渐变按钮样式 */
 @import "./gradient-buttons.css";
+/* 导入 Banner 和网格布局样式 */
+@import "./banner.css";
 /* 加密内容样式已移除，现在直接使用非加密文章的样式 */
+
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Migrate from v3 config */
+@theme {
+  --font-sans: "Roboto", "sans-serif", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1280px;
+  --breakpoint-xl: 1920px;
+}
 
 /* 导入 ZenMaruGothic-Medium 字体 */
 @font-face {
   font-family: "ZenMaruGothic-Medium";
-  src: url("/assets/font/ZenMaruGothic-Medium.woff2") format("woff2");
+  src: url("/assets/font/ZenMaruGothic-Medium.ttf") format("truetype");
   font-weight: 500;
   font-display: swap;
 }
@@ -20,19 +37,17 @@
 /* 导入 萝莉体 第二版 字体 */
 @font-face {
   font-family: "萝莉体 第二版";
-  src: url("/assets/font/萝莉体 第二版.woff2") format("woff2");
+  src: url("/assets/font/loli.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* 确保平滑滚动 */
+/* 确保平滑滚动，并稳定滚动条宽度以避免布局左右抖动 */
 html {
   scroll-behavior: smooth;
+  /* 现代浏览器：为滚动条预留稳定空间 */
+  scrollbar-gutter: stable;
 }
 
 /* 页面顶部渐变高光效果 */
@@ -51,6 +66,11 @@ html {
 /* 暗色主题下的渐变高光效果 */
 :root.dark .top-gradient-highlight {
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0.15) 60%, rgba(0, 0, 0, 0.05) 80%, transparent 100%);
+}
+
+@utility expand-animation {
+  @apply relative before:ease-out before:duration-75 before:transition-all active:bg-none hover:before:bg-(--btn-plain-bg-hover) active:before:bg-(--btn-plain-bg-active) z-0
+      before:absolute before:rounded-[inherit] before:inset-0 before:scale-[0.85] hover:before:scale-100 before:-z-10;
 }
 
 @layer components {
@@ -222,10 +242,22 @@ html {
   }
 
   .card-base {
-    @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)] transition-colors duration-150;
+    @apply rounded-(--radius-large) overflow-hidden bg-(--card-bg) transition-colors duration-150;
   }
   .card-base-transparent {
-    @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg-transparent)] backdrop-blur-sm transition-colors duration-150;
+    @apply rounded-(--radius-large) overflow-hidden bg-(--card-bg-transparent) backdrop-blur-sm transition-colors duration-150;
+  }
+
+  /* 卡片边框和微阴影效果 */
+  .enable-card-border .card-base {
+    @apply transition-all duration-300 border border-(--line-divider) shadow-xs;
+  }
+  .enable-card-border .card-base-transparent {
+    @apply transition-all duration-300 border border-(--line-divider) shadow-xs;
+  }
+  .enable-card-border #navbar > div:not(.absolute) {
+    @apply transition-all duration-300 border shadow-xs;
+    border-color: var(--line-divider) !important;
   }
 
   /* 全屏壁纸模式下的半透明效果 - 使用!important确保优先级 */
@@ -233,12 +265,14 @@ html {
     background: var(--card-bg-transparent) !important;
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
+    isolation: isolate;
   }
 
   body.wallpaper-transparent .card-base {
     background: var(--card-bg-transparent) !important;
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
+    isolation: isolate;
   }
 
   /* 确保嵌套的卡片元素在全屏壁纸模式下也应用半透明效果 */
@@ -247,29 +281,21 @@ html {
     background: var(--card-bg-transparent) !important;
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
+    isolation: isolate;
   }
 
   .wallpaper-transparent .float-panel {
-    @apply bg-[var(--card-bg-transparent)] backdrop-blur-sm;
+    @apply bg-(--card-bg-transparent) backdrop-blur-sm;
   }
 
   .wallpaper-transparent #navbar > div {
-    @apply bg-[var(--card-bg-transparent)] backdrop-blur-sm;
+    @apply bg-(--card-bg-transparent) backdrop-blur-sm;
   }
 
   .wallpaper-transparent .btn-card {
-    @apply bg-[var(--card-bg-transparent)] backdrop-blur-sm;
+    @apply bg-(--card-bg-transparent) backdrop-blur-sm;
   }
 
-  .wallpaper-transparent ~ * .music-player .mini-player,
-  .wallpaper-transparent ~ * .music-player .expanded-player,
-  .wallpaper-transparent ~ * .music-player .playlist-panel,
-  body.wallpaper-transparent .music-player .mini-player,
-  body.wallpaper-transparent .music-player .expanded-player,
-  body.wallpaper-transparent .music-player .playlist-panel {
-    background-color: var(--card-bg-transparent) !important;
-    backdrop-filter: blur(8px) !important;
-  }
   h1,
   h2,
   h3,
@@ -294,10 +320,6 @@ html {
   .card-shadow {
     @apply drop-shadow-[0_2px_4px_rgba(0,0,0,0.005)];
   }
-  .expand-animation {
-    @apply relative before:ease-out before:duration-75 before:transition-all active:bg-none hover:before:bg-[var(--btn-plain-bg-hover)] active:before:bg-[var(--btn-plain-bg-active)] z-0
-        before:absolute before:rounded-[inherit] before:inset-0 before:scale-[0.85] hover:before:scale-100 before:-z-10;
-  }
   /* 主题切换时禁用按钮背景色过渡，确保立即更新 */
   .is-theme-transitioning .expand-animation::before {
     transition: transform 75ms ease-out !important;
@@ -312,40 +334,40 @@ html {
     @apply transition-colors duration-150 rounded-md p-1.5 -m-1.5 expand-animation;
   }
   .float-panel {
-    @apply top-[5.25rem] rounded-[var(--radius-large)] overflow-hidden bg-[var(--float-panel-bg)] transition-colors duration-150 shadow-xl dark:shadow-none;
+    @apply top-[5.25rem] rounded-(--radius-large) overflow-hidden bg-(--float-panel-bg) transition-colors duration-150 shadow-xl dark:shadow-none;
   }
   .float-panel-closed {
     @apply -translate-y-1 opacity-0 pointer-events-none;
   }
   .search-panel mark {
-    @apply bg-transparent text-[var(--primary)];
+    @apply bg-transparent text-(--primary);
   }
 
   .btn-card {
-    @apply transition-colors duration-150 flex items-center justify-center bg-[var(--card-bg)] hover:bg-[var(--btn-card-bg-hover)]
-        active:bg-[var(--btn-card-bg-active)];
+    @apply transition-colors duration-150 flex items-center justify-center bg-(--card-bg) hover:bg-(--btn-card-bg-hover)
+        active:bg-(--btn-card-bg-active);
   }
   .btn-card.disabled {
     @apply pointer-events-none text-black/10 dark:text-white/10;
   }
   .btn-plain {
     @apply transition-colors duration-150 relative flex items-center justify-center bg-none
-        text-black/75 hover:text-[var(--primary)] dark:text-white/75 dark:hover:text-[var(--primary)];
+        text-black/75 hover:text-(--primary) dark:text-white/75 dark:hover:text-(--primary);
     &:not(.scale-animation) {
-      @apply hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)];
+      @apply hover:bg-(--btn-plain-bg-hover) active:bg-(--btn-plain-bg-active);
     }
     &.scale-animation {
       @apply expand-animation;
     }
   }
   .btn-regular {
-    @apply transition-colors duration-150 flex items-center justify-center bg-[var(--btn-regular-bg)] hover:bg-[var(--btn-regular-bg-hover)] active:bg-[var(--btn-regular-bg-active)]
-        text-[var(--btn-content)] dark:text-white/75;
+    @apply transition-colors duration-150 flex items-center justify-center bg-(--btn-regular-bg) hover:bg-(--btn-regular-bg-hover) active:bg-(--btn-regular-bg-active)
+        text-(--btn-content) dark:text-white/75;
   }
 
   .link-underline {
-    @apply transition-colors duration-150 underline decoration-2 decoration-dashed decoration-[var(--link-underline)]
-        hover:decoration-[var(--link-hover)] active:decoration-[var(--link-active)] underline-offset-[0.25rem];
+    @apply transition-colors duration-150 underline decoration-2 decoration-dashed decoration-(--link-underline)
+        hover:decoration-(--link-hover) active:decoration-(--link-active) underline-offset-[0.25rem];
   }
 
   .toc-hide,
@@ -385,7 +407,7 @@ html {
   .floating-toc-item {
     @apply flex items-center gap-2 py-2 px-2 rounded-lg text-sm leading-relaxed;
     @apply text-black/70 dark:text-white/70;
-    @apply hover:bg-[var(--btn-plain-bg-hover)] hover:text-[var(--primary)];
+    @apply hover:bg-(--btn-plain-bg-hover) hover:text-(--primary);
     @apply transition-all duration-150;
     text-decoration: none;
   }
@@ -397,13 +419,13 @@ html {
   .floating-toc-badge {
     @apply inline-flex items-center justify-center shrink-0;
     @apply min-w-5 h-5 px-1 rounded-md;
-    @apply bg-[var(--toc-badge-bg)] text-[var(--btn-content)];
+    @apply bg-(--toc-badge-bg) text-(--btn-content);
     @apply text-xs font-semibold;
   }
 
   .floating-toc-dot {
     @apply inline-block shrink-0 ml-1.5;
-    @apply w-2 h-2 rounded-sm bg-[var(--toc-badge-bg)];
+    @apply w-2 h-2 rounded-sm bg-(--toc-badge-bg);
   }
 
   .floating-toc-dot-small {
@@ -436,11 +458,11 @@ html {
   }
 
   .dropdown-content {
-    @apply bg-[var(--float-panel-bg)] rounded-[var(--radius-large)] shadow-xl dark:shadow-none border border-black/5 dark:border-white/10 py-2 min-w-[12rem];
+    @apply bg-(--float-panel-bg) rounded-(--radius-large) shadow-xl dark:shadow-none border border-black/5 dark:border-white/10 py-2 min-w-[12rem];
   }
 
   .dropdown-item {
-    @apply flex items-center justify-between px-4 py-2.5 text-black/75 dark:text-white/75 hover:text-[var(--primary)] hover:bg-[var(--btn-plain-bg-hover)] transition-colors duration-150 font-medium;
+    @apply flex items-center justify-between px-4 py-2.5 text-black/75 dark:text-white/75 hover:text-(--primary) hover:bg-(--btn-plain-bg-hover) transition-colors duration-150 font-medium;
   }
 
   .dropdown-item:first-child {
@@ -485,11 +507,11 @@ html {
   }
 
   .meta-icon {
-    @apply w-8 h-8 transition-colors duration-150 rounded-md flex items-center justify-center bg-[var(--btn-regular-bg)]
-        text-[var(--btn-content)] mr-2;
+    @apply w-8 h-8 transition-colors duration-150 rounded-md flex items-center justify-center bg-(--btn-regular-bg)
+        text-(--btn-content) mr-2;
   }
   .with-divider {
-    @apply before:content-['/'] before:ml-1.5 before:mr-1.5 before:text-[var(--meta-divider)] before:text-sm
+    @apply before:content-['/'] before:ml-1.5 before:mr-1.5 before:text-(--meta-divider) before:text-sm
         before:font-medium before:first-of-type:hidden before:transition-colors before:duration-150;
   }
 

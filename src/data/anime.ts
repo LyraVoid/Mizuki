@@ -1,5 +1,5 @@
 // 本地番剧数据配置
-export type AnimeItem = {
+export interface AnimeItem {
 	title: string;
 	status: "watching" | "completed" | "planned";
 	rating: number;
@@ -14,7 +14,7 @@ export type AnimeItem = {
 	totalEpisodes: number;
 	startDate: string;
 	endDate: string;
-};
+}
 
 const localAnimeList: AnimeItem[] = [
 	{

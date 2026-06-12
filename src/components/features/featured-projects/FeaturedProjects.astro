@@ -1,0 +1,27 @@
+---
+import { ProjectCard } from "../projects";
+import { SectionTitle } from "../section-title";
+import type { FeaturedProjectsProps } from "./types";
+
+const {
+	projects,
+	title,
+	class: className = "",
+} = Astro.props as FeaturedProjectsProps;
+---
+
+<div class={className}>
+	{title && <SectionTitle title={title} />}
+	<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+		{
+			projects.map((project) => (
+				<ProjectCard
+					project={project}
+					size="large"
+					showImage={true}
+					maxTechStack={4}
+				/>
+			))
+		}
+	</div>
+</div>

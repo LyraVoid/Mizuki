@@ -1,0 +1,20 @@
+---
+import { StatCard } from "../stats";
+import type { StatsGridProps } from "./types";
+
+const {
+	stats,
+	columns = 4,
+	class: className = "",
+} = Astro.props as StatsGridProps;
+
+const mdGridCols = {
+	2: "md:grid-cols-2",
+	3: "md:grid-cols-3",
+	4: "md:grid-cols-4",
+};
+---
+
+<div class={`grid grid-cols-2 ${mdGridCols[columns]} gap-4 mb-8 ${className}`}>
+	{stats.map((stat) => <StatCard {...stat} />)}
+</div>

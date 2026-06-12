@@ -3,13 +3,15 @@
   --code-block-text: #333; /* 调整为深色但在浅色背景下仍然舒适的值 */
 }
 
+@reference "tailwindcss";
+
 html.dark {
   --tk-text: #d1d5db;
   --code-block-text: #d1d5db; /* 在深色模式下使用更亮的颜色 */
 }
 
 .tk-comments {
-  @apply text-[var(--tk-text)];
+  @apply text-(--tk-text);
 }
 
 .tk-submit {
@@ -24,7 +26,7 @@ html.dark {
     @apply flex-col-reverse;
     .tk-input {
       textarea {
-        @apply rounded-[var(--radius-large)] py-4 px-6 !min-h-[150px] focus:border-[var(--primary)];
+        @apply rounded-(--radius-large) py-4 px-6 !min-h-[150px] focus:border-(--primary);
       }
     }
   }
@@ -40,7 +42,7 @@ html.dark {
       min-height: inherit;
     }
     input {
-      @apply px-4 rounded-r-lg focus:!border-[var(--primary)];
+      @apply px-4 rounded-r-lg focus:!border-(--primary);
       min-height: inherit;
     }
   }
@@ -56,38 +58,38 @@ html.dark {
   .tk-send,
   .tk-cancel {
     @apply border-none rounded-lg px-3 py-0 h-8
-       !bg-[var(--btn-regular-bg-active)] disabled:!bg-[var(--btn-regular-bg)]
-      !text-[var(--btn-content)] disabled:!text-[#ffffffa1];
+       !bg-(--btn-regular-bg-active) disabled:!bg-(--btn-regular-bg)
+      !text-(--btn-content) disabled:!text-[#ffffffa1];
   }
 }
 
 /* Comment title */
 .tk-comments-title {
   .__comments svg {
-    @apply fill-[var(--primary)];
+    @apply fill-(--primary);
   }
 }
 
 .tk-comment {
   @apply border-[1px] border-[rgba(144,147,153,0.31)] p-4 rounded-2xl hover:shadow-md transition-all;
   .tk-action-icon svg {
-    @apply fill-[var(--primary)];
+    @apply fill-(--primary);
   }
 }
 
 .tk-action {
   .tk-action-count {
-    @apply text-[var(--btn-content)];
+    @apply text-(--btn-content);
   }
 }
 
 .tk-meta {
   .tk-tag {
-    @apply border-none rounded-lg text-[var(--btn-content)];
+    @apply border-none rounded-lg text-(--btn-content) -translate-y-[2px];
   }
 
   .tk-tag-green {
-    @apply bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)] dark:text-[var(--deep-text)];
+    @apply bg-(--btn-regular-bg) dark:bg-(--primary) dark:text-(--deep-text);
   }
 }
 
@@ -102,7 +104,7 @@ html.dark {
   }
 
   a {
-    @apply underline text-[var(--primary)] font-medium;
+    @apply underline text-(--primary) font-medium;
   }
 
   .tk-ruser {
@@ -110,18 +112,41 @@ html.dark {
   }
 
   :not(pre) > code {
-    @apply bg-[var(--inline-code-bg)] rounded-md text-[--inline-code-color] px-1 py-0.5 font-semibold;
+    @apply bg-(--inline-code-bg) rounded-md text-(--inline-code-color) px-1 py-0.5 font-semibold;
   }
 
   li {
-    @apply before:content-["•"] before:text-[var(--primary)];
+    @apply before:content-["•"] before:text-(--primary);
   }
+}
+
+/* Sort Buttons */
+.tk-sort-item {
+  @apply !text-(--primary);
+  opacity: 0.6;
+}
+
+.tk-sort-item.__active {
+  @apply !text-(--primary);
+  opacity: 1;
+}
+
+/* Admin actions, For each comment */
+.tk-actions {
+  button {
+    @apply !text-(--primary);
+  }
+}
+
+/* Commenter Nickname Link, on hover */
+.tk-nick-link:hover {
+  @apply !text-(--primary);
 }
 
 /* Replies */
 .tk-replies {
   .tk-comment {
-    @apply bg-[var(--page-bg)];
+    @apply bg-(--page-bg);
     .tk-content {
       > span:first-of-type {
         @apply text-xs;
@@ -137,7 +162,7 @@ html.dark {
 
   /* Code block fall back */
   pre:not([class]) {
-    @apply bg-[var(--codeblock-bg)] overflow-auto p-2 text-[var(--code-block-text)];
+    @apply bg-(--codeblock-bg) overflow-auto p-2 text-(--code-block-text);
   }
 
   .copy-btn-icon {
@@ -148,7 +173,7 @@ html.dark {
 
 .tk-expand-wrap .tk-expand,
 .tk-collapse-wrap .tk-expand {
-  @apply hover:rounded-lg mt-1 hover:bg-[var(--btn-plain-bg-hover)];
+  @apply hover:rounded-lg mt-1 hover:bg-(--btn-plain-bg-hover);
 }
 
 /* by @SirTamago 
@@ -187,4 +212,58 @@ Make the emoji component display correctly when there are too many emoji packs
 .tk-admin-panel {
   position: relative;
   z-index: 100;
+}
+
+/* Admin Panel */
+/* Primary buttons (e.g. Save, Submit) */
+.el-button--primary {
+  @apply !bg-(--primary) !border-(--primary);
+}
+
+/* Input & textarea focus border */
+.twikoo .el-input__inner:focus,
+.twikoo .el-textarea__inner:focus,
+.el-input.is-active .el-input__inner {
+  @apply !border-(--primary);
+}
+
+/* Non-primary button hover/focus/active states */
+.twikoo .el-button:not(.el-button--primary):not(.el-button--text):active,
+.twikoo .el-button:not(.el-button--primary):not(.el-button--text):focus,
+.twikoo .el-button:not(.el-button--primary):not(.el-button--text):hover {
+  @apply !text-(--primary) !border-(--primary)/50 !bg-(--primary)/10;
+}
+
+/* Text button default state */
+.el-button--text {
+  @apply !text-(--primary) !border-transparent !bg-transparent;
+}
+
+/* Text button hover/focus state */
+.el-button--text:focus,
+.el-button--text:hover {
+  @apply !text-(--primary)/60 !border-transparent !bg-transparent;
+}
+
+/* Active pagination page */
+.tk-pagination-pager {
+  &.__current {
+    @apply !bg-(--primary) !rounded-lg;
+  }
+}
+
+/* Native select dropdown options (light mode) */
+.twikoo select option {
+  @apply !text-black !bg-white;
+}
+
+/* Native select dropdown options (dark mode) */
+html.dark .twikoo select option {
+  @apply !text-gray-300 !bg-gray-800;
+}
+
+/* Admin panel rounded corners */
+.tk-admin {
+  @apply !rounded-lg;
+  clip-path: inset(0 round 0.5rem) !important;
 }

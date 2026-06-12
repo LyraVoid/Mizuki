@@ -6,7 +6,6 @@
 .float-panel {
   z-index: 50;
   will-change: transform, opacity;
-  backface-visibility: hidden;
 
   /* 为动画做准备 */
   transform-origin: top center;

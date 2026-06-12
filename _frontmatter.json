@@ -57,6 +57,11 @@
 					"type": "boolean"
 				},
 				{
+					"title": "comment",
+					"name": "comment",
+					"type": "boolean"
+				},
+				{
 					"title": "language",
 					"name": "language",
 					"type": "string"

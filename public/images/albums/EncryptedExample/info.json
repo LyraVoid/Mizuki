@@ -1,0 +1,49 @@
+{
+	"mode": "external",
+	"title": "加密相册示例",
+	"description": "这是一个加密相册示例，需要密码才能查看照片",
+	"date": "2025-05-22",
+	"location": "秘密花园",
+	"tags": ["加密", "示例", "私密"],
+	"password": "123456",
+	"passwordHint": "六位数字",
+	"cover": "https://picsum.photos/800/600?random=10",
+	"photos": [
+		{
+			"id": "encrypted-1",
+			"src": "https://picsum.photos/800/600?random=11",
+			"alt": "私密照片 1",
+			"title": "私密风景",
+			"tags": ["私密"],
+			"width": 800,
+			"height": 600
+		},
+		{
+			"id": "encrypted-2",
+			"src": "https://picsum.photos/600/800?random=12",
+			"alt": "私密照片 2",
+			"title": "私密记忆",
+			"tags": ["私密"],
+			"width": 600,
+			"height": 800
+		},
+		{
+			"id": "encrypted-3",
+			"src": "https://picsum.photos/800/600?random=13",
+			"alt": "私密照片 3",
+			"title": "秘密花园",
+			"tags": ["私密"],
+			"width": 800,
+			"height": 600
+		},
+		{
+			"id": "encrypted-4",
+			"src": "https://picsum.photos/700/700?random=14",
+			"alt": "私密照片 4",
+			"title": "温馨时刻",
+			"tags": ["私密"],
+			"width": 700,
+			"height": 700
+		}
+	]
+}

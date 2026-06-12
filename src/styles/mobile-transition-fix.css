@@ -17,10 +17,6 @@
   .widget-container {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -webkit-perspective: 1000;
-    perspective: 1000;
     will-change: transform, opacity;
   }
 
@@ -57,12 +53,6 @@
     transition: all 0.2s ease-in-out;
   }
 
-  /* 防止页面加载时的闪烁 */
-  body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
   /* 优化网格布局切换 */
   #main-grid {
     transition: all 0.3s ease-in-out;
@@ -82,13 +72,6 @@
   /* 减少动画元素的数量 */
   .onload-animation {
     animation-duration: 0.3s;
-  }
-
-  /* 优化字体渲染 */
-  * {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
   }
 }
 

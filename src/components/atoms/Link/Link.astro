@@ -1,0 +1,39 @@
+---
+interface Props {
+	href?: string;
+	target?: "_blank" | "_self" | "_parent" | "_top";
+	rel?: string;
+	variant?: "default" | "muted" | "primary";
+	underline?: boolean;
+	class?: string;
+}
+
+const {
+	href = "#",
+	target,
+	rel,
+	variant = "default",
+	underline = false,
+	class: className = "",
+}: Props = Astro.props;
+
+const baseClasses = "inline-flex items-center transition-colors duration-200";
+
+const variantClasses = {
+	default: "text-[var(--primary)] hover:opacity-80",
+	muted: "text-[var(--text-color)] opacity-70 hover:opacity-100",
+	primary: "text-[var(--primary)] font-medium hover:opacity-80",
+};
+
+const underlineClass = underline ? "underline hover:no-underline" : "";
+
+const combinedClass =
+	`${baseClasses} ${variantClasses[variant]} ${underlineClass} ${className}`.trim();
+
+const relValue =
+	target === "_blank" ? `noopener noreferrer${rel ? ` ${rel}` : ""}` : rel;
+---
+
+<a href={href} target={target} rel={relValue} class={combinedClass}>
+	<slot />
+</a>

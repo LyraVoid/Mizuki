@@ -1,0 +1,193 @@
+---
+import { Icon } from "astro-icon/components";
+
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import type { ProjectCardProps } from "./types";
+
+const { project, maxTechStack = 4 } = Astro.props as ProjectCardProps;
+
+const hasImage = !!project.image;
+const showImageArea = project.showImage !== false && hasImage;
+const hasVisitUrl = !!project.visitUrl;
+const hasSourceCode = !!project.sourceCode;
+
+const getStatusText = (status: string) => {
+	switch (status) {
+		case "completed":
+			return i18n(I18nKey.projectsCompleted);
+		case "in-progress":
+			return i18n(I18nKey.projectsInProgress);
+		case "planned":
+			return i18n(I18nKey.projectsPlanned);
+		default:
+			return status;
+	}
+};
+---
+
+<div
+	class="project-card group relative rounded-xl border border-black/10 dark:border-white/10 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+	data-category={project.category}
+>
+	{
+		showImageArea && (
+			<div class="aspect-video overflow-hidden relative bg-gradient-to-br from-[var(--primary)]/5 to-[var(--primary)]/10">
+				{hasImage ? (
+					<img
+						src={project.image!}
+						alt={project.title}
+						class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+						loading="lazy"
+					/>
+				) : (
+					<div class="w-full h-full flex items-center justify-center">
+						<span class="text-4xl font-bold text-[var(--primary)]/15 select-none tracking-wide">
+							{project.title}
+						</span>
+					</div>
+				)}
+				<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+				{project.featured && (
+					<div class="absolute top-3 right-3">
+						<Icon
+							name="material-symbols:star-rounded"
+							class="text-[var(--primary)] text-xl drop-shadow-sm"
+							style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));"
+						/>
+					</div>
+				)}
+			</div>
+		)
+	}
+
+	<div class="p-5">
+		<div class="flex items-center justify-between mb-3">
+			<h3
+				class="text-lg font-bold text-black/90 dark:text-white/90 truncate group-hover:text-[var(--primary)] transition-colors duration-200"
+			>
+				{project.title}
+			</h3>
+			<span
+				class="shrink-0 ml-3 px-2 py-0.5 text-xs rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-medium"
+			>
+				{getStatusText(project.status)}
+			</span>
+		</div>
+
+		<p
+			class="text-sm text-black/60 dark:text-white/60 mb-4 line-clamp-2 min-h-[2.5rem]"
+		>
+			{project.description}
+		</p>
+
+		{
+			project.techStack && project.techStack.length > 0 && (
+				<div class="flex flex-wrap gap-2 mb-4">
+					{project.techStack.slice(0, maxTechStack).map((tech) => (
+						<span class="px-2 py-1 text-xs rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-medium">
+							{tech}
+						</span>
+					))}
+					{project.techStack.length > maxTechStack && (
+						<span class="px-2 py-1 text-xs rounded-md bg-[var(--btn-regular-bg)] text-black/50 dark:text-white/50 font-medium">
+							+{project.techStack.length - maxTechStack}
+						</span>
+					)}
+				</div>
+			)
+		}
+
+		{
+			(hasVisitUrl || hasSourceCode) && (
+				<div class="flex gap-2">
+					{hasVisitUrl && (
+						<a
+							href={project.visitUrl!}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="btn-regular flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+						>
+							<Icon
+								name="material-symbols:open-in-new"
+								class="text-base w-4 h-4"
+							/>
+							{i18n(I18nKey.projectsVisit)}
+						</a>
+					)}
+					{hasSourceCode && (
+						<a
+							href={project.sourceCode!}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="btn-regular flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+							style={hasVisitUrl ? "" : "flex: 1;"}
+						>
+							<Icon name="mdi:github" class="text-base w-4 h-4" />
+							{!hasVisitUrl && "GitHub"}
+						</a>
+					)}
+				</div>
+			)
+		}
+	</div>
+
+	<div
+		class="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+	>
+	</div>
+</div>
+
+<style>
+	.project-card {
+		animation: fadeInUp 0.5s ease-out forwards;
+		opacity: 0;
+	}
+
+	.project-card.filtered-out {
+		display: none;
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.project-card:nth-child(1) {
+		animation-delay: 0.05s;
+	}
+	.project-card:nth-child(2) {
+		animation-delay: 0.1s;
+	}
+	.project-card:nth-child(3) {
+		animation-delay: 0.15s;
+	}
+	.project-card:nth-child(4) {
+		animation-delay: 0.2s;
+	}
+	.project-card:nth-child(5) {
+		animation-delay: 0.25s;
+	}
+	.project-card:nth-child(6) {
+		animation-delay: 0.3s;
+	}
+	.project-card:nth-child(7) {
+		animation-delay: 0.35s;
+	}
+	.project-card:nth-child(8) {
+		animation-delay: 0.4s;
+	}
+
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+</style>

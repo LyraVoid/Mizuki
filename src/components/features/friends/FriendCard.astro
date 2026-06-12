@@ -1,0 +1,161 @@
+---
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+
+interface Props {
+	friend: {
+		title: string;
+		siteurl: string;
+		imgurl: string;
+		desc: string;
+		tags: string[];
+	};
+}
+
+const { friend } = Astro.props;
+const hostname = new URL(friend.siteurl).hostname;
+---
+
+<div
+	class="friend-card group relative bg-transparent rounded-xl border border-black/10 dark:border-white/10 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+	data-title={friend.title.toLowerCase()}
+	data-desc={friend.desc.toLowerCase()}
+	data-tags={friend.tags.join(",")}
+>
+	<div class="p-6">
+		<!-- 头像和标题区 -->
+		<div class="flex items-start gap-4 mb-4">
+			<div
+				class="w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden bg-[var(--btn-regular-bg)] ring-2 ring-transparent transition-all duration-300"
+			>
+				<img
+					src={friend.imgurl}
+					alt={friend.title}
+					class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
+					loading="lazy"
+				/>
+			</div>
+
+			<div class="flex-1 min-w-0">
+				<h3
+					class="text-xl font-bold text-black/90 dark:text-white/90 mb-1 truncate group-hover:text-[var(--primary)] transition-colors duration-200"
+				>
+					{friend.title}
+				</h3>
+				<a
+					href={friend.siteurl}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-xs text-black/50 dark:text-white/50 hover:text-[var(--primary)] truncate block transition-colors duration-200"
+				>
+					{hostname}
+				</a>
+			</div>
+		</div>
+
+		<!-- 描述 -->
+		<p
+			class="text-sm text-black/60 dark:text-white/60 mb-4 line-clamp-2 min-h-[2.5rem]"
+		>
+			{friend.desc}
+		</p>
+
+		<!-- 标签 -->
+		<div class="flex flex-wrap gap-2 mb-4">
+			{
+				friend.tags.map((tag) => (
+					<span class="px-2 py-1 text-xs rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-medium">
+						{tag}
+					</span>
+				))
+			}
+		</div>
+
+		<!-- 操作按钮 -->
+		<div class="flex gap-2">
+			<a
+				href={friend.siteurl}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--primary)]/90 active:scale-95 transition-all duration-200 font-medium text-sm"
+			>
+				<svg
+					class="w-4 h-4"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+					></path>
+				</svg>
+				{i18n(I18nKey.friendsVisit)}
+			</a>
+			<button
+				class="copy-link-btn px-3 py-2 rounded-lg bg-[var(--btn-regular-bg)] hover:bg-[var(--btn-regular-bg-hover)] active:scale-95 transition-all duration-200 text-black/70 dark:text-white/70"
+				data-url={friend.siteurl}
+				title={i18n(I18nKey.friendsCopyLink)}
+			>
+				<svg
+					class="w-4 h-4"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+					></path>
+				</svg>
+			</button>
+		</div>
+	</div>
+
+	<!-- 悬停装饰效果 -->
+	<div
+		class="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+	>
+	</div>
+</div>
+
+<style>
+	.friend-card {
+		animation: fadeInUp 0.5s ease-out forwards;
+		opacity: 0;
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.friend-card:nth-child(1) {
+		animation-delay: 0.05s;
+	}
+	.friend-card:nth-child(2) {
+		animation-delay: 0.1s;
+	}
+	.friend-card:nth-child(3) {
+		animation-delay: 0.15s;
+	}
+	.friend-card:nth-child(4) {
+		animation-delay: 0.2s;
+	}
+	.friend-card:nth-child(5) {
+		animation-delay: 0.25s;
+	}
+	.friend-card:nth-child(6) {
+		animation-delay: 0.3s;
+	}
+</style>

@@ -11,95 +11,98 @@ export interface Project {
 	status: "completed" | "in-progress" | "planned";
 	liveDemo?: string;
 	sourceCode?: string;
+	visitUrl?: string;
 	startDate: string;
 	endDate?: string;
 	featured?: boolean;
 	tags?: string[];
-	visitUrl?: string; // 添加前往项目链接字段
+	showImage?: boolean;
 }
 
 export const projectsData: Project[] = [
 	{
-		id: "mizuki-blog",
-		title: "Mizuki Blog Theme",
+		id: "mizuki",
+		title: "Mizuki",
 		description:
-			"Modern blog theme developed based on the Astro framework, supporting multilingual, dark mode, and responsive design features.",
-		image: "",
+			"A next-gen Material Design 3 blog theme built with Astro, featuring i18n, dark mode, and responsive design.",
+		image: "/assets/projects/mizuki.webp",
 		category: "web",
 		techStack: ["Astro", "TypeScript", "Tailwind CSS", "Svelte"],
 		status: "completed",
-		liveDemo: "https://blog.example.com",
-		sourceCode: "https://github.com/example/mizuki", // 更改为GitHub链接
-		visitUrl: "https://blog.example.com", // 添加前往项目链接
+		sourceCode: "https://github.com/LyraVoid/Mizuki",
+		visitUrl: "https://mizuki.mysqil.com",
 		startDate: "2024-01-01",
 		endDate: "2024-06-01",
 		featured: true,
 		tags: ["Blog", "Theme", "Open Source"],
 	},
 	{
-		id: "portfolio-website",
-		title: "Personal Portfolio",
+		id: "folkpatch",
+		title: "FolkPatch",
 		description:
-			"Personal portfolio website showcasing project experience and technical skills.",
-		image: "",
-		category: "web",
-		techStack: ["React", "Next.js", "TypeScript", "Framer Motion"],
-		status: "completed",
-		liveDemo: "https://portfolio.example.com",
-		sourceCode: "https://github.com/example/portfolio",
-		visitUrl: "https://portfolio.example.com", // 添加前往项目链接
-		startDate: "2023-09-01",
-		endDate: "2023-12-01",
-		featured: true,
-		tags: ["Portfolio", "React", "Animation"],
-	},
-	{
-		id: "task-manager-app",
-		title: "Task Manager App",
-		description:
-			"Cross-platform task management application supporting team collaboration and project management.",
-		image: "",
+			"A kernel-level ROOT solution based on KernelPatch, with polished UI, APM module system, and KPM kernel module support.",
+		image: "/assets/projects/folkpatch.webp",
 		category: "mobile",
-		techStack: ["React Native", "TypeScript", "Redux", "Firebase"],
+		techStack: ["Kotlin", "Rust", "C++", "Java"],
 		status: "in-progress",
+		sourceCode: "https://github.com/LyraVoid/FolkPatch",
+		visitUrl: "https://fp.mysqil.com",
 		startDate: "2024-03-01",
-		tags: ["Mobile", "Productivity", "Team Collaboration"],
+		featured: true,
+		tags: ["Android", "Root", "Kernel"],
 	},
 	{
-		id: "data-visualization-tool",
-		title: "Data Visualization Tool",
+		id: "folktool",
+		title: "FolkTool",
 		description:
-			"Data visualization tool supporting multiple chart types and interactive analysis.",
+			"A fast ROOT flashing tool for FolkPatch with a graphical interface and automated operations, simplifying the complex flashing process.",
 		image: "",
-		category: "web",
-		techStack: ["Vue.js", "D3.js", "TypeScript", "Node.js"],
+		category: "desktop",
+		techStack: ["Flutter", "Dart", "C++", "CMake"],
 		status: "completed",
-		liveDemo: "https://dataviz.example.com",
-		visitUrl: "https://dataviz.example.com", // 添加前往项目链接
-		startDate: "2023-06-01",
-		endDate: "2023-11-01",
-		tags: ["Data Visualization", "Analytics", "Charts"],
+		sourceCode: "https://github.com/LyraVoid/FolkTool",
+		startDate: "2026-02-01",
+		endDate: "2026-02-28",
+		tags: ["Android", "Tool", "Desktop"],
+		showImage: false,
 	},
 	{
-		id: "e-commerce-platform",
-		title: "E-commerce Platform",
+		id: "folkadb",
+		title: "FolkADB",
 		description:
-			"Full-stack e-commerce platform including user management, product management, and order processing features.",
+			"A portable ADB/Fastboot tool written in C, featuring interactive CLI, Tab completion, drag-and-drop module installation, and Shizuku activation.",
+		image: "",
+		category: "desktop",
+		techStack: ["C"],
+		status: "completed",
+		sourceCode: "https://github.com/LyraVoid/FolkADB",
+		startDate: "2025-06-01",
+		endDate: "2026-01-01",
+		tags: ["Android", "ADB", "CLI"],
+		showImage: false,
+	},
+	{
+		id: "folksplash",
+		title: "FolkSplash",
+		description:
+			"A web-based splash.img visualizer for OPPO/Realme/OnePlus devices, supporting unpack, preview, replace, and repack.",
 		image: "",
 		category: "web",
-		techStack: ["Next.js", "Node.js", "PostgreSQL", "Stripe"],
-		status: "planned",
-		startDate: "2024-07-01",
-		tags: ["E-commerce", "Full Stack", "Payment Integration"],
+		techStack: ["React", "TypeScript", "Vite", "Material-UI", "Zustand"],
+		status: "completed",
+		sourceCode: "https://github.com/LyraVoid/FolkSplash",
+		visitUrl: "https://splash.mysqil.com",
+		startDate: "2025-09-01",
+		endDate: "2025-10-01",
+		tags: ["Android", "Tool", "Frontend"],
+		showImage: false,
 	},
 ];
 
 // Get project statistics
 export const getProjectStats = () => {
 	const total = projectsData.length;
-	const completed = projectsData.filter(
-		(p) => p.status === "completed",
-	).length;
+	const completed = projectsData.filter((p) => p.status === "completed").length;
 	const inProgress = projectsData.filter(
 		(p) => p.status === "in-progress",
 	).length;

@@ -406,8 +406,9 @@ fatal: could not read Username for 'https://github.com'
 | `CONTENT_REPO_URL` | ⚠️ | - | 内容仓库地址 (启用内容分离时必需) |
 | `USE_SUBMODULE` | ❌ | `false` | 是否使用 Git Submodule 模式 |
 | `CONTENT_DIR` | ❌ | `./content` | 内容目录路径 |
-| `UMAMI_API_KEY` | ❌ | - | Umami 统计 API 密钥 |
-| `BCRYPT_SALT_ROUNDS` | ❌ | `12` | bcrypt 加密轮数 |
+| `INDEXNOW_KEY` | ❌ | - | IndexNow API 密钥，用于向搜索引擎提交 URL 更新 |
+| `INDEXNOW_HOST` | ❌ | - | 网站主机地址 |
+| `BILI_SESSDATA` | ❌ | - | Bilibili SESSDATA，用于获取观看进度 |
 
 ⚠️ = 在特定模式下必需
 

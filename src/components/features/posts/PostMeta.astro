@@ -1,0 +1,153 @@
+---
+import { Icon } from "astro-icon/components";
+
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import { formatDateToYYYYMMDD } from "../../../utils/date-utils";
+import { getTagUrl } from "../../../utils/url-utils";
+import {
+	Category,
+	EncryptedBadge,
+	PublishedDate,
+	ReadingTime,
+	WordCount,
+} from "./atoms";
+
+interface Props {
+	published: Date;
+	updated?: Date;
+	category?: string;
+	tags?: string[];
+	hideUpdateDate?: boolean;
+	hideTagsForMobile?: boolean;
+	isHome?: boolean;
+	className?: string;
+	id?: string;
+	showOnlyBasicMeta?: boolean;
+	words?: number;
+	minutes?: number;
+	showWordCount?: boolean;
+	showReadingTime?: boolean;
+	showEncrypted?: boolean;
+}
+
+const {
+	published,
+	updated,
+	category,
+	tags,
+	hideUpdateDate,
+	hideTagsForMobile,
+	isHome,
+	className = "",
+	id,
+	showOnlyBasicMeta = false,
+	words,
+	minutes,
+	showWordCount = false,
+	showReadingTime = false,
+	showEncrypted = false,
+} = Astro.props;
+---
+
+<div class:list={["flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2", className]}>
+    <PublishedDate date={published} />
+
+    {!hideUpdateDate && updated && updated.getTime() !== published.getTime() && (
+        <div class="flex items-center">
+            <div class="meta-icon">
+                <Icon name="material-symbols:edit-calendar-outline-rounded" class="text-xl"></Icon>
+            </div>
+            <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(updated)}</span>
+        </div>
+    )}
+
+    <Category category={category} />
+
+    {showWordCount && words && (
+        <WordCount words={words} />
+    )}
+
+    {showReadingTime && minutes && (
+        <ReadingTime minutes={minutes} />
+    )}
+
+    {!showOnlyBasicMeta && (
+        <div class:list={["items-center", {"flex": !hideTagsForMobile, "hidden md:flex": hideTagsForMobile}]}>
+            <div class="meta-icon">
+                <Icon name="material-symbols:tag-rounded" class="text-xl"></Icon>
+            </div>
+            <div class="flex flex-row flex-nowrap items-center">
+                {(tags && tags.length > 0) && tags.map((tag, i) => (
+                    <>
+                        <div class:list={[{"hidden": i == 0}, "mx-1.5 text-[var(--meta-divider)] text-sm"]}>/</div>
+                        <a href={getTagUrl(tag)} aria-label={`View all posts with the ${tag.trim()} tag`}
+                           class="link-lg transition text-50 text-sm font-medium
+                                        hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
+                            {tag.trim()}
+                        </a>
+                    </>
+                ))}
+                {!(tags && tags.length > 0) && <div class="transition text-50 text-sm font-medium">{i18n(I18nKey.noTags)}</div>}
+            </div>
+        </div>
+    )}
+    
+    {!isHome && id && (
+        <div class="flex items-center umami-page-views hidden" data-id={id}>
+            <div class="meta-icon">
+                <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
+            </div>
+            <span class="text-50 text-sm font-medium page-views-display">{i18n(I18nKey.pageViewsLoading)}</span>
+        </div>
+    )}
+
+    {showEncrypted && (
+        <EncryptedBadge />
+    )}
+    
+    {!isHome && id && (
+<script is:inline define:vars={{
+    pageViewsText: i18n(I18nKey.profileStatsPageViews),
+    visitsText: i18n(I18nKey.profileStatsVisits)
+}}>
+    function generateStatsText(pageViews, visits) {
+        return `${pageViewsText} ${pageViews} · ${visitsText} ${visits}`;
+    }
+
+    async function fetchPageViews() {
+        const container = document.querySelector('.umami-page-views');
+        
+        if (!window.oddmisc) {
+            container?.classList.add('hidden');
+            return;
+        }
+
+        const id = container?.dataset.id;
+        if (!id) {return;}
+
+        try {
+            const stats = await window.oddmisc.getStats(`/posts/${id}/`);
+            const pageViews = stats.pageviews || 0;
+            const visits = stats.visits || 0;
+
+            if (pageViews === 0 && visits === 0) {
+                container?.classList.add('hidden');
+                return;
+            }
+
+            container?.classList.remove('hidden');
+            container.querySelector('.page-views-display').textContent = generateStatsText(pageViews, visits);
+        } catch (error) {
+            console.error('Error fetching page views:', error);
+            container?.classList.add('hidden');
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', fetchPageViews);
+    } else {
+        fetchPageViews();
+    }
+</script>
+)}

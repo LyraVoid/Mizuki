@@ -4,7 +4,7 @@ published: 2024-05-01
 updated: 2024-11-29
 description: 'Read more about Markdown features in Mizuki'
 image: ''
-tags: [Demo, Example, Markdown, mizuki]
+tags: [Demo, Example, Markdown, Mizuki]
 category: 'Examples'
 draft: true 
 ---
@@ -12,12 +12,12 @@ draft: true
 ## GitHub Repository Cards
 You can add dynamic cards that link to GitHub repositories, on page load, the repository information is pulled from the GitHub API. 
 
-::github{repo="matsuzaka-yuki/Mizuki"}
+::github{repo="LyraVoid/Mizuki"}
 
-Create a GitHub repository card with the code `::github{repo="matsuzaka-yuki/Mizuki"}`.
+Create a GitHub repository card with the code `::github{repo="LyraVoid/Mizuki"}`.
 
 ```markdown
-::github{repo="matsuzaka-yuki/Mizuki"}
+::github{repo="LyraVoid/Mizuki"}
 ```
 
 ## Admonitions

@@ -7,11 +7,10 @@ type PanelId =
 	| "mobile-toc-panel"
 	| "display-setting"
 	| "nav-menu-panel"
-	| "search-panel"
-	| "wallpaper-mode-panel";
+	| "search-panel";
 
 class PanelManager {
-	private activePanels: Set<PanelId> = new Set();
+	private activePanels = new Set<PanelId>();
 	private panelStack: PanelId[] = [];
 	private readonly duration = 100;
 
@@ -21,10 +20,9 @@ class PanelManager {
 	private animateIn(panel: HTMLElement): Promise<void> {
 		return new Promise((resolve) => {
 			// 检查是否正在主题切换，如果是则跳过动画
-			const isThemeTransitioning =
-				document.documentElement.classList.contains(
-					"is-theme-transitioning",
-				);
+			const isThemeTransitioning = document.documentElement.classList.contains(
+				"is-theme-transitioning",
+			);
 
 			if (isThemeTransitioning) {
 				// 主题切换期间，直接显示面板，不设置pointer-events: none
@@ -40,19 +38,19 @@ class PanelManager {
 			panel.style.transform = "scale(0.95) translateY(-10px)";
 			panel.style.pointerEvents = "none";
 
-			panel.offsetHeight; // 强制重排
-
-			panel.style.transition = `all ${this.duration}ms ease-out`;
-
 			requestAnimationFrame(() => {
-				panel.style.opacity = "1";
-				panel.style.transform = "scale(1) translateY(0)";
-				panel.style.pointerEvents = "auto";
+				panel.style.transition = `all ${this.duration}ms ease-out`;
 
-				setTimeout(() => {
-					panel.style.transition = "";
-					resolve();
-				}, this.duration);
+				requestAnimationFrame(() => {
+					panel.style.opacity = "1";
+					panel.style.transform = "scale(1) translateY(0)";
+					panel.style.pointerEvents = "auto";
+
+					setTimeout(() => {
+						panel.style.transition = "";
+						resolve();
+					}, this.duration);
+				});
 			});
 		});
 	}
@@ -63,10 +61,9 @@ class PanelManager {
 	private animateOut(panel: HTMLElement): Promise<void> {
 		return new Promise((resolve) => {
 			// 检查是否正在主题切换
-			const isThemeTransitioning =
-				document.documentElement.classList.contains(
-					"is-theme-transitioning",
-				);
+			const isThemeTransitioning = document.documentElement.classList.contains(
+				"is-theme-transitioning",
+			);
 
 			if (isThemeTransitioning) {
 				// 主题切换期间，直接关闭面板，不设置pointer-events: none
@@ -99,10 +96,7 @@ class PanelManager {
 	 * @param forceState 强制设置状态 (可选)
 	 * @returns 浮窗最终状态 (true: 打开, false: 关闭)
 	 */
-	async togglePanel(
-		panelId: PanelId,
-		forceState?: boolean,
-	): Promise<boolean> {
+	async togglePanel(panelId: PanelId, forceState?: boolean): Promise<boolean> {
 		const panel = document.getElementById(panelId);
 		if (!panel) {
 			console.warn(`Panel ${panelId} not found`);
@@ -155,7 +149,7 @@ export const panelManager = new PanelManager();
 
 // 将浮窗管理器暴露到全局，方便在其他地方使用
 if (typeof window !== "undefined") {
-	(window as any).panelManager = panelManager;
+	(window as { panelManager: unknown }).panelManager = panelManager;
 }
 
 export default panelManager;

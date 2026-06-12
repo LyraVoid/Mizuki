@@ -1,5 +1,6 @@
 import { h } from "hastscript";
 import { visit } from "unist-util-visit";
+
 import mermaidRenderScript from "./mermaid-render-script.js?raw";
 
 export function rehypeMermaid() {

@@ -1,0 +1,66 @@
+---
+import ListContainer from "@/components/misc/ListContainer.astro";
+import ListDivider from "@/components/misc/ListDivider.astro";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import { getSortedPostsList } from "@/utils/content-utils";
+
+import PostListItem from "./PostListItem.astro";
+
+interface Props {
+	excludeIds?: string[];
+	maxCount?: number;
+}
+
+const { excludeIds = [], maxCount = 5 } = Astro.props;
+
+// 在构建时获取所有文章
+const allPosts = await getSortedPostsList();
+
+// 排除当前文章和加密文章
+const candidates = allPosts.filter((p) => {
+	if (excludeIds.includes(p.id)) {
+		return false;
+	}
+	if (p.data.password) {
+		return false;
+	}
+	return true;
+});
+
+// Fisher-Yates shuffle
+const shuffled = [...candidates];
+for (let i = shuffled.length - 1; i > 0; i--) {
+	const j = Math.floor(Math.random() * (i + 1));
+	[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+}
+
+const picked = shuffled.slice(0, maxCount);
+---
+
+<ListContainer
+	title={i18n(I18nKey.randomPosts)}
+	badge={i18n(I18nKey.randomRecommend)}
+	icon="material-symbols:recommend"
+>
+	{
+		picked.length > 0 ? (
+			<div class="flex flex-col -mx-1">
+				{picked.map((post, idx) => (
+					<>
+						<PostListItem
+							post={post}
+							index={idx}
+							dateFormat="iso"
+						/>
+						{idx < picked.length - 1 && <ListDivider />}
+					</>
+				))}
+			</div>
+		) : (
+			<div class="text-sm text-black/30 dark:text-white/30 px-3 py-3">
+				{i18n(I18nKey.noData)}
+			</div>
+		)
+	}
+</ListContainer>

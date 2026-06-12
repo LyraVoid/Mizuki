@@ -1,0 +1,45 @@
+---
+/**
+ * TOC 进度环组件
+ * 圆形 SVG 进度指示器，用于 FloatingTOC
+ */
+
+export interface Props {
+	/** 进度值（0-1） */
+	progress?: number;
+}
+
+const { progress = 0 } = Astro.props;
+
+// 圆周长 = 2 * PI * radius
+const radius = 40;
+const circumference = 2 * Math.PI * radius;
+const offset = Math.max(
+	0,
+	Math.min(circumference, circumference * (1 - progress)),
+);
+---
+
+<svg
+	class="progress-ring absolute inset-0 w-full h-full pointer-events-none"
+	viewBox="0 0 100 100"
+	style="transform: rotate(-90deg)"
+>
+	<circle
+		class="progress-ring-circle"
+		cx="50"
+		cy="50"
+		r={radius}
+		fill="transparent"
+		stroke="var(--primary)"
+		stroke-width="5"
+		stroke-linecap="round"
+		stroke-dasharray={circumference}
+		stroke-dashoffset={offset}></circle>
+</svg>
+
+<style>
+	.progress-ring-circle {
+		transition: stroke-dashoffset 0.1s linear;
+	}
+</style>

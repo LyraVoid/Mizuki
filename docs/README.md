@@ -103,7 +103,7 @@ docs/
 
 ## 🤝 需要帮助？
 
-- 查看 [GitHub Issues](https://github.com/matsuzaka-yuki/Mizuki/issues)
+- 查看 [GitHub Issues](https://github.com/LyraVoid/Mizuki/issues)
 - 阅读相关文档的故障排查章节
 - 运行 `pnpm run check-env` 检查配置
 

@@ -1,0 +1,68 @@
+---
+import { Icon } from "astro-icon/components";
+
+import type { PostForList } from "@/utils/content-utils";
+import { formatDateToYYYYMMDD } from "@/utils/date-utils";
+import { getPostPublicDescription } from "@/utils/post-card-content";
+import { getPostUrlBySlug } from "@/utils/url-utils";
+
+interface Props {
+	post: PostForList;
+	index: number;
+	showCategory?: boolean;
+	showDate?: boolean;
+	dateFormat?: "iso" | "description";
+}
+
+const {
+	post,
+	index,
+	showCategory = true,
+	showDate = true,
+	dateFormat = "description",
+} = Astro.props;
+
+const displayDate =
+	dateFormat === "iso"
+		? post.data.published.toISOString().substring(0, 10)
+		: getPostPublicDescription(
+				post.data,
+				formatDateToYYYYMMDD(post.data.published),
+			);
+---
+
+<a
+	href={getPostUrlBySlug(post.id)}
+	class="group flex items-center gap-3 px-3 py-3 -mx-1 rounded-lg transition-all hover:bg-black/5 dark:hover:bg-white/5 active:scale-[0.98]"
+>
+	<div
+		class="shrink-0 w-6 h-6 rounded-md bg-(--enter-btn-bg) text-(--primary) flex items-center justify-center text-sm font-bold transition"
+	>
+		{index + 1}
+	</div>
+
+	<div class="flex-1 min-w-0">
+		<div
+			class="font-bold text-sm text-black/75 dark:text-white/75 truncate transition group-hover:text-(--primary)"
+		>
+			{post.data.title}
+		</div>
+		<div
+			class="flex items-center gap-1.5 text-xs text-black/30 dark:text-white/30 transition mt-1"
+		>
+			{
+				showCategory && post.data.category && (
+					<span class="shrink-0 self-end px-1.5 py-0.5 rounded bg-[var(--btn-regular-bg)] text-[var(--btn-content)]">
+						{post.data.category}
+					</span>
+				)
+			}
+			{showDate && <span class="truncate">{displayDate}</span>}
+		</div>
+	</div>
+
+	<Icon
+		name="material-symbols:chevron-right-rounded"
+		class="shrink-0 text-xl text-black/15 dark:text-white/15 transition group-hover:text-(--primary) group-hover:translate-x-0.5"
+	/>
+</a>

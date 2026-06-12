@@ -7,8 +7,8 @@
 :root {
   /* 断点变量 */
   --breakpoint-mobile: 768px;
-  --breakpoint-tablet: 1024px;
-  --breakpoint-desktop: 1025px;
+  --breakpoint-tablet: 1280px;
+  --breakpoint-desktop: 1920px;
 
   /* 间距变量 */
   --widget-gap-mobile: 0.75rem;

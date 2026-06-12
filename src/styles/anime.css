@@ -14,19 +14,19 @@
   grid-template-columns: repeat(2, 1fr);
 }
 
-@container (min-width: 480px) {
+@container (min-width: 30rem) {
   .anime-grid-container.anime-grid-mode {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@container (min-width: 768px) {
+@container (min-width: 48rem) {
   .anime-grid-container.anime-grid-mode {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@container (min-width: 1024px) {
+@container (min-width: 64rem) {
   .anime-grid-container.anime-grid-mode {
     grid-template-columns: repeat(5, 1fr);
   }
@@ -36,7 +36,7 @@
 .anime-grid-container.anime-list-mode {
   grid-template-columns: repeat(1, 1fr);
 }
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .anime-grid-container.anime-list-mode {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -66,12 +66,23 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 0.75rem 1rem;
+  min-width: 0;
 }
 
 .anime-grid-container.anime-list-mode h3 {
   -webkit-line-clamp: unset;
   line-clamp: unset;
   white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.anime-grid-container.anime-list-mode .p-3 .flex.flex-wrap span {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .anime-grid-container.anime-list-mode .group p.text-xs {

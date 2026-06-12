@@ -1,0 +1,168 @@
+---
+import { Icon } from "astro-icon/components";
+import type { StatCardProps } from "./types";
+
+const {
+	title,
+	value,
+	subtitle,
+	icon,
+	size = "medium",
+	trend,
+	link,
+} = Astro.props as StatCardProps;
+
+const getSizeClasses = (size: string) => {
+	switch (size) {
+		case "small":
+			return {
+				container: "p-3",
+				value: "text-xl",
+				title: "text-xs",
+				subtitle: "text-xs",
+				icon: "text-lg",
+				iconContainer: "w-8 h-8",
+			};
+		case "large":
+			return {
+				container: "p-6",
+				value: "text-4xl",
+				title: "text-base",
+				subtitle: "text-sm",
+				icon: "text-2xl",
+				iconContainer: "w-12 h-12",
+			};
+		default:
+			return {
+				container: "p-4",
+				value: "text-2xl",
+				title: "text-sm",
+				subtitle: "text-xs",
+				icon: "text-xl",
+				iconContainer: "w-10 h-10",
+			};
+	}
+};
+
+const sizeClasses = getSizeClasses(size);
+---
+
+<div
+	class="stat-card group rounded-xl bg-[var(--primary)]/6 border border-[var(--primary)]/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden cursor-pointer"
+>
+	<div class={sizeClasses.container}>
+		<div class="flex items-start justify-between mb-3">
+			{
+				icon && (
+					<div
+						class={`rounded-lg flex items-center justify-center bg-[var(--primary)]/12 text-[var(--primary)] ${sizeClasses.iconContainer}`}
+					>
+						<Icon name={icon} class={sizeClasses.icon} />
+					</div>
+				)
+			}
+
+			{
+				trend && (
+					<div
+						class={`flex items-center gap-1 ${trend.isPositive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+					>
+						<Icon
+							name={
+								trend.isPositive
+									? "material-symbols:trending-up"
+									: "material-symbols:trending-down"
+							}
+							class="text-sm"
+						/>
+						<span class="text-xs font-medium">
+							{trend.isPositive ? "+" : ""}
+							{trend.value}%
+						</span>
+					</div>
+				)
+			}
+		</div>
+
+		<div
+			class={`font-bold mb-1 text-[var(--primary)] ${sizeClasses.value}`}
+		>
+			{value}
+		</div>
+
+		<div
+			class={`font-medium text-black/70 dark:text-white/70 mb-1 ${sizeClasses.title}`}
+		>
+			{title}
+		</div>
+
+		{
+			subtitle && (
+				<div
+					class={`text-black/50 dark:text-white/50 ${sizeClasses.subtitle}`}
+				>
+					{subtitle}
+				</div>
+			)
+		}
+
+		{
+			trend && trend.label && (
+				<div
+					class={`text-black/40 dark:text-white/40 mt-1 ${sizeClasses.subtitle}`}
+				>
+					{trend.label}
+				</div>
+			)
+		}
+
+		{
+			link && (
+				<div class="mt-3">
+					<a
+						href={link.url}
+						class={`text-[var(--primary)] hover:text-[var(--primary)]/80 underline decoration-[var(--primary)]/30 hover:decoration-[var(--primary)]/60 underline-offset-2 font-medium transition-colors ${sizeClasses.subtitle}`}
+					>
+						{link.text} →
+					</a>
+				</div>
+			)
+		}
+	</div>
+
+	<div
+		class="absolute inset-0 bg-[var(--primary)]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl"
+	>
+	</div>
+</div>
+
+<style>
+	.stat-card {
+		animation: fadeInUp 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+		opacity: 0;
+	}
+
+	.stat-card:nth-child(1) {
+		animation-delay: 0.05s;
+	}
+	.stat-card:nth-child(2) {
+		animation-delay: 0.1s;
+	}
+	.stat-card:nth-child(3) {
+		animation-delay: 0.15s;
+	}
+	.stat-card:nth-child(4) {
+		animation-delay: 0.2s;
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>

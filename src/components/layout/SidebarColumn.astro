@@ -1,0 +1,207 @@
+---
+import { SidebarTOC } from "@components/features/toc";
+import type { MarkdownHeading } from "astro";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
+
+import { widgetManager } from "@/utils/widget-manager";
+import { buildComponentProps } from "@/utils/widget-renderer";
+
+import Announcement from "../widgets/announcement/Announcement.astro";
+import Calendar from "../widgets/calendar/Calendar.astro";
+import { CardTOC } from "../widgets/card-toc";
+import Categories from "../widgets/categories/Categories.astro";
+import MusicPlayer from "../widgets/music-player/MusicPlayer.svelte";
+import { MusicSidebarWidget } from "../widgets/music-sidebar";
+import Profile from "../widgets/profile/Profile.astro";
+import SiteStats from "../widgets/site-stats/SiteStats.astro";
+import Tags from "../widgets/tags/Tags.astro";
+
+interface Props {
+	side: "left" | "right";
+	headings?: MarkdownHeading[];
+	containerId?: string;
+	stickyId?: string;
+	rootClass?: string;
+	topClass?: string;
+	stickyClass?: string;
+	showMobile?: boolean;
+	showTablet?: boolean;
+	showDesktop?: boolean;
+}
+
+const {
+	side,
+	headings,
+	containerId,
+	stickyId,
+	rootClass = "w-full",
+	topClass = "",
+	stickyClass = "",
+	showMobile = false,
+	showTablet = true,
+	showDesktop = true,
+} = Astro.props;
+
+const componentMap: Record<string, unknown> = {
+	profile: Profile,
+	announcement: Announcement,
+	categories: Categories,
+	tags: Tags,
+	toc: SidebarTOC,
+	"card-toc": CardTOC,
+	"music-player": MusicPlayer,
+	"music-sidebar": MusicSidebarWidget,
+	"site-stats": SiteStats,
+	calendar: Calendar,
+};
+
+type WidgetComponentConfig = ReturnType<
+	typeof widgetManager.getComponentsByPosition
+>[number];
+
+const mobileTopComponents = showMobile
+	? widgetManager.getComponentsByPosition("top", side, "mobile")
+	: [];
+const mobileStickyComponents = showMobile
+	? widgetManager.getComponentsByPosition("sticky", side, "mobile")
+	: [];
+
+const tabletTopComponents = showTablet
+	? widgetManager.getComponentsByPosition("top", side, "tablet")
+	: [];
+const tabletStickyComponents = showTablet
+	? widgetManager.getComponentsByPosition("sticky", side, "tablet")
+	: [];
+
+const desktopTopComponents = showDesktop
+	? widgetManager.getComponentsByPosition("top", side, "desktop")
+	: [];
+const desktopStickyComponents = showDesktop
+	? widgetManager.getComponentsByPosition("sticky", side, "desktop")
+	: [];
+
+function renderComponent(
+	component: WidgetComponentConfig,
+	index: number,
+): { Component: AstroComponentFactory; props: Record<string, unknown> } | null {
+	const ComponentToRender = componentMap[component.type] as
+		| AstroComponentFactory
+		| undefined;
+	if (!ComponentToRender) {
+		return null;
+	}
+
+	return {
+		Component: ComponentToRender,
+		props: buildComponentProps(component, index, headings),
+	};
+}
+---
+
+<div id={containerId} class:list={[rootClass, "sidebar-column-root"]}>
+	<div class:list={["flex flex-col w-full gap-4 mb-4", topClass]}>
+		{
+			showMobile && mobileTopComponents.length > 0 && (
+				<div class="flex flex-col w-full gap-4 md:hidden">
+					{mobileTopComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) {
+							return null;
+						}
+
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
+
+		{
+			showTablet && tabletTopComponents.length > 0 && (
+				<div class="sidebar-content hidden md:flex lg:hidden flex-col w-full gap-4">
+					{tabletTopComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) {
+							return null;
+						}
+
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
+
+		{
+			showDesktop && desktopTopComponents.length > 0 && (
+				<div class="sidebar-content hidden lg:flex flex-col w-full gap-4">
+					{desktopTopComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) {
+							return null;
+						}
+
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
+	</div>
+
+	<div
+		id={stickyId}
+		class:list={[
+			"transition-all duration-700 flex flex-col w-full gap-4 sticky top-4 sidebar-sticky-column",
+			stickyClass,
+		]}
+	>
+		{
+			showMobile && mobileStickyComponents.length > 0 && (
+				<div class="flex flex-col w-full gap-4 md:hidden">
+					{mobileStickyComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) {
+							return null;
+						}
+
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
+
+		{
+			showTablet && tabletStickyComponents.length > 0 && (
+				<div class="sidebar-content hidden md:flex lg:hidden flex-col w-full gap-4">
+					{tabletStickyComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) {
+							return null;
+						}
+
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
+
+		{
+			showDesktop && desktopStickyComponents.length > 0 && (
+				<div class="sidebar-content hidden lg:flex flex-col w-full gap-4">
+					{desktopStickyComponents.map((component, index) => {
+						const renderData = renderComponent(component, index);
+						if (!renderData) {
+							return null;
+						}
+
+						const { Component, props } = renderData;
+						return <Component {...props} />;
+					})}
+				</div>
+			)
+		}
+	</div>
+</div>

@@ -29,7 +29,7 @@ export function testSlideAnimation() {
 
 // 模拟页面切换动画
 export function simulatePageTransition() {
-	const body = document.body;
+	const _body = document.body;
 	const html = document.documentElement;
 
 	// 添加离开状态

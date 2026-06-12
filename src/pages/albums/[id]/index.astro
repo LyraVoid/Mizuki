@@ -1,13 +1,17 @@
 ---
+import { PhotoCard } from "@components/features/albums";
+import Encryptor from "@components/features/auth/Encryptor.astro";
+import PasswordProtection from "@components/features/auth/PasswordProtection.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { encryptContent } from "@utils/crypto-utils";
+import { Icon } from "astro-icon/components";
+
 import { siteConfig } from "../../../config";
 import I18nKey from "../../../i18n/i18nKey";
 import { i18n } from "../../../i18n/translation";
-import MainGridLayout from "../../../layouts/MainGridLayout.astro";
-// import type { GetStaticPaths } from "astro";
 import type { AlbumGroup, Photo } from "../../../types/album";
 import { scanAlbums } from "../../../utils/album-scanner";
 
-// 检查相册页面是否启用
 if (!siteConfig.featurePages.albums) {
 	return Astro.redirect("/404/");
 }
@@ -29,155 +33,182 @@ const { album } = Astro.props;
 if (!album) {
 	return Astro.redirect("/404/");
 }
+
+const isEncrypted = !!album.password;
+let encryptedPhotoData = "";
+if (isEncrypted) {
+	const photoHtml = album.photos
+		.map(
+			(photo: Photo) =>
+				`<div class="gallery-masonry-item"><a data-fancybox="album-${album.id}" href="${photo.src}" data-caption="${photo.alt || photo.title || ""}"><img src="${photo.src}" alt="${photo.alt || photo.title || ""}" loading="lazy" decoding="async" class="w-full rounded-lg" /></a></div>`,
+		)
+		.join("");
+	const wrappedHtml = `<div class="gallery-masonry">${photoHtml}</div>`;
+	encryptedPhotoData = encryptContent(
+		wrappedHtml,
+		String(album.password),
+		`album:${album.id}`,
+	);
+}
 ---
 
-<MainGridLayout title={album.title} description={album.description || album.title}>
-  <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-    <div class="card-base z-10 px-9 py-6 relative w-full">
-      
-      <!-- 返回按钮 -->
-      <div class="mb-6">
-        <a 
-          href="/albums/" 
-          class="inline-flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:text-[var(--primary)] transition-colors"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-          {i18n(I18nKey.albumsBackToList)}
-        </a>
-      </div>
+<MainGridLayout
+	title={album.title}
+	description={album.description || album.title}
+>
+	<script>
+		import("../../../scripts/right-sidebar-layout.js");
+		import { loadIconify } from "../../../utils/icon-loader";
 
-      <!-- 相册标题信息 -->
-      <header class="mb-8">
-        <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-3">
-          {album.title}
-        </h1>
-        
-        {album.description && (
-          <p class="text-neutral-600 dark:text-neutral-400 mb-4">
-            {album.description}
-          </p>
-        )}
-        
-        <!-- 相册元数据 -->
-        <div class="flex flex-wrap items-center gap-4 text-sm text-neutral-500 dark:text-neutral-500">
-          <span>{album.photos.length} {album.photos.length > 1 ? i18n(I18nKey.albumsPhotosCount) : i18n(I18nKey.albumsPhotoCount)}</span>
-          <time>{new Date(album.date).toLocaleDateString('zh-CN')}</time>
-          {album.location && (
-            <span class="flex items-center gap-1">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
-              </svg>
-              {album.location}
-            </span>
-          )}
-        </div>
-        
-        <!-- 标签 -->
-        {album.tags && album.tags.length > 0 && (
-          <div class="flex flex-wrap gap-2 mt-4">
-            {album.tags.map((tag: string) => (
-              <span class="btn-regular h-8 text-sm px-3 rounded-lg">
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-      </header>
+		loadIconify().catch((error) => {
+			console.error("Failed to load Iconify:", error);
+		});
+	</script>
 
-      <!-- 照片网格 -->
-      <div 
-        class={`photo-gallery moment-images ${album.layout === 'masonry' ? 'masonry-layout' : 'grid-layout'}`}
-        data-layout={album.layout || 'grid'}
-        data-columns={album.columns || 3}
-      >
-        {album.photos.map((photo: Photo, _index: number) => (
-          <figure class="photo-item group relative overflow-hidden rounded-lg">
-            <a 
-              href="javascript:void(0)"
-              data-src={photo.src}
-              data-fancybox="gallery"
-              data-caption={photo.title || photo.alt}
-              class="block"
-            >
-              <img 
-                src={photo.src}
-                alt={photo.alt}
-                class="photo-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
-                loading="lazy"
-              />
-            </a>
-          </figure>
-        ))}
-      </div>
-    </div>
-  </div>
+	<!-- Cover Banner -->
+	<div class="w-full rounded-(--radius-large) overflow-hidden relative">
+		{
+			album.cover ? (
+				<div class="relative w-full aspect-[3/1] min-h-[200px] max-h-[360px]">
+					<img
+						src={album.cover}
+						alt={album.title}
+						class="w-full h-full object-cover"
+					/>
+					<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
+					{/* Back button */}
+					<a
+						href="/albums/"
+						class="absolute top-4 left-4 inline-flex items-center gap-1.5 text-sm text-white/90 hover:text-white bg-black/30 hover:bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-lg transition-colors"
+					>
+						<Icon
+							name="material-symbols:arrow-back"
+							class="text-base"
+						/>
+						{i18n(I18nKey.albumsBackToList)}
+					</a>
+
+					{/* Album info overlay */}
+					<div class="absolute bottom-0 left-0 right-0 p-6">
+						<div class="text-2xl sm:text-3xl font-bold text-white mb-2 drop-shadow-lg">
+							{album.title}
+						</div>
+						{album.description && (
+							<p class="text-sm text-white/75 leading-relaxed mb-2 max-w-2xl line-clamp-2">
+								{album.description}
+							</p>
+						)}
+						<div class="flex items-center gap-4 text-sm text-white/80 flex-wrap">
+							<span class="inline-flex items-center gap-1">
+								<Icon
+									name="material-symbols:calendar-today"
+									class="text-sm"
+								/>
+								{new Date(album.date).toLocaleDateString(
+									"zh-CN",
+								)}
+							</span>
+							{album.location && (
+								<span class="inline-flex items-center gap-1">
+									<Icon
+										name="material-symbols:location-on"
+										class="text-sm"
+									/>
+									{album.location}
+								</span>
+							)}
+							<span class="inline-flex items-center gap-1">
+								<Icon
+									name="material-symbols:photo-library"
+									class="text-sm"
+								/>
+								{album.photos.length}{" "}
+								{i18n(I18nKey.albumsPhotosCount)}
+							</span>
+						</div>
+						{album.tags && album.tags.length > 0 && (
+							<div class="flex flex-wrap gap-1.5 mt-2.5">
+								{album.tags.map((tag: string) => (
+									<span class="text-xs px-2 py-0.5 rounded bg-white/20 text-white/90 backdrop-blur-sm">
+										{tag}
+									</span>
+								))}
+							</div>
+						)}
+					</div>
+				</div>
+			) : (
+				<div class="card-base px-6 py-4">
+					<a
+						href="/albums/"
+						class="inline-flex items-center gap-1 text-sm text-(--primary) hover:underline mb-3"
+					>
+						<Icon
+							name="material-symbols:arrow-back"
+							class="text-base"
+						/>
+						{i18n(I18nKey.albumsBackToList)}
+					</a>
+					<div class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+						{album.title}
+					</div>
+					<div class="flex items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400 mt-2 flex-wrap">
+						<span class="inline-flex items-center gap-1">
+							<Icon
+								name="material-symbols:calendar-today"
+								class="text-sm"
+							/>
+							{new Date(album.date).toLocaleDateString("zh-CN")}
+						</span>
+						{album.location && (
+							<span class="inline-flex items-center gap-1">
+								<Icon
+									name="material-symbols:location-on"
+									class="text-sm"
+								/>
+								{album.location}
+							</span>
+						)}
+						<span>
+							{album.photos.length}{" "}
+							{i18n(I18nKey.albumsPhotosCount)}
+						</span>
+					</div>
+				</div>
+			)
+		}
+	</div>
+
+	<!-- Photo Masonry Grid -->
+	<div class="w-full rounded-(--radius-large) overflow-hidden relative mt-4">
+		<div class="card-base z-10 px-6 py-6 relative w-full">
+			{
+				isEncrypted ? (
+					<PasswordProtection
+						encryptedContent={encryptedPhotoData}
+						hint={album.passwordHint}
+					/>
+				) : album.photos.length > 0 ? (
+					<div class="gallery-masonry">
+						{album.photos.map((photo: Photo) => (
+							<PhotoCard
+								src={photo.src}
+								alt={photo.alt || photo.title || ""}
+								albumId={album.id}
+							/>
+						))}
+					</div>
+				) : (
+					<div class="flex flex-col items-center justify-center py-16 text-neutral-400 dark:text-neutral-500">
+						<Icon
+							name="material-symbols:photo-library"
+							class="text-6xl mb-4 opacity-50"
+						/>
+						<p class="text-lg">{i18n(I18nKey.albumsEmpty)}</p>
+					</div>
+				)
+			}
+		</div>
+	</div>
 </MainGridLayout>
-
-<script>
-  // 确保Fancybox正确处理相册图片
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('=== 相册页面加载完成 ===');
-    
-    // 检查页面中的图片元素
-    const albumImages = document.querySelectorAll('.moment-images img, .photo-gallery img');
-    console.log('相册图片数量:', albumImages.length);
-    
-    // 预加载图片以确保正确显示
-    albumImages.forEach((img) => {
-      if (img instanceof HTMLImageElement) {
-        const preloadImg = new Image();
-        preloadImg.src = img.src;
-      }
-    });
-  });
-</script>
-
-<style>
-  .grid-layout {
-    display: grid;
-    gap: 1rem;
-  }
-  
-  .grid-layout[data-columns="2"] {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-  
-  .grid-layout[data-columns="3"] {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  }
-  
-  .grid-layout[data-columns="4"] {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-  
-  .masonry-layout {
-    columns: 2;
-    column-gap: 1rem;
-  }
-  
-  @media (min-width: 768px) {
-    .masonry-layout {
-      columns: 3;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .masonry-layout[data-columns="4"] {
-      columns: 4;
-    }
-  }
-  
-  .masonry-layout .photo-item {
-    break-inside: avoid;
-    margin-bottom: 1rem;
-  }
-  
-  .grid-layout .photo-container {
-    aspect-ratio: 1;
-  }
-  
-</style>
-

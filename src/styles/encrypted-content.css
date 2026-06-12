@@ -1,3 +1,5 @@
+@reference "tailwindcss";
+
 /* 加密内容的代码块样式，确保与非加密文章完全一致 */
 
 /* 基础容器样式 */
@@ -13,11 +15,6 @@
 /* expressive-code容器样式 */
 #decrypted-content .expressive-code {
   @apply my-4;
-}
-
-#decrypted-content .expressive-code ::selection {
-  @apply bg-[var(--codeblock-selection)];
-  color: #ffffff;
 }
 
 /* frame容器样式 - 与expressive-code.css保持一致 */
@@ -42,13 +39,13 @@
   @apply px-4 py-2 text-xs font-medium;
   background: var(--primary);
   color: white;
-  font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: var(--ec-codeFontFml, "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
 }
 
 /* pre元素样式 */
 #decrypted-content .frame pre {
   @apply p-4 overflow-x-auto m-0;
-  font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: var(--ec-codeFontFml, "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
   font-size: 0.875rem;
   line-height: 1.5rem;
   background: var(--codeblock-bg);
@@ -70,12 +67,12 @@
 
 /* 代码元素样式 */
 #decrypted-content code {
-  font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: var(--ec-codeFontFml, "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
 }
 
 /* 内联代码样式 - 与markdown.css保持一致 */
 #decrypted-content .custom-md code:not(.astro-code code) {
-  @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
+  @apply bg-(--inline-code-bg) text-(--inline-code-color) px-1 py-0.5 rounded-md overflow-hidden;
 }
 
 /* 代码块内的code元素不应用内联代码样式 */
@@ -301,12 +298,6 @@
   @apply text-inherit;
 }
 
-/* 确保代码块选择样式正确 */
-#decrypted-content .astro-code ::selection {
-  @apply bg-[var(--codeblock-selection)];
-  color: #ffffff;
-}
-
 /* 语言标识样式 - 模拟expressive-code的language-badge插件 */
 #decrypted-content .frame.has-language-badge [data-language]::before {
   position: absolute;
@@ -315,7 +306,7 @@
   top: 0.5rem;
   padding: 0.1rem 0.5rem;
   content: attr(data-language);
-  font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: var(--ec-codeFontFml, "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
   font-size: 0.75rem;
   font-weight: bold;
   text-transform: uppercase;

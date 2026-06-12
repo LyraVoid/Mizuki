@@ -11,6 +11,9 @@ rainbow-dark = linear-gradient(to right, oklch(0.70 0.10 0), oklch(0.70 0.10 30)
 :root
   --radius-large 1rem
   --content-delay 150ms
+  --wallpaper-opacity 0.8
+  --wallpaper-blur 0px
+  --card-transparent-opacity 0.5
 
 /* An util to define variables that vary with light and dark mode */
 define(vars)
@@ -57,7 +60,7 @@ define({
   --inline-code-bg: var(--btn-regular-bg)
   --inline-code-color: var(--btn-content)
   --selection-bg: oklch(0.90 0.05 var(--hue)) oklch(0.40 0.08 var(--hue))
-  --codeblock-selection: oklch(0.40 0.08 var(--hue))
+  --codeblock-selection: var(--selection-bg)
   --codeblock-bg: oklch(0.97 0.005 var(--hue)) oklch(0.17 0.015 var(--hue))
   --codeblock-topbar-bg: oklch(0.94 0.01 var(--hue)) oklch(0.12 0.015 var(--hue))
 
@@ -103,9 +106,8 @@ define({
 body:not(.wallpaper-transparent)
   --card-bg-transparent: var(--card-bg)
 
-/* 全屏壁纸模式下，--card-bg-transparent 使用真正的半透明值 */
 body.wallpaper-transparent
-  --card-bg-transparent: rgba(255, 255, 255, 0.8)
+  --card-bg-transparent: unquote("rgba(255, 255, 255, var(--card-transparent-opacity, 0.8))")
 
 :root.dark body.wallpaper-transparent
-  --card-bg-transparent: rgba(23, 23, 23, 0.8)
+  --card-bg-transparent: unquote("rgba(23, 23, 23, var(--card-transparent-opacity, 0.8))")

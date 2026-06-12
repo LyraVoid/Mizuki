@@ -3,6 +3,8 @@ dist/
 
 # generated types
 .astro/
+demo
+plans
 
 # dependencies
 node_modules/
@@ -36,6 +38,7 @@ yarn.lock
 # ide
 .idea
 *.iml
+.claude
 
 cache/
 fuwari/
@@ -44,3 +47,15 @@ src/pages/myself.astro
 
 # Bangumi generated data
 src/data/bangumi-data.json
+
+# Bilibili generated data
+src/data/bilibili-data.json
+
+# Lighthouse CI
+.lighthouseci/
+
+# Live2D editor source files
+*.psd
+*.psd~
+*.cmo3
+*.vtube.json

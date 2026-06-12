@@ -1,54 +1,24 @@
 ---
+import { FilterTabs } from "@components/atoms/filter-tabs";
+import { PageHeader } from "@components/features/page-header";
+import { ProjectCard } from "@components/features/projects";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { Icon } from "astro-icon/components";
+
 import { siteConfig } from "../config";
 import { UNCATEGORIZED } from "../constants/constants";
-import {
-	getAllTechStack,
-	getFeaturedProjects,
-	getProjectStats,
-	getProjectsByCategory,
-	projectsData,
-} from "../data/projects";
+import { projectsData } from "../data/projects";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import MainGridLayout from "../layouts/MainGridLayout.astro";
 
-// import { loadIconify } from "../utils/icon-loader";
-
-// 检查项目页面是否启用
 if (!siteConfig.featurePages.projects) {
 	return Astro.redirect("/404/");
 }
 
-// const { lang } = Astro.props;
-
-// 加载Iconify图标库 - 移至客户端执行
-// loadIconify().catch((error) => {
-// 	console.error("Failed to load Iconify:", error);
-// });
-
-// 获取项目统计信息
-const stats = getProjectStats();
-const featuredProjects = getFeaturedProjects();
-const allTechStack = getAllTechStack();
-
-// 获取所有分类
 const categories = [
 	...new Set(projectsData.map((project) => project.category)),
 ];
 
-// 按分类获取项目
-const projectsByCategory = categories.reduce(
-	(acc, category) => {
-		acc[category] = getProjectsByCategory(category);
-		return acc;
-	},
-	{} as Record<string, typeof projectsData>,
-);
-
-const title = i18n(I18nKey.projects);
-const subtitle = i18n(I18nKey.projectsSubtitle);
-
-// 获取分类文本的国际化翻译
 const getCategoryText = (category: string) => {
 	switch (category) {
 		case "web":
@@ -65,258 +35,83 @@ const getCategoryText = (category: string) => {
 			return category;
 	}
 };
+
+const getCategoryIcon = (category: string) => {
+	switch (category) {
+		case "web":
+			return "material-symbols:language";
+		case "mobile":
+			return "material-symbols:smartphone";
+		case "desktop":
+			return "material-symbols:desktop-windows";
+		case "other":
+			return "material-symbols:widgets";
+		default:
+			return "material-symbols:folder";
+	}
+};
+
+const filterTabs = [
+	{
+		value: "all",
+		label: i18n(I18nKey.friendsFilterAll),
+		icon: "material-symbols:apps",
+		count: projectsData.length,
+	},
+	...categories.map((category) => ({
+		value: category,
+		label: getCategoryText(category),
+		icon: getCategoryIcon(category),
+		count: projectsData.filter((p) => p.category === category).length,
+	})),
+];
+
+const title = i18n(I18nKey.projects);
+const subtitle = i18n(I18nKey.projectsSubtitle);
 ---
 
 <MainGridLayout title={title} description={subtitle}>
-  <!-- 引入右侧边栏布局管理器 -->
-  <script>
-    import('../scripts/right-sidebar-layout.js');
-    import { loadIconify } from "../utils/icon-loader";
-    
-    // 加载Iconify图标库
-    loadIconify().catch((error) => {
-      console.error("Failed to load Iconify:", error);
-    });
-  </script>
-  <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-    <div class="card-base z-10 px-9 py-6 relative w-full">
-      <!-- 页面标题 -->
-      <div class="flex flex-col items-start justify-center mb-8">
-        <h1 class="text-4xl font-bold text-black/90 dark:text-white/90 mb-2 relative
-                  before:w-1 before:h-8 before:rounded-md before:bg-[var(--primary)]
-                  before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4">
-          {i18n(I18nKey.projects)}
-        </h1>
-        <p class="text-lg text-black/60 dark:text-white/60">
-          {i18n(I18nKey.projectsSubtitle)}
-        </p>
-      </div>
+	<script>
+		import("../scripts/right-sidebar-layout.js");
+		import { loadIconify } from "../utils/icon-loader";
 
-      <!-- 统计信息 -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-blue-500/10 dark:bg-blue-900/30 rounded-lg p-4 border border-blue-500/20 dark:border-blue-900/30 hover:shadow-lg transition-shadow duration-300">
-          <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.total}</div>
-          <div class="text-sm text-blue-600/70 dark:text-blue-400/70">{i18n(I18nKey.projectsTotal)}</div>
-        </div>
-        <div class="bg-green-500/10 dark:bg-green-900/30 rounded-lg p-4 border border-green-500/20 dark:border-green-900/30 hover:shadow-lg transition-shadow duration-300">
-          <div class="text-2xl font-bold text-green-600 dark:text-green-400">{stats.byStatus.completed}</div>
-          <div class="text-sm text-green-600/70 dark:text-green-400/70">{i18n(I18nKey.projectsCompleted)}</div>
-        </div>
-        <div class="bg-yellow-500/10 dark:bg-yellow-900/30 rounded-lg p-4 border border-yellow-500/20 dark:border-yellow-900/30 hover:shadow-lg transition-shadow duration-300">
-          <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{stats.byStatus.inProgress}</div>
-          <div class="text-sm text-yellow-600/70 dark:text-yellow-400/70">{i18n(I18nKey.projectsInProgress)}</div>
-        </div>
-        <div class="bg-purple-500/10 dark:bg-purple-900/30 rounded-lg p-4 border border-purple-500/20 dark:border-purple-900/30 hover:shadow-lg transition-shadow duration-300">
-          <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{allTechStack.length}</div>
-          <div class="text-sm text-purple-600/70 dark:text-purple-400/70">{i18n(I18nKey.projectsTechStack)}</div>
-        </div>
-      </div>
+		loadIconify().catch((error) => {
+			console.error("Failed to load Iconify:", error);
+		});
+	</script>
 
-      <!-- 特色项目 -->
-      {featuredProjects.length > 0 && (
-        <div class="mb-8">
-          <h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-4 relative
-                    before:w-1 before:h-6 before:rounded-md before:bg-[var(--primary)]
-                    before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4">
-            {i18n(I18nKey.projectsFeatured)}
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {featuredProjects.map((project) => (
-              <div class="bg-transparent rounded-lg border border-black/10 dark:border-white/10 overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                {project.image && (
-                  <div class="aspect-video overflow-hidden">
-                    <img 
-                      src={project.image} 
-                      alt={project.title}
-                      class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                )}
-                <div class="p-6">
-                  <div class="flex items-start justify-between mb-3">
-                    <h3 class="text-xl font-semibold text-black/90 dark:text-white/90">
-                      {project.title}
-                    </h3>
-                    <span class={`px-2 py-1 text-xs rounded-full ${
-                      project.status === 'completed' 
-                        ? 'bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                        : project.status === 'in-progress'
-                        ? 'bg-yellow-600/20 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                        : 'bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-                    }`}>
-                      {i18n(project.status === 'completed' ? I18nKey.projectsCompleted : 
-                            project.status === 'in-progress' ? I18nKey.projectsInProgress : 
-                            I18nKey.projectsPlanned)}
-                    </span>
-                  </div>
-                  <p class="text-black/60 dark:text-white/60 mb-4 line-clamp-2">
-                    {project.description}
-                  </p>
-                  <div class="flex flex-wrap gap-2 mb-4">
-                    {project.techStack.slice(0, 4).map((tech) => (
-                      <span class="px-2 py-1 text-xs bg-blue-600/20 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded">
-                        {tech}
-                      </span>
-                    ))}
-                    {project.techStack.length > 4 && (
-                      <span class="px-2 py-1 text-xs bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400 rounded">
-                        +{project.techStack.length - 4}
-                      </span>
-                    )}
-                  </div>
-                  <div class="flex flex-wrap gap-2 text-sm">
-                    {project.visitUrl && (
-                      <a 
-                        href={project.visitUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        class="btn-gradient btn-gradient-primary btn-gradient-md"
-                      >
-                        <iconify-icon icon="material-symbols:open-in-new" width="18" height="18"></iconify-icon>
-                        {i18n(I18nKey.projectsVisit)}
-                      </a>
-                    )}
-                    {project.sourceCode && (
-                      <a 
-                        href={project.sourceCode} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        class="btn-gradient btn-github btn-gradient-md"
-                      >
-                        <iconify-icon icon="mdi:github" width="18" height="18"></iconify-icon>
-                        {i18n(I18nKey.projectsGitHub)}
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+	<script is:inline src="/js/filter-tabs-handler.js"></script>
 
-      <!-- 按分类展示项目 -->
-      <div class="space-y-8">
-        {categories.map((category) => {
-          const categoryProjects = projectsByCategory[category];
-          if (categoryProjects.length === 0) return null;
-          
-          return (
-            <div>
-              <h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-4 relative
-                        before:w-1 before:h-6 before:rounded-md before:bg-[var(--primary)]
-                        before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4">
-                {getCategoryText(category)}
-                <span class="text-lg font-normal text-black/60 dark:text-white/60 ml-2">
-                  ({categoryProjects.length})
-                </span>
-              </h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {categoryProjects.map((project) => (
-                  <div class="bg-transparent rounded-lg border border-black/10 dark:border-white/10 overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                    {project.image && (
-                      <div class="aspect-video overflow-hidden">
-                        <img 
-                          src={project.image} 
-                          alt={project.title}
-                          class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    )}
-                    <div class="p-4">
-                      <div class="flex items-start justify-between mb-2">
-                        <h3 class="text-lg font-semibold text-black/90 dark:text-white/90 line-clamp-1">
-                          {project.title}
-                        </h3>
-                        <span class={`px-2 py-1 text-xs rounded-full shrink-0 ml-2 ${
-                          project.status === 'completed' 
-                            ? 'bg-green-600/20 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                            : project.status === 'in-progress'
-                            ? 'bg-yellow-600/20 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                            : 'bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-                        }`}>
-                          {i18n(project.status === 'completed' ? I18nKey.projectsCompleted : 
-                                project.status === 'in-progress' ? I18nKey.projectsInProgress : 
-                                I18nKey.projectsPlanned)}
-                        </span>
-                      </div>
-                      <p class="text-black/60 dark:text-white/60 mb-3 text-sm line-clamp-2">
-                        {project.description}
-                      </p>
-                      <div class="flex flex-wrap gap-1 mb-3">
-                        {project.techStack.slice(0, 3).map((tech) => (
-                          <span class="px-2 py-1 text-xs bg-blue-600/20 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded">
-                            {tech}
-                          </span>
-                        ))}
-                        {project.techStack.length > 3 && (
-                          <span class="px-2 py-1 text-xs bg-gray-600/20 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400 rounded">
-                            +{project.techStack.length - 3}
-                          </span>
-                        )}
-                      </div>
-                      <div class="flex flex-wrap gap-2 text-sm">
-                        {project.visitUrl && (
-                          <a 
-                            href={project.visitUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            class="btn-gradient btn-gradient-primary btn-gradient-md"
-                          >
-                            <iconify-icon icon="material-symbols:open-in-new" width="18" height="18"></iconify-icon>
-                            {i18n(I18nKey.projectsVisit)}
-                          </a>
-                        )}
-                        {project.sourceCode && (
-                          <a 
-                            href={project.sourceCode} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            class="btn-gradient btn-github btn-gradient-md"
-                          >
-                            <iconify-icon icon="mdi:github" width="18" height="18"></iconify-icon>
-                            {i18n(I18nKey.projectsGitHub)}
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
+		<div class="card-base z-10 px-6 sm:px-9 py-6 relative w-full">
+			<PageHeader title={title} subtitle={subtitle} />
 
-      <!-- 技术栈统计 -->
-      <div class="mt-12 pt-8 border-t border-black/10 dark:border-white/10">
-        <h2 class="text-2xl font-bold text-black/90 dark:text-white/90 mb-4">
-          {i18n(I18nKey.projectsTechStack)}
-        </h2>
-        <div class="flex flex-wrap gap-2">
-          {allTechStack.map((tech) => (
-            <span class="px-3 py-1 text-sm bg-gray-600/20 text-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-full">
-              {tech}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
+			<div class="mb-8">
+				<FilterTabs tabs={filterTabs} dataAttr="category" />
+			</div>
+
+			<div
+				id="projects-grid"
+				class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start"
+			>
+				{
+					projectsData.map((project) => (
+						<ProjectCard project={project} maxTechStack={4} />
+					))
+				}
+			</div>
+
+			<div id="no-results" class="hidden text-center py-16">
+				<Icon
+					name="material-symbols:search-off-rounded"
+					class="text-6xl text-black/15 dark:text-white/15 mb-4"
+				/>
+				<p class="text-black/40 dark:text-white/40 text-lg">
+					No matching projects
+				</p>
+			</div>
+		</div>
+	</div>
 </MainGridLayout>
-
-<style>
-  .line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-</style>

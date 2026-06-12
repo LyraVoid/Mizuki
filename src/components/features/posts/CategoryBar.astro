@@ -1,0 +1,290 @@
+---
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import { Icon } from "astro-icon/components";
+
+import { getCategoryList, getSortedPostsList } from "@/utils/content-utils";
+import { getCategoryUrl, url } from "@/utils/url-utils";
+
+const categories = await getCategoryList();
+const totalPosts = (await getSortedPostsList()).length;
+const homeUrl = url("/");
+const archiveUrl = url("/archive/");
+---
+
+<div
+	class="card-base category-bar p-3 onload-animation"
+	id="category-bar"
+	data-home-path={homeUrl}
+	data-archive-path={archiveUrl}
+>
+	<div class="category-bar-inner flex gap-2">
+		<a
+			href={homeUrl}
+			class="category-pill text-sm px-2 py-1 rounded-lg flex-shrink-0
+				   transition-colors duration-200 flex items-center justify-center"
+			data-category-name=""
+			aria-label={i18n(I18nKey.home)}
+		>
+			<Icon name="material-symbols:home" class="text-lg" />
+		</a>
+		<a
+			href={archiveUrl}
+			class="category-pill text-sm px-3 py-1 rounded-lg whitespace-nowrap flex-shrink-0
+				   transition-colors duration-200 flex items-center justify-center"
+			data-category-name="__archive__"
+		>
+			{i18n(I18nKey.archive)}
+			<span class="text-xs opacity-60 ml-1">{totalPosts}</span>
+		</a>
+		<div class="category-divider flex-shrink-0"></div>
+		<div class="scroll-area relative">
+			<div class="scroll-fade scroll-fade-left" aria-hidden="true"></div>
+			<div class="category-scroll flex gap-2 overflow-x-auto">
+				{
+					categories.map((cat) => (
+						<a
+							href={getCategoryUrl(cat.name)}
+							class="category-pill text-sm px-3 py-1 rounded-lg whitespace-nowrap
+								   transition-colors duration-200 flex items-center justify-center"
+							data-category-name={cat.name}
+						>
+							{cat.name}
+							<span class="text-xs opacity-60 ml-1">
+								{cat.count}
+							</span>
+						</a>
+					))
+				}
+			</div>
+			<div class="scroll-fade scroll-fade-right" aria-hidden="true"></div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.category-bar {
+		margin-bottom: 1rem;
+	}
+	.category-divider {
+		width: 1px;
+		align-self: stretch;
+		background: var(--line-divider);
+	}
+	.scroll-area {
+		flex: 1;
+		min-width: 0;
+		position: relative;
+	}
+	.scroll-fade {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 2.5rem;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 300ms ease-in-out;
+		z-index: 1;
+	}
+	.scroll-fade[data-visible] {
+		opacity: 1;
+	}
+	.scroll-fade-left {
+		left: 0;
+		background: linear-gradient(to left, transparent, var(--card-bg));
+	}
+	.scroll-fade-right {
+		right: 0;
+		background: linear-gradient(to right, transparent, var(--card-bg));
+	}
+	:global(body.wallpaper-transparent) .scroll-fade {
+		display: none;
+	}
+	.category-scroll {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+		scroll-behavior: smooth;
+	}
+	.category-scroll::-webkit-scrollbar {
+		display: none;
+	}
+	.category-pill {
+		border: 1.5px solid var(--line-divider);
+		color: var(--btn-content);
+		background: transparent;
+	}
+	.category-pill:hover {
+		border-color: var(--primary);
+		color: var(--primary);
+		background: transparent;
+	}
+	.category-pill[data-active] {
+		background: var(--primary);
+		border-color: var(--primary);
+		color: white;
+	}
+	.category-pill[data-active]:hover {
+		background: var(--primary);
+		border-color: var(--primary);
+		opacity: 0.9;
+	}
+</style>
+
+<script>
+	function updateCategoryBar() {
+		const bar = document.getElementById("category-bar");
+		if (!bar) {
+			return;
+		}
+
+		const pathname = window.location.pathname.replace(/\/$/, "");
+		const homePath = (bar.getAttribute("data-home-path") || "/").replace(
+			/\/$/,
+			"",
+		);
+		// 归档页路径也需要标准化，避免 /archive 与 /archive/ 不一致导致无法匹配
+		const archivePath = (
+			bar.getAttribute("data-archive-path") || "/archive"
+		).replace(/\/$/, "");
+		const isHome =
+			pathname === homePath || pathname === "" || pathname === "/";
+		const isArchive = pathname === archivePath;
+		// 分页页面（如 /2/, /3/）也属于首页的延续
+		const isHomePagination =
+			/^\/\d+$/.test(pathname) ||
+			(homePath !== "" &&
+				new RegExp(
+					"^" +
+						homePath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+						"\\/\\d+$",
+				).test(pathname));
+
+		// 在首页、首页分页和归档页显示
+		if (!isHome && !isHomePagination && !isArchive) {
+			bar.style.display = "none";
+			return;
+		}
+		bar.style.display = "";
+
+		// 高亮当前分类
+		const pills = bar.querySelectorAll<HTMLAnchorElement>(".category-pill");
+		const params = new URLSearchParams(window.location.search);
+		const activeCategory = params.get("category") || "";
+		const hasTag = params.has("tag");
+		const hasUncategorized = params.has("uncategorized");
+
+		pills.forEach((pill) => pill.removeAttribute("data-active"));
+
+		if (isHome || isHomePagination) {
+			bar.querySelector<HTMLAnchorElement>(
+				'.category-pill[data-category-name=""]',
+			)?.setAttribute("data-active", "");
+		} else if (activeCategory) {
+			pills.forEach((pill) => {
+				if (
+					pill.getAttribute("data-category-name") === activeCategory
+				) {
+					pill.setAttribute("data-active", "");
+				}
+			});
+		} else if (isArchive && !hasTag && !hasUncategorized) {
+			bar.querySelector<HTMLAnchorElement>(
+				'.category-pill[data-category-name="__archive__"]',
+			)?.setAttribute("data-active", "");
+		}
+
+		// 自动滚动到当前高亮的分类
+		const activePill = bar.querySelector<HTMLAnchorElement>(
+			".category-pill[data-active]",
+		);
+		const scroll = bar.querySelector<HTMLElement>(".category-scroll");
+		if (activePill && scroll) {
+			const scrollLeft =
+				activePill.offsetLeft -
+				scroll.offsetLeft -
+				(scroll.clientWidth - activePill.offsetWidth) / 2;
+			scroll.scrollTo({
+				left: Math.max(0, scrollLeft),
+				behavior: "smooth",
+			});
+		}
+
+		// 更新横幅标题：归档页有分类筛选时显示分类名
+		if (isArchive && activeCategory) {
+			const bannerTitle = document.querySelector(
+				".banner-page-title-text",
+			);
+			if (bannerTitle) {
+				bannerTitle.textContent = decodeURIComponent(activeCategory);
+			}
+		}
+	}
+
+	function initScrollFeatures() {
+		const bar = document.getElementById("category-bar");
+		if (!bar) {
+			return;
+		}
+
+		const scroll = bar.querySelector<HTMLElement>(".category-scroll");
+		if (!scroll) {
+			return;
+		}
+
+		// 鼠标滚轮横向滚动
+		scroll.addEventListener(
+			"wheel",
+			(e) => {
+				if (scroll.scrollWidth <= scroll.clientWidth) {
+					return;
+				}
+				e.preventDefault();
+				scroll.scrollLeft += e.deltaY;
+			},
+			{ passive: false },
+		);
+
+		// 监听滚动更新提示图标
+		scroll.addEventListener("scroll", updateScrollHint);
+		window.addEventListener("resize", updateScrollHint);
+		updateScrollHint();
+	}
+
+	function updateScrollHint() {
+		const bar = document.getElementById("category-bar");
+		if (!bar) {
+			return;
+		}
+		const scroll = bar.querySelector<HTMLElement>(".category-scroll");
+		const fadeLeft = bar.querySelector<HTMLElement>(".scroll-fade-left");
+		const fadeRight = bar.querySelector<HTMLElement>(".scroll-fade-right");
+		if (!scroll || !fadeLeft || !fadeRight) {
+			return;
+		}
+
+		const hasOverflow = scroll.scrollWidth > scroll.clientWidth + 1;
+		const atStart = scroll.scrollLeft <= 1;
+		const atEnd =
+			scroll.scrollLeft + scroll.clientWidth >= scroll.scrollWidth - 1;
+
+		if (hasOverflow && !atStart) {
+			fadeLeft.setAttribute("data-visible", "");
+		} else {
+			fadeLeft.removeAttribute("data-visible");
+		}
+
+		if (hasOverflow && !atEnd) {
+			fadeRight.setAttribute("data-visible", "");
+		} else {
+			fadeRight.removeAttribute("data-visible");
+		}
+	}
+
+	updateCategoryBar();
+	initScrollFeatures();
+	document.addEventListener("astro:page-load", () => {
+		updateCategoryBar();
+		initScrollFeatures();
+	});
+	document.addEventListener("swup:contentReplaced", updateCategoryBar);
+</script>

@@ -1,0 +1,143 @@
+---
+/**
+ * CardTOC - 卡片式目录组件
+ * 使用 WidgetLayout (竖线+标题封装)
+ * 复用 TOCManager 逻辑
+ */
+
+import "@/styles/toc.css";
+
+import type { MarkdownHeading } from "astro";
+import { siteConfig } from "@/config";
+
+import I18nKey from "../../../i18n/i18nKey";
+import { i18n } from "../../../i18n/translation";
+import WidgetLayout from "../common/WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+	headings?: MarkdownHeading[];
+}
+
+const { class: className, style } = Astro.props;
+const useJapaneseBadge = siteConfig.toc.useJapaneseBadge;
+---
+
+<WidgetLayout
+	name={i18n(I18nKey.tableOfContents)}
+	id="card-toc"
+	class={"group " + (className || "")}
+	style={style}
+>
+	<div data-card-toc-root data-japanese-badge={String(useJapaneseBadge)}>
+		<div class="toc-scroll-container">
+			<div class="toc-content" data-card-toc-content></div>
+		</div>
+	</div>
+</WidgetLayout>
+
+<style>
+	.toc-scroll-container {
+		max-height: 50vh;
+		overflow-y: auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.toc-scroll-container::-webkit-scrollbar {
+		display: none;
+		width: 0;
+		height: 0;
+	}
+</style>
+
+<script>
+	import { TOCManager } from "@/utils/tocManager";
+
+	const cardTocManagers = new WeakMap();
+
+	/**
+	 * 为单个 card-toc 实例初始化目录。
+	 * 目录绑定当前组件自己的内容容器，避免左侧多断点并存时命中隐藏实例。
+	 */
+	function initCardTOC(root: Element) {
+		if (!(root instanceof HTMLElement)) {
+			return;
+		}
+
+		const tocContent = root.querySelector("[data-card-toc-content]");
+		if (!(tocContent instanceof HTMLElement)) {
+			return;
+		}
+
+		try {
+			const existingManager = cardTocManagers.get(root);
+			if (
+				existingManager &&
+				typeof existingManager.cleanup === "function"
+			) {
+				existingManager.cleanup();
+			}
+
+			const useJapaneseBadge = root.dataset.japaneseBadge === "true";
+
+			const manager = new TOCManager({
+				contentElement: tocContent,
+				maxLevel: 3,
+				useJapaneseBadge,
+				scrollOffset: 80,
+			});
+
+			cardTocManagers.set(root, manager);
+			manager.init();
+		} catch (error) {
+			if (typeof reportError === "function" && error instanceof Error) {
+				reportError(error);
+			}
+		}
+	}
+
+	/**
+	 * 页面内可能同时存在多个 card-toc 实例。
+	 * 统一批量初始化，确保可见和隐藏实例都各自绑定正确容器。
+	 */
+	function initAllCardTOCs() {
+		document.querySelectorAll("[data-card-toc-root]").forEach((root) => {
+			initCardTOC(root);
+		});
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initAllCardTOCs);
+	} else {
+		initAllCardTOCs();
+	}
+
+	document.addEventListener("swup:contentReplaced", () => {
+		setTimeout(initAllCardTOCs, 100);
+	});
+
+	document.addEventListener("astro:page-load", () => {
+		setTimeout(initAllCardTOCs, 100);
+	});
+
+	document.addEventListener("astro:after-swap", () => {
+		setTimeout(initAllCardTOCs, 100);
+	});
+
+	window.addEventListener("popstate", () => {
+		setTimeout(initAllCardTOCs, 200);
+	});
+
+	window.addEventListener("hashchange", () => {
+		if (!window.tocInternalNavigation) {
+			setTimeout(initAllCardTOCs, 100);
+		}
+		window.tocInternalNavigation = false;
+	});
+
+	document.addEventListener("password:decrypted", () => {
+		setTimeout(initAllCardTOCs, 200);
+	});
+</script>

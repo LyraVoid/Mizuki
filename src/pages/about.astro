@@ -1,7 +1,9 @@
 ---
-
 import { getEntry, render } from "astro:content";
+import Comment from "@components/comment/index.astro";
+import { PageHeader } from "@components/features/page-header";
 import Markdown from "@components/misc/Markdown.astro";
+
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
@@ -15,27 +17,26 @@ if (!aboutPost) {
 const { Content } = await render(aboutPost);
 const title = i18n(I18nKey.about);
 ---
+
 <MainGridLayout title={title}>
 	<!-- 引入右侧边栏布局管理器 -->
-  <script>
-    import('../scripts/right-sidebar-layout.js');
-  </script>
-    <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-        <div class="card-base z-10 px-9 py-6 relative w-full">
-            <!-- 页面标题 -->
-            <div class="flex flex-col items-start justify-center mb-8">
-                <h1 class="text-4xl font-bold text-black/90 dark:text-white/90 mb-2 relative
-                          before:w-1 before:h-8 before:rounded-md before:bg-[var(--primary)]
-                          before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-4">
-                    {title}
-                </h1>
-            </div>
-            
-            
-            <!-- 从MD文件读取的内容 -->
-            <Markdown class="mt-2">
-                <Content />
-            </Markdown>
-        </div>
-    </div>
+	<script>
+		import("../scripts/right-sidebar-layout.js");
+	</script>
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
+		<div class="card-base z-10 px-9 py-6 relative w-full">
+			<PageHeader title={title} />
+
+			<!-- 从MD文件读取的内容 -->
+			<Markdown class="mt-2">
+				<Content />
+			</Markdown>
+		</div>
+	</div>
+
+	<div class="mt-4">
+		<Comment path="/about/" />
+	</div>
 </MainGridLayout>

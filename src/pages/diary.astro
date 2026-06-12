@@ -1,267 +1,442 @@
 ---
+import { FilterTabs } from "@components/atoms/filter-tabs";
+import { MomentCard } from "@components/features/diary";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { Icon } from "astro-icon/components";
+
 import { siteConfig } from "../config";
-import { getDiaryList, getDiaryStats } from "../data/diary";
+import { getAllTags, getDiaryList } from "../data/diary";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import MainGridLayout from "../layouts/MainGridLayout.astro";
 
-// 检查日记页面是否启用
 if (!siteConfig.featurePages.diary) {
 	return Astro.redirect("/404/");
 }
 
-// 获取日记数据
 const moments = getDiaryList();
-const diaryStats = getDiaryStats();
+const allTags = getAllTags();
 
-// 时间格式化函数
-function formatTime(dateString: string): string {
-	var TG = 8;
-	if (siteConfig.timeZone >= -12 && siteConfig.timeZone <= 12)
-		TG = siteConfig.timeZone;
-	const timeGap = TG;
+const filterTabs = [
+	{
+		value: "all",
+		label: i18n(I18nKey.albumsFilterAll),
+		icon: "material-symbols:apps",
+		count: moments.length,
+	},
+	...allTags.map((tag) => ({
+		value: tag,
+		label: tag,
+		count: moments.filter((m) => m.tags?.includes(tag)).length,
+	})),
+];
 
-	// const lang = siteConfig.lang;
-	const now = new Date();
-	const date = new Date(dateString);
-	const diffInMinutes = Math.floor(
-		(now.getTime() + timeGap * 60 * 60 * 1000 - date.getTime()) / (1000 * 60),
-	);
+const minutesAgo = i18n(I18nKey.diaryMinutesAgo);
+const hoursAgo = i18n(I18nKey.diaryHoursAgo);
+const daysAgo = i18n(I18nKey.diaryDaysAgo);
 
-	if (diffInMinutes < 60) {
-		return `${diffInMinutes}${i18n(I18nKey.diaryMinutesAgo)}`;
-	}
-	if (diffInMinutes < 1440) {
-		// 24小时
-		const hours = Math.floor(diffInMinutes / 60);
-		return `${hours}${i18n(I18nKey.diaryHoursAgo)}`;
-	}
-	const days = Math.floor(diffInMinutes / 1440);
-	return `${days}${i18n(I18nKey.diaryDaysAgo)}`;
-}
+const diaryApiUrl = siteConfig.diaryApiUrl || "";
+
+const title = i18n(I18nKey.diary);
+const subtitle = i18n(I18nKey.diarySubtitle);
 ---
 
-<MainGridLayout title={i18n(I18nKey.diary)} description="即刻短文">
-	<!-- 引入右侧边栏布局管理器 -->
-  <script>
-    import('../scripts/right-sidebar-layout.js');
-  </script>
-	<div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-		<div class="card-base z-10 px-4 py-4 md:px-6 md:py-5 relative w-full">
-		<div class="relative max-w-4xl w-full px-2 md:px-0">
-				<!-- 页面头部 -->
-				<div class="moments-header mb-6">
-					<div class="header-content">
-						<div class="header-info">
-							<h1 class="moments-title text-xl md:text-2xl lg:text-3xl font-bold text-90 mb-1">{i18n(I18nKey.diary)}</h1>
-							<p class="moments-subtitle text-sm md:text-base lg:text-lg text-75">{i18n(I18nKey.diarySubtitle)}</p>
+<MainGridLayout title={title} description={subtitle}>
+	<script>
+		import("../scripts/right-sidebar-layout.js");
+		import { loadIconify } from "../utils/icon-loader";
+
+		loadIconify().catch((error) => {
+			console.error("Failed to load Iconify:", error);
+		});
+	</script>
+
+	<script is:inline src="/js/filter-tabs-handler.js"></script>
+
+	<div
+		class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"
+	>
+		<div class="card-base z-10 relative w-full overflow-hidden">
+			<!-- Gradient Banner -->
+			<div class="px-6 sm:px-9 py-6">
+				<div
+					class="rounded-xl bg-gradient-to-r from-[var(--primary)] to-[var(--primary-dark,var(--primary))] p-5 sm:p-6"
+				>
+					<div class="flex items-center justify-between gap-4">
+						<div class="min-w-0">
+							<h1
+								class="text-2xl sm:text-3xl font-bold text-white mb-1 drop-shadow-sm truncate"
+							>
+								{title}
+							</h1>
+							<p
+								class="text-sm sm:text-base text-white/80 truncate"
+							>
+								{subtitle}
+							</p>
 						</div>
-						<div class="header-stats">
-							<div class="stat-item text-center">
-								<span class="stat-number text-lg md:text-xl lg:text-2xl font-bold text-[var(--primary)]">{diaryStats.total}</span>
-								<span class="stat-label text-xs md:text-sm lg:text-base text-75">{i18n(I18nKey.diaryCount)}</span>
-							</div>
+						<div class="shrink-0 text-center">
+							<span
+								class="block text-2xl sm:text-3xl font-bold text-white drop-shadow-sm"
+							>
+								{moments.length}
+							</span>
+							<span
+								class="block text-xs sm:text-sm text-white/70"
+							>
+								{i18n(I18nKey.diaryCount)}
+							</span>
 						</div>
 					</div>
+				</div>
+			</div>
+
+			<!-- Content -->
+			<div class="px-6 sm:px-9 pt-2 pb-6">
+				{
+					moments.length > 0 && allTags.length > 0 && (
+						<div class="mb-8">
+							<FilterTabs tabs={filterTabs} dataAttr="tags" />
+						</div>
+					)
+				}
+
+				<div id="diary-list" class="space-y-4" data-memos-api={diaryApiUrl || ""} data-minutes-ago={minutesAgo} data-hours-ago={hoursAgo} data-days-ago={daysAgo}>
+					{
+						moments.map((moment, index) => (
+							<MomentCard
+								moment={moment}
+								index={index}
+								minutesAgo={minutesAgo}
+								hoursAgo={hoursAgo}
+								daysAgo={daysAgo}
+							/>
+						))
+					}
 				</div>
 
-				<!-- 短文列表 -->
-				<div class="moments-timeline">
-					<div class="timeline-list space-y-4">
-					{moments.map(moment => (
-						<div class="moment-item card-base p-4 md:p-6 lg:p-8 hover:shadow-lg transition-all">
-								<div class="moment-content">
-									<p class="moment-text text-sm md:text-base lg:text-lg text-90 leading-relaxed mb-3 md:mb-4">{moment.content}</p>
-									
-									{moment.images && moment.images.length > 0 && (
-				<div class="moment-images grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4 mb-3 md:mb-4">
-					{moment.images.map((image, _index) => (
-					<div class="image-item relative rounded-md overflow-hidden aspect-square cursor-pointer hover:scale-105 transition-transform">
-						<img 
-							src={image} 
-								alt="diary moment image"
-							class="w-full h-full object-cover"
-							loading="lazy"
-						/>
-					</div>
-					))}
-				</div>
-			)}
-								</div>
-								
-								<hr class="moment-divider border-t border-[var(--line-divider)] my-3 md:my-4" />
-								
-								<div class="moment-footer flex justify-between items-center">
-									<div class="moment-time flex items-center gap-1.5 text-75 text-xs md:text-sm lg:text-base">
-										<i class="time-icon text-xs md:text-sm">🕐</i>
-										<time datetime={moment.date}>
-											{formatTime(moment.date)}
-										</time>
-									</div>
-									
-								</div>
-							</div>
-						))}
-					</div>
+				<div id="no-results" class="hidden text-center py-16">
+					<Icon
+						name="material-symbols:edit-note"
+						class="text-6xl text-black/15 dark:text-white/15 mb-4"
+					/>
+					<p class="text-black/40 dark:text-white/40 text-lg">
+						{i18n(I18nKey.diaryNoResults)}
+					</p>
 				</div>
 
-				<!-- 底部提示 -->
-				<div class="moments-tips text-center mt-6 md:mt-8 lg:mt-10 text-75 text-xs md:text-sm lg:text-base italic">
+				{
+					moments.length === 0 && (
+						<div class="text-center py-16">
+							<Icon
+								name="material-symbols:edit-note"
+								class="text-6xl text-black/15 dark:text-white/15 mb-4"
+							/>
+							<h3 class="text-lg font-medium text-black/90 dark:text-white/90 mb-2">
+								{i18n(I18nKey.diaryNoResults)}
+							</h3>
+						</div>
+					)
+				}
+
+				<div
+					class="text-center mt-8 text-black/50 dark:text-white/50 text-sm italic"
+				>
 					{i18n(I18nKey.diaryTips)}
 				</div>
 			</div>
 		</div>
 	</div>
+
+	{
+		diaryApiUrl && (
+			<script is:inline>
+				(function () {
+					const container = document.getElementById("diary-list");
+					if (!container) {return;}
+					const apiUrl = container.dataset.memosApi;
+					if (!apiUrl) {return;}
+					const minutesAgo = container.dataset.minutesAgo || "minutes ago";
+					const hoursAgo = container.dataset.hoursAgo || "hours ago";
+					const daysAgo = container.dataset.daysAgo || "days ago";
+
+					// Derive base URL for file attachments (strip /api/...)
+					const baseUrl = apiUrl.replace(/\/api\/.*$/, "");
+
+					function transformMemosToDiary(memos) {
+						return memos
+							.filter(function (m) {
+								return (
+									m.visibility === "PUBLIC" && m.state === "NORMAL"
+								);
+							})
+							.map(function (m, i) {
+								const images =
+					m.attachments && m.attachments.length > 0
+						? m.attachments
+								.filter(function (a) {
+									return a.type.indexOf("image/") === 0;
+								})
+								.map(function (a) {
+									return (
+										baseUrl + "/file/" + a.name + "/" + a.filename
+									);
+								})
+						: [];
+								return {
+									id: i,
+									content: m.content,
+									date: m.createTime,
+									tags: m.tags || [],
+									images: images.length > 0 ? images : undefined,
+									location: m.location ? m.location.placeholder : undefined,
+									pinned: m.pinned,
+								};
+							})
+							.sort(function (a, b) {
+								if (a.pinned && !b.pinned) {return -1;}
+								if (!a.pinned && b.pinned) {return 1;}
+								return new Date(b.date).getTime() - new Date(a.date).getTime();
+							});
+					}
+
+					function formatRelativeTime(dateString) {
+						const date = new Date(dateString);
+						const diffInMinutes = Math.floor(
+			(Date.now() - date.getTime()) / (1000 * 60),
+		);
+						if (diffInMinutes < 60)
+							{return diffInMinutes + minutesAgo;}
+						if (diffInMinutes < 1440)
+							{return Math.floor(diffInMinutes / 60) + hoursAgo;}
+						return Math.floor(diffInMinutes / 1440) + daysAgo;
+					}
+
+					function escapeHtml(text) {
+						const map = {
+			"&": "&amp;",
+			"<": "&lt;",
+			">": "&gt;",
+			'"': "&quot;",
+			"'": "&#039;",
+		};
+						return text.replace(/[&<>"']/g, function (c) {
+							return map[c];
+						});
+					}
+
+					function getImageLayoutClass(count) {
+						if (count === 1) {return "diary-images-single";}
+						if (count === 2) {return "diary-images-double";}
+						if (count === 3) {return "diary-images-triple";}
+						return "diary-images-grid";
+					}
+
+					function renderMomentCards(moments) {
+						return moments
+							.map(function (moment, index) {
+								const relativeTime = formatRelativeTime(moment.date);
+								const tagsAttr = (moment.tags || []).join(",");
+
+								let imagesHtml = "";
+								if (moment.images && moment.images.length > 0) {
+									const layoutClass = getImageLayoutClass(moment.images.length);
+									const imgs = moment.images
+						.map(function (img, i) {
+							return (
+								'<div class="relative rounded-lg overflow-hidden aspect-square cursor-pointer">' +
+								'<a href="javascript:void(0)" data-src="' +
+								escapeHtml(img) +
+								'" data-fancybox="diary-' +
+								index +
+								"-" +
+								i +
+								'" class="block w-full h-full">' +
+								'<img src="' +
+								escapeHtml(img) +
+								'" alt="diary moment image" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" loading="lazy" decoding="async" />' +
+								"</a></div>"
+							);
+						})
+						.join("");
+									imagesHtml =
+										'<div class="diary-images grid gap-2 mb-3 ' +
+										layoutClass +
+										'">' +
+										imgs +
+										"</div>";
+								}
+
+								let tagsHtml = "";
+								if (moment.tags && moment.tags.length > 0) {
+									const tagSpans = moment.tags
+						.map(function (tag) {
+							return (
+								'<span class="btn-regular h-6 text-xs px-2 rounded-lg">' +
+								escapeHtml(tag) +
+								"</span>"
+							);
+						})
+						.join("");
+									tagsHtml =
+										'<div class="flex flex-wrap gap-1.5 mb-3">' +
+										tagSpans +
+										"</div>";
+								}
+
+								const locationHtml = moment.location
+					? '<span class="flex items-center gap-1"><iconify-icon icon="material-symbols:location-on" class="text-xs w-3.5 h-3.5"></iconify-icon>' +
+						escapeHtml(moment.location) +
+						"</span>"
+					: "";
+
+								return (
+									'<div class="moment-card group relative bg-transparent rounded-xl border border-black/10 dark:border-white/10 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1" data-tags="' +
+									tagsAttr +
+									'">' +
+									'<div class="p-5">' +
+									'<p class="text-sm md:text-base text-black/90 dark:text-white/90 leading-relaxed mb-3">' +
+									escapeHtml(moment.content) +
+									"</p>" +
+									imagesHtml +
+									tagsHtml +
+									'<hr class="border-t border-black/5 dark:border-white/5 my-3" />' +
+									'<div class="flex items-center justify-between text-xs text-black/50 dark:text-white/50 flex-wrap gap-2">' +
+									'<div class="flex items-center gap-1.5">' +
+									'<iconify-icon icon="material-symbols:schedule" class="text-xs w-3.5 h-3.5"></iconify-icon>' +
+									'<time datetime="' +
+									escapeHtml(moment.date) +
+									'">' +
+									relativeTime +
+									"</time>" +
+									"</div>" +
+									'<div class="flex items-center gap-3">' +
+									locationHtml +
+									"</div>" +
+									"</div>" +
+									"</div>" +
+									'<div class="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl"></div>' +
+									"</div>"
+								);
+							})
+							.join("");
+					}
+
+					function rebuildFilterTabs(moments) {
+						let filterContainer = document.querySelector(".filter-tabs");
+						if (!filterContainer) {
+							// No filter tabs in static render — need to create the container
+							const contentArea = document.querySelector(".card-base .px-6.sm\\:px-9.pt-2.pb-6");
+							if (!contentArea) {return;}
+							filterContainer = document.createElement("div");
+							filterContainer.className = "filter-tabs mb-8";
+							contentArea.insertBefore(filterContainer, contentArea.firstChild);
+						}
+
+						const allTags = [];
+						const seen = {};
+						moments.forEach(function (m) {
+							(m.tags || []).forEach(function (t) {
+								if (!seen[t]) {
+									seen[t] = true;
+									allTags.push(t);
+								}
+							});
+						});
+						allTags.sort();
+
+						// Remove existing tabs
+						const existingTabs = filterContainer.querySelectorAll(
+			".filter-tabs-item",
+		);
+						existingTabs.forEach(function (tab) {
+							tab.remove();
+						});
+
+						// Create "all" tab
+						const allTab = document.createElement("button");
+						allTab.className = "filter-tabs-item active";
+						allTab.setAttribute("data-filter-value", "all");
+						allTab.setAttribute("data-filter-attr", "tags");
+						allTab.innerHTML =
+							'<iconify-icon icon="material-symbols:apps"></iconify-icon>' +
+							'<span class="count">' +
+							moments.length +
+							"</span>";
+						filterContainer.appendChild(allTab);
+
+						// Create tag tabs
+						allTags.forEach(function (tag) {
+							const count = moments.filter(function (m) {
+				return m.tags && m.tags.indexOf(tag) !== -1;
+			}).length;
+							const tab = document.createElement("button");
+							tab.className = "filter-tabs-item";
+							tab.setAttribute("data-filter-value", tag);
+							tab.setAttribute("data-filter-attr", "tags");
+							tab.innerHTML =
+								"<span>" +
+								escapeHtml(tag) +
+								'</span><span class="count">' +
+								count +
+								"</span>";
+							filterContainer.appendChild(tab);
+						});
+
+						// Re-init filter handler
+						if (
+							typeof window !== "undefined" &&
+							window.__initFilterTabs
+						) {
+							window.__initFilterTabs();
+						}
+					}
+
+					function updateCountDisplay(count) {
+						const countEl = document.querySelector(
+			".card-base .shrink-0 .text-2xl",
+		);
+						if (countEl) {
+							countEl.textContent = String(count);
+						}
+					}
+
+					function fetchAndRender() {
+						if (!apiUrl) {return;}
+
+						fetch(apiUrl)
+							.then(function (res) {
+								if (!res.ok) {throw new Error("HTTP " + res.status);}
+								return res.json();
+							})
+							.then(function (data) {
+								const memos = data.memos || [];
+								if (memos.length === 0) {return;}
+
+								const moments = transformMemosToDiary(memos);
+								const container = document.getElementById("diary-list");
+								if (!container) {return;}
+
+								container.innerHTML = renderMomentCards(moments);
+								updateCountDisplay(moments.length);
+								rebuildFilterTabs(moments);
+							})
+							.catch(function () {
+								// Silent fallback — static data already rendered
+							});
+					}
+
+					// IIFE: run immediately (handles Swup pre-render case)
+					fetchAndRender();
+
+					// DOMContentLoaded
+					if (document.readyState === "loading") {
+						document.addEventListener("DOMContentLoaded", fetchAndRender);
+					}
+
+					// Swup page transitions
+					document.addEventListener("swup:contentReplaced", fetchAndRender);
+				})();
+			</script>
+		)
+	}
 </MainGridLayout>
-
-<style>
-	.card-base {
-		background: var(--card-bg);
-		border: 1px solid var(--line-divider);
-		transition: all 0.3s ease;
-	}
-	
-	.moments-header {
-		padding: 1rem;
-		border-radius: 8px;
-		background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark, var(--primary)) 100%);
-		color: white;
-		position: relative;
-		overflow: hidden;
-	}
-	
-	.header-content {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		position: relative;
-		z-index: 1;
-	}
-	
-	.moments-title {
-		color: white;
-		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-	}
-	
-	.moments-subtitle {
-		color: rgba(255, 255, 255, 0.9);
-	}
-	
-	.stat-number {
-		color: white;
-	}
-	
-	.stat-label {
-		color: rgba(255, 255, 255, 0.8);
-	}
-	
-	.image-item img {
-		transition: transform 0.3s ease;
-	}
-	
-	.image-item:hover img {
-		transform: scale(1.05);
-	}
-	
-	.action-btn {
-		background: none;
-		border: none;
-		cursor: pointer;
-		color: var(--text-muted);
-	}
-	
-	.action-btn:hover {
-		color: var(--primary);
-	}
-	
-	/* 响应式设计 */
-	/* 手机端 (小于640px) */
-	@media (max-width: 640px) {
-		.moments-header {
-			padding: 0.75rem;
-		}
-		
-		.header-content {
-			flex-direction: column;
-			text-align: center;
-			gap: 0.75rem;
-		}
-		
-		.moment-images {
-			grid-template-columns: repeat(2, 1fr);
-		}
-		
-		.moment-footer {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 0.5rem;
-		}
-	}
-	
-	/* 平板竖屏 (641px - 900px) - 优化显示 */
-	@media (min-width: 641px) and (max-width: 900px) {
-		.moments-header {
-			padding: 1.25rem;
-		}
-		
-		.header-content {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-		}
-		
-		.moment-item {
-			padding: 1.5rem;
-		}
-		
-		.moment-images {
-			grid-template-columns: repeat(3, 1fr);
-			gap: 0.75rem;
-			max-width: 500px;
-		}
-		
-		.moment-text {
-			font-size: 1rem;
-			line-height: 1.7;
-		}
-		
-		.moment-footer {
-			margin-top: 1rem;
-		}
-	}
-	
-	/* 平板横屏和桌面端 (大于900px) */
-	@media (min-width: 901px) {
-		.moments-header {
-			padding: 1.5rem;
-		}
-		
-		.moment-item {
-			padding: 2rem;
-		}
-		
-		.moment-images {
-			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-			max-width: 600px;
-			gap: 1rem;
-		}
-		
-		.moment-text {
-			font-size: 1.1rem;
-			line-height: 1.8;
-		}
-	}
-	
-	/* 优化小屏幕显示 */
-	@media (max-width: 480px) {
-		.moment-item {
-			border-radius: 8px;
-		}
-		
-		.moments-header {
-			border-radius: 6px;
-		}
-	}
-</style>
-
-

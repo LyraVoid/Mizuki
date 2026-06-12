@@ -1,0 +1,231 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { formatRelativeTime } from "../../../utils/timeFormat";
+import type { MomentCardProps } from "./types";
+
+const { moment, index, minutesAgo, hoursAgo, daysAgo } =
+	Astro.props as MomentCardProps;
+
+const relativeTime = formatRelativeTime(
+	moment.date,
+	minutesAgo,
+	hoursAgo,
+	daysAgo,
+);
+---
+
+<div
+	class="moment-card group relative bg-transparent rounded-xl border border-black/10 dark:border-white/10 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+	data-tags={moment.tags?.join(",") || ""}
+>
+	<div class="p-5">
+		<!-- Content -->
+		<p
+			class="text-sm md:text-base text-black/90 dark:text-white/90 leading-relaxed mb-3"
+		>
+			{moment.content}
+		</p>
+
+		<!-- Images -->
+		{
+			moment.images && moment.images.length > 0 && (
+				<div
+					class:list={[
+						"diary-images grid gap-2 mb-3",
+						moment.images.length === 1 && "diary-images-single",
+						moment.images.length === 2 && "diary-images-double",
+						moment.images.length === 3 && "diary-images-triple",
+						moment.images.length >= 4 && "diary-images-grid",
+					]}
+				>
+					{moment.images.map((image, imgIndex) => (
+						<div class="relative rounded-lg overflow-hidden aspect-square cursor-pointer">
+							<a
+								href="javascript:void(0)"
+								data-src={image}
+								data-fancybox={`diary-${index}-${imgIndex}`}
+								class="block w-full h-full"
+							>
+								<img
+									src={image}
+									alt="diary moment image"
+									class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+									loading="lazy"
+									decoding="async"
+								/>
+							</a>
+						</div>
+					))}
+				</div>
+			)
+		}
+
+		<!-- Tags -->
+		{
+			moment.tags && moment.tags.length > 0 && (
+				<div class="flex flex-wrap gap-1.5 mb-3">
+					{moment.tags.map((tag: string) => (
+						<span class="btn-regular h-6 text-xs px-2 rounded-lg">
+							{tag}
+						</span>
+					))}
+				</div>
+			)
+		}
+
+		<!-- Divider -->
+		<hr class="border-t border-black/5 dark:border-white/5 my-3" />
+
+		<!-- Footer -->
+		<div
+			class="flex items-center justify-between text-xs text-black/50 dark:text-white/50 flex-wrap gap-2"
+		>
+			<div class="flex items-center gap-1.5">
+				<Icon
+					name="material-symbols:schedule"
+					class="text-xs w-3.5 h-3.5"
+				/>
+				<time datetime={moment.date}>{relativeTime}</time>
+			</div>
+
+			<div class="flex items-center gap-3">
+				{
+					moment.location && (
+						<span class="flex items-center gap-1">
+							<Icon
+								name="material-symbols:location-on"
+								class="text-xs w-3.5 h-3.5"
+							/>
+							{moment.location}
+						</span>
+					)
+				}
+				{
+					moment.mood && (
+						<span class="flex items-center gap-1">
+							{moment.mood}
+						</span>
+					)
+				}
+			</div>
+		</div>
+	</div>
+
+	<!-- Hover gradient overlay -->
+	<div
+		class="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl"
+	>
+	</div>
+</div>
+
+<style is:global>
+	.moment-card {
+		animation: fadeInUp 0.5s ease-out forwards;
+		opacity: 0;
+	}
+
+	.moment-card.filtered-out {
+		display: none;
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.moment-card:nth-child(1) {
+		animation-delay: 0.03s;
+	}
+	.moment-card:nth-child(2) {
+		animation-delay: 0.06s;
+	}
+	.moment-card:nth-child(3) {
+		animation-delay: 0.09s;
+	}
+	.moment-card:nth-child(4) {
+		animation-delay: 0.12s;
+	}
+	.moment-card:nth-child(5) {
+		animation-delay: 0.15s;
+	}
+	.moment-card:nth-child(6) {
+		animation-delay: 0.18s;
+	}
+	.moment-card:nth-child(7) {
+		animation-delay: 0.21s;
+	}
+	.moment-card:nth-child(8) {
+		animation-delay: 0.24s;
+	}
+	.moment-card:nth-child(9) {
+		animation-delay: 0.27s;
+	}
+	.moment-card:nth-child(10) {
+		animation-delay: 0.3s;
+	}
+	.moment-card:nth-child(11) {
+		animation-delay: 0.33s;
+	}
+	.moment-card:nth-child(12) {
+		animation-delay: 0.36s;
+	}
+
+	/* 1 image: large, max-width constrained */
+	.diary-images-single {
+		grid-template-columns: 1fr;
+		max-width: 400px;
+	}
+
+	/* 2 images: two columns, medium size */
+	.diary-images-double {
+		grid-template-columns: repeat(2, 1fr);
+		max-width: 500px;
+	}
+
+	/* 3 images: first large + two small */
+	.diary-images-triple {
+		grid-template-columns: repeat(2, 1fr);
+		max-width: 500px;
+	}
+	.diary-images-triple > :first-child {
+		grid-row: span 2;
+	}
+
+	/* 4+ images: auto-fit grid with max-width */
+	.diary-images-grid {
+		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		max-width: 600px;
+	}
+
+	@media (min-width: 768px) {
+		.diary-images-single {
+			max-width: 500px;
+		}
+		.diary-images-double {
+			max-width: 560px;
+		}
+		.diary-images-triple {
+			max-width: 560px;
+		}
+		.diary-images-grid {
+			grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+			max-width: 700px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.diary-images-triple {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		.diary-images-triple > :first-child {
+			grid-row: span 1;
+		}
+	}
+</style>
