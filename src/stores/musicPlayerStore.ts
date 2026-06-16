@@ -168,6 +168,7 @@ class MusicPlayerStore {
 				this.audio.currentTime = 0;
 				this.audio.play().catch(() => {});
 			}
+			this.broadcastState();
 		} else {
 			this.next(true);
 		}

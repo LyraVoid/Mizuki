@@ -26,6 +26,7 @@ export class TOCManager {
 	private contentElement: HTMLElement | null;
 	private scrollOffset: number;
 	private useJapaneseBadge: boolean;
+	private boundClickHandler: ((event: Event) => void) | null = null;
 
 	constructor(config: TOCConfig) {
 		this.contentId = config.contentId ?? null;
@@ -401,12 +402,24 @@ export class TOCManager {
 	}
 
 	public bindClickEvents(): void {
+		this.unbindClickEvents();
+		this.boundClickHandler = this.handleClick.bind(this);
 		this.tocItems.forEach((item) => {
-			item.addEventListener("click", this.handleClick.bind(this));
+			item.addEventListener("click", this.boundClickHandler!);
 		});
 	}
 
+	private unbindClickEvents(): void {
+		if (this.boundClickHandler) {
+			this.tocItems.forEach((item) => {
+				item.removeEventListener("click", this.boundClickHandler!);
+			});
+			this.boundClickHandler = null;
+		}
+	}
+
 	public cleanup(): void {
+		this.unbindClickEvents();
 		if (this.observer) {
 			this.observer.disconnect();
 			this.observer = null;

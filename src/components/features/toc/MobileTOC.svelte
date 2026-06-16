@@ -22,6 +22,7 @@ let activeId = $state("");
 let isHomePage = $state(false);
 
 let observer: IntersectionObserver | undefined;
+let initializing = false;
 let swupListenersRegistered = $state(false);
 
 const togglePanel = async () => {
@@ -156,6 +157,11 @@ const checkSwupAvailability = () => {
 };
 
 const init = () => {
+	if (initializing) {
+		return;
+	}
+	initializing = true;
+
 	isHomePage = checkIsHomePage();
 	checkSwupAvailability();
 
@@ -169,6 +175,8 @@ const init = () => {
 		setupIntersectionObserver();
 		updateActiveHeading();
 	}
+
+	initializing = false;
 };
 
 onMount(() => {

@@ -151,29 +151,39 @@ onMount(() => {
 			typeof window.pagefind.search === "function";
 		console.log("Pagefind status on init:", pagefindLoaded);
 	};
+	const cleanupCallbacks: (() => void)[] = [];
 	if (import.meta.env.DEV) {
 		console.log(
 			"Pagefind is not available in development mode. Using mock data.",
 		);
 		initializeSearch();
 	} else {
-		document.addEventListener("pagefindready", () => {
+		const handlePagefindReady = () => {
 			console.log("Pagefind ready event received.");
 			initializeSearch();
-		});
-		document.addEventListener("pagefindloaderror", () => {
+		};
+		const handlePagefindError = () => {
 			console.warn(
 				"Pagefind load error event received. Search functionality will be limited.",
 			);
-			initializeSearch(); // Initialize with pagefindLoaded as false
-		});
+			initializeSearch();
+		};
+
+		document.addEventListener("pagefindready", handlePagefindReady);
+		document.addEventListener("pagefindloaderror", handlePagefindError);
+
 		// Fallback in case events are not caught or pagefind is already loaded by the time this script runs
 		setTimeout(() => {
 			if (!initialized) {
 				console.log("Fallback: Initializing search after timeout.");
 				initializeSearch();
 			}
-		}, 2000); // Adjust timeout as needed
+		}, 2000);
+
+		cleanupCallbacks.push(
+			() => document.removeEventListener("pagefindready", handlePagefindReady),
+			() => document.removeEventListener("pagefindloaderror", handlePagefindError),
+		);
 	}
 
 	// 监听窗口焦点事件，防止切换窗口时自动展开搜索框
@@ -189,6 +199,9 @@ onMount(() => {
 
 	return () => {
 		window.removeEventListener("focus", handleFocus);
+		for (const cb of cleanupCallbacks) {
+			cb();
+		}
 	};
 });
 
