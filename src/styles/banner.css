@@ -68,7 +68,7 @@ body.wallpaper-transparent #toc-inner-wrapper:has(table-of-contents[data-loaded=
 }
 
 /* 桌面端 Banner 模式下的主内容区域位置 */
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   body.enable-banner .absolute.w-full.z-30 {
     top: 35vh !important;
   }
@@ -77,7 +77,7 @@ body.wallpaper-transparent #toc-inner-wrapper:has(table-of-contents[data-loaded=
 /* ==========================================================================
    移动端无侧边栏布局优化
    ========================================================================== */
-@media (max-width: 767px) {
+@media (width < 768px) {
   .mobile-no-sidebar {
     display: block !important;
     width: 100% !important;
@@ -118,7 +118,7 @@ body.wallpaper-transparent #toc-inner-wrapper:has(table-of-contents[data-loaded=
 /* ==========================================================================
    移动端横幅优化 - 小屏手机 (320px - 479px)
    ========================================================================== */
-@media (max-width: 479px) {
+@media (width < 480px) {
   /* Banner wrapper 高度优化 */
   body.enable-banner #banner-wrapper:not(.mobile-hide-banner) {
     height: max(70vh, 450px) !important;
@@ -174,7 +174,7 @@ body.wallpaper-transparent #toc-inner-wrapper:has(table-of-contents[data-loaded=
 /* ==========================================================================
    移动端横幅优化 - 大屏手机 (480px - 767px)
    ========================================================================== */
-@media (min-width: 480px) and (max-width: 767px) {
+@media (480px <= width < 768px) {
   /* Banner wrapper 高度优化 */
   body.enable-banner #banner-wrapper:not(.mobile-hide-banner) {
     height: max(75vh, 500px) !important;
@@ -230,7 +230,7 @@ body.wallpaper-transparent #toc-inner-wrapper:has(table-of-contents[data-loaded=
 /* ==========================================================================
    平板设备横幅优化 (768px - 1279px)
    ========================================================================== */
-@media (min-width: 768px) and (max-width: 1279px) {
+@media (768px <= width < 1280px) {
   /* Banner wrapper 高度优化 */
   body.enable-banner #banner-wrapper:not(.mobile-hide-banner) {
     height: max(70vh, 500px) !important;
@@ -322,7 +322,7 @@ body.wallpaper-transparent #toc-inner-wrapper:has(table-of-contents[data-loaded=
 /* ==========================================================================
    桌面端样式 (1280px+)
    ========================================================================== */
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   .banner-text-overlay {
     align-items: center !important;
     justify-content: center !important;
@@ -357,7 +357,7 @@ html[data-banner-title-enabled="false"] .banner-text-overlay {
 /* ==========================================================================
    全屏 Banner 模式 - 复用 Banner 设计，仅改变高度
    ========================================================================== */
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   body.enable-banner.fullscreen-banner #top-row {
     position: absolute !important;
     top: 0 !important;
@@ -395,7 +395,7 @@ html[data-banner-title-enabled="false"] .banner-text-overlay {
   }
 }
 
-@media (max-width: 1279px) {
+@media (width < 1280px) {
   body.enable-banner.fullscreen-banner #top-row {
     height: 0 !important;
     overflow: visible !important;
@@ -430,7 +430,7 @@ html.is-page-transitioning #header-waves {
 /* ==========================================================================
    移动端图片优化
    ========================================================================== */
-@media (max-width: 1279px) {
+@media (width < 1280px) {
   /* 移动端 banner 加载动画优化 */
   .onload-animation-fade-in {
     animation: mobile-fade-in 0.8s ease-out forwards !important;
@@ -452,7 +452,7 @@ html.is-page-transitioning #header-waves {
 /* ==========================================================================
    手机端非首页隐藏 Banner
    ========================================================================== */
-@media (max-width: 1279px) {
+@media (width < 1280px) {
   #banner-wrapper {
     transition:
       transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
@@ -490,7 +490,7 @@ html.is-page-transitioning #header-waves {
 /* ==========================================================================
    移动端导航栏与 Banner 的协调
    ========================================================================== */
-@media (max-width: 1279px) {
+@media (width < 1280px) {
   /* 暗色主题下的导航栏 */
   :root.dark #navbar-wrapper {
     /* 移除覆盖样式，让 Navbar.astro 的圆角和半透明效果生效 */
@@ -500,7 +500,7 @@ html.is-page-transitioning #header-waves {
 /* ==========================================================================
    移动端 Banner 性能优化
    ========================================================================== */
-@media (max-width: 1279px) {
+@media (width < 1280px) {
   .banner-container {
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
@@ -562,7 +562,7 @@ html.is-page-transitioning #header-waves {
 /* ==========================================================================
    平板设备 Grid 模式
    ========================================================================== */
-@media (min-width: 768px) and (max-width: 1279px) {
+@media (768px <= width < 1280px) {
   #main-grid[data-layout-mode="grid"] {
     grid-template-columns: 1fr !important;
     grid-template-rows: auto auto auto !important;
@@ -626,7 +626,7 @@ html.is-page-transitioning #header-waves {
 /* ==========================================================================
    桌面设备 Grid 模式
    ========================================================================== */
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   #main-grid[data-layout-mode="grid"] {
     grid-template-columns: 17.5rem 1fr !important;
   }
@@ -637,7 +637,7 @@ html.is-page-transitioning #header-waves {
 }
 
 /* 确保大屏桌面设备 Grid 模式配置 */
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   #main-grid[data-layout-mode="grid"] {
     grid-template-columns: 17.5rem 1fr !important;
   }
@@ -650,7 +650,7 @@ html.is-page-transitioning #header-waves {
 /* ==========================================================================
    移动端当 Banner 被禁用时的布局样式
    ========================================================================== */
-@media (max-width: 1279px) {
+@media (width < 1280px) {
   .absolute.w-full.z-30.no-banner-layout {
     top: 5.5rem !important;
     min-height: calc(100vh - 5.5rem) !important;
@@ -659,7 +659,7 @@ html.is-page-transitioning #header-waves {
 }
 
 /* 小屏手机当 Banner 被禁用时的布局样式 */
-@media (max-width: 479px) {
+@media (width < 480px) {
   .absolute.w-full.z-30.no-banner-layout {
     top: 5.5rem !important;
     min-height: calc(100vh - 5.5rem) !important;
@@ -668,7 +668,7 @@ html.is-page-transitioning #header-waves {
 }
 
 /* 平板设备当 Banner 被禁用时的布局样式 */
-@media (min-width: 768px) and (max-width: 1279px) {
+@media (768px <= width < 1280px) {
   .absolute.w-full.z-30.no-banner-layout {
     top: 5.5rem !important;
     min-height: calc(100vh - 5.5rem) !important;
@@ -679,7 +679,7 @@ html.is-page-transitioning #header-waves {
 /* ==========================================================================
    移动端横屏优化
    ========================================================================== */
-@media (max-width: 1279px) and (orientation: landscape) {
+@media (width < 1280px) and (orientation: landscape) {
   #banner-wrapper:not(.mobile-hide-banner) {
     top: 0 !important;
     height: 60vh !important;
@@ -717,7 +717,7 @@ html.is-page-transitioning #header-waves {
 /* ==========================================================================
    移动端暗色模式优化
    ========================================================================== */
-@media (max-width: 1279px) and (prefers-color-scheme: dark) {
+@media (width < 1280px) and (prefers-color-scheme: dark) {
   .banner-text-overlay {
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
   }
@@ -769,7 +769,7 @@ html.is-page-transitioning #header-waves {
 /* ==========================================================================
    移动端水波纹特殊优化
    ========================================================================== */
-@media (max-width: 1279px) {
+@media (width < 1280px) {
   #header-waves {
     overflow: visible;
     z-index: 5;
@@ -791,7 +791,7 @@ html.is-page-transitioning #header-waves {
 }
 
 /* 超小屏幕水波纹优化 */
-@media (max-width: 360px) {
+@media (width < 360px) {
   .waves {
     height: 6vh !important;
     min-height: 50px !important;

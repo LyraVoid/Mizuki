@@ -5,7 +5,7 @@
  */
 
 /* 移动端页面切换性能优化 */
-@media (max-width: 768px) {
+@media (width < 768px) {
   /* 为所有动画元素添加硬件加速 */
   .transition-main,
   .transition-leaving,
@@ -76,7 +76,7 @@
 }
 
 /* 超小屏幕设备优化 */
-@media (max-width: 480px) {
+@media (width < 480px) {
   /* 进一步减少动画效果 */
   html.is-animating .transition-main {
     transform: translateY(0.3rem) translateX(0.1rem);

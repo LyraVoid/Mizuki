@@ -83,7 +83,7 @@
 }
 
 /* 响应式设计 */
-@media (max-width: 768px) {
+@media (width < 768px) {
   .fancybox__toolbar {
     padding: 4px;
   }
@@ -104,7 +104,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width < 480px) {
   .fancybox__button {
     width: 32px;
     height: 32px;

@@ -70,7 +70,7 @@
   min-height: 120px;
 }
 
-@media (max-width: 767px) {
+@media (width < 768px) {
   .widget-container[data-widget-type="profile"] {
     min-height: 100px;
   }
@@ -82,7 +82,7 @@
   min-height: 80px;
 }
 
-@media (max-width: 767px) {
+@media (width < 768px) {
   .widget-container[data-widget-type="announcement"] {
     min-height: 60px;
     font-size: 0.875rem;
@@ -121,7 +121,7 @@
   overflow-y: auto;
 }
 
-@media (max-width: 767px) {
+@media (width < 768px) {
   .widget-container[data-widget-type="toc"] {
     display: none;
   }
@@ -134,7 +134,7 @@
   max-height: 150px;
 }
 
-@media (max-width: 767px) {
+@media (width < 768px) {
   .widget-container[data-widget-type="music-player"] {
     min-height: 80px;
     max-height: 120px;

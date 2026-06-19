@@ -45,19 +45,19 @@ const tabletStickyComponents = widgetManager.getComponentsByPosition(
 />
 
 <style>
-	@media (max-width: 1280px) {
+	@media (width < 1280px) {
 		#sidebar {
 			display: var(--sidebar-mobile-display, block);
 		}
 	}
 
-	@media (min-width: 769px) and (max-width: 1279px) {
+	@media (768px <= width < 1280px) {
 		#sidebar {
 			display: var(--sidebar-tablet-display, block);
 		}
 	}
 
-	@media (min-width: 1280px) {
+	@media (width >= 1280px) {
 		#sidebar {
 			display: var(--sidebar-desktop-display, block);
 		}

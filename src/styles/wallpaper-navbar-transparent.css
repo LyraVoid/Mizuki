@@ -45,7 +45,7 @@
 /* --- 首页 Banner 沉浸式 (Wallpaper Transparent) --- */
 
 /* 桌面端 Full 模式 */
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   body.wallpaper-transparent #navbar[data-transparent-mode="full"] {
     --nav-bg: transparent;
     --nav-blur: none;
@@ -55,7 +55,7 @@
 }
 
 /* 移动端 Full 模式 (仅首页) */
-@media (max-width: 1279px) {
+@media (width < 1280px) {
   body.wallpaper-transparent #navbar[data-transparent-mode="full"][data-is-home="true"] {
     --nav-bg: transparent;
     --nav-blur: none;
@@ -121,7 +121,7 @@ body.wallpaper-transparent #navbar[data-transparent-mode="semifull"].scrolled {
 }
 
 /* Banner 模式下的特殊增强 */
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   body.wallpaper-transparent :is(.dropdown-content, #display-setting, #search-panel) {
     background: rgba(255, 255, 255, 0.85);
   }
@@ -130,7 +130,7 @@ body.wallpaper-transparent #navbar[data-transparent-mode="semifull"].scrolled {
   }
 }
 
-@media (max-width: 1279px) {
+@media (width < 1280px) {
   /* 修正移动端 Navbar 布局 */
   #navbar > div {
     border-radius: 0.5rem;

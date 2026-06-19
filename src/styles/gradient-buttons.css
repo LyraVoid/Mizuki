@@ -96,7 +96,7 @@
 }
 
 /* 响应式设计 */
-@media (max-width: 768px) {
+@media (width < 768px) {
   .btn-gradient {
     padding: 0.4rem 0.8rem;
     font-size: 0.8125rem;
@@ -126,7 +126,7 @@
 }
 
 /* 为移动端堆叠按钮添加类 */
-@media (max-width: 768px) {
+@media (width < 768px) {
   .md\:btn-stack-mobile {
     flex-direction: column;
     align-items: stretch;

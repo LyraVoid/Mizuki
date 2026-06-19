@@ -285,7 +285,7 @@ if (siteConfig.font) {
 	@reference "../styles/main.css";
 
 	@layer components {
-		@media (min-width: 1280px) {
+		@media (width >= 1280px) {
 			.enable-banner #banner-wrapper {
 				height: var(--banner-height-home);
 				transform: translateY(var(--banner-height-extend));
@@ -321,7 +321,7 @@ if (siteConfig.font) {
 		}
 	}
 	@layer utilities {
-		@media (min-width: 1280px) {
+		@media (width >= 1280px) {
 			.enable-banner #sidebar-sticky {
 				top: calc(1rem - var(--banner-height-extend)) !important;
 			}

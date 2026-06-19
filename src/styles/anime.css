@@ -36,7 +36,7 @@
 .anime-grid-container.anime-list-mode {
   grid-template-columns: repeat(1, 1fr);
 }
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   .anime-grid-container.anime-list-mode {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -54,7 +54,7 @@
   aspect-ratio: 2/3;
   flex-shrink: 0;
 }
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .anime-grid-container.anime-list-mode .anime-cover-container {
     width: 11rem;
   }

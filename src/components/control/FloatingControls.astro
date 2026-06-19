@@ -155,7 +155,7 @@ const { headings = [] } = Astro.props;
 		overflow: hidden !important;
 	}
 
-	@media (max-width: 1024px) {
+	@media (width < 1024px) {
 		:global(:root) {
 			--fab-group-right: 1rem;
 			--fab-group-bottom: 6rem;
@@ -168,7 +168,7 @@ const { headings = [] } = Astro.props;
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (width < 768px) {
 		:global(:root) {
 			--fab-group-right: 0.75rem;
 			--fab-group-bottom: 5rem;
@@ -182,7 +182,7 @@ const { headings = [] } = Astro.props;
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (width < 480px) {
 		:global(:root) {
 			--fab-group-right: 0.5rem;
 			--fab-group-bottom: 4.5rem;
@@ -196,7 +196,7 @@ const { headings = [] } = Astro.props;
 		}
 	}
 
-	@media (max-width: 320px) {
+	@media (width < 320px) {
 		:global(:root) {
 			--fab-group-right: 0.25rem;
 			--fab-group-bottom: 4rem;

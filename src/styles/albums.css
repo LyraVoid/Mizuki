@@ -48,13 +48,13 @@
 }
 
 /* 响应式瀑布流 */
-@media (max-width: 768px) {
+@media (width < 768px) {
   .gallery-masonry {
     column-width: 180px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width < 480px) {
   .gallery-masonry {
     column-width: 140px;
   }

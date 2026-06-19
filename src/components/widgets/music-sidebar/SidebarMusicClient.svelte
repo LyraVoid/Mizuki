@@ -113,7 +113,7 @@ function setVolume(volume: number) {
 </div>
 
 <style>
-	@media (max-width: 520px) {
+	@media (width < 520px) {
 		.music-sidebar-widget {
 			min-width: 0;
 		}

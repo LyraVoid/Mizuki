@@ -168,7 +168,7 @@
 }
 
 /* 移动端适配 (Mobile) */
-@media (max-width: 768px) {
+@media (width < 768px) {
   /* 调整复制按钮大小和位置 */
   .expressive-code .copy-btn {
     width: 1.75rem;

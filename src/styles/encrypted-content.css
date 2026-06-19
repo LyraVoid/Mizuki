@@ -339,7 +339,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width < 768px) {
   /* 在移动端隐藏语言标识（与全局行为一致） */
   #decrypted-content .frame.has-language-badge [data-language]::before {
     display: none !important;

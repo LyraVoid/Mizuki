@@ -142,7 +142,7 @@
   border-color: var(--toc-btn-active);
 }
 
-@media (max-width: 768px) {
+@media (width < 768px) {
   .toc-item {
     padding: 0.44rem 0.58rem;
     border-radius: 0.78rem;

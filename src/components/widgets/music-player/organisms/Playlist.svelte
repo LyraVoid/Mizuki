@@ -67,7 +67,7 @@ const { playlist, currentIndex, isPlaying, show, onClose, onPlaySong }: Props =
 		);
 	}
 
-	@media (max-width: 768px) {
+	@media (width < 768px) {
 		.playlist-panel {
 			width: 280px !important;
 			max-width: 280px !important;
@@ -75,7 +75,7 @@ const { playlist, currentIndex, isPlaying, show, onClose, onPlaySong }: Props =
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (width < 480px) {
 		.playlist-panel {
 			width: 260px !important;
 			max-width: 260px !important;

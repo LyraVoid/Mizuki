@@ -157,7 +157,7 @@ const hasChildren = children.length > 0;
 		@apply flex items-center justify-between px-4 py-2.5 text-black/75 dark:text-white/75 hover:text-[var(--primary)] hover:bg-[var(--btn-plain-bg-hover)] transition-colors duration-150 font-medium rounded-lg;
 	}
 
-	@media (max-width: 767px) {
+	@media (width < 768px) {
 		.dropdown-container {
 			@apply hidden;
 		}

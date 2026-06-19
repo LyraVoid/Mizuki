@@ -199,7 +199,7 @@ html.is-animating .transition-swup-fade {
 }
 
 /* 移动端性能优化 */
-@media (max-width: 768px) {
+@media (width < 768px) {
   .transition-main,
   .transition-leaving,
   .onload-animation,

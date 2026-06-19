@@ -204,7 +204,7 @@ const relativeTime = formatRelativeTime(
 		max-width: 600px;
 	}
 
-	@media (min-width: 768px) {
+	@media (width >= 768px) {
 		.diary-images-single {
 			max-width: 500px;
 		}
@@ -220,7 +220,7 @@ const relativeTime = formatRelativeTime(
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (width < 480px) {
 		.diary-images-triple {
 			grid-template-columns: repeat(2, 1fr);
 		}

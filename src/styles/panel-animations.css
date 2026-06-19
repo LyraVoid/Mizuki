@@ -65,7 +65,7 @@
 }
 
 /* 移动端 */
-@media (max-width: 768px) {
+@media (width < 768px) {
   .float-panel-closed {
     transform: scaleY(0) scaleX(0.85);
   }

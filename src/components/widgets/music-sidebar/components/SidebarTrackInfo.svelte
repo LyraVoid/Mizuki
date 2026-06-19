@@ -232,7 +232,7 @@ function handleVolumeKeyDown(event: KeyboardEvent) {
 		outline-offset: 2px;
 	}
 
-	@media (max-width: 520px) {
+	@media (width < 520px) {
 		.artist-row {
 			margin-bottom: 0.28rem;
 		}

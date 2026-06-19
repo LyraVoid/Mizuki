@@ -104,7 +104,7 @@ const modeActive = $derived(isShuffled || repeatMode > 0);
 		flex-shrink: 0;
 	}
 
-	@media (max-width: 520px) {
+	@media (width < 520px) {
 		.controls-row {
 			gap: 0.15rem;
 			padding-inline: 0;

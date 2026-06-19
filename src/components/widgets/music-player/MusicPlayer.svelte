@@ -476,7 +476,7 @@ onDestroy(() => {
 			transition: transform 0.2s ease;
 		}
 
-		@media (max-width: 768px) {
+		@media (width < 768px) {
 			.music-player-fab-anchor {
 				right: var(--fab-group-right, 0.75rem) !important;
 				bottom: calc(
@@ -535,7 +535,7 @@ onDestroy(() => {
 			}
 		}
 
-		@media (max-width: 480px) {
+		@media (width < 480px) {
 			.music-player-fab-anchor {
 				right: var(--fab-group-right, 0.5rem) !important;
 				bottom: calc(

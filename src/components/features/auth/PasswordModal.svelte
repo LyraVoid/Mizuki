@@ -251,7 +251,7 @@ onMount(() => {
 		color: #f87171;
 	}
 
-	@media (max-width: 768px) {
+	@media (width < 768px) {
 		.password-protection {
 			padding: 2rem 1rem;
 		}
