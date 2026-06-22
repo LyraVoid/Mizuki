@@ -8,23 +8,25 @@
   Access-Control-Allow-Methods: GET
   Access-Control-Max-Age: 86400
 
+/*
+  Cache-Control: public, max-age=3600, must-revalidate
+
 /_astro/*
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 
 /assets/*
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 
 /pio/*
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 
 /images/*
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 
 /*.woff2
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
-
-/index.html
-  Cache-Control: public, max-age=3600, must-revalidate
-
-*.html
-  Cache-Control: public, max-age=3600, must-revalidate
