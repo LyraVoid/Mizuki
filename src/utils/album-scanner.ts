@@ -231,11 +231,16 @@ function parseFileName(fileName: string): { baseName: string; tags: string[] } {
 	// 匹配文件名中的标签，格式为：文件名_标签1_标签2.扩展名
 	const parts = path.basename(fileName, path.extname(fileName)).split("_");
 
-	if (parts.length > 1) {
-		// 第一部分作为基本名称，其余部分作为标签
+	if (parts.length >= 3) {
+		// 前 N-2 部分作为基本名称，最后 2 部分作为标签
 		const baseName = parts.slice(0, -2).join("_");
 		const tags = parts.slice(-2);
 		return { baseName, tags };
+	}
+
+	if (parts.length === 2) {
+		// 第一部分作为基本名称，第二部分作为标签
+		return { baseName: parts[0], tags: [parts[1]] };
 	}
 
 	// 如果没有标签，返回不带扩展名的文件名

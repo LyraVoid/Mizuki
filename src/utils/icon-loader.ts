@@ -7,6 +7,17 @@ interface IconifyLoadOptions {
 	retryDelay?: number;
 }
 
+type IconifyIconClass = {
+	loadIcons: (
+		icons: string[],
+		callback?: (
+			loaded: unknown[],
+			missing: unknown[],
+			pending: unknown[],
+		) => void,
+	) => void;
+};
+
 class IconLoader {
 	private static instance: IconLoader;
 	private isLoaded = false;
@@ -211,44 +222,35 @@ class IconLoader {
 			await this.loadIconify();
 		}
 
-		// 等待图标加载
-		return new Promise((resolve) => {
-			let loadedCount = 0;
-			const totalIcons = icons.length;
+		if (icons.length === 0) {
+			return;
+		}
 
-			if (totalIcons === 0) {
+		const IconifyIcon = customElements.get("iconify-icon") as
+			| IconifyIconClass
+			| undefined;
+
+		if (!IconifyIcon || typeof IconifyIcon.loadIcons !== "function") {
+			return;
+		}
+
+		await new Promise<void>((resolve) => {
+			let resolved = false;
+
+			const finish = () => {
+				if (resolved) return;
+				resolved = true;
 				resolve();
-				return;
-			}
-
-			const checkComplete = () => {
-				loadedCount++;
-				if (loadedCount >= totalIcons) {
-					resolve();
-				}
 			};
 
-			// 创建临时图标元素来触发加载
-			icons.forEach((icon) => {
-				const tempIcon = document.createElement("iconify-icon");
-				tempIcon.setAttribute("icon", icon);
-				tempIcon.style.display = "none";
-				tempIcon.onload = checkComplete;
-				tempIcon.onerror = checkComplete; // 即使加载失败也要继续
-				document.body.appendChild(tempIcon);
+			const timeoutId = setTimeout(finish, 5000);
 
-				// 清理临时元素
-				setTimeout(() => {
-					if (tempIcon.parentNode) {
-						tempIcon.parentNode.removeChild(tempIcon);
-					}
-				}, 1000);
+			IconifyIcon.loadIcons(icons, (_loaded, _missing, pending) => {
+				if (pending.length === 0) {
+					clearTimeout(timeoutId);
+					finish();
+				}
 			});
-
-			// 设置超时
-			setTimeout(() => {
-				resolve();
-			}, 5000);
 		});
 	}
 }

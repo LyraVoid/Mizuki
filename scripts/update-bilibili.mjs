@@ -156,10 +156,6 @@ async function getData(
 				if (cover.startsWith("http://")) {
 					cover = cover.replace("http://", "https://");
 				}
-				// 如果需要使用镜像源
-				if (coverMirror) {
-					cover = `${coverMirror}${cover}`;
-				}
 				// 如果需要WebP格式
 				if (useWebp && !cover.includes("@")) {
 					try {
@@ -168,13 +164,14 @@ async function getData(
 						if (!urlObj.pathname.includes("@")) {
 							urlObj.pathname += "@220w_280h.webp";
 							cover = urlObj.toString();
-							if (coverMirror) {
-								cover = `${coverMirror}${cover}`;
-							}
 						}
 					} catch {
 						// URL解析失败，使用原始封面
 					}
+				}
+				// 如果需要使用镜像源
+				if (coverMirror) {
+					cover = `${coverMirror}${cover}`;
 				}
 			} catch {
 				// URL处理失败，使用原始封面
