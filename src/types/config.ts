@@ -52,6 +52,7 @@ export interface SiteConfig {
 			enable: boolean; // 是否在文章列表页显示分类导航条
 		};
 	};
+	postDateFormat?: "date" | "datetime"; // 文章日期展示格式：date=YYYY-MM-DD，datetime=YYYY-MM-DD HH:mm:ss
 
 	// 顶栏标题配置
 	navbarTitle?: {

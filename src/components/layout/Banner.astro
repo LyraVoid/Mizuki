@@ -243,8 +243,7 @@ const bannerFormats = getImageFormats();
 	)}
 
 	<!-- 轮播脚本：随机起始 + 帧收集 + Ken Burns + Crossfade + 触摸/鼠标事件 -->
-	{isCarouselEnabled && (
-		<script is:inline data-swup-ignore-script>
+	<script is:inline data-swup-ignore-script>
 			(function initBannerCarousel() {
 				var container = document.getElementById('banner-carousel');
 				if (!container) return;
@@ -607,7 +606,6 @@ const bannerFormats = getImageFormats();
 				};
 			})();
 		</script>
-	)}
 
 	<!-- 首页文字覆盖层 -->
 	{siteConfig.banner.homeText?.enable && (

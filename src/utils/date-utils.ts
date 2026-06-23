@@ -1,7 +1,36 @@
 import { siteConfig } from "../config";
 
+export type PostDateFormat = "date" | "datetime";
+
+const pad = (n: number) => n.toString().padStart(2, "0");
+
 export function formatDateToYYYYMMDD(date: Date): string {
-	return date.toISOString().substring(0, 10);
+	const Y = date.getFullYear();
+	const M = pad(date.getMonth() + 1);
+	const D = pad(date.getDate());
+	return `${Y}-${M}-${D}`;
+}
+
+export function formatDateTime(date: Date): string {
+	const datePart = formatDateToYYYYMMDD(date);
+	const h = pad(date.getHours());
+	const m = pad(date.getMinutes());
+	const s = pad(date.getSeconds());
+	return `${datePart} ${h}:${m}:${s}`;
+}
+
+export function formatDateForDisplay(
+	date: Date,
+	format?: PostDateFormat,
+): string {
+	const resolvedFormat = format ?? siteConfig.postDateFormat;
+	return resolvedFormat === "datetime"
+		? formatDateTime(date)
+		: formatDateToYYYYMMDD(date);
+}
+
+export function formatDateForJsonLd(date: Date): string {
+	return date.toISOString();
 }
 
 // 国际化日期格式化函数

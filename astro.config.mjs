@@ -37,6 +37,7 @@ export default defineConfig({
 	site: siteConfig.siteURL,
 	base: "/",
 	trailingSlash: "always",
+	compressHTML: true,
 
 	output: "static",
 

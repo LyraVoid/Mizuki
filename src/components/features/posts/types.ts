@@ -1,5 +1,6 @@
 import type { CollectionEntry } from "astro:content";
 import type { Page } from "astro";
+import type { PostDateFormat } from "@/utils/date-utils";
 
 export interface PostCardProps {
 	class?: string;
@@ -10,6 +11,7 @@ export interface PostCardProps {
 export interface PostMetaProps {
 	published: Date;
 	updated?: Date;
+	dateFormat?: PostDateFormat;
 	category?: string;
 	tags?: string[];
 	hideUpdateDate?: boolean;

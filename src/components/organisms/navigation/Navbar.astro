@@ -309,10 +309,11 @@ if (document.readyState === 'loading') {
 }
 </script>
 
-{import.meta.env.PROD && <script is:inline define:vars={{scriptUrl: url('/pagefind/pagefind.js')}}>
+<script is:inline>
 window.loadPagefind = async function() {
     if (window.pagefind) {return;}
     try {
+        const scriptUrl = new URL('pagefind/pagefind.js', window.location.origin).href;
         const response = await fetch(scriptUrl, { method: 'HEAD' });
         if (!response.ok) {
             throw new Error(`Pagefind script not found: ${response.status}`);
@@ -338,4 +339,4 @@ window.loadPagefind = async function() {
         console.log('Pagefind load error, event dispatched.');
     }
 };
-</script>}
+</script>

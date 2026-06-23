@@ -3,6 +3,7 @@ allowBuilds:
   sharp: true
   ttf2woff2: true
 minimumReleaseAgeExclude:
+  - oddmisc
   - '@astrojs/*'
   - astro
   - '@img/sharp-darwin-arm64@0.35.0'
@@ -32,3 +33,5 @@ minimumReleaseAgeExclude:
   - '@img/sharp-win32-ia32@0.35.0'
   - '@img/sharp-win32-x64@0.35.0'
   - sharp@0.35.0
+  - axios@1.18.1
+  - node-html-parser@8.0.3

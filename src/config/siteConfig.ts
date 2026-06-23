@@ -85,6 +85,7 @@ export const siteConfig: SiteConfig = {
 			enable: true, // 是否在文章列表页显示分类导航条
 		},
 	},
+	postDateFormat: "date", // 文章日期展示格式："date" 或 "datetime"
 
 	// 标签样式配置
 	tagStyle: {

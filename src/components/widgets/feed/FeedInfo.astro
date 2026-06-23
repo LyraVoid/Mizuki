@@ -3,7 +3,7 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
-import { formatDateToYYYYMMDD } from "@utils/date-utils";
+import { formatDateForDisplay } from "@utils/date-utils";
 import { getPostPublicDescription } from "@utils/post-card-content";
 import { Icon } from "astro-icon/components";
 
@@ -116,7 +116,10 @@ const t = (key: string) => i18n(key as I18nKey);
 									datetime={post.data.published.toISOString()}
 									class="text-75"
 								>
-									{formatDateToYYYYMMDD(post.data.published)}
+									{formatDateForDisplay(
+										post.data.published,
+										post.data.postDateFormat,
+									)}
 								</time>
 							</div>
 						</article>

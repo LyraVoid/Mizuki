@@ -4,12 +4,16 @@ import { Icon } from "astro-icon/components";
 import { licenseConfig, profileConfig } from "../../config";
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
-import { formatDateToYYYYMMDD } from "../../utils/date-utils";
+import {
+	formatDateForDisplay,
+	type PostDateFormat,
+} from "../../utils/date-utils";
 
 interface Props {
 	title: string;
 	id: string;
 	pubDate: Date;
+	dateFormat?: PostDateFormat;
 	class: string;
 	author: string;
 	sourceLink: string;
@@ -17,8 +21,15 @@ interface Props {
 	licenseUrl: string;
 }
 
-const { title, pubDate, author, sourceLink, licenseName, licenseUrl } =
-	Astro.props;
+const {
+	title,
+	pubDate,
+	dateFormat,
+	author,
+	sourceLink,
+	licenseName,
+	licenseUrl,
+} = Astro.props;
 const className = Astro.props.class;
 const profileConf = profileConfig;
 const licenseConf = licenseConfig;
@@ -52,7 +63,7 @@ const postUrl = sourceLink || decodeURIComponent(Astro.url.toString());
 			<div
 				class="transition text-black/75 dark:text-white/75 line-clamp-2"
 			>
-				{formatDateToYYYYMMDD(pubDate)}
+				{formatDateForDisplay(pubDate, dateFormat)}
 			</div>
 		</div>
 		<div>

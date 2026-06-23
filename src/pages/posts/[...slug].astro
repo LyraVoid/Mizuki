@@ -31,7 +31,10 @@ import {
 import Image from "../../components/atoms/Image/Image.astro";
 import Encryptor from "../../components/features/auth/Encryptor.astro";
 import { profileConfig, siteConfig } from "../../config";
-import { formatDateToYYYYMMDD } from "../../utils/date-utils";
+import {
+	formatDateForDisplay,
+	formatDateForJsonLd,
+} from "../../utils/date-utils";
 
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
@@ -197,7 +200,7 @@ const jsonLd = {
 		name: profileConfig.name,
 		url: Astro.site,
 	},
-	datePublished: formatDateToYYYYMMDD(entry.data.published),
+	datePublished: formatDateForJsonLd(entry.data.published),
 	inLanguage: entry.data.lang
 		? entry.data.lang.replace("_", "-")
 		: siteConfig.lang.replace("_", "-"),
@@ -215,6 +218,7 @@ const jsonLd = {
 	headings={headings}
 	coverImage={ogCoverUrl}
 	publishedDate={entry.data.published}
+	postDateFormat={entry.data.postDateFormat}
 	category={entry.data.category || undefined}
 	wordCount={remarkPluginFrontmatter.words}
 >
@@ -278,6 +282,7 @@ const jsonLd = {
 					className="mb-5"
 					published={entry.data.published}
 					updated={entry.data.updated}
+					dateFormat={entry.data.postDateFormat}
 					tags={entry.data.tags}
 					category={entry.data.category || undefined}
 					id={entry.id}
@@ -335,7 +340,10 @@ const jsonLd = {
 						title={entry.data.title}
 						author={entry.data.author}
 						description={publicDescription}
-						pubDate={formatDateToYYYYMMDD(entry.data.published)}
+						pubDate={formatDateForDisplay(
+							entry.data.published,
+							entry.data.postDateFormat,
+						)}
 						coverImage={posterCoverUrl}
 						url={Astro.url.toString()}
 						siteTitle={siteConfig.title}
@@ -357,6 +365,7 @@ const jsonLd = {
 							title={entry.data.title}
 							id={entry.id}
 							pubDate={entry.data.published}
+							dateFormat={entry.data.postDateFormat}
 							author={entry.data.author}
 							sourceLink={entry.data.sourceLink}
 							licenseName={entry.data.licenseName}

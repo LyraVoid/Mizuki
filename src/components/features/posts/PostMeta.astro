@@ -3,7 +3,10 @@ import { Icon } from "astro-icon/components";
 
 import I18nKey from "../../../i18n/i18nKey";
 import { i18n } from "../../../i18n/translation";
-import { formatDateToYYYYMMDD } from "../../../utils/date-utils";
+import {
+	formatDateForDisplay,
+	type PostDateFormat,
+} from "../../../utils/date-utils";
 import { getTagUrl } from "../../../utils/url-utils";
 import {
 	Category,
@@ -16,6 +19,7 @@ import {
 interface Props {
 	published: Date;
 	updated?: Date;
+	dateFormat?: PostDateFormat;
 	category?: string;
 	tags?: string[];
 	hideUpdateDate?: boolean;
@@ -34,6 +38,7 @@ interface Props {
 const {
 	published,
 	updated,
+	dateFormat,
 	category,
 	tags,
 	hideUpdateDate,
@@ -51,14 +56,14 @@ const {
 ---
 
 <div class:list={["flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2", className]}>
-    <PublishedDate date={published} />
+    <PublishedDate date={published} dateFormat={dateFormat} />
 
     {!hideUpdateDate && updated && updated.getTime() !== published.getTime() && (
         <div class="flex items-center">
             <div class="meta-icon">
                 <Icon name="material-symbols:edit-calendar-outline-rounded" class="text-xl"></Icon>
             </div>
-            <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(updated)}</span>
+            <span class="text-50 text-sm font-medium">{formatDateForDisplay(updated, dateFormat)}</span>
         </div>
     )}
 
@@ -105,8 +110,8 @@ const {
     {showEncrypted && (
         <EncryptedBadge />
     )}
-    
-    {!isHome && id && (
+</div>
+
 <script is:inline define:vars={{
     pageViewsText: i18n(I18nKey.profileStatsPageViews),
     visitsText: i18n(I18nKey.profileStatsVisits)
@@ -117,13 +122,14 @@ const {
 
     async function fetchPageViews() {
         const container = document.querySelector('.umami-page-views');
-        
+        if (!container) return;
+
         if (!window.oddmisc) {
-            container?.classList.add('hidden');
+            container.classList.add('hidden');
             return;
         }
 
-        const id = container?.dataset.id;
+        const id = container.dataset.id;
         if (!id) {return;}
 
         try {
@@ -132,15 +138,15 @@ const {
             const visits = stats.visits || 0;
 
             if (pageViews === 0 && visits === 0) {
-                container?.classList.add('hidden');
+                container.classList.add('hidden');
                 return;
             }
 
-            container?.classList.remove('hidden');
+            container.classList.remove('hidden');
             container.querySelector('.page-views-display').textContent = generateStatsText(pageViews, visits);
         } catch (error) {
             console.error('Error fetching page views:', error);
-            container?.classList.add('hidden');
+            container.classList.add('hidden');
         }
     }
 
@@ -150,4 +156,3 @@ const {
         fetchPageViews();
     }
 </script>
-)}
