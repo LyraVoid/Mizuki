@@ -138,7 +138,7 @@ class MusicPlayerStore {
 		});
 
 		this.audio.addEventListener("timeupdate", () => {
-			if (!!this.audio) {
+			if (this.audio) {
 				this.state.currentTime = this.audio.currentTime;
 				this.broadcastState();
 			}
@@ -164,7 +164,7 @@ class MusicPlayerStore {
 
 	private handleAudioEnded(): void {
 		if (this.state.isRepeating === 1) {
-			if (!!this.audio) {
+			if (this.audio) {
 				this.audio.currentTime = 0;
 				this.audio.play().catch(() => {});
 			}
@@ -188,7 +188,7 @@ class MusicPlayerStore {
 
 	private handleAudioLoaded(): void {
 		this.state.isLoading = false;
-		if (!!this.audio?.duration && this.audio.duration > 1) {
+		if (this.audio?.duration && this.audio.duration > 1) {
 			this.state.duration = Math.floor(this.audio.duration);
 			this.state.currentSong = {
 				...this.state.currentSong,
@@ -211,12 +211,12 @@ class MusicPlayerStore {
 	private loadVolumeFromStorage(): void {
 		if (typeof localStorage !== "undefined") {
 			const savedVolume = localStorage.getItem(STORAGE_KEY_VOLUME);
-			if (!!savedVolume) {
+			if (savedVolume) {
 				const volume = Number.parseFloat(savedVolume);
 				if (!Number.isNaN(volume) && volume >= 0 && volume <= 1) {
 					this.state.volume = volume;
 					this.state.isMuted = volume === 0;
-					if (!!this.audio) {
+					if (this.audio) {
 						this.audio.volume = volume;
 						this.audio.muted = this.state.isMuted;
 					}
@@ -227,7 +227,7 @@ class MusicPlayerStore {
 
 	private registerInteractionHandler(): void {
 		const handler = () => {
-			if (this.state.autoplayFailed && !!this.audio) {
+			if (this.state.autoplayFailed && this.audio) {
 				const playPromise = this.audio.play();
 				if (playPromise !== undefined) {
 					playPromise
@@ -360,8 +360,8 @@ class MusicPlayerStore {
 			}
 		}
 		this.state.willAutoPlay = autoPlay;
-		if (!!this.audio) {
-			if (!!this.audio.src && song.url) {
+		if (this.audio) {
+			if (this.audio.src && song.url) {
 				this.audio.src = "";
 			}
 			this.audio.src = getAssetPath(song.url);
@@ -469,7 +469,7 @@ class MusicPlayerStore {
 		const clampedVolume = Math.max(0, Math.min(1, volume));
 		this.state.volume = clampedVolume;
 		this.state.isMuted = clampedVolume === 0;
-		if (!!this.audio) {
+		if (this.audio) {
 			this.audio.volume = clampedVolume;
 			this.audio.muted = this.state.isMuted;
 		}
@@ -481,7 +481,7 @@ class MusicPlayerStore {
 
 	toggleMute(): void {
 		this.state.isMuted = !this.state.isMuted;
-		if (!!this.audio) {
+		if (this.audio) {
 			this.audio.muted = this.state.isMuted;
 		}
 		this.broadcastState();
@@ -575,10 +575,10 @@ class MusicPlayerStore {
 	}
 
 	destroy(): void {
-		if (!!this.unregisterInteraction) {
+		if (this.unregisterInteraction) {
 			this.unregisterInteraction();
 		}
-		if (!!this.audio) {
+		if (this.audio) {
 			this.audio.pause();
 			this.audio.src = "";
 			this.audio = null;

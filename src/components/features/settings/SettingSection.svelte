@@ -1,16 +1,19 @@
 <script lang="ts">
 import Icon from "@iconify/svelte";
+    import { Snippet } from "svelte";
 
 let {
 	title = "",
 	isOpen = true,
 	showReset = false,
 	onreset,
+	children
 }: {
 	title?: string;
 	isOpen?: boolean;
 	showReset?: boolean;
 	onreset?: (() => void) | undefined;
+	children: Snippet;
 } = $props();
 
 function toggleSection() {
@@ -35,16 +38,16 @@ function handleReset() {
 		>
 			<Icon icon="material-symbols:chevron-right-rounded" class="text-[1rem] opacity-50"></Icon>
 		</div>
-		<span class="text-sm font-bold text-[var(--deep-text)] dark:text-neutral-100 flex-1">{title}</span>
+		<span class="text-sm font-bold text-(--deep-text) dark:text-neutral-100 flex-1">{title}</span>
 		</button>
 		{#if showReset}
 			<button
 				type="button"
-				class="btn-regular w-6 h-6 rounded-md active:scale-90 opacity-0 group-hover:opacity-70 hover:!opacity-100 transition-opacity"
+				class="btn-regular w-6 h-6 rounded-md active:scale-90 opacity-0 group-hover:opacity-70 hover:opacity-100! transition-opacity"
 				onclick={handleReset}
 				aria-label="Reset section"
 			>
-				<Icon icon="fa7-solid:arrow-rotate-left" class="text-[0.7rem] text-[var(--btn-content)]"></Icon>
+				<Icon icon="fa7-solid:arrow-rotate-left" class="text-[0.7rem] text-(--btn-content)"></Icon>
 			</button>
 		{/if}
 	</div>
@@ -57,7 +60,7 @@ function handleReset() {
 		style="padding-left: 0.25rem; padding-right: 0.25rem;"
 	>
 		<div class="space-y-1.5 pb-1">
-			<slot></slot>
+			{@render children()}
 		</div>
 	</div>
 </div>
