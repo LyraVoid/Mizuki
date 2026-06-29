@@ -140,22 +140,22 @@ export const navBarConfig: NavBarConfig = {
 			icon: "material-symbols:link",
 			children: [
 				{
-					name: "GitHub",
-					url: "https://github.com/LyraVoid/Mizuki",
+					name: "Openlist",
+					url: "https://oplist.ykse27.fun:2727/",
 					external: true, // 外部链接，新标签页打开
-					icon: "fa7-brands:github",
+					icon: "material-symbols:folder",
 				},
 				{
 					name: "Bilibili",
-					url: "https://space.bilibili.com/701864046",
-					external: true,
 					icon: "fa7-brands:bilibili",
+					url: "https://space.bilibili.com/21869977",
+					external: true, // 外部链接，新标签页打开
 				},
 				{
-					name: "Gitee",
-					url: "https://gitee.com/matsuzakayuki/Mizuki",
-					external: true,
-					icon: "mdi:git",
+					name: "Steam",
+					url: "https://steamcommunity.com/profiles/76561198159046945/",
+					external: true, // 外部链接，新标签页打开
+					icon: "fa7-brands:steam",
 				},
 			],
 		},
@@ -170,16 +170,19 @@ export const navBarConfig: NavBarConfig = {
 					name: "Anime",
 					url: "/anime/",
 					icon: "material-symbols:movie",
+					external: false, // 内部链接，当前页导航
 				},
 				{
 					name: "Diary",
 					url: "/diary/",
+					external: false, // 内部链接，当前页导航
 					icon: "material-symbols:book",
 				},
 				{
 					name: "Gallery",
-					url: "/albums/",
+					url: "https://photo.ykse27.fun:2727/",
 					icon: "material-symbols:photo-library",
+					external: true, // 外部链接，新标签页打开
 				},
 				{
 					name: "Devices",
@@ -210,27 +213,27 @@ export const navBarConfig: NavBarConfig = {
 		},
 
 		// 自定义一级下拉菜单示例：其他页面
-		{
-			name: "Others",
-			url: "#", // "#" 作为占位 URL，点击不会跳转
-			icon: "material-symbols:more-horiz",
-			children: [
-				{
-					name: "Projects",
-					url: "/projects/",
-					icon: "material-symbols:work",
-				},
-				{
-					name: "Skills",
-					url: "/skills/",
-					icon: "material-symbols:psychology",
-				},
-				{
-					name: "Timeline",
-					url: "/timeline/",
-					icon: "material-symbols:timeline",
-				},
-			],
-		},
+		// {
+		// 	name: "Others",
+		// 	url: "#", // "#" 作为占位 URL，点击不会跳转
+		// 	icon: "material-symbols:more-horiz",
+		// 	children: [
+		// 		{
+		// 			name: "Projects",
+		// 			url: "/projects/",
+		// 			icon: "material-symbols:work",
+		// 		},
+		// 		{
+		// 			name: "Skills",
+		// 			url: "/skills/",
+		// 			icon: "material-symbols:psychology",
+		// 		},
+		// 		{
+		// 			name: "Timeline",
+		// 			url: "/timeline/",
+		// 			icon: "material-symbols:timeline",
+		// 		},
+		// 	],
+		// },
 	],
 };

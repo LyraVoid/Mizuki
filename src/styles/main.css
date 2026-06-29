@@ -34,10 +34,10 @@
   font-display: swap;
 }
 
-/* 导入 萝莉体 第二版 字体 */
+/* 导入 MapleMono-NF-CN-Regular 字体 */
 @font-face {
-  font-family: "萝莉体 第二版";
-  src: url("/assets/font/loli.ttf") format("truetype");
+  font-family: "MapleMono-NF-CN-Regular";
+  src: url("/assets/font/MapleMono-NF-CN-Regular.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;

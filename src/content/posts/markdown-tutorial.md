@@ -1,10 +1,10 @@
 ---
 title: Markdown Tutorial
 published: 2025-01-20
-pinned: true
+pinned: false
 description: A simple example of a Markdown blog post.
-tags: [Markdown, Blogging]
-category: Examples
+tags: [Markdown, 博客]
+category: 教程
 licenseName: "Unlicensed"
 author: emn178
 sourceLink: "https://github.com/emn178/markdown"
@@ -48,7 +48,7 @@ Code:
 
     This will be
     inline.
-
+    
     This is second paragraph.
 
 Preview:
@@ -188,7 +188,7 @@ Code:
     > This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
     consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
     Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
-
+    
     > Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse
     id sem consectetuer libero luctus adipiscing.
 
@@ -356,7 +356,7 @@ To put a blockquote within a list item, the blockquote's > delimiters need to be
 Code:
 
     *   A list item with a blockquote:
-
+    
         > This is a blockquote
         > inside a list item.
 
@@ -378,7 +378,7 @@ To put a code block within a list item, the code block needs to be indented twic
 Code:
 
     *   A list item with a code block:
-
+    
             <code goes here>
 
 Preview:
@@ -422,7 +422,7 @@ Indent every line of the block by at least **4 spaces** or **1 tab**.
 Code:
 
     This is a normal paragraph:
-
+    
         This is a code block.
 
 Preview:
@@ -464,7 +464,7 @@ Just wrap your code in ` ``` ` (as shown below) and you won't need to indent it 
 Code:
 
     Here's an example:
-
+    
     ```
     function test() {
       console.log("notice the blank line before this function?");
@@ -605,7 +605,7 @@ Title is optional.
 Code:
 
     This is [an example](http://example.com/ "Title") inline link.
-
+    
     [This link](http://example.net/) has no title attribute.
 
 Preview:
@@ -697,11 +697,11 @@ Markdown treats **asterisks (\*)** and **underscores (\_)** as indicators of emp
 Code:
 
     *single asterisks*
-
+    
     _single underscores_
-
+    
     **double asterisks**
-
+    
     __double underscores__
 
 Preview:
@@ -771,7 +771,7 @@ The backtick delimiters surrounding a code span may include spaces — one after
 Code:
 
     A single backtick in a code span: `` ` ``
-
+    
     A backtick-delimited string in a code span: `` `foo` ``
 
 Preview:
@@ -799,7 +799,7 @@ Title is optional.
 Code:
 
     ![Alt text](/path/to/img.jpg)
-
+    
     ![Alt text](/path/to/img.jpg "Optional title")
 
 Preview:
@@ -868,7 +868,7 @@ Markdown supports a shortcut style for creating "automatic" links for URLs and e
 Code:
 
     <http://example.com/>
-
+    
     <address@example.com>
 
 Preview:
@@ -937,13 +937,13 @@ For any markup that is not covered by Markdown's syntax, you simply use HTML its
 Code:
 
     This is a regular paragraph.
-
+    
     <table>
         <tr>
             <td>Foo</td>
         </tr>
     </table>
-
+    
     This is another regular paragraph.
 
 Preview:
@@ -969,7 +969,7 @@ Unlike block-level HTML tags, Markdown syntax is **processed within span-level t
 Code:
 
     <span>**Work**</span>
-
+    
     <div>
         **No Work**
     </div>
