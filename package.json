@@ -74,11 +74,11 @@
   },
   "devDependencies": {
     "@astrojs/ts-plugin": "^1.10.9",
-    "@biomejs/biome": "^2.5.1",
+    "@biomejs/biome": "^2.5.2",
     "@iconify-json/fa7-brands": "^1.2.3",
     "@iconify-json/fa7-regular": "^1.2.3",
     "@iconify-json/fa7-solid": "^1.2.5",
-    "@iconify-json/material-symbols": "^1.2.81",
+    "@iconify-json/material-symbols": "^1.2.82",
     "@iconify-json/mdi": "^1.2.3",
     "@iconify-json/simple-icons": "^1.2.88",
     "@rollup/plugin-yaml": "^5.0.0",
