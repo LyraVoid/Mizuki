@@ -46,7 +46,7 @@
     "hastscript": "^9.0.1",
     "katex": "^0.17.0",
     "l2d-widget": "^0.1.0",
-    "markdown-it": "^14.2.0",
+    "markdown-it": "^14.3.0",
     "marked": "^18.0.5",
     "node-html-parser": "^8.0.4",
     "oddmisc": "^1.2.8",
