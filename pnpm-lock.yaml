@@ -60,8 +60,8 @@ importers:
         specifier: ^1.1.5
         version: 1.1.5
       axios:
-        specifier: ^1.18.1
-        version: 1.18.1
+        specifier: ^1.19.0
+        version: 1.19.0
       dayjs:
         specifier: ^1.11.21
         version: 1.11.21
@@ -78,8 +78,8 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1
       katex:
-        specifier: ^0.16.47
-        version: 0.16.47
+        specifier: ^0.18.1
+        version: 0.18.1
       l2d-widget:
         specifier: ^0.1.0
         version: 0.1.0
@@ -144,8 +144,8 @@ importers:
         specifier: ^2.17.6
         version: 2.17.6
       satori:
-        specifier: ^0.26.0
-        version: 0.26.0
+        specifier: ^0.29.0
+        version: 0.29.0
       sharp:
         specifier: ^0.35.3
         version: 0.35.3(@types/node@26.1.1)
@@ -2208,8 +2208,8 @@ packages:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
 
-  axios@1.18.1:
-    resolution: {integrity: sha512-3nTvFlvpn9Zu/RkHUqtc7/+al4UpRW5az71ap5zccp6e8RAYEzhMTecX8Dz1wWDYrPpUoB1HAQEGEAEvUr7S9g==}
+  axios@1.19.0:
+    resolution: {integrity: sha512-ht/iuYZXEjFxLH/Hkezgd7m6JKlHHXEUSneaDz8uZe1Gj5QZtCnpyDsckvAiEnT89OEbCLmnte4R4sn7P0EKFw==}
 
   axobject-query@4.1.0:
     resolution: {integrity: sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ==}
@@ -3466,6 +3466,10 @@ packages:
 
   katex@0.16.47:
     resolution: {integrity: sha512-Eeo8Ys1doU1z+x8AZsPpQu+p/QcZBI5PeOo7QGQdy2x2m0MU/hYagBbGOmXwr5KVbEfVuWv9LpnQWeehogurjg==}
+    hasBin: true
+
+  katex@0.18.1:
+    resolution: {integrity: sha512-Td8GCYSxDAoMhHOlKmCFMJ/hz5qlAAb71n66Dryw9nfCVfumLo7nhuotbvKom/XPADmrYC3O5QR71EPq4DarJQ==}
     hasBin: true
 
   kind-of@6.0.3:
@@ -4783,8 +4787,8 @@ packages:
     resolution: {integrity: sha512-M4bo9tfv1yfhQZZKkc6dL07ALrGJtfvNOuhX3hU9AVPR/uPQ+nKOJBqTYc7LfMQblTW04mtSWDJWEyLvygJsLA==}
     engines: {node: '>=22.12.0'}
 
-  satori@0.26.0:
-    resolution: {integrity: sha512-tkMFrfIs3l2mQ2JEcyW0ADTy3zGggFRFzi6Ef8YozQSFsFKEqaSO1Y8F9wJg4//PJGQauMalHGTUEkPrFwhVPA==}
+  satori@0.29.0:
+    resolution: {integrity: sha512-fPAfrwNaIQ7EsJLhY382STEqpczN6ZEH9NsKXDQgRcxUXNNPB73iAjSshzFwTaaScT68pxV0pmG6TBzDQ4sEGw==}
     engines: {node: '>=16'}
 
   satteri@0.9.5:
@@ -7856,7 +7860,7 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axios@1.18.1:
+  axios@1.19.0:
     dependencies:
       follow-redirects: 1.16.0
       form-data: 4.0.6
@@ -9350,6 +9354,10 @@ snapshots:
       graceful-fs: 4.2.11
 
   katex@0.16.47:
+    dependencies:
+      commander: 8.3.0
+
+  katex@0.18.1:
     dependencies:
       commander: 8.3.0
 
@@ -11087,7 +11095,7 @@ snapshots:
       parse-srcset: 1.0.2
       postcss: 8.5.21
 
-  satori@0.26.0:
+  satori@0.29.0:
     dependencies:
       '@shuding/opentype.js': 1.4.0-beta.0
       css-background-parser: 0.1.0
