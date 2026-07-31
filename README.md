@@ -265,7 +265,7 @@ All commands are run from the project root:
 
 ### 🔧 Basic Configuration
 
-Edit `src/config.ts` to customize your blog:
+Edit `src/config/siteConfig.ts` to customize your blog:
 
 ```typescript
 export const siteConfig: SiteConfig = {
