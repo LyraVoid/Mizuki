@@ -4,6 +4,8 @@ import { PageProgressBar } from "@components/control/PageProgressBar";
 import Pio from "@components/features/pio/Pio.astro";
 import ConfigCarrier from "@components/misc/ConfigCarrier.astro";
 import MusicPlayer from "@components/widgets/music-player/MusicPlayer.svelte";
+import CodeGroupManager from "@/components/features/markdown/CodeGroupManager.astro";
+import DiagramManager from "@/components/features/markdown/DiagramManager.astro";
 import { pioConfig, profileConfig, siteConfig } from "@/config";
 
 const BANNER_HEIGHT = 35;
@@ -234,6 +236,9 @@ const bannerOffset =
 		<!-- Pio 看板娘组件 - 仅在进入视口时加载 -->
 		{pioConfig.enable && <Pio config={pioConfig} />}
 
+		<CodeGroupManager />
+		<DiagramManager />
+
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
 	</body>
@@ -312,7 +317,7 @@ const bannerOffset =
 	initSwupManager();
 </script>
 
-<!-- 代码块折叠功能 -->
+<!-- 基于 Mizuki 原有交互，为超过阈值的代码块自动启用折叠 -->
 <script>
 	import "../scripts/code-collapse.js";
 </script>

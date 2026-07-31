@@ -317,8 +317,29 @@ export interface BlogPostData {
 }
 
 export interface ExpressiveCodeConfig {
-	theme: string;
+	/** @deprecated 使用 darkTheme/lightTheme。 */
+	theme?: string;
+	darkTheme: string;
+	lightTheme: string;
+	defaultWrap: boolean;
 	hideDuringThemeTransition?: boolean; // 是否在主题切换时隐藏代码块
+	languageBadge: {
+		enable: boolean;
+	};
+	languageLogo: {
+		enable: boolean;
+		color?: "mono" | "original" | "theme" | `#${string}`;
+		excludedLangs?: string[];
+	};
+	collapsible: {
+		enable: boolean;
+		lineThreshold: number;
+		previewLines: number;
+		defaultCollapsed: boolean;
+	};
+	codeGroup: {
+		enable: boolean;
+	};
 }
 
 export interface AnnouncementConfig {

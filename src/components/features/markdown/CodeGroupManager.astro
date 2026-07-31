@@ -1,0 +1,81 @@
+---
+// rehype-code-group 的原生脚本依赖首次 DOMContentLoaded。使用事件委托后，
+// Swup 替换 main 内容无需重新绑定。
+---
+
+<script>
+	const GROUP = ".rehype-code-group";
+	const TAB = ".rcg-tab";
+	const BLOCK = ".rcg-block";
+
+	function tabs(group: Element): HTMLElement[] {
+		return Array.from(
+			group.querySelectorAll<HTMLElement>(
+				`:scope > .rcg-tab-container > ${TAB}`,
+			),
+		);
+	}
+
+	function blocks(group: Element): HTMLElement[] {
+		return Array.from(group.querySelectorAll<HTMLElement>(`:scope > ${BLOCK}`));
+	}
+
+	function activate(group: Element, index: number, focus = false) {
+		const allTabs = tabs(group);
+		const allBlocks = blocks(group);
+		if (allTabs.length === 0) return;
+		const target = Math.max(0, Math.min(index, allTabs.length - 1));
+		allTabs.forEach((tab, current) => {
+			const selected = current === target;
+			tab.classList.toggle("active", selected);
+			tab.setAttribute("aria-selected", String(selected));
+			tab.tabIndex = selected ? 0 : -1;
+		});
+		allBlocks.forEach((block, current) => {
+			const selected = current === target;
+			block.classList.toggle("active", selected);
+			block.toggleAttribute("hidden", !selected);
+		});
+		if (focus) allTabs[target]?.focus({ preventScroll: true });
+	}
+
+	function resolve(target: EventTarget | null) {
+		if (!(target instanceof Element)) return null;
+		const tab = target.closest<HTMLElement>(TAB);
+		const group = tab?.closest(GROUP);
+		if (!tab || !group) return null;
+		const index = tabs(group).indexOf(tab);
+		return index < 0 ? null : { group, index };
+	}
+
+	document.addEventListener("click", (event) => {
+		const found = resolve(event.target);
+		if (found) activate(found.group, found.index);
+	});
+
+	document.addEventListener("keydown", (event) => {
+		if (event.altKey || event.ctrlKey || event.metaKey) return;
+		const found = resolve(event.target);
+		if (!found) return;
+		const count = tabs(found.group).length;
+		let next: number;
+		switch (event.key) {
+			case "ArrowRight":
+				next = (found.index + 1) % count;
+				break;
+			case "ArrowLeft":
+				next = (found.index - 1 + count) % count;
+				break;
+			case "Home":
+				next = 0;
+				break;
+			case "End":
+				next = count - 1;
+				break;
+			default:
+				return;
+		}
+		event.preventDefault();
+		activate(found.group, next, true);
+	});
+</script>

@@ -13,6 +13,15 @@ import {
 	data-hide-code-blocks-during-transition={expressiveCodeConfig.hideDuringThemeTransition
 		? "true"
 		: "false"}
+	data-code-collapse-enabled={expressiveCodeConfig.collapsible.enable
+		? "true"
+		: "false"}
+	data-code-collapse-line-threshold={expressiveCodeConfig.collapsible.lineThreshold}
+	data-code-collapse-preview-lines={expressiveCodeConfig.collapsible.previewLines}
+	data-code-collapse-default-collapsed={expressiveCodeConfig.collapsible
+		.defaultCollapsed
+		? "true"
+		: "false"}
 	data-overlay-opacity={fullscreenWallpaperConfig.overlay?.opacity ?? 0.8}
 	data-overlay-blur={fullscreenWallpaperConfig.overlay?.blur ?? 10}
 	data-overlay-card-opacity={fullscreenWallpaperConfig.overlay?.cardOpacity ?? 0.5}

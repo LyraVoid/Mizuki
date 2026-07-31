@@ -1,6 +1,6 @@
-import sitemap from "@astrojs/sitemap";
-import mdx from '@astrojs/mdx';
 import { unified } from '@astrojs/markdown-remark';
+import mdx from '@astrojs/mdx';
+import sitemap from "@astrojs/sitemap";
 import svelte, { vitePreprocess } from "@astrojs/svelte";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
@@ -9,8 +9,11 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
+import { pluginLanguageLogo } from "ec-lang-logo";
+import "katex/dist/contrib/mhchem.mjs";
 import { oddmisc } from "oddmisc";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeCodeGroup from "rehype-code-group";
 import rehypeComponents from "rehype-components";
 import rehypeExternalLinks from "rehype-external-links";
 import rehypeKatex from "rehype-katex";
@@ -19,8 +22,13 @@ import remarkDirective from "remark-directive";
 import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
 
+import {
+	expressiveCodeConfig,
+	markdownConfig,
+	permalinkConfig,
+	siteConfig,
+} from "./src/config/index.ts";
 import { buildIconInclude } from "./src/plugins/astro-icon-include.mjs";
-import { siteConfig } from "./src/config/index.ts";
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
@@ -28,12 +36,16 @@ import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.
 import { ImageGridComponent } from "./src/plugins/rehype-component-image-grid.mjs";
 import { rehypeImageWidth } from "./src/plugins/rehype-image-width.mjs";
 import { rehypeMermaid } from "./src/plugins/rehype-mermaid.mjs";
+import { rehypePlantuml } from "./src/plugins/rehype-plantuml.mjs";
 import { rehypeWrapTable } from "./src/plugins/rehype-wrap-table.mjs";
+import { remarkAutoImageGrid } from "./src/plugins/remark-auto-image-grid.mjs";
 import { remarkContent } from "./src/plugins/remark-content.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkEscapeNumericColons } from "./src/plugins/remark-escape-numeric-colons.mjs";
 import { remarkFixGithubAdmonitions } from "./src/plugins/remark-fix-github-admonitions.js";
 import { remarkMermaid } from "./src/plugins/remark-mermaid.js";
+import { remarkPlantuml } from "./src/plugins/remark-plantuml.mjs";
+import { remarkWikiLink } from "./src/plugins/remark-wiki-link.mjs";
 
 // https://astro.build/config
 export default defineConfig({
@@ -131,15 +143,29 @@ export default defineConfig({
 			include: buildIconInclude(),
 		}),
 		expressiveCode({
-			themes: ["github-light", "github-dark"],
+			themes: [
+				expressiveCodeConfig.lightTheme,
+				expressiveCodeConfig.darkTheme,
+			],
 			plugins: [
 				pluginCollapsibleSections(),
 				pluginLineNumbers(),
-				pluginLanguageBadge(),
+				...(expressiveCodeConfig.languageBadge.enable
+					? [pluginLanguageBadge()]
+					: []),
+				...(expressiveCodeConfig.languageLogo.enable
+					? [
+							pluginLanguageLogo({
+								color: expressiveCodeConfig.languageLogo.color ?? "mono",
+								excludedLangs:
+									expressiveCodeConfig.languageLogo.excludedLangs ?? [],
+							}),
+						]
+					: []),
 				pluginCustomCopyButton(),
 			],
 			defaultProps: {
-				wrap: true,
+				wrap: expressiveCodeConfig.defaultWrap,
 				overridesByLang: {
 					shellsession: { showLineNumbers: false },
 					bash: { frame: "code" },
@@ -191,9 +217,24 @@ export default defineConfig({
 				remarkFixGithubAdmonitions,
 				remarkDirective,
 				remarkEscapeNumericColons,
-				remarkSectionize,
+				...(markdownConfig.wikiLink.enable
+					? [
+							[
+								remarkWikiLink,
+								{
+									...markdownConfig.wikiLink,
+									permalink: permalinkConfig,
+								},
+							],
+						]
+					: []),
+				...(markdownConfig.autoImageGrid.enable
+					? [[remarkAutoImageGrid, markdownConfig.autoImageGrid]]
+					: []),
 				parseDirectiveNode,
 				remarkMermaid,
+				[remarkPlantuml, markdownConfig.plantuml],
+				remarkSectionize,
 			],
 			rehypePlugins: [
 				rehypeKatex,
@@ -205,8 +246,10 @@ export default defineConfig({
 					},
 				],
 				rehypeSlug,
+				...(expressiveCodeConfig.codeGroup.enable ? [rehypeCodeGroup] : []),
 				rehypeWrapTable,
 				rehypeMermaid,
+				rehypePlantuml,
 				[
 					rehypeComponents,
 					{
@@ -219,6 +262,29 @@ export default defineConfig({
 								AdmonitionComponent(x, y, "important"),
 							caution: (x, y) => AdmonitionComponent(x, y, "caution"),
 							warning: (x, y) => AdmonitionComponent(x, y, "warning"),
+							info: (x, y) => AdmonitionComponent(x, y, "note"),
+							abstract: (x, y) => AdmonitionComponent(x, y, "note"),
+							summary: (x, y) => AdmonitionComponent(x, y, "note"),
+							tldr: (x, y) => AdmonitionComponent(x, y, "note"),
+							todo: (x, y) => AdmonitionComponent(x, y, "note"),
+							hint: (x, y) => AdmonitionComponent(x, y, "tip"),
+							success: (x, y) => AdmonitionComponent(x, y, "tip"),
+							check: (x, y) => AdmonitionComponent(x, y, "tip"),
+							done: (x, y) => AdmonitionComponent(x, y, "tip"),
+							question: (x, y) =>
+								AdmonitionComponent(x, y, "important"),
+							help: (x, y) => AdmonitionComponent(x, y, "important"),
+							faq: (x, y) => AdmonitionComponent(x, y, "important"),
+							attention: (x, y) => AdmonitionComponent(x, y, "warning"),
+							failure: (x, y) => AdmonitionComponent(x, y, "caution"),
+							fail: (x, y) => AdmonitionComponent(x, y, "caution"),
+							missing: (x, y) => AdmonitionComponent(x, y, "caution"),
+							danger: (x, y) => AdmonitionComponent(x, y, "caution"),
+							error: (x, y) => AdmonitionComponent(x, y, "caution"),
+							bug: (x, y) => AdmonitionComponent(x, y, "caution"),
+							example: (x, y) => AdmonitionComponent(x, y, "note"),
+							quote: (x, y) => AdmonitionComponent(x, y, "note"),
+							cite: (x, y) => AdmonitionComponent(x, y, "note"),
 						},
 					},
 				],

@@ -1,12 +1,44 @@
 import { visit } from "unist-util-visit";
 
-const GITHUB_ALERT_DECLARATION_REGEX = /^\s*\[!(?<type>\w+)\]\s*$/;
-const GITHUB_ALERT_TYPES = ["NOTE", "TIP", "IMPORTANT", "WARNING", "CAUTION"];
+const GITHUB_ALERT_DECLARATION_REGEX =
+	/^\s*\[!(?<type>[\w-]+)\](?:[ \t]+(?<title>[^\n]+))?\s*$/;
+
+const TYPE_ALIASES = {
+	NOTE: "note",
+	ABSTRACT: "note",
+	SUMMARY: "note",
+	TLDR: "note",
+	INFO: "note",
+	TODO: "note",
+	TIP: "tip",
+	HINT: "tip",
+	IMPORTANT: "important",
+	SUCCESS: "tip",
+	CHECK: "tip",
+	DONE: "tip",
+	QUESTION: "important",
+	HELP: "important",
+	FAQ: "important",
+	WARNING: "warning",
+	CAUTION: "caution",
+	ATTENTION: "warning",
+	FAILURE: "caution",
+	FAIL: "caution",
+	MISSING: "caution",
+	DANGER: "caution",
+	ERROR: "caution",
+	BUG: "caution",
+	EXAMPLE: "note",
+	QUOTE: "note",
+	CITE: "note",
+};
 
 function parseGithubAlertDeclaration(text) {
 	const match = text.match(GITHUB_ALERT_DECLARATION_REGEX);
 	const type = match?.groups?.type?.toUpperCase();
-	return GITHUB_ALERT_TYPES.includes(type) ? type : null;
+	return type && TYPE_ALIASES[type]
+		? { type: TYPE_ALIASES[type], title: match?.groups?.title?.trim() || type }
+		: null;
 }
 
 export function remarkFixGithubAdmonitions() {
@@ -31,21 +63,8 @@ export function remarkFixGithubAdmonitions() {
 				return;
 			}
 
-			const type = parseGithubAlertDeclaration(possibleTypeDeclaration);
-			if (!type) {
-				return;
-			}
-
-			const typeToDirectiveName = {
-				NOTE: "note",
-				TIP: "tip",
-				IMPORTANT: "important",
-				WARNING: "warning",
-				CAUTION: "caution",
-			};
-
-			const directiveName = typeToDirectiveName[type];
-			if (!directiveName) {
+			const alert = parseGithubAlertDeclaration(possibleTypeDeclaration);
+			if (!alert) {
 				return;
 			}
 
@@ -74,7 +93,8 @@ export function remarkFixGithubAdmonitions() {
 
 			const directive = {
 				type: "containerDirective",
-				name: directiveName,
+				name: alert.type,
+				attributes: { title: alert.title },
 				children: [...alertParagraphChildren, ...node.children.slice(1)],
 			};
 

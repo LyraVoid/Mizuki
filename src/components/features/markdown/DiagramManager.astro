@@ -1,0 +1,144 @@
+---
+// PlantUML 图表主题、缩放、拖拽和全屏交互。所有监听均使用事件委托或
+// 幂等初始化，以兼容 Swup 页面切换与加密文章解密后的动态内容。
+---
+
+<script>
+	const MIN_SCALE = 0.5;
+	const MAX_SCALE = 4;
+	const STEP = 1.2;
+
+	type DiagramState = {
+		scale: number;
+		x: number;
+		y: number;
+	};
+
+	function applyTheme(root: ParentNode = document) {
+		const dark = document.documentElement.classList.contains("dark");
+		root.querySelectorAll<HTMLImageElement>(".plantuml-image").forEach((image) => {
+			const light = image.dataset.lightSrc || image.src;
+			const source = dark ? image.dataset.darkSrc || light : light;
+			if (source && image.src !== source) image.src = source;
+		});
+	}
+
+	function initDiagram(container: HTMLElement) {
+		if (container.dataset.diagramReady === "true") return;
+		const target = container.querySelector<HTMLElement>(".plantuml-image, svg");
+		if (!target) return;
+		container.dataset.diagramReady = "true";
+		const state: DiagramState = { scale: 1, x: 0, y: 0 };
+		const apply = () => {
+			target.style.transformOrigin = "center";
+			target.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+		};
+		const zoom = (factor: number) => {
+			state.scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, state.scale * factor));
+			apply();
+		};
+		const reset = () => {
+			state.scale = 1;
+			state.x = 0;
+			state.y = 0;
+			apply();
+		};
+		const controls = document.createElement("div");
+		controls.className = "diagram-controls";
+		const actions: Array<[string, string, () => void]> = [
+			["＋", "放大", () => zoom(STEP)],
+			["−", "缩小", () => zoom(1 / STEP)],
+			["↺", "重置", reset],
+			["⛶", "全屏", () => openFullscreen(target)],
+		];
+		for (const [label, title, action] of actions) {
+			const button = document.createElement("button");
+			button.type = "button";
+			button.className = "diagram-control";
+			button.textContent = label;
+			button.title = title;
+			button.setAttribute("aria-label", title);
+			button.addEventListener("click", (event) => {
+				event.preventDefault();
+				action();
+			});
+			controls.append(button);
+		}
+		container.append(controls);
+
+		let dragging = false;
+		let startX = 0;
+		let startY = 0;
+		let originX = 0;
+		let originY = 0;
+		container.addEventListener("pointerdown", (event) => {
+			if (event.pointerType === "touch" || event.button !== 0) return;
+			if ((event.target as Element).closest(".diagram-controls")) return;
+			dragging = true;
+			startX = event.clientX;
+			startY = event.clientY;
+			originX = state.x;
+			originY = state.y;
+			container.setPointerCapture(event.pointerId);
+		});
+		container.addEventListener("pointermove", (event) => {
+			if (!dragging) return;
+			state.x = originX + event.clientX - startX;
+			state.y = originY + event.clientY - startY;
+			apply();
+		});
+		const end = () => {
+			dragging = false;
+		};
+		container.addEventListener("pointerup", end);
+		container.addEventListener("pointercancel", end);
+		container.addEventListener("dblclick", () =>
+			state.scale === 1 ? zoom(STEP * STEP) : reset(),
+		);
+	}
+
+	function openFullscreen(target: HTMLElement) {
+		const overlay = document.createElement("div");
+		overlay.className = "diagram-fullscreen";
+		const clone = target.cloneNode(true) as HTMLElement;
+		clone.removeAttribute("style");
+		const close = () => overlay.remove();
+		const closeButton = document.createElement("button");
+		closeButton.type = "button";
+		closeButton.className = "diagram-fullscreen-close";
+		closeButton.textContent = "×";
+		closeButton.setAttribute("aria-label", "关闭全屏图表");
+		closeButton.addEventListener("click", close);
+		overlay.append(clone, closeButton);
+		overlay.addEventListener("click", (event) => {
+			if (event.target === overlay) close();
+		});
+		const onKey = (event: KeyboardEvent) => {
+			if (event.key === "Escape") {
+				close();
+				document.removeEventListener("keydown", onKey);
+			}
+		};
+		document.addEventListener("keydown", onKey);
+		document.body.append(overlay);
+	}
+
+	function initAll(root: ParentNode = document) {
+		applyTheme(root);
+		root
+			.querySelectorAll<HTMLElement>(".diagram-container")
+			.forEach(initDiagram);
+	}
+
+	const themeObserver = new MutationObserver(() => applyTheme());
+	themeObserver.observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ["class"],
+	});
+	document.addEventListener("astro:page-load", () => initAll());
+	document.addEventListener("swup:pageView", () => initAll());
+	document.addEventListener("password:decrypted", () =>
+		requestAnimationFrame(() => initAll()),
+	);
+	initAll();
+</script>

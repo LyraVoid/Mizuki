@@ -353,3 +353,148 @@ a.card-github.fetch-error
   gap: 6px;
   z-index: 30;
   user-select: none;
+
+// Wiki Link 文章卡片
+a.card-wiki-link
+  display: flex
+  margin: 1rem 0
+  padding: 1rem 1.2rem
+  color: var(--tw-prose-body)
+  background: var(--license-block-bg)
+  border: 1px solid var(--line-divider)
+  border-radius: var(--radius-large)
+  text-decoration: none
+  transition: transform .15s ease, background-color .15s ease
+
+  &:hover
+    color: var(--tw-prose-body)
+    background: var(--btn-regular-bg-hover)
+    transform: translateY(-1px)
+
+    .wlc-title
+      color: var(--primary)
+
+  &:active
+    transform: scale(.99)
+
+  .wlc-info
+    display: flex
+    flex: 1
+    min-width: 0
+    flex-direction: column
+    gap: .4rem
+
+  .wlc-title
+    color: var(--tw-prose-headings)
+    font-size: 1.05rem
+    font-weight: 700
+    transition: color .15s ease
+
+  .wlc-description
+    font-size: .9rem
+    line-height: 1.5
+
+  .wlc-meta
+    display: flex
+    flex-wrap: wrap
+    align-items: center
+    gap: .35rem .75rem
+    font-size: .78rem
+    opacity: .8
+
+  .wlc-tags
+    display: flex
+    flex-wrap: wrap
+    gap: .35rem
+
+// PlantUML 与共享图表交互
+.diagram-container
+  position: relative
+  margin: 1rem 0
+  min-height: 8rem
+  overflow: hidden
+  border: 1px solid var(--line-divider)
+  border-radius: var(--radius-large)
+  background: var(--card-bg)
+  cursor: grab
+
+  &:active
+    cursor: grabbing
+
+.diagram-wrapper
+  display: flex
+  min-height: 8rem
+  align-items: center
+  justify-content: center
+  padding: 1.5rem
+
+.plantuml-image
+  display: block
+  max-width: 100%
+  max-height: 32rem
+  margin: 0 auto
+  user-select: none
+  transition: transform .12s ease-out
+
+.diagram-controls
+  position: absolute
+  z-index: 5
+  top: .5rem
+  right: .5rem
+  display: flex
+  gap: .25rem
+  padding: .25rem
+  border: 1px solid var(--line-divider)
+  border-radius: .65rem
+  background: var(--card-bg)
+  backdrop-filter: blur(8px)
+
+.diagram-control, .diagram-fullscreen-close
+  display: grid
+  width: 2rem
+  height: 2rem
+  place-items: center
+  color: var(--tw-prose-body)
+  border: 0
+  border-radius: .45rem
+  background: transparent
+  cursor: pointer
+
+  &:hover
+    color: var(--primary)
+    background: var(--btn-regular-bg-hover)
+
+.diagram-fullscreen
+  position: fixed
+  z-index: 10000
+  inset: 0
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: 3rem
+  background: rgba(15, 18, 25, .94)
+  backdrop-filter: blur(12px)
+
+  > svg, > img
+    max-width: 92vw
+    max-height: 88vh
+    object-fit: contain
+
+.diagram-fullscreen-close
+  position: absolute
+  top: 1rem
+  right: 1rem
+  width: 2.5rem
+  height: 2.5rem
+  font-size: 1.7rem
+  background: var(--btn-regular-bg)
+
+@media (max-width: 640px)
+  .diagram-wrapper
+    padding: 1rem
+
+  .diagram-controls
+    opacity: .85
+
+  .diagram-fullscreen
+    padding: 1rem

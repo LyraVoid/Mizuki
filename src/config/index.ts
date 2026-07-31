@@ -62,6 +62,7 @@ export { expressiveCodeConfig } from "./expressiveCodeConfig";
 export { footerConfig } from "./footerConfig";
 // ─── 内容与版权 ─────────────────────────────────────────────
 export { licenseConfig } from "./licenseConfig";
+export { markdownConfig } from "./markdownConfig";
 // ─── 多媒体 ─────────────────────────────────────────────────
 export { musicPlayerConfig } from "./musicConfig";
 // ─── 导航栏 ─────────────────────────────────────────────────
