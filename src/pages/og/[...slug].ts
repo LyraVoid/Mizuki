@@ -8,7 +8,9 @@ import { removeFileExtension } from "@/utils/url-utils";
 
 import { profileConfig, siteConfig } from "../../config";
 import { ImageResponse } from "takumi-js/response";
-import type { Font } from "takumi-js";
+import { setGlyphCacheMaxBytes, type Font } from "takumi-js";
+
+setGlyphCacheMaxBytes(32 * 1024 * 1024);
 
 export const prerender = true;
 
