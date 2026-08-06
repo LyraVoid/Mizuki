@@ -8,7 +8,7 @@ import { removeFileExtension } from "@/utils/url-utils";
 
 import { profileConfig, siteConfig } from "../../config";
 import { ImageResponse } from "takumi-js/response";
-import type { Font } from "takumi-js"
+import type { Font } from "takumi-js";
 
 export const prerender = true;
 
@@ -330,7 +330,7 @@ export async function GET({
 		format: "png",
 		fonts,
 		headers: {
-			"Cache-Control": "public, max-age=31536000, immutable"
-		}
-	})
+			"Cache-Control": "public, max-age=31536000, immutable",
+		},
+	});
 }
