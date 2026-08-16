@@ -1,6 +1,4 @@
-// Project data configuration file
-// Used to manage data for the project display page
-
+// Personal project data
 export interface Project {
 	id: string;
 	title: string;
@@ -21,123 +19,66 @@ export interface Project {
 
 export const projectsData: Project[] = [
 	{
-		id: "mizuki",
-		title: "Mizuki",
+		id: "python-dsa-lab",
+		title: "Python & DSA Lab",
 		description:
-			"A next-gen Material Design 3 blog theme built with Astro, featuring i18n, dark mode, and responsive design.",
-		image: "/assets/projects/mizuki.webp",
-		category: "web",
-		techStack: ["Astro", "TypeScript", "Tailwind CSS", "Svelte"],
-		status: "completed",
-		sourceCode: "https://github.com/LyraVoid/Mizuki",
-		visitUrl: "https://mizuki.mysqil.com",
-		startDate: "2024-01-01",
-		endDate: "2024-06-01",
-		featured: true,
-		tags: ["Blog", "Theme", "Open Source"],
-	},
-	{
-		id: "folkpatch",
-		title: "FolkPatch",
-		description:
-			"A kernel-level ROOT solution based on KernelPatch, with polished UI, APM module system, and KPM kernel module support.",
-		image: "/assets/projects/folkpatch.webp",
-		category: "mobile",
-		techStack: ["Kotlin", "Rust", "C++", "Java"],
+			"A collection of implementations and small experiments covering Python fundamentals, data structures, algorithms, and complexity analysis.",
+		image: "",
+		category: "desktop",
+		techStack: ["Python", "DSA"],
 		status: "in-progress",
-		sourceCode: "https://github.com/LyraVoid/FolkPatch",
-		visitUrl: "https://fp.mysqil.com",
-		startDate: "2024-03-01",
+		startDate: "2026-08-01",
 		featured: true,
-		tags: ["Android", "Root", "Kernel"],
-	},
-	{
-		id: "folktool",
-		title: "FolkTool",
-		description:
-			"A fast ROOT flashing tool for FolkPatch with a graphical interface and automated operations, simplifying the complex flashing process.",
-		image: "",
-		category: "desktop",
-		techStack: ["Flutter", "Dart", "C++", "CMake"],
-		status: "completed",
-		sourceCode: "https://github.com/LyraVoid/FolkTool",
-		startDate: "2026-02-01",
-		endDate: "2026-02-28",
-		tags: ["Android", "Tool", "Desktop"],
+		tags: ["Python", "Algorithms", "Computer Science"],
 		showImage: false,
 	},
 	{
-		id: "folkadb",
-		title: "FolkADB",
+		id: "binary-search",
+		title: "Algorithm Visualizer Experiments",
 		description:
-			"A portable ADB/Fastboot tool written in C, featuring interactive CLI, Tab completion, drag-and-drop module installation, and Shizuku activation.",
+			"Hands-on implementations of searching, sorting, trees, recursion, and traversal algorithms while building a strong CS foundation.",
 		image: "",
 		category: "desktop",
-		techStack: ["C"],
-		status: "completed",
-		sourceCode: "https://github.com/LyraVoid/FolkADB",
-		startDate: "2025-06-01",
-		endDate: "2026-01-01",
-		tags: ["Android", "ADB", "CLI"],
+		techStack: ["Python", "Algorithms"],
+		status: "in-progress",
+		startDate: "2026-08-01",
+		tags: ["DSA", "Algorithms", "Learning"],
 		showImage: false,
 	},
 	{
-		id: "folksplash",
-		title: "FolkSplash",
+		id: "ai-roadmap",
+		title: "AI Learning Roadmap",
 		description:
-			"A web-based splash.img visualizer for OPPO/Realme/OnePlus devices, supporting unpack, preview, replace, and repack.",
+			"A long-term learning track from computer science fundamentals toward machine learning, AI engineering, and research.",
 		image: "",
-		category: "web",
-		techStack: ["React", "TypeScript", "Vite", "Material-UI", "Zustand"],
-		status: "completed",
-		sourceCode: "https://github.com/LyraVoid/FolkSplash",
-		visitUrl: "https://splash.mysqil.com",
-		startDate: "2025-09-01",
-		endDate: "2025-10-01",
-		tags: ["Android", "Tool", "Frontend"],
+		category: "other",
+		techStack: ["Python", "Mathematics", "Machine Learning"],
+		status: "planned",
+		startDate: "2026-08-16",
+		featured: true,
+		tags: ["AI", "Machine Learning", "Research"],
 		showImage: false,
 	},
 ];
 
-// Get project statistics
 export const getProjectStats = () => {
 	const total = projectsData.length;
 	const completed = projectsData.filter((p) => p.status === "completed").length;
-	const inProgress = projectsData.filter(
-		(p) => p.status === "in-progress",
-	).length;
+	const inProgress = projectsData.filter((p) => p.status === "in-progress").length;
 	const planned = projectsData.filter((p) => p.status === "planned").length;
 
-	return {
-		total,
-		byStatus: {
-			completed,
-			inProgress,
-			planned,
-		},
-	};
+	return { total, byStatus: { completed, inProgress, planned } };
 };
 
-// Get projects by category
 export const getProjectsByCategory = (category?: string) => {
-	if (!category || category === "all") {
-		return projectsData;
-	}
-	return projectsData.filter((p) => p.category === category);
+	if (!category || category === "all") return projectsData;
+	return projectsData.filter((project) => project.category === category);
 };
 
-// Get featured projects
-export const getFeaturedProjects = () => {
-	return projectsData.filter((p) => p.featured);
-};
+export const getFeaturedProjects = () => projectsData.filter((project) => project.featured);
 
-// Get all tech stacks
 export const getAllTechStack = () => {
 	const techSet = new Set<string>();
-	projectsData.forEach((project) => {
-		project.techStack.forEach((tech) => {
-			techSet.add(tech);
-		});
-	});
+	projectsData.forEach((project) => project.techStack.forEach((tech) => techSet.add(tech)));
 	return Array.from(techSet).sort();
 };
