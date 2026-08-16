@@ -8,6 +8,11 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Projects,
 		LinkPreset.Skills,
 		LinkPreset.Timeline,
+		{
+			name: "Devices",
+			url: "/devices/",
+			icon: "material-symbols:devices",
+		},
 		LinkPreset.AITools,
 		LinkPreset.About,
 	],
