@@ -3,19 +3,13 @@ import type { SiteConfig } from "../types/config";
 const SITE_LANG = "en";
 
 export const siteConfig: SiteConfig = {
-	title: "Youssef",
-	subtitle: "AI & Computer Science Journey",
+	title: "0xjoyo",
+	subtitle: "CS foundations, AI, projects, and the learning process",
 	siteURL: "https://0xjoyo.github.io/Mizuki_joyo-_edition/",
 	siteStartDate: "2026-08-16",
 	timeZone: "Africa/Cairo",
-
 	lang: SITE_LANG,
-
-	themeColor: {
-		hue: 210,
-		fixed: false,
-	},
-
+	themeColor: { hue: 210, fixed: false },
 	featurePages: {
 		anime: false,
 		diary: false,
@@ -24,67 +18,30 @@ export const siteConfig: SiteConfig = {
 		skills: true,
 		timeline: true,
 		albums: false,
-		devices: false,
+		devices: true,
 		aiTools: true,
 	},
-
 	navbarTitle: {
 		mode: "text-icon",
-		text: "Youssef",
+		text: "0xjoyo",
 		icon: "assets/home/home.webp",
 		logo: "assets/home/default-logo.webp",
 	},
-
-	pageScaling: {
-		enable: false,
-		targetWidth: 2000,
-	},
-
-	font: {
-		mode: "custom",
-	},
-
-	bangumi: {
-		userId: "",
-		fetchOnDev: false,
-	},
-
-	bilibili: {
-		vmid: "",
-		fetchOnDev: false,
-		coverMirror: "",
-		useWebp: true,
-	},
-
-	anime: {
-		mode: "local",
-	},
-
+	pageScaling: { enable: false, targetWidth: 2000 },
+	font: { mode: "custom" },
+	bangumi: { userId: "", fetchOnDev: false },
+	bilibili: { vmid: "", fetchOnDev: false, coverMirror: "", useWebp: true },
+	anime: { mode: "local" },
 	diaryApiUrl: "",
-
 	postListLayout: {
 		defaultMode: "list",
 		enable: true,
 		allowSwitch: true,
-		categoryBar: {
-			enable: true,
-		},
+		categoryBar: { enable: true },
 	},
-
-	ultrawidePostLayout: {
-		enable: true,
-		allowSwitch: true,
-	},
-
-	tagStyle: {
-		useNewStyle: true,
-	},
-
-	wallpaperMode: {
-		defaultMode: "banner",
-		showModeSwitchOnMobile: "both",
-	},
-
+	ultrawidePostLayout: { enable: true, allowSwitch: true },
+	tagStyle: { useNewStyle: true },
+	wallpaperMode: { defaultMode: "banner", showModeSwitchOnMobile: "both" },
 	banner: {
 		src: {
 			desktop: [
@@ -101,48 +58,24 @@ export const siteConfig: SiteConfig = {
 			],
 		},
 		position: "center",
-		carousel: {
-			enable: true,
-			interval: 5,
-			switchable: true,
-		},
-		waves: {
-			enable: true,
-			performanceMode: false,
-			mobileDisable: false,
-			switchable: true,
-		},
-		imageApi: {
-			enable: false,
-			url: "",
-		},
+		carousel: { enable: true, interval: 5, switchable: true },
+		waves: { enable: true, performanceMode: false, mobileDisable: false, switchable: true },
+		imageApi: { enable: false, url: "" },
 		homeText: {
 			enable: true,
-			title: "Youssef's Lab",
+			title: "0xjoyo",
 			switchable: true,
 			subtitle: [
-				"Learning CS from the ground up.",
-				"Building toward AI and research.",
-				"Python, DSA, systems, mathematics, and AI.",
-				"Documenting the process, one project at a time.",
+				"Building CS fundamentals from the ground up.",
+				"Python, DSA, systems, networking, and Linux.",
+				"Working toward machine learning and AI.",
+				"Documenting the process instead of pretending to have finished it.",
 			],
-			typewriter: {
-				enable: true,
-				speed: 80,
-				deleteSpeed: 40,
-				pauseTime: 2500,
-			},
+			typewriter: { enable: true, speed: 80, deleteSpeed: 40, pauseTime: 2500 },
 		},
-		credit: {
-			enable: false,
-			text: "",
-			url: "",
-		},
-		navbar: {
-			transparentMode: "semifull",
-		},
+		credit: { enable: false, text: "", url: "" },
+		navbar: { transparentMode: "semifull" },
 	},
-
 	toc: {
 		enable: true,
 		mobileTop: true,
@@ -155,24 +88,10 @@ export const siteConfig: SiteConfig = {
 	generateOgImages: false,
 	favicon: [],
 	showLastModified: true,
-	pageProgressBar: {
-		enable: true,
-		height: 3,
-		duration: 6000,
-	},
-	thirdPartyAnalytics: {
-		enable: false,
-		clarityId: "",
-	},
-	card: {
-		border: true,
-		followTheme: false,
-	},
-	imageOptimization: {
-		formats: "webp",
-		quality: 85,
-		noReferrerDomains: ["*.hdslb.com"],
-	},
+	pageProgressBar: { enable: true, height: 3, duration: 6000 },
+	thirdPartyAnalytics: { enable: false, clarityId: "" },
+	card: { border: true, followTheme: false },
+	imageOptimization: { formats: "webp", quality: 85, noReferrerDomains: ["*.hdslb.com"] },
 };
 
 export { SITE_LANG };
