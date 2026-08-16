@@ -3,7 +3,7 @@ import type { ProfileConfig } from "../types/config";
 // Personal profile configuration
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/avatar.webp",
-	name: "Youssef Joyo",
+	name: "0xjoyo",
 	bio: "AI & Computer Science learner building from fundamentals to research.",
 	typewriter: {
 		enable: true,
