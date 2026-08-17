@@ -339,6 +339,6 @@ Thanks to all contributors for their contributions to this project. If you have 
 
 ## ⭐ Star History
 
-## [![Star History Chart](https://api.star-history.com/svg?repos=LyraVoid/Mizuki&type=Date)](https://star-history.com/#LyraVoid/Mizuki&Date)
+## [![Star History Chart](https://star-history.dera.page/svg?repos=LyraVoid/Mizuki&type=Date)](https://star-history.dera.page/#LyraVoid/Mizuki&Date)
 
 ⭐ If you find this project helpful, please consider giving it a star!
