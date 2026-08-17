@@ -335,6 +335,6 @@ Markdown 增强功能的部分实现基于 [Firefly](https://github.com/CuteLeaf
 
 ## ⭐ Star History
 
-## [![Star History Chart](https://api.star-history.com/svg?repos=LyraVoid/Mizuki&type=Date)](https://star-history.com/#LyraVoid/Mizuki&Date)
+## [![Star History Chart](https://star-history.dera.page/svg?repos=LyraVoid/Mizuki&type=Date)](https://star-history.dera.page/#LyraVoid/Mizuki&Date)
 
 ⭐ 如果您觉得这个项目有帮助，请考虑给它一个星标!

@@ -330,6 +330,6 @@ Mizuki-Content/
 
 ## ⭐ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=LyraVoid/Mizuki&type=Date)](https://star-history.com/#LyraVoid/Mizuki&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=LyraVoid/Mizuki&type=Date)](https://star-history.dera.page/#LyraVoid/Mizuki&Date)
 
 ⭐ 如果您覺得這個專案有幫助，請考慮給它一個星標！
