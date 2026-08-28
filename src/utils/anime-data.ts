@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import type { SiteConfig } from "../types/config";
+
 import localAnimeList from "../data/anime";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
@@ -73,7 +75,9 @@ export function loadAnimeData(filename: string): AnimeItem[] {
 	}
 }
 
-export function getAnimeSourceConfigs(): Record<string, AnimeSourceConfig> {
+export function getAnimeSourceConfigs(
+	siteConfig: SiteConfig,
+): Record<string, AnimeSourceConfig> {
 	return {
 		local: {
 			type: "local",
@@ -82,13 +86,13 @@ export function getAnimeSourceConfigs(): Record<string, AnimeSourceConfig> {
 		bilibili: {
 			type: "json",
 			filename: "bilibili-data.json",
-			fetchOnDev: undefined,
+			fetchOnDev: siteConfig.bilibili?.fetchOnDev,
 			emptyDescription: i18n(I18nKey.animeEmptyBilibili),
 		},
 		bangumi: {
 			type: "json",
 			filename: "bangumi-data.json",
-			fetchOnDev: undefined,
+			fetchOnDev: siteConfig.bangumi?.fetchOnDev,
 			emptyDescription: i18n(I18nKey.animeEmptyBangumi),
 		},
 	};
