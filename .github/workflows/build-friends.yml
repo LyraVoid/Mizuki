@@ -1,0 +1,30 @@
+name: Build Friends Data
+
+'on':
+  issues:
+    types: [labeled, closed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Trigger when the repo owner approves a friend link or closes an issue
+    if: (github.event.label.name == 'friends:approved' || github.event.action == 'closed') && github.event.sender.login == github.repository_owner
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build friends.ts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUES_REPO: ${{ github.repository }}
+          APPROVED_LABEL: "friends:approved"
+          OWNER_LOGIN: ${{ github.repository_owner }}
+          DEFAULT_TAGS: '["Friends"]'
+          OUTPUT_FILE: src/data/friends.ts
+        run: node .github/scripts/build-friends.js

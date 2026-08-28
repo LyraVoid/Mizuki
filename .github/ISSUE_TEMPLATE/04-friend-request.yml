@@ -1,0 +1,58 @@
+name: 友链申请
+description: 提交你的友链申请，申请将在审核通过后自动收录
+title: "[友链申请] 你的站点名称"
+labels: ["待审核"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 👋 感谢申请友链！
+        请按照以下格式填写你的站点信息，审核通过后将自动收录。
+        
+        **填写须知：**
+        - 站点链接和头像链接请确保以 `https://` 开头且可以正常访问
+        - 站点描述建议控制在 30 字以内，过长会被截断显示
+        - 提交后请耐心等待审核，审核结果会通过标签变更体现
+
+  - type: input
+    id: title
+    attributes:
+      label: 站点名称
+      placeholder: 例：拾光小阁
+    validations:
+      required: true
+
+  - type: input
+    id: siteurl
+    attributes:
+      label: 站点链接
+      placeholder: 例：https://blog.bear556.top/
+      description: 请确保链接以 https:// 开头且可以正常访问
+    validations:
+      required: true
+
+  - type: input
+    id: imgurl
+    attributes:
+      label: 头像链接
+      description: 请确保图片链接以 https:// 开头且可以正常访问，建议使用正方形图片
+    validations:
+      required: true
+
+  - type: input
+    id: desc
+    attributes:
+      label: 站点描述
+      description: 建议控制在 30 字以内
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 确认事项
+      options:
+        - label: 我的站点可以正常访问，且内容健康合规
+          required: true
+        - label: 我已了解申请将经过人工审核，结果以标签变更为准
+          required: true
