@@ -20,40 +20,34 @@ Usage: npm run new-post -- <filename>`);
 	process.exit(1); // Terminate the script and return error code 1
 }
 
-let fileName = args[0];
-
-// Add .md extension if not present
-const fileExtensionRegex = /\.(md|mdx)$/i;
-if (!fileExtensionRegex.test(fileName)) {
-	fileName += ".md";
-}
-
+const postName = args[0].replace(/\.(md|mdx)$/i, "");
 const targetDir = "./src/content/posts/";
-const fullPath = path.join(targetDir, fileName);
+const postDir = path.join(targetDir, postName);
+const fullPath = path.join(postDir, "index.md");
+const legacyPaths = [`${postDir}.md`, `${postDir}.mdx`];
 
-if (fs.existsSync(fullPath)) {
-	console.error(`Error: File ${fullPath} already exists `);
+if (fs.existsSync(fullPath) || legacyPaths.some((filePath) => fs.existsSync(filePath))) {
+	console.error(`Error: Post ${postName} already exists`);
 	process.exit(1);
 }
 
 // recursive mode creates multi-level directories
-const dirPath = path.dirname(fullPath);
-if (!fs.existsSync(dirPath)) {
-	fs.mkdirSync(dirPath, { recursive: true });
+if (!fs.existsSync(postDir)) {
+	fs.mkdirSync(postDir, { recursive: true });
 }
 
 const content = `---
-title: ${args[0]}
+title: ${path.basename(postName)}
 published: ${getDate()}
 description: ''
 image: ''
 tags: []
 category: ''
-draft: false 
+draft: false
 lang: ''
 ---
 `;
 
-fs.writeFileSync(path.join(targetDir, fileName), content);
+fs.writeFileSync(fullPath, content);
 
 console.log(`Post ${fullPath} created`);
