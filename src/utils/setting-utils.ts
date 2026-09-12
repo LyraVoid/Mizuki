@@ -1,7 +1,17 @@
 import { DARK_MODE, DEFAULT_THEME, LIGHT_MODE } from "@constants/constants";
 
-import { fullscreenWallpaperConfig, sakuraConfig, siteConfig } from "@/config";
+import {
+	fullscreenWallpaperConfig,
+	rainyDayConfig,
+	sakuraConfig,
+	siteConfig,
+} from "@/config";
 import type { LIGHT_DARK_MODE, WALLPAPER_MODE } from "@/types/config";
+import type {
+	RainyBannerMode,
+	RainyFullscreenMode,
+	RainyPrefs,
+} from "@/utils/rainy-day-options";
 
 export function getDefaultHue(): number {
 	const fallback = "250";
@@ -133,6 +143,34 @@ export function setWallpaperMode(mode: WALLPAPER_MODE): void {
 	localStorage.setItem("wallpaperMode", mode);
 	window.dispatchEvent(
 		new CustomEvent("wallpaper-mode-change", { detail: { mode } }),
+	);
+}
+
+// ─── Rainy Day 雨滴特效偏好 ──────────────────────────────────
+// 「外观设置」面板的特效区可切换；RainyDay 组件监听事件即时增删雨层。
+// 注意：总开关是 src/config/rainyDayConfig.ts 的 enable（构建期），这里只存档位。
+
+export function getStoredRainyPrefs(): RainyPrefs {
+	const banner = localStorage.getItem(
+		"rainyInBanner",
+	) as RainyBannerMode | null;
+	const fullscreen = localStorage.getItem(
+		"rainyInFullscreen",
+	) as RainyFullscreenMode | null;
+	return {
+		banner: banner ?? rainyDayConfig.defaultInBannerMode,
+		fullscreen: fullscreen ?? rainyDayConfig.defaultInFullscreenMode,
+	};
+}
+
+export function setRainyPrefs(patch: Partial<RainyPrefs>): void {
+	if (patch.banner) localStorage.setItem("rainyInBanner", patch.banner);
+	if (patch.fullscreen) {
+		localStorage.setItem("rainyInFullscreen", patch.fullscreen);
+	}
+	// 通知 RainyDay 即时切换（无需刷新页面）
+	window.dispatchEvent(
+		new CustomEvent("rainy-prefs-change", { detail: getStoredRainyPrefs() }),
 	);
 }
 

@@ -6,6 +6,7 @@ import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-s
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
 import tailwindcss from "@tailwindcss/vite";
+import path from "node:path";
 import { defineConfig, fontProviders } from "astro/config";
 import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
@@ -25,6 +26,7 @@ import {
 	expressiveCodeConfig,
 	markdownConfig,
 	permalinkConfig,
+	rainyDayConfig,
 	siteConfig,
 } from "./src/config/index.ts";
 import { buildIconInclude } from "./src/plugins/astro-icon-include.mjs";
@@ -50,6 +52,47 @@ import { remarkWikiLink } from "./src/plugins/remark-wiki-link.mjs";
 import { resolveFontMode } from "./src/utils/fontMode.ts";
 
 const customFontsEnabled = resolveFontMode(siteConfig) === "custom";
+
+/**
+ * 雨滴窗口特效（src/config/rainyDayConfig.ts）的「关闭态」构建处理
+ *
+ * 主布局里写的是 `{rainyDayConfig.enable && <RainyDay />}`，但 Astro 里的静态
+ * import 一定会进模块图 → Rollup 会为 RainyDay.astro 的脚本、以及它动态引入的
+ * @arayui/rainy-day（含 Three.js）生成 chunk，即使它们永远不会被渲染/请求，
+ * 文件仍会留在 dist/ 里。所以 enable=false 时在这里把 import 重定向到空组件，
+ * 让相关代码彻底不进产物（开启时不做任何改动）。
+ */
+const rainyDayEnabled = rainyDayConfig.enable;
+
+/**
+ * 关闭雨滴时用的替身解析插件
+ *
+ * 为什么用插件而不是 vite.resolve.alias：Astro 会把 tsconfig 的 paths
+ * （`@components/*` → `src/components/*`）也塞进 resolve.alias，且排在用户别名之前，
+ * 于是 `@components/common/RainyDay.astro` 会先被解析成真实文件，别名永远不命中。
+ * `enforce: "pre"` 的 resolveId 会跑在 Astro 的所有插件之前，能稳定拦下这个 import。
+ */
+const rainyDayDisabledPlugin = {
+	name: "mizuki:rainy-day-disabled",
+	enforce: "pre",
+	resolveId(source) {
+		// 同一支组件会以多种写法出现：别名（@components/...）、被 Astro 改写成相对路径
+		// （../../components/...）、以及绝对路径 —— 都要拦。带 ?astro&type=... 的是它的
+		// 子资源请求；只要上面几种入口都被拦下，这些子资源就不会再出现。
+		const [id, query] = source.split("?");
+		if (query) return null;
+		if (
+			id === "@components/common/RainyDay.astro" ||
+			id.endsWith("components/common/RainyDay.astro")
+		) {
+			return path.resolve(
+				process.cwd(),
+				"src/components/common/RainyDayDisabled.astro",
+			);
+		}
+		return null;
+	},
+};
 
 // https://astro.build/config
 export default defineConfig({
@@ -319,7 +362,7 @@ export default defineConfig({
 		}),
 	},
 	vite: {
-		plugins: [tailwindcss()],
+		plugins: [tailwindcss(), ...(rainyDayEnabled ? [] : [rainyDayDisabledPlugin])],
 		// 开发环境预打包优化：将常用依赖提前编译，避免首次页面加载时 on-demand 编译导致 8s+ 的等待
 		optimizeDeps: {
 			include: [

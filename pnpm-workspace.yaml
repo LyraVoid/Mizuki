@@ -3,6 +3,7 @@ allowBuilds:
   sharp: true
   ttf2woff2: true
 minimumReleaseAgeExclude:
+  - '@arayui/rainy-day'
   - oddmisc
   - '@astrojs/*'
   - astro

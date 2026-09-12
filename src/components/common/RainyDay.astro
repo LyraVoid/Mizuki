@@ -1,0 +1,912 @@
+---
+/**
+ * 雨滴窗口特效（纯脚本组件，不渲染任何 DOM）
+ *
+ * 关键设计：
+ *   1) 特效库的 shader 输出 alpha 恒为 1（不透明）且自带背景图 → 每个实例只能有一种背景。
+ *      挂载点按「壁纸模式 + 用户偏好」决定（可同时挂载多个）：
+ *        banner               → #banner-wrapper 内，背景 = 当前横幅图（z-[1]，低于水波纹 z-5）
+ *        viewport-fullscreen  → body 下的 fixed 全屏层，背景 = 由 --page-bg 生成的极淡同色微渐变
+ *                               （z-[9]：在横幅 z-10 之下 → 上方图片区看到的是"图 + 雨"，
+ *                                下方征文区看到的是"干净背景 + 雨"，**底层不含任何图片**）
+ *        wallpaper-fullscreen → [data-fullscreen-wallpaper] 内，背景 = 当前全屏壁纸
+ *   2) 「横幅模式 + 全屏」= banner + viewport-fullscreen 两个实例同时挂载：
+ *        上方图片区（横幅 35vh）→ 实例 A：横幅图 + 雨
+ *        下方征文区（主内容）  → 实例 B：页面背景色微渐变 + 雨（没有图片，卡片文字不受影响）
+ *      这是"全屏雨"在横幅模式下唯一正确的形态：图片只属于横幅区，不会铺到征文区底层。
+ *   3) 换图过渡用「双层真交叉淡入」：新建一层渲染新图并淡入，完成后销毁旧实例/旧层。
+ *      这样全程不透明，**不会露出横幅自身的 Ken Burns / crossfade**，也不会露出水波纹交界。
+ *      交叉时长直接读轮播自己的过渡时长（横幅读 #banner-carousel 的 data-fade-ms）。
+ *   4) 征文区底色跟随明暗主题：主题切换没有派发事件 → 用 MutationObserver 观察 <html> 的 class。
+ *
+ *   5) 总开关是 src/config/rainyDayConfig.ts 的 enable（本地文件，改完需重新 build）；
+ *      档位由「外观设置」面板的特效区控制（src/components/features/settings/SettingsPanel.svelte），
+ *      改动会派发 rainy-prefs-change → 本组件即时增删雨层，无需刷新。
+ *      enable=false 时 MainGridLayout 不会渲染本组件，这份脚本与 @arayui/rainy-day
+ *      （内含 Three.js）都不会进产物 —— 即"整个板块不存在"。
+ */
+---
+
+<script>
+	import { fullscreenWallpaperConfig, siteConfig } from "@/config";
+	import { rainyDayConfig as cfg } from "@/config/rainyDayConfig";
+	import {
+		applyRainyOptions,
+		deriveGradientStops,
+		resolveBgFadeMs,
+		resolveRainyPlacements,
+		type RainyControlLike,
+		type RainyOptionPatch,
+		type RainyOptionsSnapshot,
+		type RainyPlacement,
+		type RainyPrefs,
+	} from "@utils/rainy-day-options";
+	import { getStoredRainyPrefs } from "@utils/setting-utils";
+
+	interface RainyInstance extends RainyControlLike {
+		pause: () => void;
+		resume: () => void;
+		destroy: () => void;
+		/**
+		 * 上游实例内部的三方 renderer（私有字段，这里只用它修正 HiDPI 的渲染像素比）
+		 *
+		 * 为什么需要：见 createInstance() 里的详细说明 —— 不把像素比压回 1，
+		 * 4K/Retina（devicePixelRatio≠1）下背景贴图会错位（壁纸"被拉伸"）。
+		 */
+		renderer?: { setPixelRatio?: (ratio: number) => void };
+	}
+
+	const win = window as Window & {
+		__rainyDayReady?: boolean;
+		__rainyDay?: unknown;
+		setRainyOptions?: (patch: RainyOptionPatch) => Promise<unknown>;
+		getRainyOptions?: () => unknown;
+		getRainyDebug?: () => unknown;
+	};
+
+	const LAYER_CLASS = "absolute inset-0 pointer-events-none";
+
+	/**
+	 * 各挂载位置：父元素 + wrapper id + wrapper class（id 区分多层，便于调试）
+	 *
+	 * 注：本项目的 #header-waves 只在 (width < 1280px) 有 z-index: 5，桌面端是 z-auto，
+	 * 而雨层是定位元素 + z-index: 1（一定画在 z-auto 兄弟之上）→ 会把桌面端的水波纹
+	 * 压到雨层下面。本组件底部的全局样式在雨层存在时把水波纹提到 z-index: 2，
+	 * 保证「图 + 雨 + 水波纹」三者共存。
+	 */
+	const MOUNT_TARGETS: Record<
+		RainyPlacement,
+		{ parent: string; id: string; className: string }
+	> = {
+		banner: {
+			parent: "#banner-wrapper",
+			id: "rainy-window",
+			className: "absolute inset-0 z-[1] pointer-events-none",
+		},
+		"viewport-fullscreen": {
+			parent: "body",
+			// z-[9] < 横幅 z-10：横幅图片、文字与流动水波纹始终可见；
+			// 底色是 --page-bg 的微渐变（不是图片）→ 征文区底层绝不会出现壁纸图
+			id: "rainy-window-fullscreen",
+			className: "fixed inset-0 z-[9] pointer-events-none",
+		},
+		"wallpaper-fullscreen": {
+			parent: "[data-fullscreen-wallpaper]",
+			id: "rainy-window-wallpaper",
+			className: "absolute inset-0 pointer-events-none",
+		},
+	};
+
+	/** 只有"横幅内"这一个位置的背景来自横幅轮播换图 */
+	function usesBannerCarousel(p: RainyPlacement): boolean {
+		return p === "banner";
+	}
+
+	/** 该位置是否需要跟随轮播换图（征文区的底色是渐变，只在主题变化时重建） */
+	function followsCarousel(p: RainyPlacement): boolean {
+		return p !== "viewport-fullscreen";
+	}
+
+	/** 单个挂载点的运行状态（一个位置一套实例，互不干扰） */
+	interface RainyCtx {
+		wrapper: HTMLDivElement;
+		layer: HTMLDivElement;
+		instance: RainyInstance;
+		observer: MutationObserver | null;
+		swapping: boolean;
+		pendingBg: string | null;
+	}
+
+	const contexts = new Map<RainyPlacement, RainyCtx>();
+	/** 正在挂载中的位置（防止异步 import 期间重复挂载） */
+	const mounting = new Set<RainyPlacement>();
+	/** 主实例位置（banner 优先）：用于 __rainyDay 调试句柄 */
+	let mainPlacement: RainyPlacement | null = null;
+	/** 征文区渐变底色的缓存（key = 解析出的 --page-bg） */
+	let gradientCache: { key: string; url: string } | null = null;
+	/** 征文区当前已应用的底色 key（只有它真的变了才重建，避免无谓的换图） */
+	let appliedGradientKey: string | null = null;
+	/** 调试用：征文区贴图中心 texel 的实际 RGB（核对补偿是否正确） */
+	let gradientCenterSample: [number, number, number] | null = null;
+
+	let currentOptions: RainyOptionsSnapshot = {
+		intensity: cfg.intensity,
+		speed: cfg.speed,
+		brightness: cfg.brightness,
+		normal: cfg.normal,
+		zoom: cfg.zoom,
+		blurIntensity: cfg.blurIntensity,
+		blurIterations: cfg.blurIterations,
+		panning: cfg.panning,
+		postProcessing: cfg.postProcessing,
+		lightning: cfg.lightning,
+		textureFill: true,
+		fps: cfg.fps,
+	};
+
+	// ---------- 环境检测 ----------
+	const mobileMQ = window.matchMedia("(max-width: 767px)");
+	const reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+	const hasWebGL = (() => {
+		try {
+			const c = document.createElement("canvas");
+			return !!(c.getContext("webgl") || c.getContext("experimental-webgl"));
+		} catch {
+			return false;
+		}
+	})();
+
+	function envBlocked(el: HTMLElement): boolean {
+		return (
+			!hasWebGL ||
+			(cfg.respectReducedMotion && reduceMQ.matches) ||
+			(cfg.disableOnMobile && mobileMQ.matches) ||
+			el.clientWidth === 0 ||
+			el.clientHeight === 0
+		);
+	}
+
+	// ---------- 读取"当前可见的背景图" ----------
+	function isDisplayed(el: Element): boolean {
+		return getComputedStyle(el as HTMLElement).display !== "none";
+	}
+
+	function imgSrc(img: HTMLImageElement | null | undefined): string | undefined {
+		if (!img) return undefined;
+		return img.currentSrc || img.src || undefined;
+	}
+
+	function pickVisibleImage(p: RainyPlacement): string | undefined {
+		if (usesBannerCarousel(p)) {
+			// 横幅：crossfade 期间存在新旧两个 slot（新层在旧层之后）→ 取最后一个
+			const slots = Array.from(
+				document.querySelectorAll<HTMLElement>(
+					".banner-image-slot-desktop, .banner-image-slot-mobile",
+				),
+			).filter((el) => isDisplayed(el) && el.querySelector("img"));
+			const current = slots[slots.length - 1];
+			if (current) {
+				const imgs = current.querySelectorAll<HTMLImageElement>("img");
+				return imgSrc(imgs[imgs.length - 1]);
+			}
+			// 单图 / 随机单图模式：本项目允许在设置面板里关掉轮播（bannerCarouselEnabled），
+			// 那时横幅里没有 slot —— 若不兜底取图，雨会整层消失。这里退回容器里的当前图。
+			const single = document.querySelector<HTMLImageElement>(
+				"#banner-single-container img",
+			);
+			if (single) return imgSrc(single);
+			const any = document.querySelectorAll<HTMLImageElement>(
+				"#banner-wrapper img",
+			);
+			return imgSrc(any[any.length - 1]);
+		}
+
+		// 全屏壁纸：取 opacity 最大（当前显示）的那一项
+		const items = Array.from(
+			document.querySelectorAll<HTMLElement>("[data-carousel-item]"),
+		).filter(isDisplayed);
+		let best: HTMLElement | undefined;
+		let bestOpacity = -1;
+		for (const el of items) {
+			const parsed = Number.parseFloat(el.style.opacity || "1");
+			const value = Number.isFinite(parsed) ? parsed : 1;
+			if (value > bestOpacity) {
+				bestOpacity = value;
+				best = el;
+			}
+		}
+		const img =
+			best instanceof HTMLImageElement
+				? best
+				: best?.querySelector<HTMLImageElement>("img");
+		return imgSrc(img);
+	}
+
+	// ---------- 征文区（视口全屏层）的底色：--page-bg 的同色系极淡微渐变 ----------
+	/** 读取当前解析后的页面背景色（如 "oklch(0.95 0.01 240)" / "rgb(242, 242, 245)"） */
+	function pageBackgroundRaw(): string {
+		try {
+			return getComputedStyle(document.documentElement)
+				.getPropertyValue("--page-bg")
+				.trim();
+		} catch {
+			return "";
+		}
+	}
+
+	/**
+	 * 生成征文区（视口全屏层）要用的"干净背景"贴图（带缓存）
+	 *
+	 * 两个要点：
+	 *  1) 不用纯色：雨滴靠"折射背景细节"才看得见 → 用 --page-bg 亮度 ±0.02 的同色系
+	 *     极淡渐变，观感仍是干净背景，但雨滴清晰。
+	 *  2) 逆向补偿着色器末尾的乘性步骤（只用 texel 自身坐标，与屏幕尺寸无关，可精确反算）：
+	 *       u_brightness : finalColor *= brightness      → 整幅变暗
+	 *       边缘暗角      : finalColor *= 1 - dot(d, d)   → 左右两侧变暗
+	 *     补偿后画面中心≈页面原色，两侧保留柔和暗角（雨滴"湿玻璃"质感的来源）。
+	 *
+	 * 注：`postProcessing` 的 `finalColor *= vec3(0.8, 0.9, 1.3)`（整屏偏蓝）在浅色底上
+	 * 无法用 8bit 贴图抵消（浅色没有提亮余量）→ 改为对该层关闭 postProcessing，
+	 * 见 PLACEMENT_OVERRIDES。
+	 *
+	 * 返回 undefined 时调用方会跳过挂载 —— 否则特效库会去加载它自带的 picsum 占位图。
+	 */
+	function viewportGradientUrl(): string | undefined {
+		const raw = pageBackgroundRaw();
+		if (!raw) return undefined;
+		if (gradientCache?.key === raw) return gradientCache.url;
+
+		const stops = deriveGradientStops(raw);
+		if (!stops) return undefined;
+
+		try {
+			const W = 64;
+			const H = 128;
+			const canvas = document.createElement("canvas");
+			canvas.width = W;
+			canvas.height = H;
+			const ctx2d = canvas.getContext("2d");
+			if (!ctx2d) return undefined;
+
+			const gradient = ctx2d.createLinearGradient(0, 0, 0, H);
+			gradient.addColorStop(0, stops.from);
+			gradient.addColorStop(1, stops.to);
+			ctx2d.fillStyle = gradient;
+			ctx2d.fillRect(0, 0, W, H);
+
+			// 逆向补偿：抵消亮度衰减与暗角，让输出精确回到 --page-bg 原色
+			// （texel = 页面原色 / (亮度 × 暗角 × 渲染增益)，8bit 内不会溢出）
+			// 另加一层极淡的细纹：让"雨滴折射"有细节可作用（纯平滑底色上雨滴几乎看不见）
+			const image = ctx2d.getImageData(0, 0, W, H);
+			const data = image.data;
+			for (let y = 0; y < H; y++) {
+				const ty = (y + 0.5) / H - 0.5;
+				for (let x = 0; x < W; x++) {
+					const tx = (x + 0.5) / W - 0.5;
+					const vignette = Math.max(
+						VIEWPORT_VIGNETTE_MIN,
+						1 - (tx * tx + ty * ty),
+					);
+					const grain = grainAt(x, y) * VIEWPORT_GRAIN_AMPLITUDE;
+					const gain = 1 / (VIEWPORT_BAKE_DIVISOR * vignette);
+					const i = (y * W + x) * 4;
+					// 细纹也按同样的倍率补偿，保证它在输出里保持 1:1 的可见幅度
+					data[i] = clampByte((data[i] + grain) * gain);
+					data[i + 1] = clampByte((data[i + 1] + grain) * gain);
+					data[i + 2] = clampByte((data[i + 2] + grain) * gain);
+				}
+			}
+			ctx2d.putImageData(image, 0, 0);
+			// 调试用：记录贴图中心 texel 的实际字节值（用于核对补偿是否正确）
+			const ci = ((H >> 1) * W + (W >> 1)) * 4;
+			gradientCenterSample = [data[ci], data[ci + 1], data[ci + 2]];
+
+			const url = canvas.toDataURL("image/png");
+			gradientCache = { key: raw, url };
+			return url;
+		} catch {
+			return undefined;
+		}
+	}
+
+	/** 该挂载位置应该使用的背景素材 */
+	function backgroundFor(p: RainyPlacement): string | undefined {
+		if (p === "viewport-fullscreen") return viewportGradientUrl();
+		return pickVisibleImage(p);
+	}
+
+	// ---------- 读取轮播自身的过渡时长（用于对齐交叉淡入）----------
+	function readBannerFadeMs(): number | null {
+		const carousel = document.getElementById("banner-carousel");
+		const raw = carousel?.dataset?.fadeMs;
+		if (!raw) return null;
+		const parsed = Number.parseInt(raw, 10);
+		return Number.isFinite(parsed) ? parsed : null;
+	}
+
+	function readWallpaperFadeMs(): number | null {
+		const item = document.querySelector<HTMLElement>("[data-carousel-item]");
+		if (!item) return null;
+		const first = getComputedStyle(item).transitionDuration.split(",")[0]?.trim();
+		if (!first) return null;
+		const value = first.endsWith("ms")
+			? Number.parseFloat(first)
+			: Number.parseFloat(first) * 1000;
+		return Number.isFinite(value) && value > 0 ? Math.round(value) : null;
+	}
+
+	function currentFadeMs(p: RainyPlacement): number {
+		const fromCarousel = followsCarousel(p)
+			? usesBannerCarousel(p)
+				? readBannerFadeMs()
+				: readWallpaperFadeMs()
+			: null;
+		return resolveBgFadeMs(fromCarousel, cfg.bgFadeMs);
+	}
+
+	// ---------- 参数构造（继承 currentOptions，保证控制台调参在换图后仍生效）----------
+	function num(value: unknown, fallback: number): number {
+		return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+	}
+	function bool(value: unknown, fallback: boolean): boolean {
+		return typeof value === "boolean" ? value : fallback;
+	}
+	/** 贴图细纹的伪随机值（-1..1；确定性 → 同底色下贴图可复现、可缓存） */
+	function grainAt(x: number, y: number): number {
+		const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+		return (n - Math.floor(n)) * 2 - 1;
+	}
+
+	/** 把计算结果裁剪到 0-255 的整数（写回 ImageData 用） */
+	function clampByte(value: number): number {
+		return value < 0 ? 0 : value > 255 ? 255 : Math.round(value);
+	}
+
+	/**
+	 * 征文区（视口全屏层）的"补偿亮度"
+	 *
+	 * 着色器结尾是 `finalColor *= 1 - dot(d, d)`（d = 归一化坐标 - 0.5），即"边缘暗角"，
+	 * 最后还要乘 `u_brightness`。贴图能预留的提亮余量受 8bit 上限（255）限制，
+	 * 所以这一层取 2.0（暗角最小系数 0.5 → 1/0.5 = 2），并把反向补偿烘进贴图：
+	 *   输出 = (页面原色 / (2 × 暗角)) × 2 × 暗角 = 页面原色 ✅
+	 * 结果是征文区底色与页面背景完全一致（明暗主题都成立），只留下雨滴本身。
+	 */
+	const VIEWPORT_LAYER_BRIGHTNESS = 2;
+	/** 着色器暗角的理论最小系数（|d|² ≤ 0.5 → 1 - 0.5），用于防止补偿计算越界 */
+	const VIEWPORT_VIGNETTE_MIN = 0.5;
+	/**
+	 * 实测渲染增益（贴图 → 屏幕的额外倍率）
+	 *
+	 * 用像素采样标定得到：屏幕输出 ≈ 贴图值 × 亮度 × 暗角 × 1.077。
+	 * 该倍率与贴图内容无关（明暗主题下一致，b=1 与 b=2 的输出比恰为 1.99），
+	 * 来自 WebGL 渲染/色彩空间链路本身（已排除 CSS 蒙层、mix-blend、backdrop-filter）。
+	 * 若日后升级特效库或改渲染设置，可用 getRainyDebug().viewportTextureCenter 重新标定。
+	 */
+	const VIEWPORT_RENDER_GAIN = 1.077;
+	/** 贴图预补偿除数 = 亮度 × 渲染增益（贴图按此值反向预除，输出即回到原色） */
+	const VIEWPORT_BAKE_DIVISOR = VIEWPORT_LAYER_BRIGHTNESS * VIEWPORT_RENDER_GAIN;
+	/**
+	 * 征文区贴图上的细纹幅度（0-255 的字节幅度）
+	 *
+	 * 为什么要它：雨滴的可见性来自"折射背景细节"，纯平滑底色上几乎看不出雨滴。
+	 * 加一层极淡的细纹（在屏幕上表现为很淡的柔和斑纹）后，雨滴就有了可折射的细节，
+	 * 观感仍然是"干净背景"，但雨滴清晰可辨。设为 0 即关闭（背景变成纯粹的同色微渐变）。
+	 */
+	const VIEWPORT_GRAIN_AMPLITUDE = 6;
+
+	/**
+	 * 单个挂载位置的实例参数覆盖
+	 *
+	 * 征文区（视口全屏层）的底是"纯色"，着色器的 postProcessing
+	 * （`finalColor *= vec3(0.8, 0.9, 1.3)`）会变成一整块偏蓝蒙层 ——
+	 * 在照片上看不出来，在纯色上非常显眼，所以这一层默认关掉；
+	 * 同时把亮度换成补偿值（贴图已按同一系数反向预补偿，两者必须配套）。
+	 * 想在征文区也保留"蓝调湿玻璃"观感，把 postProcessing 改成 true 即可。
+	 */
+	const PLACEMENT_OVERRIDES: Partial<
+		Record<
+			RainyPlacement,
+			Partial<{ postProcessing: boolean; brightness: number }>
+		>
+	> = {
+		"viewport-fullscreen": {
+			postProcessing: false,
+			brightness: VIEWPORT_LAYER_BRIGHTNESS,
+		},
+	};
+
+	function buildInstanceOptions(bg?: string, p?: RainyPlacement) {
+		return {
+			intensity: num(currentOptions.intensity, cfg.intensity),
+			speed: num(currentOptions.speed, cfg.speed),
+			brightness: num(currentOptions.brightness, cfg.brightness),
+			normal: num(currentOptions.normal, cfg.normal),
+			zoom: num(currentOptions.zoom, cfg.zoom),
+			blurIntensity: num(currentOptions.blurIntensity, cfg.blurIntensity),
+			blurIterations: num(currentOptions.blurIterations, cfg.blurIterations ?? 16),
+			lightning: bool(currentOptions.lightning, cfg.lightning),
+			panning: bool(currentOptions.panning, cfg.panning),
+			postProcessing: bool(currentOptions.postProcessing, cfg.postProcessing),
+			fps: num(currentOptions.fps, cfg.fps),
+			...(p ? PLACEMENT_OVERRIDES[p] : undefined),
+			...(bg ? { backgroundImage: bg } : {}),
+		};
+	}
+
+	// ---------- wrapper / layer / instance ----------
+	function resolveParent(p: RainyPlacement): HTMLElement | null {
+		const selector = MOUNT_TARGETS[p].parent;
+		return selector === "body"
+			? document.body
+			: document.querySelector<HTMLElement>(selector);
+	}
+
+	function ensureWrapper(p: RainyPlacement): HTMLDivElement | null {
+		const parent = resolveParent(p);
+		if (!parent) return null;
+
+		const { id, className } = MOUNT_TARGETS[p];
+		let el = document.getElementById(id) as HTMLDivElement | null;
+		if (el && el.parentElement !== parent) {
+			el.remove();
+			el = null;
+		}
+		if (!el) {
+			el = document.createElement("div");
+			el.id = id;
+			el.setAttribute("aria-hidden", "true");
+			parent.appendChild(el);
+		}
+		el.className = className;
+		return el;
+	}
+
+	function createLayer(parent: HTMLElement): HTMLDivElement {
+		const el = document.createElement("div");
+		el.className = LAYER_CLASS;
+		parent.appendChild(el);
+		return el;
+	}
+
+	async function createInstance(
+		target: HTMLElement,
+		bg?: string,
+		p?: RainyPlacement,
+	): Promise<RainyInstance> {
+		const { RainyWindow } = await import("@arayui/rainy-day");
+		const instance = new RainyWindow(
+			target,
+			buildInstanceOptions(bg, p),
+		) as unknown as RainyInstance;
+
+		// ── 修正上游 v1.0.6 的 HiDPI 缺陷（dpr≠1 时背景贴图错位）──────────────
+		// 上游初始化顺序：
+		//   u_resolution = (container.clientWidth, clientHeight)   ← CSS 像素
+		//   renderer.setPixelRatio(min(devicePixelRatio, 2))       ← 后备缓冲放大 dpr 倍
+		// 而着色器里是：
+		//   textureCoord = gl_FragCoord.xy / u_resolution.xy;      ← gl_FragCoord 是「设备像素」
+		// 于是只要 dpr≠1，uv 的实际范围就是 [0, dpr] 而不是 [0, 1]：
+		//   · 贴图被压进屏幕一角，其余部分是边缘像素拖影 → 4K/HiDPI 上壁纸"被拉伸、糊成一片"
+		//   · 结尾的暗角 1 - dot(uv-0.5, uv-0.5) 同样错位 → 征文区底色整体偏暗
+		// 把渲染像素比压回 1，让「后备缓冲 == CSS 尺寸 == u_resolution」，uv 回到 [0, 1]。
+		//
+		// 回归安全性：dpr=1 时上游本来就是 setPixelRatio(1)，此处是空操作 →
+		// 1080p / 2K（缩放 100%）观感完全不变；dpr=2 时才真正生效。
+		// 唯一可见差异：雨滴图案按画布像素计算（上游 REFERENCE_SIZE=1000 硬编码），
+		// 修正后 HiDPI 上的"视口占比"与 dpr=1 一致（即与设计一致）；
+		// 若想回到更细密的雨，把 rainyDayConfig.zoom 调小（zoom 越大雨滴越大越稀疏）。
+		instance.renderer?.setPixelRatio?.(1);
+
+		return instance;
+	}
+
+	// ---------- 水波纹联动（配置要求时隐藏 SSR 出来的水波纹）----------
+	function applyWavesVisibility(): void {
+		const waves = document.getElementById("header-waves");
+		if (!waves) return;
+		// 只有"横幅内挂了雨"才需要按配置隐藏水波纹；征文区的雨在横幅之下，不影响水波纹
+		if (cfg.autoDisableWaves && contexts.has("banner")) {
+			waves.style.display = "none";
+		} else {
+			waves.style.removeProperty("display");
+		}
+	}
+
+	/** 雨层淡入：延后挂载后避免"雨突然出现"的突兀感 */
+	function fadeIn(el: HTMLElement): void {
+		if (cfg.fadeInMs <= 0) return;
+		el.style.opacity = "0";
+		el.style.transition = `opacity ${cfg.fadeInMs}ms ease-out`;
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				el.style.opacity = "1";
+			});
+		});
+		window.setTimeout(() => {
+			el.style.removeProperty("transition");
+		}, cfg.fadeInMs + 200);
+	}
+
+	// ---------- 双层真交叉淡入（每个挂载位置各自独立进行）----------
+	async function crossfadeTo(p: RainyPlacement, next: string): Promise<void> {
+		const ctx = contexts.get(p);
+		if (!ctx) return;
+		if (ctx.swapping) {
+			ctx.pendingBg = next; // 交叉中又来新图 → 结束后补一次
+			return;
+		}
+		ctx.swapping = true;
+		const ms = currentFadeMs(p);
+
+		try {
+			if (ms <= 0) {
+				await ctx.instance.loadImage(next);
+				currentOptions.backgroundImage = next;
+				return;
+			}
+
+			const incoming = createLayer(ctx.wrapper);
+			incoming.style.opacity = "0";
+			incoming.style.transition = `opacity ${ms}ms ease-in-out`;
+
+			// 旧实例暂停渲染（保留最后一帧作为交叉底层，省一半 GPU）
+			try {
+				ctx.instance.pause();
+			} catch {
+				/* 忽略 */
+			}
+
+			const nextInstance = await createInstance(incoming, next);
+
+			// 双 rAF：确保初始帧已绘制，再开始淡入
+			await new Promise<void>((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+			);
+			incoming.style.opacity = "1";
+			await new Promise((resolve) => setTimeout(resolve, ms + 60));
+
+			// 交叉完成：销毁旧实例、移除旧层
+			try {
+				ctx.instance.destroy();
+			} catch {
+				/* 忽略 */
+			}
+			ctx.layer.remove();
+
+			ctx.instance = nextInstance;
+			ctx.layer = incoming;
+			incoming.style.removeProperty("transition");
+			currentOptions.backgroundImage = next;
+			if (mainPlacement === p) win.__rainyDay = nextInstance;
+		} catch (err) {
+			console.warn("[rainy-day] 交叉淡入失败，保持原背景：", err);
+		} finally {
+			ctx.swapping = false;
+			if (ctx.pendingBg) {
+				const queued = ctx.pendingBg;
+				ctx.pendingBg = null;
+				void crossfadeTo(p, queued);
+			}
+		}
+	}
+
+	// ---------- 轮播跟随 ----------
+	function watchCarousel(p: RainyPlacement): void {
+		const root = resolveParent(p);
+		if (!root) return;
+
+		let last = backgroundFor(p);
+		const carouselObserver = new MutationObserver(() => {
+			if (!contexts.has(p)) return;
+			const next = backgroundFor(p);
+			if (!next || next === last) return;
+			last = next;
+			void crossfadeTo(p, next);
+		});
+		carouselObserver.observe(root, {
+			subtree: true,
+			childList: true,
+			attributes: true,
+			attributeFilter: ["style", "src", "srcset"],
+		});
+
+		const ctx = contexts.get(p);
+		if (ctx) ctx.observer = carouselObserver;
+	}
+
+	// ---------- 挂载 / 卸载（按位置独立管理，可同时存在多个实例）----------
+	async function mountOne(p: RainyPlacement): Promise<void> {
+		if (!cfg.enable || contexts.has(p) || mounting.has(p)) return;
+		mounting.add(p);
+		try {
+			const el = ensureWrapper(p);
+			if (!el || envBlocked(el)) {
+				el?.remove();
+				return;
+			}
+
+			const bg = backgroundFor(p);
+			// 没有可用背景就不要挂载：否则特效库会去加载它自带的 picsum 占位图
+			if (!bg) {
+				el.remove();
+				return;
+			}
+
+			const layerEl = createLayer(el);
+			const inst = await createInstance(layerEl, bg, p);
+
+			contexts.set(p, {
+				wrapper: el,
+				layer: layerEl,
+				instance: inst,
+				observer: null,
+				swapping: false,
+				pendingBg: null,
+			});
+
+			// 挂载完成 → 淡入，避免雨"突然出现"
+			fadeIn(el);
+
+			if (!mainPlacement || p === "banner") mainPlacement = p;
+			if (p === "viewport-fullscreen") appliedGradientKey = pageBackgroundRaw();
+			win.__rainyDay = contexts.get(mainPlacement)?.instance;
+			win.__rainyDayReady = true;
+
+			if (followsCarousel(p)) watchCarousel(p);
+			applyWavesVisibility();
+		} catch (err) {
+			console.warn(`[rainy-day] 挂载失败（${p}）：`, err);
+			unmountOne(p);
+		} finally {
+			mounting.delete(p);
+		}
+	}
+
+	function unmountOne(p: RainyPlacement): void {
+		const ctx = contexts.get(p);
+		if (ctx) {
+			ctx.observer?.disconnect();
+			try {
+				ctx.instance.destroy();
+			} catch {
+				/* 忽略 */
+			}
+			ctx.wrapper.remove();
+			contexts.delete(p);
+		}
+
+		// 重新挑主实例（banner 优先）供调试接口使用
+		mainPlacement = contexts.has("banner")
+			? "banner"
+			: (Array.from(contexts.keys())[0] ?? null);
+		win.__rainyDay = mainPlacement
+			? contexts.get(mainPlacement)?.instance
+			: undefined;
+		win.__rainyDayReady = contexts.size > 0;
+		applyWavesVisibility();
+	}
+
+	function unmountAll(): void {
+		for (const p of Array.from(contexts.keys())) unmountOne(p);
+	}
+
+	// ---------- 壁纸模式 + 偏好 → 挂载位置 ----------
+	/**
+	 * 读取当前壁纸模式
+	 *
+	 * 与本项目 setting-utils 的 getStoredWallpaperMode 保持一致：全屏壁纸功能关闭时
+	 * 一律按 banner 处理（否则会挂一个永远看不见、却仍在烧 GPU 的全屏雨层）。
+	 * 注意本项目的 overlay（卡片半透明全屏壁纸）与 fullscreen 用的是同一个
+	 * [data-fullscreen-wallpaper] 容器，所以两者都落到 "wallpaper-fullscreen"。
+	 */
+	function resolveMode(): string {
+		if (!fullscreenWallpaperConfig.enable) {
+			return "banner";
+		}
+		try {
+			return (
+				localStorage.getItem("wallpaperMode") ||
+				siteConfig.wallpaperMode.defaultMode
+			);
+		} catch {
+			return siteConfig.wallpaperMode.defaultMode;
+		}
+	}
+
+	async function refresh(): Promise<void> {
+		if (!cfg.enable) {
+			unmountAll();
+			return;
+		}
+		const prefs: RainyPrefs = getStoredRainyPrefs();
+		const wanted = new Set(resolveRainyPlacements(resolveMode(), prefs));
+
+		// 先卸载不再需要的位置
+		for (const p of Array.from(contexts.keys())) {
+			if (!wanted.has(p)) unmountOne(p);
+		}
+		// 再补齐新增的位置（"横幅模式 + 全屏"需要两个位置：横幅内 + 视口全屏）
+		// 顺序挂载：保证 Map 顺序稳定（banner 先挂），调试时所见即所得
+		for (const p of wanted) {
+			if (!contexts.has(p)) await mountOne(p);
+		}
+	}
+
+	// ---------- 延后挂载：把 Three.js 移出首屏关键路径 ----------
+	/** 弱网/省流（saveData / 2G）时不加载 */
+	function isSlowNetwork(): boolean {
+		if (!cfg.skipOnSlowNetwork) return false;
+		const conn = (
+			navigator as Navigator & {
+				connection?: { saveData?: boolean; effectiveType?: string };
+			}
+		).connection;
+		if (!conn) return false;
+		if (conn.saveData) return true;
+		return conn.effectiveType === "slow-2g" || conn.effectiveType === "2g";
+	}
+
+	let booted = false;
+	/** 真正开始挂载（首次只做一次；用户主动切换时绕过 idle 立即挂载） */
+	function boot(): void {
+		if (booted) return;
+		booted = true;
+		if (!cfg.enable || isSlowNetwork()) return;
+		void refresh();
+	}
+
+	/** 首次挂载：等 load + 浏览器空闲（兜底超时 idleDelayMs） */
+	function scheduleBoot(): void {
+		if (!cfg.lazyMount) {
+			boot();
+			return;
+		}
+		const start = () => {
+			const ric = (
+				window as Window & {
+					requestIdleCallback?: (
+						cb: () => void,
+						opts?: { timeout: number },
+					) => number;
+				}
+			).requestIdleCallback;
+			if (typeof ric === "function") {
+				ric(() => boot(), { timeout: cfg.idleDelayMs });
+			} else {
+				window.setTimeout(() => boot(), Math.min(cfg.idleDelayMs, 1200));
+			}
+		};
+		if (document.readyState === "complete") start();
+		else window.addEventListener("load", start, { once: true });
+	}
+
+	// ---------- 启动与事件 ----------
+	scheduleBoot();
+
+	// 用户主动切换（雨滴面板 / 壁纸模式）→ 立即挂载，不等空闲
+	window.addEventListener("wallpaper-mode-change", () => {
+		booted = true;
+		void refresh();
+	});
+	window.addEventListener("rainy-prefs-change", () => {
+		booted = true;
+		void refresh();
+	});
+
+	// 切到后台标签页时暂停渲染（省电）
+	document.addEventListener("visibilitychange", () => {
+		try {
+			for (const ctx of contexts.values()) {
+				if (document.hidden) ctx.instance.pause();
+				else ctx.instance.resume();
+			}
+		} catch {
+			/* 忽略 */
+		}
+	});
+
+	// 离开页面时释放 WebGL 资源
+	window.addEventListener("pagehide", () => unmountAll());
+
+	/**
+	 * 明暗主题切换 → 重建征文区（视口全屏层）的渐变底色
+	 *
+	 * 主题切换本身没有派发事件（只有 wallpaper-mode-change / rainy-prefs-change），
+	 * 而 --page-bg 会随 <html> 的 dark class 变化 → 用 MutationObserver 兜住
+	 * （"自动跟随系统"最终也会落到同一个 class 上）。
+	 */
+	const themeObserver = new MutationObserver(() => {
+		const ctx = contexts.get("viewport-fullscreen");
+		if (!ctx) return;
+		const raw = pageBackgroundRaw();
+		// 只有底色真的变了才重建（主题切换会连带改 is-theme-transitioning，避免无谓换图）
+		if (!raw || raw === appliedGradientKey) return;
+		const bg = viewportGradientUrl();
+		if (!bg) return;
+		appliedGradientKey = raw;
+		ctx.instance.loadImage(bg).catch(() => {
+			/* 忽略：保持旧底色 */
+		});
+	});
+	themeObserver.observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ["class"],
+	});
+
+	// ---------- 控制台调试接口 ----------
+	if (cfg.debug) {
+		win.setRainyOptions = async (patch: RainyOptionPatch) => {
+			if (contexts.size === 0) {
+				console.warn(
+					"[rainy-day] 当前模式下没有雨（可在导航栏「雨滴」按钮里开启）",
+				);
+				return currentOptions;
+			}
+			// 每个实例的背景不同（横幅图 / 页面底色微渐变）→ 补丁里带上各自的背景，
+			// 否则会被特效库回退成它自带的 picsum 占位图
+			let snapshot: RainyOptionsSnapshot = currentOptions;
+			for (const [p, ctx] of contexts) {
+				const own: RainyOptionPatch = { ...patch };
+				const bg = backgroundFor(p);
+				if (bg) own.backgroundImage = bg;
+				const result = await applyRainyOptions(ctx.instance, own, snapshot);
+				snapshot = result.current;
+			}
+			currentOptions = {
+				...snapshot,
+				backgroundImage: currentOptions.backgroundImage,
+			};
+			console.table(currentOptions);
+			return currentOptions;
+		};
+		win.getRainyOptions = () => {
+			console.table(currentOptions);
+			return currentOptions;
+		};
+		// 只读探针：查看当前挂了哪些雨层、各自用的什么背景（"征文区无图片"的验证入口）
+		win.getRainyDebug = () => {
+			const viewportBg = contexts.has("viewport-fullscreen")
+				? (viewportGradientUrl() ?? "")
+				: "";
+			const info = {
+				placements: Array.from(contexts.keys()),
+				main: mainPlacement,
+				// data URL 的头部都相同，取尾部 + 长度才比得出内容差异
+				viewportBackground: viewportBg
+					? `${viewportBg.slice(0, 24)}…${viewportBg.slice(-24)}(${viewportBg.length})`
+					: null,
+				viewportBackgroundTail: viewportBg ? viewportBg.slice(-40) : null,
+				/** 贴图中心 texel 的值（应为 --page-bg / (2 × 暗角)，中心暗角系数为 1） */
+				viewportTextureCenter: gradientCenterSample,
+				viewportLayerBrightness: VIEWPORT_LAYER_BRIGHTNESS,
+				pageBackground: pageBackgroundRaw(),
+				bannerBackground: contexts.has("banner")
+					? (backgroundFor("banner") ?? "")
+					: null,
+				wavesVisible:
+					getComputedStyle(
+						document.getElementById("header-waves") ?? document.body,
+					).display !== "none",
+			};
+			console.table(info);
+			return info;
+		};
+		console.info(
+			"[rainy-day] 调试接口已启用：setRainyOptions({ ... }) / getRainyOptions() / __rainyDay",
+		);
+	}
+</script>
+
+<style is:global>
+	/**
+	 * 雨层（#rainy-window，z-index: 1）挂在横幅内时，把水波纹提到 z-index: 2。
+	 *
+	 * 原因：本项目 #header-waves 只在 (width < 1280px) 有 z-index: 5，桌面端是 z-auto，
+	 * 而雨层是「定位元素 + z-index」→ 一定画在 z-auto 的兄弟之上，会把水波纹盖住。
+	 * 用 :has() 限定只有雨层真的挂上时才生效：未开启雨滴（enable=false）时本组件
+	 * 不会被渲染，CSS 也不会进产物，原行为完全不变。
+	 */
+	#banner-wrapper:has(#rainy-window) #header-waves {
+		z-index: 2;
+	}
+</style>

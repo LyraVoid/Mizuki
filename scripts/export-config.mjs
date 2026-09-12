@@ -64,6 +64,7 @@ const CONFIGS = [
 	["pioConfig", "pioConfig", "PioConfig"],
 	["profileConfig", "profileConfig", "ProfileConfig"],
 	["randomPostsConfig", "randomPostsConfig", "RandomPostsConfig"],
+	["rainyDayConfig", "rainyDayConfig", "RainyDayConfig"],
 	["relatedPostsConfig", "relatedPostsConfig", "RelatedPostsConfig"],
 	["shareConfig", "shareConfig", "ShareConfig"],
 	["sidebarConfig", "sidebarLayoutConfig", "SidebarLayoutConfig"],

@@ -74,6 +74,19 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 const bannerQuality = getImageQuality();
 const bannerMobileQuality = Math.round(bannerQuality * 0.9);
 const bannerFormats = getImageFormats();
+
+/**
+ * 同源横幅图加 crossorigin="anonymous"（协议相对地址 //host/x 不算）
+ *
+ * 原因（实测）：雨滴窗口特效（RainyDay.astro）会用 THREE 以 CORS 模式加载当前横幅图
+ * 作为折射背景，而轮播 <img> 默认是 no-cors；浏览器把两种模式分成两份 HTTP 缓存，
+ * 于是轮播每换一帧，雨层都会把同一张图完整重下一次。统一成 CORS 模式即可共用缓存。
+ * 未开启雨滴时该属性对同源图片也完全无副作用（不影响显示、不产生预检请求）。
+ */
+const crossOriginOf = (src: string) =>
+	src.startsWith("/") && !src.startsWith("//")
+		? ("anonymous" as const)
+		: undefined;
 ---
 
 <div
@@ -106,6 +119,7 @@ const bannerFormats = getImageFormats();
 						fetchpriority="high"
 						quality={bannerMobileQuality}
 						formats={bannerFormats}
+						crossorigin={crossOriginOf(mobileImages[0])}
 					/>
 				</div>
 			)}
@@ -123,6 +137,7 @@ const bannerFormats = getImageFormats();
 						fetchpriority="low"
 						quality={bannerMobileQuality}
 						formats={bannerFormats}
+						crossorigin={crossOriginOf(src)}
 					/>
 				</template>
 			))}
@@ -143,6 +158,7 @@ const bannerFormats = getImageFormats();
 						fetchpriority="high"
 						quality={bannerQuality}
 						formats={bannerFormats}
+						crossorigin={crossOriginOf(desktopImages[0])}
 					/>
 				</div>
 			)}
@@ -160,6 +176,7 @@ const bannerFormats = getImageFormats();
 						fetchpriority="low"
 						quality={bannerQuality}
 						formats={bannerFormats}
+						crossorigin={crossOriginOf(src)}
 					/>
 				</template>
 			))}

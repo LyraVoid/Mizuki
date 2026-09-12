@@ -24,6 +24,15 @@ interface Props {
 	widths?: number[];
 	sizes?: string;
 	quality?: number;
+	/**
+	 * 传给 <img> 的 crossorigin。
+	 *
+	 * 用途：雨滴特效（RainyDay.astro）会用 THREE 以 CORS 模式取当前横幅图作为折射背景，
+	 * 而轮播 <img> 默认是 no-cors —— 浏览器把两种模式切成两份 HTTP 缓存，导致同一张图
+	 * 被完整下载两次。给同源横幅图加 crossorigin="anonymous"，两者就能共用缓存
+	 * （同源图片加该属性不影响显示，也不会引入额外的预检请求）。
+	 */
+	crossorigin?: "anonymous" | "use-credentials" | undefined;
 }
 
 const {
@@ -38,6 +47,7 @@ const {
 	widths,
 	sizes,
 	quality = getImageQuality(),
+	crossorigin,
 } = Astro.props;
 const className = Astro.props.class;
 const metadata = await resolveImageMetadata(src);
@@ -90,5 +100,6 @@ function getImageMimeType(format: ImageFormat | undefined): string | undefined {
 		decoding="async"
 		fetchpriority={fetchpriority}
 		referrerpolicy={referrerPolicy}
+		crossorigin={crossorigin}
 	/>
 </picture>

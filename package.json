@@ -29,6 +29,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@arayui/rainy-day": "^1.0.6",
     "@astrojs/check": "^0.9.9",
     "@astrojs/markdown-remark": "^7.2.1",
     "@astrojs/mdx": "^7.0.3",

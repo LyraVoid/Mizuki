@@ -1,0 +1,18 @@
+---
+/**
+ * 雨滴特效的「关闭态」占位组件（构建期由 astro.config.mjs 的 resolve.alias 顶包）
+ *
+ * 为什么需要它：
+ *   Rollup 会为「模块图里出现的静态 import」生成 chunk —— 即使
+ *   `{rainyDayConfig.enable && <RainyDay />}` 在渲染期恒为 false，RainyDay.astro
+ *   的脚本、以及它动态引入的 @arayui/rainy-day（内含 Three.js，约 480KB）
+ *   仍会以「没有任何 HTML 引用的 chunk」形式留在 dist/ 里，白占部署体积。
+ *
+ * 因此当 src/config/rainyDayConfig.ts 的 enable 为 false 时，astro.config.mjs 会把
+ * `@components/common/RainyDay.astro` 的 import 重定向到本组件：
+ *   真正的 RainyDay.astro 根本不进模块图 → 产物里连一个字节的相关代码都没有。
+ *
+ * 本组件不渲染任何内容；而且此时外层的 `rainyDayConfig.enable &&` 也是 false，
+ * 所以它连渲染都不会被调用。
+ */
+---

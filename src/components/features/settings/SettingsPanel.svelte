@@ -8,6 +8,7 @@ import {
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import Icon from "@iconify/svelte";
+import type { RainyBannerMode, RainyPrefs } from "@utils/rainy-day-options";
 import {
 	getDefaultBannerTitleEnabled,
 	getDefaultHue,
@@ -22,6 +23,7 @@ import {
 	getStoredOverlayBlur,
 	getStoredOverlayCardOpacity,
 	getStoredOverlayOpacity,
+	getStoredRainyPrefs,
 	getStoredSakuraEnabled,
 	getStoredUltrawidePostLayout,
 	getStoredWallpaperMode,
@@ -31,13 +33,19 @@ import {
 	setOverlayBlur,
 	setOverlayCardOpacity,
 	setOverlayOpacity,
+	setRainyPrefs,
 	setSakuraEnabled,
 	setUltrawidePostLayout,
 	setWallpaperMode,
 	setWavesEnabled,
 } from "@utils/setting-utils";
 import { onMount } from "svelte";
-import { fullscreenWallpaperConfig, sakuraConfig, siteConfig } from "@/config";
+import {
+	fullscreenWallpaperConfig,
+	rainyDayConfig,
+	sakuraConfig,
+	siteConfig,
+} from "@/config";
 
 import type { WALLPAPER_MODE } from "@/types/config";
 
@@ -83,6 +91,9 @@ const hasBannerSettings = isWavesSwitchable || isBannerTitleSwitchable;
 const isSakuraSwitchable =
 	sakuraConfig.enable && (sakuraConfig.switchable ?? false);
 
+// 雨滴特效：「外观设置」面板里的控件是否显示（总开关在 src/config/rainyDayConfig.ts）
+const isRainySwitchable = rainyDayConfig.enable && rainyDayConfig.showSwitch;
+
 const isUltrawidePostLayoutSwitchable =
 	siteConfig.ultrawidePostLayout?.allowSwitch ?? true;
 
@@ -104,6 +115,7 @@ const hasAnyContent = $derived(
 		hasOverlaySettings ||
 		hasBannerSettings ||
 		isSakuraSwitchable ||
+		isRainySwitchable ||
 		isUltrawidePostLayoutSwitchable,
 );
 
@@ -124,6 +136,29 @@ const defaultBannerTitleEnabled = getDefaultBannerTitleEnabled();
 let sakuraEnabled = $state(getDefaultSakuraEnabled());
 const defaultSakuraEnabled = getDefaultSakuraEnabled();
 let ultrawidePostLayout = $state(getDefaultUltrawidePostLayout());
+
+// ─── 雨滴特效 ────────────────────────────────────────────────
+// 默认档位来自 src/config/rainyDayConfig.ts；用户的改动存进 localStorage 并即时生效
+const defaultRainyPrefs: RainyPrefs = {
+	banner: rainyDayConfig.defaultInBannerMode,
+	fullscreen: rainyDayConfig.defaultInFullscreenMode,
+};
+let rainyPrefs = $state<RainyPrefs>({ ...defaultRainyPrefs });
+const rainySettingsIsDefault = $derived(
+	rainyPrefs.banner === defaultRainyPrefs.banner &&
+		rainyPrefs.fullscreen === defaultRainyPrefs.fullscreen,
+);
+const rainyBannerOptions: { value: RainyBannerMode; label: I18nKey }[] = [
+	{ value: "off", label: I18nKey.rainyOff },
+	{ value: "banner", label: I18nKey.rainyBannerOnly },
+	{ value: "fullscreen", label: I18nKey.rainyFullscreen },
+];
+const rainyBannerIndex = $derived(
+	Math.max(
+		rainyBannerOptions.findIndex((o) => o.value === rainyPrefs.banner),
+		0,
+	),
+);
 
 let overlaySettingsIsDefault = $derived(
 	(!isOverlayOpacitySwitchable || overlayOpacity === defaultOverlayOpacity) &&
@@ -206,6 +241,17 @@ function toggleSakuraEnabled() {
 	setSakuraEnabled(sakuraEnabled);
 }
 
+// ─── 雨滴特效 ────────────────────────────────────────────────
+function updateRainyPrefs(patch: Partial<RainyPrefs>) {
+	rainyPrefs = { ...rainyPrefs, ...patch };
+	setRainyPrefs(patch);
+}
+
+function resetRainyPrefs() {
+	rainyPrefs = { ...defaultRainyPrefs };
+	setRainyPrefs(defaultRainyPrefs);
+}
+
 function toggleUltrawidePostLayout() {
 	ultrawidePostLayout = !ultrawidePostLayout;
 	setUltrawidePostLayout(ultrawidePostLayout);
@@ -262,6 +308,7 @@ onMount(() => {
 	bannerTitleEnabled = getStoredBannerTitleEnabled();
 	sakuraEnabled = getStoredSakuraEnabled();
 	ultrawidePostLayout = getStoredUltrawidePostLayout();
+	rainyPrefs = getStoredRainyPrefs();
 
 	const savedLayout = siteConfig.postListLayout?.enable
 		? sessionStorage.getItem("postListLayout") ||
@@ -274,6 +321,12 @@ onMount(() => {
 	refreshAllRangeProgress();
 	checkMobile();
 	window.addEventListener("resize", checkMobile);
+
+	// 雨滴偏好若被其它入口改动（控制台 / 以后新增的面板）→ 同步到本面板
+	const syncRainyPrefs = () => {
+		rainyPrefs = getStoredRainyPrefs();
+	};
+	window.addEventListener("rainy-prefs-change", syncRainyPrefs);
 
 	const panel = document.getElementById("display-setting");
 	let handleRangeInput: ((event: Event) => void) | undefined;
@@ -289,6 +342,7 @@ onMount(() => {
 
 	return () => {
 		window.removeEventListener("resize", checkMobile);
+		window.removeEventListener("rainy-prefs-change", syncRainyPrefs);
 		if (panel && handleRangeInput) {
 			panel.removeEventListener("input", handleRangeInput);
 		}
@@ -436,7 +490,7 @@ $effect(() => {
 		</div>
 	{/if}
 
-	{#if isSakuraSwitchable}
+	{#if isSakuraSwitchable || isRainySwitchable}
 		<div class="mt-2 mb-2">
 			<div
 				class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3 mb-2
@@ -444,8 +498,22 @@ $effect(() => {
 				before:absolute before:-left-3 before:top-1/2 before:-translate-y-1/2"
 			>
 				{i18n(I18nKey.effectsSettings)}
+				{#if isRainySwitchable}
+					<button
+						aria-label="Reset to Default"
+						class="btn-regular w-7 h-7 rounded-md active:scale-90"
+						class:opacity-0={rainySettingsIsDefault}
+						class:pointer-events-none={rainySettingsIsDefault}
+						onclick={resetRainyPrefs}
+					>
+						<div class="text-(--btn-content)">
+							<Icon icon="material-symbols:refresh" class="text-[0.875rem]" />
+						</div>
+					</button>
+				{/if}
 			</div>
 			<div class="space-y-1">
+				{#if isSakuraSwitchable}
 				<button
 					class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
 					class:bg-(--btn-regular-bg-hover)={sakuraEnabled}
@@ -461,6 +529,58 @@ $effect(() => {
 							class:left-5={sakuraEnabled}></div>
 					</div>
 				</button>
+				{/if}
+
+				{#if isRainySwitchable}
+					<!-- 雨滴特效（总开关在 src/config/rainyDayConfig.ts） -->
+					{#if wallpaperMode === WALLPAPER_BANNER}
+						<div class="rounded-md bg-(--btn-regular-bg) p-2 flex items-center gap-3">
+							<Icon icon="material-symbols:rainy" class="text-[1.25rem] shrink-0 opacity-80" />
+							<span class="text-sm flex-1">{i18n(I18nKey.rainySwitch)}</span>
+							<div class="relative grid grid-cols-3 rounded-full bg-(--btn-regular-bg-active) p-0.5 w-[9.5rem] shrink-0">
+								<div
+									class="absolute top-0.5 bottom-0.5 left-0.5 w-[calc((100%-0.25rem)/3)] rounded-full bg-(--primary) transition-transform duration-300 ease-out"
+									style={`transform: translateX(${rainyBannerIndex * 100}%)`}
+								></div>
+								{#each rainyBannerOptions as option (option.value)}
+									<button
+										type="button"
+										aria-label={i18n(option.label)}
+										class="relative z-10 h-6 text-[0.7rem] font-medium rounded-full transition-colors"
+										class:text-white={rainyPrefs.banner === option.value}
+										onclick={() => updateRainyPrefs({ banner: option.value })}
+									>
+										{i18n(option.label)}
+									</button>
+								{/each}
+							</div>
+						</div>
+					{:else if wallpaperMode === WALLPAPER_FULLSCREEN || wallpaperMode === WALLPAPER_OVERLAY}
+						<button
+							class="w-full btn-regular rounded-md py-2 px-3 flex items-center gap-3 text-left active:scale-95 transition-all relative overflow-hidden"
+							class:bg-(--btn-regular-bg-hover)={rainyPrefs.fullscreen === "on"}
+							onclick={() =>
+								updateRainyPrefs({
+									fullscreen: rainyPrefs.fullscreen === "on" ? "off" : "on",
+								})}
+						>
+							<Icon icon="material-symbols:rainy" class="text-[1.25rem] shrink-0" />
+							<span class="text-sm flex-1">{i18n(I18nKey.rainySwitch)}</span>
+							<div class="w-10 h-5 rounded-full transition-all duration-200 relative"
+								class:bg-(--primary)={rainyPrefs.fullscreen === "on"}
+								class:bg-(--btn-regular-bg-active)={rainyPrefs.fullscreen !== "on"}>
+								<div class="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200"
+									class:left-0.5={rainyPrefs.fullscreen !== "on"}
+									class:left-5={rainyPrefs.fullscreen === "on"}></div>
+							</div>
+						</button>
+					{:else}
+						<div class="rounded-md bg-(--btn-regular-bg) p-2 flex items-start gap-3">
+							<Icon icon="material-symbols:rainy" class="text-[1.25rem] shrink-0 opacity-50" />
+							<span class="text-xs flex-1 opacity-70 leading-relaxed">{i18n(I18nKey.rainyNeedWallpaper)}</span>
+						</div>
+					{/if}
+				{/if}
 			</div>
 		</div>
 	{/if}

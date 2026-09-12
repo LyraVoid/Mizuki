@@ -399,4 +399,11 @@ export const zh_TW: Translation = {
 	[Key.randomPosts]: "隨機文章",
 	[Key.smartRecommend]: "智能推薦",
 	[Key.randomRecommend]: "隨機推薦",
+
+	// 雨滴視窗特效（外觀設定面板）
+	[Key.rainySwitch]: "雨滴特效",
+	[Key.rainyOff]: "無雨",
+	[Key.rainyBannerOnly]: "僅橫幅",
+	[Key.rainyFullscreen]: "全螢幕",
+	[Key.rainyNeedWallpaper]: "目前壁紙模式下沒有可折射的背景，雨滴不會顯示。",
 };

@@ -593,6 +593,53 @@ export interface ThirdPartyAnalyticsConfig {
 }
 
 /**
+ * 雨滴窗口特效配置（基于 @arayui/rainy-day，Three.js + WebGL）
+ *
+ * 效果叠加在首页横幅（及全屏壁纸）上；档位由「外观设置」面板的特效区控制，
+ * 总开关是本文件的 enable（构建期生效，改完需重新 build）。
+ */
+export interface RainyDayConfig {
+	enable: boolean; // 总开关：false 时组件/控件/Three.js 都不进产物
+	/** 横幅壁纸模式下雨的默认档位（用户可在设置面板里覆盖） */
+	defaultInBannerMode: "off" | "banner" | "fullscreen";
+	/** 全屏壁纸模式下雨的默认档位（用户可在设置面板里覆盖） */
+	defaultInFullscreenMode: "off" | "on";
+	/** 是否在「外观设置」面板里显示雨滴控件 */
+	showSwitch: boolean;
+	/** 轮播换图时雨层淡出→换图→淡入的时长（毫秒；0 = 直接切换） */
+	bgFadeMs: number;
+	/** 延后挂载：等 load + 浏览器空闲后再初始化（把 Three.js 移出首屏关键路径） */
+	lazyMount: boolean;
+	/** lazyMount 的 idle 兜底超时（毫秒）：最迟这么久一定挂载，避免雨永远不出现 */
+	idleDelayMs: number;
+	/** 雨层挂载完成后的淡入时长（毫秒；0 = 立即显示） */
+	fadeInMs: number;
+	/** 弱网/省流（navigator.connection.saveData 或 2G）不加载雨特效 */
+	skipOnSlowNetwork: boolean;
+
+	// ↓ 以下参数直接透传给 RainyWindow，含义见官方文档
+	intensity: number; // 雨滴密度 0-1
+	speed: number; // 下落速度 0-10
+	brightness: number; // 亮度 0-1
+	normal: number; // 法线强度 0-3
+	zoom: number; // 雨滴图案缩放 0.1-3（越大雨滴越大、越稀疏）
+	blurIntensity: number; // 玻璃模糊强度 0-10（太大会影响文字可读性）
+	blurIterations?: number; // 模糊迭代次数 1-64（越大越慢）
+	lightning: boolean; // 闪电效果
+	panning: boolean; // 镜头平移
+	postProcessing: boolean; // 后处理（开启更细腻，稍耗性能）
+	fps: number; // 限帧 15-120（省电关键）
+
+	// ↓ 行为开关
+	disableOnMobile: boolean; // 移动端不启用（省电）
+	respectReducedMotion: boolean; // 尊重系统「减少动态效果」设置
+	autoDisableWaves: boolean; // 雨窗开启时自动关闭横幅水波纹（false = 两者共存）
+	pauseWhenHidden: boolean; // 标签页不可见时暂停渲染
+	lazy: boolean; // 动态 import 懒加载（Three.js 不进首屏）
+	debug: boolean; // 是否把实例与控制台调参接口挂到 window（调完可关掉）
+}
+
+/**
  * 递归可选类型，供 src/config/overrides/ 下的配置覆盖文件使用。
  *
  * `Partial<T>` 只把顶层键变成可选，无法表达「只改 themeColor.hue、其余取
