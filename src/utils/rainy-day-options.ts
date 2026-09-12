@@ -73,15 +73,22 @@ export interface RainyPrefs {
 }
 
 /**
- * 雨窗的挂载位置：
- *   banner               → 横幅内部（#banner-wrapper）
- *   viewport-fullscreen  → 视口级全屏层（body 下的 fixed 容器）
- *   wallpaper-fullscreen → 全屏壁纸层内部（[data-fullscreen-wallpaper]）
+ * 雨窗的挂载位置（本项目四种壁纸模式「谁在显示背景」各不相同，落点必须跟着走）：
+ *   banner            → 横幅内部（#banner-wrapper）
+ *                       ⚠️ 本项目「全屏」模式也是它：GridScripts 在 fullscreen 下
+ *                       把 #banner-wrapper 显示出来并拉成 100vh（banner.css 的
+ *                       body.enable-banner.fullscreen-banner），而全屏壁纸容器是
+ *                       display:none —— 所以 fullscreen 的雨同样挂在横幅里
+ *   viewport-fullscreen → 视口级全屏层（body 下的 fixed 容器）：用于征文区
+ *                       （背景是页面底色的微渐变，底层不放图片）
+ *                       两种场景都会用到它：「横幅模式 + 全屏档位」、以及全屏壁纸模式
+ *   overlay-wallpaper   → 全屏壁纸容器内部（[data-fullscreen-wallpaper]）
+ *                       只有 overlay 模式会显示该容器
  */
 export type RainyPlacement =
 	| "banner"
 	| "viewport-fullscreen"
-	| "wallpaper-fullscreen";
+	| "overlay-wallpaper";
 
 /**
  * 决策：当前壁纸模式 + 用户偏好 → 需要挂载的雨窗位置列表
@@ -101,13 +108,16 @@ export function resolveRainyPlacements(
 		}
 		return [];
 	}
+	// 本项目的「全屏」= 横幅铺满 100vh，全屏壁纸容器此时是 display:none
+	// → 图片区必须挂横幅里（挂到 [data-fullscreen-wallpaper] 会因为容器不可见而完全不出雨）；
+	//   下方征文区是页面底色、body 上没有任何图层，所以再补一层 viewport-fullscreen，
+	//   否则雨只出现在上方图片区（与「横幅模式 + 全屏档位」同构）
 	if (wallpaperMode === "fullscreen") {
-		return prefs.fullscreen === "on" ? ["wallpaper-fullscreen"] : [];
+		return prefs.fullscreen === "on" ? ["banner", "viewport-fullscreen"] : [];
 	}
-	// 本项目的 overlay（卡片半透明全屏壁纸）复用同一个 [data-fullscreen-wallpaper] 容器，
-	// 因此与 fullscreen 落点一致
+	// overlay：横幅被隐藏，真正显示背景的是 [data-fullscreen-wallpaper]
 	if (wallpaperMode === "overlay") {
-		return prefs.fullscreen === "on" ? ["wallpaper-fullscreen"] : [];
+		return prefs.fullscreen === "on" ? ["overlay-wallpaper"] : [];
 	}
 	// none / 未知模式：没有背景图可折射 → 不挂载
 	return [];

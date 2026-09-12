@@ -29,7 +29,11 @@ import type { RainyDayConfig } from "../types/config";
  *   横幅模式 + 仅横幅  → #banner-wrapper 内一层：横幅图 + 雨（水波纹仍在最上层）
  *   横幅模式 + 全屏    → 两层：横幅区「横幅图 + 雨」+ 征文区「页面底色 + 雨」
  *                        （征文区底层不放图片，卡片文字不受影响）
- *   全屏 / overlay 壁纸 → [data-fullscreen-wallpaper] 内：壁纸图 + 雨
+ *   全屏壁纸模式        → 两层：横幅区「100vh 横幅图 + 雨」+ 征文区「页面底色 + 雨」
+ *                        （本项目的「全屏」是横幅铺满 100vh（body.fullscreen-banner），
+ *                          全屏壁纸容器此时是 display:none；征文区在同一页里，
+ *                          所以与「横幅模式 + 全屏档位」一样需要第二层）
+ *   overlay 壁纸模式    → 挂在 [data-fullscreen-wallpaper] 内：壁纸图 + 雨
  *   无壁纸模式          → 没有可折射的背景 → 不挂载
  */
 export const rainyDayConfig: RainyDayConfig = {

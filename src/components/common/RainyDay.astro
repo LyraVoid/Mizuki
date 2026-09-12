@@ -4,16 +4,26 @@
  *
  * 关键设计：
  *   1) 特效库的 shader 输出 alpha 恒为 1（不透明）且自带背景图 → 每个实例只能有一种背景。
- *      挂载点按「壁纸模式 + 用户偏好」决定（可同时挂载多个）：
- *        banner               → #banner-wrapper 内，背景 = 当前横幅图（z-[1]，低于水波纹 z-5）
+ *      挂载点按「壁纸模式 + 用户偏好」决定（可同时挂载多个）。
+ *      先看本项目四种壁纸模式到底是谁在显示背景（决定雨该挂哪儿）：
+ *        banner               → #banner-wrapper（35vh 横幅）
+ *        fullscreen           → 还是 #banner-wrapper！GridScripts 会把它显示出来并拉成 100vh
+ *                               （banner.css 的 body.enable-banner.fullscreen-banner），
+ *                               而 [data-fullscreen-wallpaper] 是 display:none
+ *        overlay              → [data-fullscreen-wallpaper]（fixed 全屏 + 卡片半透明）
+ *        none                 → 没有背景图可折射
+ *      对应的挂载位置：
+ *        banner               → #banner-wrapper 内，背景 = 当前横幅图（z-[1]，水波纹在更上层）
  *        viewport-fullscreen  → body 下的 fixed 全屏层，背景 = 由 --page-bg 生成的极淡同色微渐变
  *                               （z-[9]：在横幅 z-10 之下 → 上方图片区看到的是"图 + 雨"，
  *                                下方征文区看到的是"干净背景 + 雨"，**底层不含任何图片**）
- *        wallpaper-fullscreen → [data-fullscreen-wallpaper] 内，背景 = 当前全屏壁纸
+ *        overlay-wallpaper    → [data-fullscreen-wallpaper] 内，背景 = 当前全屏壁纸
  *   2) 「横幅模式 + 全屏」= banner + viewport-fullscreen 两个实例同时挂载：
  *        上方图片区（横幅 35vh）→ 实例 A：横幅图 + 雨
  *        下方征文区（主内容）  → 实例 B：页面背景色微渐变 + 雨（没有图片，卡片文字不受影响）
  *      这是"全屏雨"在横幅模式下唯一正确的形态：图片只属于横幅区，不会铺到征文区底层。
+ *      fullscreen 模式同理挂两层：横幅区（100vh 横幅图）+ 征文区（页面底色），
+ *      否则雨只会出现在上方图片区、下方征文区没有。
  *   3) 换图过渡用「双层真交叉淡入」：新建一层渲染新图并淡入，完成后销毁旧实例/旧层。
  *      这样全程不透明，**不会露出横幅自身的 Ken Burns / crossfade**，也不会露出水波纹交界。
  *      交叉时长直接读轮播自己的过渡时长（横幅读 #banner-carousel 的 data-fade-ms）。
@@ -79,6 +89,7 @@
 		{ parent: string; id: string; className: string }
 	> = {
 		banner: {
+			// banner 模式与 fullscreen 模式（横幅铺满 100vh）都显示这个容器
 			parent: "#banner-wrapper",
 			id: "rainy-window",
 			className: "absolute inset-0 z-[1] pointer-events-none",
@@ -87,17 +98,19 @@
 			parent: "body",
 			// z-[9] < 横幅 z-10：横幅图片、文字与流动水波纹始终可见；
 			// 底色是 --page-bg 的微渐变（不是图片）→ 征文区底层绝不会出现壁纸图
+			// 用于：「横幅模式 + 全屏档位」、全屏壁纸模式（两种模式的征文区都是页面底色）
 			id: "rainy-window-fullscreen",
 			className: "fixed inset-0 z-[9] pointer-events-none",
 		},
-		"wallpaper-fullscreen": {
+		"overlay-wallpaper": {
+			// 只有 overlay 模式会显示 [data-fullscreen-wallpaper]（fullscreen 模式它是 display:none）
 			parent: "[data-fullscreen-wallpaper]",
 			id: "rainy-window-wallpaper",
 			className: "absolute inset-0 pointer-events-none",
 		},
 	};
 
-	/** 只有"横幅内"这一个位置的背景来自横幅轮播换图 */
+	/** 只有「横幅」这一个位置的背景来自横幅轮播换图（fullscreen 模式下背景同样是它） */
 	function usesBannerCarousel(p: RainyPlacement): boolean {
 		return p === "banner";
 	}
@@ -167,8 +180,18 @@
 	}
 
 	// ---------- 读取"当前可见的背景图" ----------
+	/**
+	 * 元素是否真的会被渲染出来
+	 *
+	 * 不能用 `getComputedStyle(el).display !== "none"`：那只反映元素自身的 display，
+	 * 祖先被 display:none 时依然返回 block。本项目的全屏壁纸把「桌面/移动」两组 DOM
+	 * 用容器类（hidden md:block / block md:hidden）整体隐藏，两组里的
+	 * [data-carousel-item] 自身 display 都是 block → 只看自身会同时选中两组，
+	 * 再按 opacity 打平后就可能取到被隐藏的那一组图（手机上贴出桌面壁纸）。
+	 * getClientRects().length 能连带祖先的 display:none 一起判断。
+	 */
 	function isDisplayed(el: Element): boolean {
-		return getComputedStyle(el as HTMLElement).display !== "none";
+		return el.getClientRects().length > 0;
 	}
 
 	function imgSrc(img: HTMLImageElement | null | undefined): string | undefined {
@@ -178,7 +201,8 @@
 
 	function pickVisibleImage(p: RainyPlacement): string | undefined {
 		if (usesBannerCarousel(p)) {
-			// 横幅：crossfade 期间存在新旧两个 slot（新层在旧层之后）→ 取最后一个
+			// 横幅（含「全屏」模式，它的背景同样是 #banner-wrapper）：
+			// crossfade 期间存在新旧两个 slot（新层在旧层之后）→ 取最后一个
 			const slots = Array.from(
 				document.querySelectorAll<HTMLElement>(
 					".banner-image-slot-desktop, .banner-image-slot-mobile",
@@ -201,7 +225,7 @@
 			return imgSrc(any[any.length - 1]);
 		}
 
-		// 全屏壁纸：取 opacity 最大（当前显示）的那一项
+		// overlay 壁纸：取 opacity 最大（当前显示）的那一项
 		const items = Array.from(
 			document.querySelectorAll<HTMLElement>("[data-carousel-item]"),
 		).filter(isDisplayed);
@@ -219,7 +243,18 @@
 			best instanceof HTMLImageElement
 				? best
 				: best?.querySelector<HTMLImageElement>("img");
-		return imgSrc(img);
+		if (img) return imgSrc(img);
+
+		// overlay 关掉轮播 / 只有一张图时走 #wallpaper-single-container（页面脚本注入 img），
+		// 那里没有 [data-carousel-item] → 同样需要兜底，否则 overlay 模式下也会没有雨
+		const single = document.querySelector<HTMLImageElement>(
+			"#wallpaper-single-container img",
+		);
+		if (single) return imgSrc(single);
+		const any = document.querySelectorAll<HTMLImageElement>(
+			"[data-fullscreen-wallpaper] img",
+		);
+		return imgSrc(any[any.length - 1]);
 	}
 
 	// ---------- 征文区（视口全屏层）的底色：--page-bg 的同色系极淡微渐变 ----------
@@ -325,7 +360,11 @@
 	}
 
 	function readWallpaperFadeMs(): number | null {
-		const item = document.querySelector<HTMLElement>("[data-carousel-item]");
+		// 取「真的被渲染出来」的那一项（桌面/移动两组 DOM，隐藏组的过渡时长虽然一样，
+		// 但顺着同一条可见性规则走更不容易出错）
+		const item = Array.from(
+			document.querySelectorAll<HTMLElement>("[data-carousel-item]"),
+		).find((el) => isDisplayed(el));
 		if (!item) return null;
 		const first = getComputedStyle(item).transitionDuration.split(",")[0]?.trim();
 		if (!first) return null;
@@ -696,8 +735,9 @@
 	 *
 	 * 与本项目 setting-utils 的 getStoredWallpaperMode 保持一致：全屏壁纸功能关闭时
 	 * 一律按 banner 处理（否则会挂一个永远看不见、却仍在烧 GPU 的全屏雨层）。
-	 * 注意本项目的 overlay（卡片半透明全屏壁纸）与 fullscreen 用的是同一个
-	 * [data-fullscreen-wallpaper] 容器，所以两者都落到 "wallpaper-fullscreen"。
+	 * 注意四种模式下「谁在显示背景」不同（见文件头注释），映射由
+	 * resolveRainyPlacements 负责：banner / fullscreen 都落在横幅，overlay 落在
+	 * [data-fullscreen-wallpaper]。
 	 */
 	function resolveMode(): string {
 		if (!fullscreenWallpaperConfig.enable) {
