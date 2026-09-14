@@ -25,6 +25,7 @@ const OVERRIDABLE_CONFIGS = [
 	"pioConfig",
 	"profileConfig",
 	"randomPostsConfig",
+	"rainyDayConfig",
 	"relatedPostsConfig",
 	"sakuraConfig",
 	"shareConfig",

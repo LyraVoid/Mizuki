@@ -19,7 +19,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "type-check": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test tests/markdown-enhancements.test.mjs tests/layout-regressions.test.mjs tests/image-loading.test.mjs tests/music-player-loading.test.mjs && node tests/crypto.test.mjs",
+    "test": "node --experimental-strip-types --test tests/markdown-enhancements.test.mjs tests/layout-regressions.test.mjs tests/image-loading.test.mjs tests/music-player-loading.test.mjs tests/rainy-day-placements.test.ts && node tests/crypto.test.mjs",
     "prepare-fonts": "node scripts/prepare-fonts.mjs",
     "check-fonts": "node scripts/check-font-loading.mjs",
     "prepare-images": "node scripts/prepare-default-images.mjs",
@@ -29,6 +29,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@arayui/rainy-day": "^1.0.6",
     "@astrojs/check": "^0.9.9",
     "@astrojs/markdown-remark": "^7.2.1",
     "@astrojs/mdx": "^7.0.3",

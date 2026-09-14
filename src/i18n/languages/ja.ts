@@ -414,4 +414,12 @@ export const ja: Translation = {
 	[Key.randomPosts]: "ランダムな投稿",
 	[Key.smartRecommend]: "スマート",
 	[Key.randomRecommend]: "ランダム",
+
+	// 雨滴ウィンドウエフェクト（表示設定パネル）
+	[Key.rainySwitch]: "雨エフェクト",
+	[Key.rainyOff]: "なし",
+	[Key.rainyBannerOnly]: "バナーのみ",
+	[Key.rainyFullscreen]: "全画面",
+	[Key.rainyNeedWallpaper]:
+		"この壁紙モードでは屈折させる背景がないため、雨は表示されません。",
 };

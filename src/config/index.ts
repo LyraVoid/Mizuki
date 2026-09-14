@@ -25,6 +25,7 @@
  * pioConfig                     │ pioConfig.ts               │ Live2D 看板娘（模型、对话、位置）
  * relatedPostsConfig            │ relatedPostsConfig.ts      │ 相关文章推荐（开关、数量）
  * randomPostsConfig             │ randomPostsConfig.ts       │ 随机文章推荐（开关、数量）
+ * rainyDayConfig                │ rainyDayConfig.ts          │ 雨滴窗口特效（总开关、效果参数）
  * widgetConfigs                 │ (聚合)                     │ 侧边栏 Widget 配置聚合对象
  *
  * ══════════════════════════════════════════════════════════════
@@ -77,6 +78,7 @@ import { withOverride } from "./overrideLoader";
 import { permalinkConfig as permalinkDefaults } from "./permalinkConfig";
 import { pioConfig as pioDefaults } from "./pioConfig";
 import { profileConfig as profileDefaults } from "./profileConfig";
+import { rainyDayConfig as rainyDayDefaults } from "./rainyDayConfig";
 import { randomPostsConfig as randomPostsDefaults } from "./randomPostsConfig";
 import { relatedPostsConfig as relatedPostsDefaults } from "./relatedPostsConfig";
 import { shareConfig as shareDefaults } from "./shareConfig";
@@ -133,6 +135,9 @@ export const randomPostsConfig = withOverride(
 	"randomPostsConfig",
 	randomPostsDefaults,
 );
+
+// ─── 特效 ───────────────────────────────────────────────────
+export const rainyDayConfig = withOverride("rainyDayConfig", rainyDayDefaults);
 
 // ─── 文章推荐 ───────────────────────────────────────────────
 export const relatedPostsConfig = withOverride(

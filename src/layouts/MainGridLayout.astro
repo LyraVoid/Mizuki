@@ -1,4 +1,5 @@
 ---
+import RainyDay from "@components/common/RainyDay.astro";
 import FloatingControls from "@components/control/FloatingControls.astro";
 import { SidebarTOC } from "@components/features/toc";
 import Banner from "@components/layout/Banner.astro";
@@ -11,7 +12,11 @@ import SideBar from "@components/widgets/sidebar/SideBar.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 
-import { fullscreenWallpaperConfig, siteConfig } from "../config";
+import {
+	fullscreenWallpaperConfig,
+	rainyDayConfig,
+	siteConfig,
+} from "../config";
 import {
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_FULLSCREEN,
@@ -155,6 +160,14 @@ const defaultPostListLayout = siteConfig.postListLayout?.defaultMode || "list";
 		showTextOverlay={isHomePage &&
 			(siteConfig.banner.homeText?.enable ?? false)}
 	/>
+
+	<!--
+		雨滴窗口特效（纯脚本组件，不渲染 DOM）
+		总开关在 src/config/rainyDayConfig.ts 的 enable：
+		  为 false 时整段不渲染 → 组件、@arayui/rainy-day（含 Three.js）都不会进产物
+		位置：Banner 与 <main> 之外 —— Swup 只替换 <main>，所以切换页面不会重建雨层
+	-->
+	{rainyDayConfig.enable && <RainyDay />}
 
 	<!-- Main content -->
 	<div

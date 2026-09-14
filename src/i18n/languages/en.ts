@@ -411,4 +411,12 @@ export const en: Translation = {
 	[Key.randomPosts]: "Random Posts",
 	[Key.smartRecommend]: "Smart",
 	[Key.randomRecommend]: "Random",
+
+	// Rain window effect (display settings panel)
+	[Key.rainySwitch]: "Rain effect",
+	[Key.rainyOff]: "Off",
+	[Key.rainyBannerOnly]: "Banner only",
+	[Key.rainyFullscreen]: "Fullscreen",
+	[Key.rainyNeedWallpaper]:
+		"No background to refract in this wallpaper mode, so the rain is hidden.",
 };

@@ -397,4 +397,11 @@ export const zh_CN: Translation = {
 	[Key.randomPosts]: "随机文章",
 	[Key.smartRecommend]: "智能推荐",
 	[Key.randomRecommend]: "随机推荐",
+
+	// 雨滴窗口特效（外观设置面板）
+	[Key.rainySwitch]: "雨滴特效",
+	[Key.rainyOff]: "无雨",
+	[Key.rainyBannerOnly]: "仅横幅",
+	[Key.rainyFullscreen]: "全屏",
+	[Key.rainyNeedWallpaper]: "当前壁纸模式下没有可折射的背景，雨滴不会显示。",
 };

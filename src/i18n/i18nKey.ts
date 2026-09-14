@@ -389,6 +389,13 @@ enum I18nKey {
 	randomPosts = "randomPosts",
 	smartRecommend = "smartRecommend",
 	randomRecommend = "randomRecommend",
+
+	// 雨滴窗口特效（外观设置面板）
+	rainySwitch = "rainySwitch",
+	rainyOff = "rainyOff",
+	rainyBannerOnly = "rainyBannerOnly",
+	rainyFullscreen = "rainyFullscreen",
+	rainyNeedWallpaper = "rainyNeedWallpaper",
 }
 
 export default I18nKey;
