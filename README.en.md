@@ -136,6 +136,7 @@ Deploy your blog to any static hosting platform:
 - **Netlify:** Deploy directly from GitHub
 - **GitHub Pages:** Use the included GitHub Actions workflow
 - **Cloudflare Pages:** Connect your repository
+- **Wasmer Edge:** [![Deploy to Wasmer](https://img.shields.io/badge/Deploy%20to-Wasmer-171717?logo=wasmer&logoColor=white)](https://wasmer.io/apps/create?github=LyraVoid%2FMizuki) imports this repository and builds it as a static site (output `dist`); to customize, import your own copy or fork
 
 - **Environment Variable Configuration (Optional):** Refer to `.env.example` for configuration
 

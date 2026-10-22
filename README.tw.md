@@ -136,6 +136,7 @@
 - **Netlify：** 直接從 GitHub 部署
 - **GitHub Pages：** 使用包含的 GitHub Actions 工作流
 - **Cloudflare Pages：** 連接您的儲存庫
+- **Wasmer Edge：** [![Deploy to Wasmer](https://img.shields.io/badge/Deploy%20to-Wasmer-171717?logo=wasmer&logoColor=white)](https://wasmer.io/apps/create?github=LyraVoid%2FMizuki) 匯入本儲存庫並建置為靜態網站（輸出目錄 `dist`）；如需自訂，請匯入您自己的副本或 fork
 
 部署前，請在 `src/config/siteConfig.ts` 中更新 `siteURL`。
 不要將 `.env` 或憑據提交到 Git；託管構建請在平台的環境變數設定中配置。

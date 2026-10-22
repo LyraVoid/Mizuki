@@ -136,6 +136,7 @@
 - **Netlify：** 直接从 GitHub 部署
 - **GitHub Pages：** 使用包含的 GitHub Actions 工作流
 - **Cloudflare Pages：** 连接您的仓库
+- **Wasmer Edge：** [![Deploy to Wasmer](https://img.shields.io/badge/Deploy%20to-Wasmer-171717?logo=wasmer&logoColor=white)](https://wasmer.io/apps/create?github=LyraVoid%2FMizuki) 导入本仓库并构建为静态站点（输出目录 `dist`）；如需自定义，请导入您自己的副本或 fork
 
 - **环境变量配置（可选）：** 可参照 `.env.example` 来配置
 
