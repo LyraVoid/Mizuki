@@ -136,6 +136,7 @@
 - **Netlify：** GitHubから直接デプロイ
 - **GitHub Pages：** 付属のGitHub Actionsワークフローを使用
 - **Cloudflare Pages：** リポジトリを接続
+- **Wasmer Edge：** [![Deploy to Wasmer](https://img.shields.io/badge/Deploy%20to-Wasmer-171717?logo=wasmer&logoColor=white)](https://wasmer.io/apps/create?github=LyraVoid%2FMizuki) このリポジトリをインポートし静的サイトとしてビルド（出力先 `dist`）。カスタマイズする場合はご自身のコピーまたはフォークをインポート
 
 デプロイ前に、`src/config/siteConfig.ts` の `siteURL` を更新してください。
 `.env` や認証情報を Git にコミットしないでください。ホスティング環境では、プロバイダーの環境変数設定を使用します。
